@@ -1,5 +1,5 @@
 .mainContainer {
-  min-height: calc(100vh);
+  min-height: calc(100vh - $main-header-height);
   height: 100%;
 
   :global {

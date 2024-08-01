@@ -15,8 +15,8 @@
       &.scrolled {
         min-height: calc($main-header-height - 16px);
         height: calc($main-header-height - 16px);
-        background: rgb(0 43 93 / 70%);
-        backdrop-filter: blur(16px);
+        backdrop-filter: blur(3px);
+        background: rgb(0 0 0 / 50%);
         @media (max-width: 767px) {
         }
       }
@@ -46,10 +46,10 @@
       }
     }
     .logo-image {
-      width: 243px;
+      width: 112px;
       height: auto;
       @media screen and (max-width: 767px) {
-        width: 160px;
+        width: 64px;
         margin-left: 48px;
       }
     }

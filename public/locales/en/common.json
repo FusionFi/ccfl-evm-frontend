@@ -1,4 +1,8 @@
 {
   "LAYOUT_MAIN_HEADER_NAV_TEXT_SUPPLY": "Supply",
-  "LAYOUT_MAIN_HEADER_NAV_TEXT_BORROW": "Borrow"
+  "LAYOUT_MAIN_HEADER_NAV_TEXT_BORROW": "Borrow",
+  "LANDING_PAGE_BANNER_TITLE": " <div> Your Trusted DeFi</div><div><span> Loan Services</span> on EVM</div>",
+  "LANDING_PAGE_BANNER_DESCRIPTION": "CCFL is a platform that provides loan services to users with crypto collateral and staking yields. Similar to other decentralized lending platforms, users could deposit their crypto assets and ask for a fixed-time loan according to the value of their collateral without selling their assets.",
+  "LANDING_PAGE_BANNER_BTN_TITLE_LENDING": "Start Lending",
+  "LANDING_PAGE_BANNER_BTN_TITLE_BORROW": "Start Borrowing"
 }
