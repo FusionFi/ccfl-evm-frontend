@@ -1,0 +1,50 @@
+.mainLayoutFooter {
+  :global {
+    .landing-page-footer {
+      background: #011a41 0% 0% no-repeat padding-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 120px 16px 48px 16px;
+      font-family: Inter;
+      font-size: 18px;
+      color: #fff;
+      .footer-logo {
+        margin-bottom: 88px;
+        img {
+          width: 100%;
+          height: auto;
+          transition: transform 0.3s ease;
+          &:hover {
+            transform: scale(1.02);
+          }
+        }
+      }
+      .social-icons {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 60px;
+        a {
+          margin-right: 60px;
+          &:hover {
+            color: #7ce4ff;
+          }
+          &:last-child {
+            margin-right: 0;
+          }
+        }
+      }
+      .footer-copyright {
+        font-family: Inter;
+        font-size: 18px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 24px;
+        color: #fff;
+        letter-spacing: 0.9px;
+      }
+    }
+  }
+}

@@ -1,0 +1,317 @@
+.app-container {
+  // .hidden {
+  //   display: none !important;
+  // }
+  .main-container {
+  }
+  .bg-main-color {
+    background: transparent;
+  }
+
+  .ant-menu-item.ant-menu-item-selected {
+    color: #6559f5;
+    box-shadow: -3px 0px 0px 0px #6559f5 inset;
+  }
+
+  .btn-primary-custom {
+    padding: 8px;
+    border-radius: 32px;
+    background: transparent linear-gradient(137deg, #a8f1ff 0%, #89b7ff 100%) 0% 0% no-repeat
+      padding-box;
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 17px;
+    color: #00377a;
+    width: 100%;
+    height: auto;
+    border: 0px;
+    transition: none;
+    display: flex;
+    align-items: center;
+    &:hover {
+      background: #fff;
+      color: #00377a !important;
+    }
+    &[disabled],
+    &[disabled]:hover,
+    &:disabled:hover,
+    &:disabled {
+      border: 1px solid rgb(217, 217, 217) !important;
+      background: rgb(245, 245, 245) !important;
+      color: rgb(191, 191, 191) !important;
+      cursor: not-allowed;
+    }
+    .ant-spin {
+      margin-right: 8px;
+    }
+  }
+  .btn-outline-custom {
+    padding: 5px 16px;
+    border-radius: 6px;
+    height: auto;
+    background: #fff;
+    font-family: Segoe UI;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 22px;
+    color: #6559f5;
+    border: 1px solid #6559f5;
+    width: 100%;
+    &:hover {
+      opacity: 0.8;
+      border: 1px solid #6559f5 !important;
+      color: #6559f5 !important;
+      background: #fff !important;
+    }
+  }
+  // custom popover
+  .ant-popover {
+    .ant-popover-arrow {
+      margin-left: -24px;
+      &:before {
+        background: #fff;
+      }
+    }
+    .ant-popover-content {
+      left: -64px;
+      .ant-popover-inner {
+        background: #fff;
+        padding: 16px 24px;
+      }
+    }
+  }
+  // custom modal ant design
+  .ant-modal {
+    .ant-modal-content {
+      padding: 0px;
+    }
+    .ant-modal-header {
+      padding: 16px 24px;
+      border-bottom: 1px solid #d9d9d9;
+      margin-bottom: 0px;
+      .ant-modal-title {
+        font-family: Segoe UI;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 24px;
+        color: #262626;
+      }
+    }
+    .ant-modal-body {
+      padding: 16px 24px;
+    }
+    .ant-modal-footer {
+      padding: 16px 24px;
+      margin-top: 0px;
+    }
+  }
+  // custom Form ant design
+  .ant-form {
+    .ant-form-item {
+      margin-bottom: 16px;
+      .ant-row {
+        .ant-col {
+          &.ant-form-item-label {
+            font-family: Segoe UI;
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 22px;
+            color: #262626;
+          }
+          &.ant-form-item-control {
+            .ant-form-item-control-input {
+              .ant-form-item-control-input-content {
+                .ant-input {
+                  color: #262626;
+                  &::placeholder {
+                    color: #8c8c8c;
+                    opacity: 1; /* Firefox */
+                  }
+                }
+                .ant-input-data-count {
+                  font-size: 12px;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  .ant-upload-list-item-thumbnail {
+    > img {
+      object-fit: cover !important;
+    }
+  }
+}
+
+// table custom - start
+.wrap-table {
+  border-radius: 8px;
+  border: 1px solid #d9d9d9;
+  background: #fff;
+  overflow: hidden;
+  .table {
+    &-title {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 12px 24px;
+      // border-bottom: 1px solid #f0f0f0;
+      color: var(--gray-gray-9, #262626);
+      font-family: 'Segoe UI';
+      font-size: 20px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 28px;
+      svg,
+      img {
+        width: 24px;
+        height: 24px;
+        margin-right: 10px;
+      }
+    }
+    &-tabs {
+      padding: 0 24px;
+      .ant-tabs.ant-tabs-top > .ant-tabs-nav {
+        margin: 0;
+        &::before {
+          border-color: transparent;
+        }
+      }
+    }
+    &-nodata {
+      padding: 12px 24px;
+      text-align: center;
+      color: #595959;
+      font-family: 'Segoe UI';
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 22px;
+    }
+  }
+  .ant-table-wrapper {
+    overflow: auto;
+    .ant-table {
+      color: #595959;
+      font-family: 'Segoe UI';
+      &-thead {
+        tr {
+          th {
+            padding: 12px 24px;
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: 22px;
+            background: var(--gray-gray-3, #f5f5f5);
+            border-top: 1px solid #f0f0f0;
+            border-radius: 0 !important;
+            min-width: 100px;
+            &::before {
+              display: none;
+            }
+          }
+        }
+      }
+      &-tbody {
+        tr {
+          td {
+            padding: 12px 24px;
+          }
+          &:last-child td {
+            border: none;
+          }
+        }
+      }
+    }
+  }
+}
+// table custom - end
+
+// button - start
+.ant-btn.ant-btn-primary-outline {
+  font-family: 'Segoe UI';
+  background: transparent;
+  @apply border-primary text-primary;
+  @apply text-base;
+  border-radius: 8px;
+  padding: 8px 16px;
+  height: auto;
+  &.ant-btn-sm {
+    @apply text-sm;
+    height: auto;
+    padding: 1px 7px;
+    border-radius: 4px;
+  }
+  &:active,
+  &:hover {
+    @apply border-blue-5 text-blue-5;
+  }
+}
+.ant-btn.ant-btn-gray-outline {
+  font-family: 'Segoe UI';
+  background: transparent;
+  @apply border-gray-5 text-gray-9;
+  @apply text-base;
+  border-radius: 8px;
+  padding: 8px 16px;
+  height: auto;
+  &.ant-btn-sm {
+    @apply text-sm;
+    height: auto;
+    padding: 1px 7px;
+    border-radius: 4px;
+  }
+  &:active,
+  &:hover {
+    @apply border-gray-5 text-primary;
+  }
+}
+.ant-btn {
+  &[disabled],
+  &[disabled]:hover,
+  &:disabled:hover,
+  &:disabled {
+    border-color: rgb(217 217 217) !important;
+    background-color: rgb(245 245 245) !important;
+    color: rgb(191 191 191) !important;
+  }
+}
+// button - end
+
+.pagination-custom {
+  &.ant-pagination {
+    .ant-pagination-item:not(.ant-pagination-item-active) {
+      @apply border-gray-5;
+    }
+    .ant-pagination-prev,
+    .ant-pagination-next {
+      .ant-pagination-item-link {
+        @apply border-gray-5;
+      }
+      &.ant-pagination-disabled {
+        .ant-pagination-item-link {
+          @apply bg-gray-3;
+        }
+      }
+    }
+  }
+}
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.rotate {
+  animation: rotate 1s linear infinite;
+}

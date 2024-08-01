@@ -1,0 +1,51 @@
+.mainContainer {
+  min-height: calc(100vh);
+  height: 100%;
+
+  :global {
+    .sidebar-container {
+    }
+    .ant-menu {
+      background: transparent;
+      padding-top: 56px;
+      .ant-menu-item {
+        font-family: Inter;
+        font-size: 18px;
+        font-style: normal;
+        font-weight: normal;
+        line-height: 30px;
+        letter-spacing: 1.68px;
+        color: #ffffff;
+        background: transparent;
+        height: auto;
+        padding: 4px 12px;
+        transition: all 0.3s !important;
+
+        &:hover {
+          color: #7ee4ff !important;
+          opacity: 0.8;
+        }
+        &:active {
+          background: transparent;
+        }
+        &.ant-menu-item-selected {
+          font-size: 24px;
+          font-weight: bold;
+          color: #7ee4ff;
+          box-shadow: none;
+        }
+        > .anticon {
+          display: none !important;
+        }
+        > svg {
+          display: none !important;
+          width: 18px;
+          height: 18px;
+          // margin-inline-end: 12px;
+        }
+        .anticon {
+        }
+      }
+    }
+  }
+}

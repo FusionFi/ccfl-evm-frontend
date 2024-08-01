@@ -1,0 +1,47 @@
+.btnActions {
+  display: flex;
+
+  :global {
+    .wallet-connect-tooltip {
+      z-index: 9;
+      .ant-tooltip-arrow {
+        &:before {
+          background: #fff;
+        }
+      }
+      .ant-tooltip-content {
+        left: -24px;
+        .ant-tooltip-inner {
+          background: #fff;
+          padding: 16px 24px;
+          .btn-connect {
+            margin-bottom: 10px;
+            min-width: 200px;
+            font-family: Segoe UI;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 24px;
+            border-radius: 8px;
+            border: 1px solid #6559f5;
+            color: #6559f5;
+            display: flex;
+            align-items: center;
+            &:hover {
+              opacity: 0.8;
+            }
+            &:last-child {
+              margin-bottom: 0px;
+            }
+            img {
+              width: 16px;
+              height: auto;
+              margin-right: 8px;
+              margin-top: 4px;
+            }
+          }
+        }
+      }
+    }
+  }
+}

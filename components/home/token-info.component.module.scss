@@ -1,0 +1,68 @@
+.tokenInfoComponent {
+  background-image: url('/images/landing/token/bg.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  @media screen and (max-width: 767px) {
+    background-image: url('/images/landing/token/bg-mobile.png');
+  }
+  :global {
+    .token-info-container {
+      margin-top: 54px;
+      padding: 90px 120px 72px 120px;
+      display: flex;
+      @media screen and (max-width: 767px) {
+        margin-top: 28px;
+        flex-direction: column;
+        padding: 45px 16px 36px 16px;
+      }
+      .content-left {
+        width: 60%;
+        @media screen and (max-width: 767px) {
+          width: 100%;
+        }
+        .title {
+          font-family: Inter;
+          color: #fff;
+          font-size: 60px;
+          font-weight: 500;
+          line-height: 74px;
+          letter-spacing: 3px;
+          @media screen and (max-width: 767px) {
+            font-size: 32px;
+            line-height: 36px;
+          }
+        }
+        .description {
+          font-family: Inter;
+          color: #fff;
+          font-size: 18px;
+          font-weight: 200;
+          line-height: 24px;
+          letter-spacing: 0.9px;
+          margin-top: 60px;
+          max-width: 712px;
+          @media screen and (max-width: 767px) {
+            font-size: 18px;
+            line-height: 22px;
+            margin-top: 30px;
+          }
+        }
+      }
+      .content-right {
+        width: 40%;
+        display: flex;
+        justify-content: flex-end;
+        @media screen and (max-width: 767px) {
+          padding-left: 0px;
+          justify-content: center;
+          margin-top: 48px;
+          width: 100%;
+        }
+        > img {
+          width: 310px;
+          height: 310px;
+        }
+      }
+    }
+  }
+}

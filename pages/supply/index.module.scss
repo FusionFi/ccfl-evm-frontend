@@ -1,0 +1,12 @@
+.supplyPage {
+  padding: $main-header-height 0px 0px 0px;
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  @media screen and (max-width: 767px) {
+    min-height: 100vh;
+  }
+
+  :global {
+  }
+}

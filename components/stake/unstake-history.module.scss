@@ -1,0 +1,32 @@
+.unstakeHistory {
+  :global {
+    .unstake-history-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #fff;
+      font-family: Inter;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 300;
+      line-height: 17px;
+      .unstake-history-item-value {
+        font-weight: bold;
+      }
+    }
+    hr {
+      border: 0px;
+      border-bottom: 1px solid #e2e2e2;
+      margin: 8px 0px;
+      opacity: 0.25;
+    }
+    .redeeming {
+      color: hsla(205, 100%, 65%, 1);
+      font-weight: bold;
+    }
+    .redeemed {
+      color: hsla(120, 100%, 50%, 1);
+      font-weight: bold;
+    }
+  }
+}

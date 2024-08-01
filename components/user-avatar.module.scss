@@ -1,0 +1,30 @@
+.userAvatar {
+  :global {
+    .user-image {
+      cursor: pointer;
+      width: 32px;
+      height: 32px;
+      &:hover {
+        opacity: 0.8;
+      }
+          &.disabled {
+        cursor: auto;
+        &:hover {
+          opacity: 1;
+        }
+      }
+      display: flex;
+      > img {
+        border-radius: 50%;
+        object-fit: cover;
+      }
+    }
+    .no-image {
+      .paper {
+        > svg {
+          width: 100%;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,97 @@
+.mainLayoutHeader {
+  :global {
+    //min-height: $main-header-height;
+
+    .header-container {
+      transition: all 0.3s;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      min-height: $main-header-height;
+      padding: 0 48px;
+      @media (max-width: 767px) {
+        padding: 0 16px;
+      }
+      &.scrolled {
+        min-height: calc($main-header-height - 16px);
+        height: calc($main-header-height - 16px);
+        background: rgb(0 43 93 / 70%);
+        backdrop-filter: blur(16px);
+        @media (max-width: 767px) {
+        }
+      }
+    }
+    .navigation-links {
+      li > a {
+        font-family: Inter;
+        font-size: 18px;
+        font-style: normal;
+        font-weight: normal;
+        line-height: 30px;
+        letter-spacing: 1.68px;
+        color: #ffffff;
+        background: transparent;
+        height: auto;
+        padding: 4px 12px;
+        transition: all 0.3s !important;
+        &.active {
+          font-size: 24px;
+          font-weight: bold;
+          color: #7ee4ff;
+          box-shadow: none;
+        }
+      }
+      @media screen and (max-width: 767px) {
+        display: none;
+      }
+    }
+    .logo-image {
+      width: 243px;
+      height: auto;
+      @media screen and (max-width: 767px) {
+        width: 160px;
+        margin-left: 48px;
+      }
+    }
+    .right-content {
+      .user-info-popover {
+        .ant-popover-arrow {
+          display: none;
+        }
+        .ant-popover-content {
+          width: 200px;
+          .ant-popover-inner {
+            padding: 16px 4px;
+            .user-info-navigation {
+              .row-item {
+                cursor: pointer;
+                &:first-child {
+                  border-top: 1px solid #f0f0f0;
+                }
+                &:last-child {
+                  border-bottom: 1px solid #f0f0f0;
+                }
+                &:hover {
+                  background-color: rgba(38, 38, 38, 0.06);
+                }
+                .content-left {
+                  font-family: Segoe UI;
+                  font-size: 14px;
+                  font-style: normal;
+                  font-weight: 400;
+                  line-height: 22px;
+                  color: #595959;
+                  > svg {
+                    width: 20px;
+                    height: 20px;
+                    margin-right: 4px;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
