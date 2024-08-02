@@ -1,7 +1,6 @@
 .mainLayoutHeader {
   :global {
     //min-height: $main-header-height;
-
     .header-container {
       transition: all 0.3s;
       width: 100%;
@@ -15,29 +14,31 @@
       &.scrolled {
         min-height: calc($main-header-height - 16px);
         height: calc($main-header-height - 16px);
-        background: rgb(0 43 93 / 70%);
-        backdrop-filter: blur(16px);
+        backdrop-filter: blur(3px);
+        background: rgb(0 0 0 / 50%);
         @media (max-width: 767px) {
         }
       }
     }
     .navigation-links {
+      margin-left: 80px;
       li > a {
         font-family: Inter;
-        font-size: 18px;
+        font-size: 14px;
         font-style: normal;
         font-weight: normal;
-        line-height: 30px;
+        line-height: 20px;
         letter-spacing: 1.68px;
         color: #ffffff;
         background: transparent;
         height: auto;
         padding: 4px 12px;
-        transition: all 0.3s !important;
+        transition: all 0.5s ease-in-out !important;
         &.active {
-          font-size: 24px;
+          font-size: 20px;
+          line-height: 24px;
           font-weight: bold;
-          color: #7ee4ff;
+          color: #2e77e3;
           box-shadow: none;
         }
       }
@@ -46,14 +47,19 @@
       }
     }
     .logo-image {
-      width: 243px;
+      width: 112px;
       height: auto;
       @media screen and (max-width: 767px) {
-        width: 160px;
+        width: 64px;
         margin-left: 48px;
       }
     }
     .right-content {
+      .external-links {
+        > a {
+          min-width: 60px;
+        }
+      }
       .user-info-popover {
         .ant-popover-arrow {
           display: none;

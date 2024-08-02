@@ -14,25 +14,27 @@
   }
 
   .btn-primary-custom {
-    padding: 8px;
-    border-radius: 32px;
-    background: transparent linear-gradient(137deg, #a8f1ff 0%, #89b7ff 100%) 0% 0% no-repeat
-      padding-box;
+    padding: 5px 16px;
+    border-radius: 2px;
+    border: 1px $primary-color;
+    background: $primary-color;
+    box-shadow: 0px 2px 0px 0px rgba(0, 0, 0, 0.04);
+    color: #fff;
+    text-align: center;
+    /* H5/regular */
     font-family: Inter;
     font-size: 14px;
     font-style: normal;
     font-weight: 400;
-    line-height: 17px;
-    color: #00377a;
+    line-height: 22px;
     width: 100%;
     height: auto;
-    border: 0px;
-    transition: none;
     display: flex;
+    justify-content: center;
     align-items: center;
     &:hover {
-      background: #fff;
-      color: #00377a !important;
+      opacity: 0.8;
+      color: #fff !important;
     }
     &[disabled],
     &[disabled]:hover,
@@ -48,23 +50,27 @@
     }
   }
   .btn-outline-custom {
-    padding: 5px 16px;
-    border-radius: 6px;
+    padding: 3px 16px;
+    border-radius: 2px;
+    border: 1px solid $primary-color;
+    background: transparent !important;
     height: auto;
     background: #fff;
-    font-family: Segoe UI;
+    text-align: center;
+    font-family: Inter;
     font-size: 14px;
     font-style: normal;
     font-weight: 400;
-    line-height: 22px;
-    color: #6559f5;
-    border: 1px solid #6559f5;
+    line-height: 24px;
     width: 100%;
+    color: $primary-color;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     &:hover {
       opacity: 0.8;
-      border: 1px solid #6559f5 !important;
-      color: #6559f5 !important;
-      background: #fff !important;
+      color: $primary-color !important;
+      border: 1px solid $primary-color !important;
     }
   }
   // custom popover

@@ -2,29 +2,34 @@
   display: flex;
 
   :global {
+    .btn-primary-custom {
+      font-family: Inter;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 22px;
+    }
     .wallet-connect-tooltip {
       z-index: 9;
       .ant-tooltip-arrow {
         &:before {
-          background: #fff;
+          background: $primary-color;
         }
       }
       .ant-tooltip-content {
         left: -24px;
         .ant-tooltip-inner {
-          background: #fff;
+          background: #000;
           padding: 16px 24px;
-          .btn-connect {
+          border: $primary-color 1px solid;
+          .btn-outline-custom {
             margin-bottom: 10px;
             min-width: 200px;
-            font-family: Segoe UI;
-            font-size: 16px;
+            font-family: Inter;
+            font-size: 14px;
             font-style: normal;
             font-weight: 400;
-            line-height: 24px;
-            border-radius: 8px;
-            border: 1px solid #6559f5;
-            color: #6559f5;
+            line-height: 22px;
             display: flex;
             align-items: center;
             &:hover {
@@ -37,7 +42,6 @@
               width: 16px;
               height: auto;
               margin-right: 8px;
-              margin-top: 4px;
             }
           }
         }

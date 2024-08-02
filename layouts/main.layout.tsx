@@ -51,7 +51,7 @@ export const MainLayout = ({ children }: PropsWithChildren<{}>) => {
   }, [router.pathname]);
   useEffect(() => {
     const handleScroll = () => {
-      const isScrolled = window.scrollY > 80;
+      const isScrolled = window.scrollY > 40;
       setIsHeaderScrolled(isScrolled);
     };
 

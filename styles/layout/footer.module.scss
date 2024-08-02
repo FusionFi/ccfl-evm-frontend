@@ -1,19 +1,18 @@
 .mainLayoutFooter {
   :global {
     .landing-page-footer {
-      background: #011a41 0% 0% no-repeat padding-box;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding: 120px 16px 48px 16px;
+      padding: 20px 160px 20px 160px;
       font-family: Inter;
       font-size: 18px;
       color: #fff;
+      display: flex;
+      justify-content: space-between;
+      @media screen and (max-width: 767px) {
+        padding: 8px 16px 8px 16px;
+      }
       .footer-logo {
-        margin-bottom: 88px;
         img {
-          width: 100%;
+          width: 130px;
           height: auto;
           transition: transform 0.3s ease;
           &:hover {
@@ -25,11 +24,14 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-bottom: 60px;
         a {
-          margin-right: 60px;
+          margin-right: 16px;
+          > img {
+            width: 32px;
+            height: auto;
+          }
           &:hover {
-            color: #7ce4ff;
+            opacity: 0.8;
           }
           &:last-child {
             margin-right: 0;

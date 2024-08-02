@@ -8,6 +8,8 @@ import { twMerge } from 'tailwind-merge';
 import header from '@/styles/layout/header.module.scss';
 import { useNetwork } from 'wagmi';
 // imports components
+import { BridgeIcon } from '@/components/icons/bridge';
+import { SwapIcon } from '@/components/icons/swap';
 import { WagmiButton } from '@/components/wagmi/wagmi.btn.component';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
@@ -16,7 +18,7 @@ export const MainHeader = () => {
   /**
    * STATES
    */
-  const [isLandingPage, setIsLandingPage] = useState(false);
+  const [isLandingPage, setIsLandingPage] = useState(true);
   const [backgroundChange, setBackgroundChange] = useState(false);
   /**
    * HOOKS
@@ -26,7 +28,6 @@ export const MainHeader = () => {
   const { chain } = useNetwork();
   const [messageApi, contextHolder] = message.useMessage();
   const { t } = useTranslation('common');
-  console.log('🚀 ~ MainHeader ~ t:', t);
 
   /**
    * FUNCTIONS
@@ -55,7 +56,8 @@ export const MainHeader = () => {
   }, [router.pathname]);
   useEffect(() => {
     const handleScroll = () => {
-      const shouldChangeBackground = window.scrollY > 80;
+      const shouldChangeBackground = window.scrollY > 20;
+      console.log('🚀 ~ handleScroll ~ window.scrollY:', window.scrollY);
       setBackgroundChange(shouldChangeBackground);
     };
 
@@ -71,37 +73,29 @@ export const MainHeader = () => {
    * RENDERS
    */
   const HeaderContent = () => {
-    // if (isLandingPage) {
-    //   return (
-    //     <div className="landing-page-header-content  md:pl-6 pl-10 md:pr-6 pr-1.5  flex items-center justify-center w-full">
-    //       <div className="right-content ml-auto">
-    //         <Link href="/stake">
-    //           <Button type="primary"> Stake Now</Button>
-    //         </Link>
-    //       </div>
-    //     </div>
-    //   );
-    // } else {
-    return (
-      <div className="page-header-content flex items-center justify-center w-full">
-        {!isLandingPage && (
-          <div className="navigation-links">
-            <ul className="flex items-center justify-center ml-4">
-              <li className="text-white mr-4 hover:opacity-80">
-                <Link
-                  href="/supply"
-                  className={`link ${router?.pathname === '/supply' ? 'active' : ''}`}>
-                  {t('LAYOUT_MAIN_HEADER_NAV_TEXT_SUPPLY')}
-                </Link>
-              </li>
-              <li className="text-white mr-4 hover:opacity-80">
-                <Link
-                  href="/borrow"
-                  className={`link ${router?.pathname === '/borrow' ? 'active' : ''}`}>
-                  {t('LAYOUT_MAIN_HEADER_NAV_TEXT_BORROW')}
-                </Link>
-              </li>
-              {/* <li className="text-white mr-4 hover:opacity-80">
+    if (isLandingPage) {
+      return <></>;
+    } else {
+      return (
+        <div className="page-header-content flex items-center justify-center w-full">
+          {!isLandingPage && (
+            <div className="navigation-links">
+              <ul className="flex items-center justify-center ml-4">
+                <li className="text-white mr-4 hover:opacity-80">
+                  <Link
+                    href="/supply"
+                    className={`link ${router?.pathname === '/supply' ? 'active' : ''}`}>
+                    {t('LAYOUT_MAIN_HEADER_NAV_TEXT_SUPPLY')}
+                  </Link>
+                </li>
+                <li className="text-white mr-4 hover:opacity-80">
+                  <Link
+                    href="/borrow"
+                    className={`link ${router?.pathname === '/borrow' ? 'active' : ''}`}>
+                    {t('LAYOUT_MAIN_HEADER_NAV_TEXT_BORROW')}
+                  </Link>
+                </li>
+                {/* <li className="text-white mr-4 hover:opacity-80">
                 <Link
                   href="/stake"
                   className={`link ${router?.pathname === '/stake' ? 'active' : ''}`}>
@@ -113,21 +107,40 @@ export const MainHeader = () => {
                   Bridge
                 </a>
               </li> */}
-            </ul>
-          </div>
-        )}
-        <div className="right-content ml-auto">
-          <div className={!address ? 'hidden' : 'visible'}>
-            <UserInfoComponent />
-          </div>
+              </ul>
+            </div>
+          )}
+          <div className="right-content ml-auto flex items-center">
+            {!isLandingPage && (
+              <div className="external-links flex items-center">
+                <a
+                  target="_blank"
+                  className="btn-outline-custom mr-4"
+                  href="https://app.v2.tealswap.com/bridge/cbridge/">
+                  <BridgeIcon className="mr-2" /> {t('LAYOUT_MAIN_HEADER_NAV_BTN_TITLE_BRIDGE')}
+                </a>
+                <a
+                  className="btn-outline-custom mr-4"
+                  target="_blank"
+                  href="https://app.v2.tealswap.com/bridge/cbridge/">
+                  <SwapIcon className="mr-2" /> {t('LAYOUT_MAIN_HEADER_NAV_BTN_TITLE_SWAP')}
+                </a>
+              </div>
+            )}
+            <div className={!address ? 'hidden' : 'visible'}>
+              <UserInfoComponent />
+            </div>
 
-          <div className={address ? 'hidden' : 'visible'}>
-            <WagmiButton handleError={handleError} />
+            <div className={address ? 'hidden' : 'visible'}>
+              <WagmiButton
+                handleError={handleError}
+                btnLabel={'LAYOUT_MAIN_HEADER_NAV_BTN_TITLE_CONNECT_WALLET'}
+              />
+            </div>
           </div>
         </div>
-      </div>
-    );
-    //}
+      );
+    }
   };
   return (
     <>
