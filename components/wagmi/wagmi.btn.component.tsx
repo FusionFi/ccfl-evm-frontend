@@ -2,11 +2,12 @@
 import { WalletIcon } from '@/components/icons/wallet.icon';
 import cssClass from '@/components/wagmi/wagmi.btn.module.scss';
 import { useAuth, useResetState } from '@/hooks/auth.hook';
+import eventBus from '@/hooks/eventBus.hook';
 import { watchAccount } from '@wagmi/core';
 import { Button, Tooltip } from 'antd';
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
-import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { useAccount, useConnect, useDisconnect, useNetwork } from 'wagmi';
 declare global {
@@ -30,6 +31,7 @@ export const WagmiButton = ({
    * STATES
    */
   const [isMobile, setIsMobile] = useState(false);
+
   /***
    * HOOKS
    */
@@ -39,6 +41,7 @@ export const WagmiButton = ({
   const { address, isConnected, connector } = useAccount();
   const { t } = useTranslation('common');
   const { chain: chainCurrent } = useNetwork();
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   // hook from store auth module
   const [auth, updateAuth] = useAuth();
@@ -83,6 +86,21 @@ export const WagmiButton = ({
     }
     return () => {
       window.removeEventListener('resize', handleWindowSizeChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleWalletConnect = () => {
+      console.log('🚀 ~ handleWalletConnect ~ handleWalletConnect:', buttonRef);
+      if (buttonRef.current) {
+        buttonRef.current.click();
+      }
+    };
+
+    eventBus.on('handleWalletConnect', handleWalletConnect);
+
+    return () => {
+      eventBus.off('handleWalletConnect', handleWalletConnect);
     };
   }, []);
 
@@ -209,8 +227,8 @@ export const WagmiButton = ({
           title={CustomTooltipContent}
           overlayClassName="wallet-connect-tooltip"
           getPopupContainer={getPopupContainer}
-          trigger={isMobile ? 'click' : 'hover'}>
-          <Button className={twMerge('btn-primary-custom', className)}>
+          trigger={isMobile ? 'click' : 'click'}>
+          <Button ref={buttonRef} className={twMerge('btn-primary-custom', className)}>
             <WalletIcon className="mr-2" />
             {t(btnLabel)}
           </Button>
