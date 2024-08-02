@@ -3,11 +3,12 @@ import { twMerge } from 'tailwind-merge';
 import React from 'react';
 import { Tooltip } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
+import { TYPE_COMMON } from '@/constants/common.constant';
 
 interface itemProps {
   text: string;
   content: string;
-  type: 'usd' | 'percent' | 'health' | string;
+  type: string;
 }
 
 interface itemsProps extends Array<itemProps> {}
@@ -20,13 +21,13 @@ interface overviewProps {
 export default function OverviewComponent(props: overviewProps) {
   const renderItem = (item: itemProps) => {
     return (
-      <div className={`item ${item.type === 'health' ? 'highlight' : ''}`}>
+      <div className={`item ${item.type === TYPE_COMMON.FINANCE_HEALTH ? 'highlight' : ''}`}>
         <div className="overview-title">{item.text}</div>
         <div className="overview-content">
-          {item.type === 'usd' && <span className="overview-symbol mr-1">$</span>}
+          {item.type === TYPE_COMMON.USD && <span className="overview-symbol mr-1">$</span>}
           {item.content}
-          {item.type === 'percent' && <span className="overview-symbol ml-1">%</span>}
-          {item.type === 'health' && (
+          {item.type === TYPE_COMMON.PERCENT && <span className="overview-symbol ml-1">%</span>}
+          {item.type === TYPE_COMMON.FINANCE_HEALTH && (
             <span className="flex">
               B
               <Tooltip placement="top" title={'a'} className="ml-1">

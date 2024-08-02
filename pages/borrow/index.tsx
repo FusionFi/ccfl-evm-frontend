@@ -4,39 +4,42 @@ import { twMerge } from 'tailwind-merge';
 import SelectComponent from '@/components/common/select.component';
 import TitleComponent from '@/components/common/title.component';
 import OverviewComponent from '@/components/common/overview.component';
+import { useTranslation } from 'next-i18next';
+import { TYPE_COMMON } from '@/constants/common.constant';
 
 export default function BorrowPage() {
+  const { t } = useTranslation('common');
+
   const itemLeft = [
     {
-      text: 'Borrowed balance',
+      text: t('BORROW_OVERVIEW_BALANCE'),
       content: ' 1,875.00',
-      type: 'usd',
+      type: TYPE_COMMON.USD,
     },
     {
-      text: 'Collateral',
-
+      text: t('BORROW_OVERVIEW_COLLATERAL'),
       content: ' 1,875.00',
-      type: 'usd',
+      type: TYPE_COMMON.USD,
     },
   ];
 
   const itemRight = [
     {
-      text: 'Net APR',
+      text: t('BORROW_OVERVIEW_APR'),
       content: '0.07',
-      type: 'percent',
+      type: TYPE_COMMON.PERCENT,
     },
     {
-      text: 'Finance health',
+      text: t('BORROW_OVERVIEW_FINANCE_HEALTH'),
       content: '1.66',
-      type: 'health',
+      type: TYPE_COMMON.FINANCE_HEALTH,
     },
   ];
 
   return (
     <div className={twMerge('borrow-page-container', cssClass.borrowPage)}>
       <div className="borrow-header">
-        <TitleComponent text="Borrow overview">
+        <TitleComponent text={t('BORROW_OVERVIEW_TITLE')}>
           <SelectComponent />
         </TitleComponent>
       </div>
@@ -44,7 +47,7 @@ export default function BorrowPage() {
     </div>
   );
 }
-export const getStaticProps = async ({ locale }) => ({
+export const getStaticProps = async ({ locale }: any) => ({
   props: {
     ...(await serverSideTranslations(locale, ['common'])),
   },

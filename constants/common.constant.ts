@@ -1,0 +1,5 @@
+export const TYPE_COMMON = {
+  USD: 'USD',
+  PERCENT: 'PERCENT',
+  FINANCE_HEALTH: 'FINANCE_HEALTH',
+};
