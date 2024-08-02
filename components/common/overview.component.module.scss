@@ -1,0 +1,70 @@
+.overviewComponent {
+  :global {
+    .overview {
+      &-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 32px;
+        border-radius: 2px;
+        background: var(--Conditional-pop-over, #1f1f1f);
+
+        article,
+        aside {
+          display: flex;
+          gap: 32px;
+        }
+        .item.highlight {
+          .overview-content {
+            color: var(--Polar-Green-6, #52c41a);
+
+            /* H5/bold */
+            font-family: Inter;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: 24px; /* 150% */
+          }
+        }
+        svg {
+          width: 12px;
+          height: 12px;
+          color: #1890ff;
+        }
+      }
+      &-title {
+        color: var(--Neutral-9, #f0f0f0);
+
+        /* Body/regular */
+        font-family: Inter;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 22px; /* 157.143% */
+        margin-bottom: 2px;
+      }
+      &-content {
+        display: flex;
+        align-items: center;
+        color: var(--Neutral-1, #fff);
+
+        /* H5/bold */
+        font-family: Inter;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 24px; /* 150% */
+      }
+      &-symbol {
+        color: var(--Neutral-4, #f0f0f0);
+
+        /* H5/regular */
+        font-family: Inter;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 24px; /* 150% */
+      }
+    }
+  }
+}

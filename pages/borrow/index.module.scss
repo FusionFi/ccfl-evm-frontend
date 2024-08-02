@@ -1,5 +1,5 @@
 .borrowPage {
-  padding: 68px 108px;
+  padding: 128px 156px;
   position: relative;
   min-height: 100vh;
   overflow: hidden;
@@ -8,5 +8,8 @@
   }
 
   :global {
+    .borrow-header {
+      margin-bottom: 16px;
+    }
   }
 }
