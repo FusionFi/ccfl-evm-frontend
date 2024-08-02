@@ -1,25 +1,24 @@
 import cssClass from '@/components/common/overview.component.module.scss';
 import { twMerge } from 'tailwind-merge';
-import React from 'react';
 import { Tooltip } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { TYPE_COMMON } from '@/constants/common.constant';
 
-interface itemProps {
+interface ItemProps {
   text: string;
   content: string;
   type: string;
 }
 
-interface itemsProps extends Array<itemProps> {}
+interface ItemsProps extends Array<ItemProps> {}
 
-interface overviewProps {
-  itemLeft: itemsProps;
-  itemRight: itemsProps;
+interface OverviewProps {
+  itemLeft: ItemsProps;
+  itemRight: ItemsProps;
 }
 
-export default function OverviewComponent(props: overviewProps) {
-  const renderItem = (item: itemProps) => {
+export default function OverviewComponent(props: OverviewProps) {
+  const renderItem = (item: ItemProps) => {
     return (
       <div className={`item ${item.type === TYPE_COMMON.FINANCE_HEALTH ? 'highlight' : ''}`}>
         <div className="overview-title">{item.text}</div>
@@ -43,8 +42,8 @@ export default function OverviewComponent(props: overviewProps) {
   return (
     <div className={twMerge(cssClass.overviewComponent)}>
       <div className="overview-container">
-        <article>{props.itemLeft?.map((item: itemProps) => renderItem(item))}</article>
-        <aside>{props.itemRight?.map((item: itemProps) => renderItem(item))}</aside>
+        <article>{props.itemLeft?.map((item: ItemProps) => renderItem(item))}</article>
+        <aside>{props.itemRight?.map((item: ItemProps) => renderItem(item))}</aside>
       </div>
     </div>
   );

@@ -6,6 +6,8 @@ import TitleComponent from '@/components/common/title.component';
 import OverviewComponent from '@/components/common/overview.component';
 import { useTranslation } from 'next-i18next';
 import { TYPE_COMMON } from '@/constants/common.constant';
+import LoansComponent from '@/components/borrow/loans.component';
+import AssetComponent from '@/components/borrow/asset.component';
 
 export default function BorrowPage() {
   const { t } = useTranslation('common');
@@ -43,7 +45,17 @@ export default function BorrowPage() {
           <SelectComponent />
         </TitleComponent>
       </div>
-      <OverviewComponent itemLeft={itemLeft} itemRight={itemRight} />
+      <div className="mb-4">
+        <OverviewComponent itemLeft={itemLeft} itemRight={itemRight} />
+      </div>
+      <div className="flex gap-6">
+        <div className="basis-1/2">
+          <LoansComponent />
+        </div>
+        <div className="basis-1/2">
+          <AssetComponent />
+        </div>
+      </div>
     </div>
   );
 }

@@ -1,6 +1,5 @@
 import cssClass from '@/components/common/title.component.module.scss';
 import { twMerge } from 'tailwind-merge';
-import React from 'react';
 
 interface TitleProps {
   children: any;
