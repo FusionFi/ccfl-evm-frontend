@@ -1,10 +1,8 @@
 .mainContainer {
   min-height: calc(100vh - $main-header-height);
   height: 100%;
-
+  background: #000;
   :global {
-    .sidebar-container {
-    }
     .ant-menu {
       background: transparent;
       padding-top: 56px;
@@ -22,7 +20,7 @@
         transition: all 0.3s !important;
 
         &:hover {
-          color: #7ee4ff !important;
+          color: #2e77e3 !important;
           opacity: 0.8;
         }
         &:active {
@@ -31,7 +29,7 @@
         &.ant-menu-item-selected {
           font-size: 24px;
           font-weight: bold;
-          color: #7ee4ff;
+          color: #2e77e3;
           box-shadow: none;
         }
         > .anticon {

@@ -8,6 +8,8 @@ import { twMerge } from 'tailwind-merge';
 import header from '@/styles/layout/header.module.scss';
 import { useNetwork } from 'wagmi';
 // imports components
+import { BridgeIcon } from '@/components/icons/bridge';
+import { SwapIcon } from '@/components/icons/swap';
 import { WagmiButton } from '@/components/wagmi/wagmi.btn.component';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
@@ -108,13 +110,32 @@ export const MainHeader = () => {
               </ul>
             </div>
           )}
-          <div className="right-content ml-auto">
+          <div className="right-content ml-auto flex items-center">
+            {!isLandingPage && (
+              <div className="external-links flex items-center">
+                <a
+                  target="_blank"
+                  className="btn-outline-custom mr-4"
+                  href="https://app.v2.tealswap.com/bridge/cbridge/">
+                  <BridgeIcon className="mr-2" /> {t('LAYOUT_MAIN_HEADER_NAV_BTN_TITLE_BRIDGE')}
+                </a>
+                <a
+                  className="btn-outline-custom mr-4"
+                  target="_blank"
+                  href="https://app.v2.tealswap.com/bridge/cbridge/">
+                  <SwapIcon className="mr-2" /> {t('LAYOUT_MAIN_HEADER_NAV_BTN_TITLE_SWAP')}
+                </a>
+              </div>
+            )}
             <div className={!address ? 'hidden' : 'visible'}>
               <UserInfoComponent />
             </div>
 
             <div className={address ? 'hidden' : 'visible'}>
-              <WagmiButton handleError={handleError} />
+              <WagmiButton
+                handleError={handleError}
+                btnLabel={'LAYOUT_MAIN_HEADER_NAV_BTN_TITLE_CONNECT_WALLET'}
+              />
             </div>
           </div>
         </div>

@@ -6,13 +6,16 @@
       padding: 64px 108px 64px 108px;
       @media screen and (max-width: 767px) {
         flex-direction: column;
-        padding: 56px 16px 56px 16px;
+        padding: 0px 16px 56px 16px;
       }
     }
     .content-left {
       max-width: 620px;
       margin: 0 auto;
-
+      @media screen and (max-width: 767px) {
+        order: 1;
+        padding-top: 200px;
+      }
       .logo {
         margin-bottom: 12px;
         img {
@@ -65,6 +68,10 @@
           height: auto;
           position: absolute;
           animation: float 3s ease-in-out infinite;
+          @media screen and (max-width: 767px) {
+            top: 60px;
+            max-width: 240px;
+          }
         }
         .image-hand {
           max-width: 655px;

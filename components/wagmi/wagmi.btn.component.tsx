@@ -1,8 +1,10 @@
 //import css class module
+import { WalletIcon } from '@/components/icons/wallet.icon';
 import cssClass from '@/components/wagmi/wagmi.btn.module.scss';
 import { useAuth, useResetState } from '@/hooks/auth.hook';
 import { watchAccount } from '@wagmi/core';
 import { Button, Tooltip } from 'antd';
+import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
 import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -35,7 +37,7 @@ export const WagmiButton = ({
   const { disconnect } = useDisconnect();
   const [loading, setLoading] = useState('');
   const { address, isConnected, connector } = useAccount();
-
+  const { t } = useTranslation('common');
   const { chain: chainCurrent } = useNetwork();
 
   // hook from store auth module
@@ -186,7 +188,7 @@ export const WagmiButton = ({
       loading={loading == connector.id}
       key={connector.id}
       onClick={() => handleConnect({ connector })}
-      className={twMerge('btn-connect', connector.name)}>
+      className={twMerge('btn-outline-custom', connector.name)}>
       <div className="flex items-center justify-center w-full">
         <Image
           alt="logo"
@@ -208,7 +210,10 @@ export const WagmiButton = ({
           overlayClassName="wallet-connect-tooltip"
           getPopupContainer={getPopupContainer}
           trigger={isMobile ? 'click' : 'hover'}>
-          <Button className={twMerge('btn-primary-custom', className)}>{btnLabel}</Button>
+          <Button className={twMerge('btn-primary-custom', className)}>
+            <WalletIcon className="mr-2" />
+            {t(btnLabel)}
+          </Button>
         </Tooltip>
       </div>
     </>

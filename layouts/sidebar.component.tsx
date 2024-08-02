@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo } from 'react';
 
 // import components
 import { KeyOutlineIcon } from '@/components/icons/key-outline.icon';
-
 import { useAuth } from '@/hooks/auth.hook';
 import { useSiderbarManager } from '@/hooks/global.hook';
 import {
@@ -14,6 +13,7 @@ import {
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Menu, Typography, theme } from 'antd';
+import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 
 import layout from '@/styles/layout/layout.module.scss';
@@ -59,9 +59,14 @@ export const Sidebar = () => {
   const [siderbar, updateSiderbar] = useSiderbarManager();
   const { token } = useToken();
   const [auth, updateAuth] = useAuth();
+  const { t } = useTranslation('common');
 
   const items: MenuItem[] = useMemo(() => {
-    return [getItem('/', 'Home', 'HomeOutlined'), getItem('/stake', 'Stake', 'KeyOutlineIcon')];
+    return [
+      getItem('/', t('SIDEBAR_NAV_TEXT_HOME'), 'HomeOutlined'),
+      getItem('/supply', t('SIDEBAR_NAV_TEXT_SUPPLY'), 'KeyOutlineIcon'),
+      getItem('/borrow', t('SIDEBAR_NAV_TEXT_BORROW'), 'KeyOutlineIcon'),
+    ];
   }, []);
 
   /**
@@ -129,19 +134,6 @@ export const Sidebar = () => {
         mode="inline"
         items={items}
       />
-      <ul className="ant-menu pt-0 ant-menu-root ant-menu-inline ant-menu-light">
-        <li className="ant-menu-item" style={{ paddingLeft: '24px' }}>
-          <span
-            className="ant-menu-title-content"
-            style={{
-              marginInlineStart: '14px',
-            }}>
-            <a href="https://app.v2.tealswap.com/bridge/cbridge/" target="_blank">
-              Bridge
-            </a>
-          </span>
-        </li>
-      </ul>
     </div>
   );
 };
