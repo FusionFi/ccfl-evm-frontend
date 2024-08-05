@@ -1,4 +1,91 @@
 .assetComponent {
   :global {
+    .asset {
+      &-container {
+        border-radius: 2px;
+        border: 1px solid var(--Conditional-divider, #303030);
+        background: var(--Conditional-pop-over, #1f1f1f);
+      }
+      &-header {
+        color: #fff;
+
+        /* H5/bold */
+        font-family: Inter;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 24px; /* 150% */
+
+        padding: 12px 16px;
+      }
+      &-nav {
+        display: flex;
+        padding: 8px 16px;
+        color: var(--Neutral-7, #8c8c8c);
+
+        /* Body/regular */
+        font-family: Inter;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 22px; /* 157.143% */
+      }
+      &-body {
+        border-top: 1px solid var(--Neutral-4, #262626);
+        display: flex;
+        padding: 16px;
+        color: var(--Neutral-13, #fff);
+
+        /* Body/medium */
+        font-family: Inter;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 22px; /* 157.143% */
+
+        &:last-child {
+          margin-bottom: 16px;
+        }
+
+        & > div {
+          display: flex;
+          align-items: center;
+        }
+
+        .usd {
+          color: var(--Neutral-7, #8c8c8c);
+
+          /* Footnote/description */
+          font-family: Inter;
+          font-size: 12px;
+          font-style: normal;
+          font-weight: 400;
+          line-height: 20px; /* 166.667% */
+        }
+        .ant-btn-default {
+          border-radius: 2px;
+          background: var(--Primary-6, #1890ff);
+
+          /* drop-shadow/button-primary */
+          box-shadow: 0px 2px 0px 0px rgba(0, 0, 0, 0.04);
+          padding: 0px 7px;
+          border: 0;
+          height: 22px;
+          display: flex;
+          align-items: center;
+          span {
+            color: var(--character-primary-inverse, #fff);
+            text-align: center;
+
+            /* Body/regular */
+            font-family: Inter;
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 22px; /* 157.143% */
+          }
+        }
+      }
+    }
   }
 }
