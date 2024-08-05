@@ -6,6 +6,7 @@
 
   @media screen and (max-width: 767px) {
     min-height: 100vh;
+    padding: 128px 16px;
   }
 
   :global {
@@ -21,7 +22,7 @@
         padding: 16px 32px;
         align-items: center;
         border-radius: 2px;
-        background: var(--Conditional-pop-over, #1F1F1F);
+        background: var(--Conditional-pop-over, #1f1f1f);
         margin-top: 20px;
         gap: 60px;
 
@@ -37,7 +38,7 @@
             gap: 2px;
 
             &__label {
-              color: var(--Neutral-9, #F0F0F0);
+              color: var(--Neutral-9, #f0f0f0);
               /* Body/regular */
               font-family: Inter;
               font-size: 14px;
@@ -48,7 +49,7 @@
             }
 
             &__value {
-              color: var(--Neutral-4, #F0F0F0);
+              color: var(--Neutral-4, #f0f0f0);
               /* H5/regular */
               font-family: Inter;
               font-size: 16px;
@@ -72,7 +73,7 @@
 
       .table-wrapper {
         &__asset {
-          color: var(--Neutral-13, #FFF);
+          color: var(--Neutral-13, #fff);
 
           /* Body/medium */
           font-family: Inter;
@@ -87,7 +88,7 @@
           display: flex;
           flex-direction: column;
           align-items: flex-start;
-          color: var(--Neutral-13, #FFF);
+          color: var(--Neutral-13, #fff);
 
           /* Body/medium */
           font-family: Inter;
@@ -98,7 +99,7 @@
 
           /* 157.143% */
           &__price {
-            color: var(--Neutral-7, #8C8C8C);
+            color: var(--Neutral-7, #8c8c8c);
 
             /* Footnote/description */
             font-family: Inter;
@@ -114,7 +115,7 @@
           display: flex;
           flex-direction: column;
           align-items: flex-start;
-          color: var(--Polar-Green-6, #52C41A);
+          color: var(--Polar-Green-6, #52c41a);
 
           /* Body/medium */
           font-family: Inter;
@@ -124,7 +125,7 @@
           line-height: 22px;
 
           &__price {
-            color: var(--Neutral-7, #8C8C8C);
+            color: var(--Neutral-7, #8c8c8c);
 
             /* Footnote/description */
             font-family: Inter;
@@ -137,7 +138,7 @@
         }
 
         &__apy {
-          color: var(--Neutral-13, #FFF);
+          color: var(--Neutral-13, #fff);
           text-align: right;
 
           /* Body/bold */
@@ -200,8 +201,8 @@
     }
 
     .ant-table {
-      background: var(--Conditional-pop-over, #1F1F1F);
-      color: var(--Neutral-7, #8C8C8C);
+      background: var(--Conditional-pop-over, #1f1f1f);
+      color: var(--Neutral-7, #8c8c8c);
 
       /* Body/regular */
       font-family: Inter;
@@ -214,7 +215,7 @@
       .ant-table-thead {
         .ant-table-cell {
           background-color: transparent;
-          color: var(--Neutral-7, #8C8C8C);
+          color: var(--Neutral-7, #8c8c8c);
 
           /* Body/regular */
           font-family: Inter;
@@ -234,7 +235,6 @@
       }
 
       .ant-table-tbody {
-
         .ant-table-row,
         .ant-table-expanded-row {
           .ant-table-cell {
