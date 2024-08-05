@@ -1,12 +1,161 @@
 .supplyPage {
-  padding: $main-header-height 0px 0px 0px;
+  padding: 128px 156px;
   position: relative;
   min-height: 100vh;
   overflow: hidden;
+
   @media screen and (max-width: 767px) {
     min-height: 100vh;
   }
 
   :global {
+    .overview {
+      font-family: Inter;
+      font-size: 30px;
+      font-style: normal;
+      font-weight: 500;
+      line-height: 40px;
+
+      &__body {
+        display: flex;
+        padding: 16px 32px;
+        align-items: center;
+        border-radius: 2px;
+        background: var(--Conditional-pop-over, #1F1F1F);
+        margin-top: 20px;
+        gap: 60px;
+
+        &__wrapper {
+          display: flex;
+          align-items: center;
+          gap: 32px;
+
+          &__item {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 2px;
+
+            &__label {
+              color: var(--Neutral-9, #F0F0F0);
+              /* Body/regular */
+              font-family: Inter;
+              font-size: 14px;
+              font-style: normal;
+              font-weight: 400;
+              line-height: 22px;
+              /* 157.143% */
+            }
+
+            &__value {
+              color: var(--Neutral-4, #F0F0F0);
+              /* H5/regular */
+              font-family: Inter;
+              font-size: 16px;
+              font-style: normal;
+              font-weight: 400;
+              line-height: 24px;
+              display: flex;
+              align-items: center;
+              gap: 4px;
+              align-self: stretch;
+              /* 150% */
+            }
+          }
+        }
+      }
+    }
+
+    .content {
+      padding-bottom: 16px;
+      margin-top: 16px;
+
+      .ant-table {
+        background: var(--Conditional-pop-over, #1F1F1F);
+        color: var(--Neutral-7, #8C8C8C);
+
+        /* Body/regular */
+        font-family: Inter;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 22px;
+
+        /* 157.143% */
+        .ant-table-thead {
+          .ant-table-cell {
+            background-color: transparent;
+            color: var(--Neutral-7, #8C8C8C);
+
+            /* Body/regular */
+            font-family: Inter;
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 22px;
+            border-bottom: none;
+            
+            &::before {
+              background-color: transparent;
+              display: none;
+            }
+
+            /* 157.143% */
+          }
+        }
+
+        .ant-table-tbody {
+          .ant-table-row {
+            .ant-table-cell {
+              border-bottom: none;
+              border-top: 1px solid var(--Neutral-4, #262626);
+            }
+          }
+        }
+      }
+    }
+
+    .select-wrapper {
+      .ant-select .ant-select-selector {
+        border-radius: 2px;
+        border: 1px solid var(--Neutral-1, #fff);
+
+        /* drop-shadow/button-secondary */
+        box-shadow: 0px 2px 0px 0px rgba(0, 0, 0, 0.02);
+        display: flex;
+        padding: 4px 12px;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+        background-color: #000000;
+
+        color: var(--Neutral-3, #f5f5f5);
+
+        /* H5/regular */
+        font-family: Inter;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 24px;
+        /* 150% */
+      }
+
+      .ant-select-single .ant-select-selector {
+        border-color: #fff !important;
+      }
+
+      .ant-select-single.ant-select-open .ant-select-selection-item {
+        color: white;
+      }
+
+      .anticon-caret-down {
+        svg {
+          width: 16px;
+          height: 16px;
+          color: #f5f5f5;
+        }
+      }
+    }
+
   }
 }
