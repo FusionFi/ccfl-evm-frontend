@@ -14,7 +14,7 @@ import { Provider } from 'react-redux';
 import { persistStore } from 'redux-persist';
 import { PersistGate } from 'redux-persist/integration/react';
 import { WagmiConfig, configureChains, createConfig } from 'wagmi';
-import { oasys } from 'wagmi/chains';
+import { oasys, sepolia, mainnet } from 'wagmi/chains';
 
 //import { alchemyProvider } from 'wagmi/providers/alchemy'
 import { infuraProvider } from '@wagmi/core/providers/infura';
@@ -28,10 +28,13 @@ import Image from 'next/image';
 import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
 //const CHAIN_ID_CONFIG = Number(process.env.NEXT_PUBLIC_CHAIN_ID);
 
+// TODO: config chaings
+const supportedChains = process.env.NEXT_PUBLIC_IS_TESTNET ? [sepolia] : [mainnet]
+
 // Configure chains & providers with the Alchemy provider.
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   // [mainnet, polygon, polygonMumbai],
-  [oasys],
+  supportedChains as any,
   [
     infuraProvider({ apiKey: '87e1c45a4ffc42a2ad67fe5865a833c5' }),
     publicProvider(),
