@@ -2,13 +2,21 @@ import cssClass from '@/components/borrow/loans.component.module.scss';
 import { twMerge } from 'tailwind-merge';
 import { InfoCircleOutlined, CheckOutlined } from '@ant-design/icons';
 import { Tooltip } from 'antd';
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from 'antd';
 import Image from 'next/image';
+import ModalBorrowComponent from '@/components/borrow/modal-borrow.component';
 
 interface LoansProps {}
 
 export default function LoansComponent(props: LoansProps) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
   return (
     <div className={twMerge(cssClass.loansComponent)}>
       <div className="loans-container">
@@ -82,7 +90,7 @@ export default function LoansComponent(props: LoansProps) {
               </div>
             </div>
             <div className="loans-button ">
-              <Button type="primary" className="mr-2">
+              <Button type="primary" className="mr-2" onClick={showModal}>
                 Borrow More
               </Button>
               <Button>Repay</Button>
@@ -91,6 +99,7 @@ export default function LoansComponent(props: LoansProps) {
         </div>
         {/* <div className="loans-empty">There is no loan yet.</div> */}
       </div>
+      <ModalBorrowComponent isModalOpen={isModalOpen} handleCancel={handleCancel} />
     </div>
   );
 }

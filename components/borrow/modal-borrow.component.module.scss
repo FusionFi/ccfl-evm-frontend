@@ -1,0 +1,19 @@
+.modalComponent {
+  :global {
+    .modal-container {
+      display: flex;
+      align-items: center;
+    }
+    .modal-content {
+      color: #fff;
+
+      /* H2/medium */
+      font-family: Inter;
+      font-size: 30px;
+      font-style: normal;
+      font-weight: 500;
+      line-height: 40px; /* 133.333% */
+      margin-right: 23px;
+    }
+  }
+}
