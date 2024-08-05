@@ -12,92 +12,120 @@ import type { SelectProps } from 'antd';
 import Image from 'next/image';
 import { Space, Table, Tag } from 'antd';
 import type { TableProps } from 'antd';
+import { toCurrency } from '@/utils/common'
+import { computeWithMinThreashold } from '@/utils/percent.util'
 
 interface DataType {
   key: string;
-  name: string;
-  age: number;
-  address: string;
-  tags: string[];
+  asset: Array<any>;
+  supply_balance: string;
+  earned_reward: string;
+  apy: string;
+  wallet_balance: string
 }
 type LabelRender = SelectProps['labelRender'];
 
 const columns: TableProps<DataType>['columns'] = [
   {
-    title: 'Name',
-    dataIndex: 'name',
-    key: 'name',
-    render: (text) => <a>{text}</a>,
+    title: 'Asset',
+    dataIndex: 'asset',
+    key: 'asset',
+    render: (values) => {
+      const [symbol, name] = values;
+      return <div className='flex items-center table-wrapper__asset'>
+        <Image src={`/images/tokens/${symbol}.png`} style={{
+          marginRight: 8
+        }} alt={name} width={40} height={40} />
+        {name}
+      </div>
+    },
   },
   {
-    title: 'Age',
-    dataIndex: 'age',
-    key: 'age',
+    title: 'Supply Balance',
+    dataIndex: 'supply_balance',
+    key: 'supply_balance',
+    render: (value) => {
+      return <div className='table-wrapper__supply-balance'>
+        {toCurrency(value)}
+        <span className='table-wrapper__supply-balance__price'>$ {toCurrency(value, 2)}</span>
+      </div>
+    },
   },
   {
-    title: 'Address',
-    dataIndex: 'address',
-    key: 'address',
+    title: 'Earned reward',
+    dataIndex: 'earned_reward',
+    key: 'earned_reward',
+    render: (value) => {
+      return <div className='table-wrapper__earned-reward'>
+        {toCurrency(value)}
+        <span className='table-wrapper__supply-balance__price'>$ {toCurrency(value, 2)}</span>
+      </div>
+    },
   },
   {
-    title: 'Tags',
-    key: 'tags',
-    dataIndex: 'tags',
-    render: (_, { tags }) => (
-      <>
-        {tags.map((tag) => {
-          let color = tag.length > 5 ? 'geekblue' : 'green';
-          if (tag === 'loser') {
-            color = 'volcano';
-          }
-          return (
-            <Tag color={color} key={tag}>
-              {tag.toUpperCase()}
-            </Tag>
-          );
-        })}
-      </>
+    title: 'APY (variable)',
+    key: 'apy',
+    dataIndex: 'apy',
+    render: (value) => (
+      <span className='table-wrapper__apy'>
+        {computeWithMinThreashold(value)}
+      </span>
     ),
   },
   {
-    title: 'Action',
-    key: 'action',
-    render: (_, record) => (
-      <Space size="middle">
-        <a>Invite {record.name}</a>
-        <a>Delete</a>
-      </Space>
-    ),
+    title: 'Wallet Balance',
+    key: 'wallet_balance',
+    dataIndex: 'wallet_balance',
+    render: (value) => {
+
+      console.log('value: ', value)
+      return <div className='table-wrapper__supply-balance'>
+        {toCurrency(value)}
+        <span className='table-wrapper__supply-balance__price'>$ {toCurrency(value, 2)}</span>
+      </div>
+    },
   },
 ];
 
 const data: DataType[] = [
   {
     key: '1',
-    name: 'John Brown',
-    age: 32,
-    address: 'New York No. 1 Lake Park',
-    tags: ['nice', 'developer'],
+    asset: ['USDC', 'USDC'],
+    supply_balance: '3500',
+    earned_reward: '350',
+    apy: '0.009',
+    wallet_balance: '1000'
   },
   {
     key: '2',
-    name: 'Jim Green',
-    age: 42,
-    address: 'London No. 1 Lake Park',
-    tags: ['loser'],
-  },
-  {
-    key: '3',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sydney No. 1 Lake Park',
-    tags: ['cool', 'teacher'],
+    asset: ['USDT', 'USDT'],
+    supply_balance: '3500',
+    earned_reward: '350',
+    apy: '0.009',
+    wallet_balance: '1000'
   },
 ];
 
 export default function SupplyPage() {
   const { t } = useTranslation('common');
   const { chain, chains } = useNetwork()
+
+  const expandedRowRender = (record: any) => {
+    console.log('record: ', record)
+    return <div className='table-wrapper__action'>
+      <Button className={twMerge('btn-primary-custom')} style={{
+        width: 200,
+        marginRight: 8
+      }}>
+        Supply more
+      </Button>
+      <Button className={twMerge('btn-default-custom')} style={{
+        width: 200,
+      }}>
+        Withdraw
+      </Button>
+    </div>
+  }
 
   const labelRender: LabelRender = (props: any) => {
     let { label, logo } = props;
@@ -161,7 +189,16 @@ export default function SupplyPage() {
           </div>
         </div>
       </div>
-      <Table className='content' bordered={false} rowHoverable={false} pagination={false} columns={columns} dataSource={data} />
+      <div className='content'>
+        <Table
+          expandable={{
+            defaultExpandAllRows: true,
+            expandedRowRender,
+            rowExpandable: (record) => true,
+            showExpandColumn: false
+          }}
+          className='table-wrapper' bordered={false} rowHoverable={false} pagination={false} columns={columns} dataSource={data} />
+      </div>
     </div>
   );
 }
