@@ -6,6 +6,7 @@ export const ST_OAS_DEFI_TESTNET = process.env.NEXT_PUBLIC_ST_OAS_DEFI_TESTNET;
 
 export const NETWORKS_MAINNET = [
   {
+    id: 248,
     chain_id: '0xF8',
     chain_id_decimals: 248,
     img_url: oasIcon,
@@ -39,12 +40,15 @@ export const NETWORKS_MAINNET = [
     },
   },
 ];
+
 export const NETWORKS_TESTNET = [
   {
+    id: '9372',
     chain_id: '0x249C',
     chain_id_decimals: 9372,
     img_url: oasIcon,
     name: 'OASYS Testnet',
+    network: 'oasys-testnet',
     gasPrice: null,
     explorer: 'https://explorer.testnet.oasys.games/',
     rpc: 'https://rpc.testnet.oasys.games/',

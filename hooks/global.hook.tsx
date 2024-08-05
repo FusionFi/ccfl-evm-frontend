@@ -38,7 +38,7 @@ export function useChain() {
 
   const updateChain = useCallback(
     (chainId: number) => {
-      let chain = CHAIN_INFO[chainId];
+      let chain = CHAIN_INFO.get(chainId);
       dispatch(GlobalActions.updateChain({ chainInfo: chain }));
     },
     [dispatch],
