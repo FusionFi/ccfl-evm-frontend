@@ -7,6 +7,7 @@ interface ModalProps {
   handleCancel: any;
   children: any;
   title: string;
+  modalStyles: any;
 }
 
 export default function ModalComponent(props: ModalProps) {
@@ -18,7 +19,8 @@ export default function ModalComponent(props: ModalProps) {
           title={props.title}
           open={props.isModalOpen}
           onCancel={props.handleCancel}
-          className="modal-common">
+          className="modal-common"
+          styles={props.modalStyles}>
           {props.children}
         </Modal>
       </div>

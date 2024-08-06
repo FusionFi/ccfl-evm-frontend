@@ -171,6 +171,33 @@
       padding: 16px 24px;
       margin-top: 0px;
     }
+
+    &.modal-common {
+      border-radius: 2px;
+      border: 1px solid var(--Conditional-divider, #303030);
+      overflow: hidden;
+      padding-bottom: 16px;
+      .ant-modal-close {
+        svg {
+          color: #fff;
+        }
+      }
+      .ant-modal-header {
+        background: var(--Conditional-pop-over, #1f1f1f);
+        border-radius: 0;
+
+        .ant-modal-title {
+          color: #fff;
+
+          /* H5/bold */
+          font-family: Inter;
+          font-size: 16px;
+          font-style: normal;
+          font-weight: 700;
+          line-height: 24px; /* 150% */
+        }
+      }
+    }
   }
 
   // custom Form ant design

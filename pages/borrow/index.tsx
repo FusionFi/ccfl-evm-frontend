@@ -48,11 +48,11 @@ export default function BorrowPage() {
       <div className="mb-4">
         <OverviewComponent itemLeft={itemLeft} itemRight={itemRight} />
       </div>
-      <div className="flex gap-6">
-        <div className="basis-1/2">
+      <div className="flex gap-6 borrow-inner">
+        <div className="xl:basis-1/2 basis-full">
           <LoansComponent />
         </div>
-        <div className="basis-1/2">
+        <div className="xl:basis-1/2 basis-full">
           <AssetComponent />
         </div>
       </div>

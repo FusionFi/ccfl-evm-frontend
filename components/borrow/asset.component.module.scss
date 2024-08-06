@@ -73,6 +73,10 @@
           height: 22px;
           display: flex;
           align-items: center;
+          &:hover,
+          &:active {
+            background: var(--Primary-6, #1890ff);
+          }
           span {
             color: var(--character-primary-inverse, #fff);
             text-align: center;

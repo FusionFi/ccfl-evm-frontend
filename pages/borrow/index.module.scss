@@ -11,5 +11,12 @@
     .borrow-header {
       margin-bottom: 16px;
     }
+    .borrow-inner {
+      flex-direction: row;
+
+      @media screen and (max-width: 1200px) {
+        flex-direction: column;
+      }
+    }
   }
 }
