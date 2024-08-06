@@ -14,6 +14,7 @@ import { Space, Table, Tag } from 'antd';
 import type { TableProps } from 'antd';
 import { toCurrency } from '@/utils/common'
 import { computeWithMinThreashold } from '@/utils/percent.util'
+import { WalletSolidIcon } from '@/components/icons/wallet-solid.icon';
 
 interface DataType {
   key: string;
@@ -73,7 +74,12 @@ const columns: TableProps<DataType>['columns'] = [
     ),
   },
   {
-    title: 'Wallet Balance',
+    title: () => {
+      return <div className='flex items-center'>
+        <WalletSolidIcon className="mr-2" />
+        Wallet Balance</div>
+    },
+
     key: 'wallet_balance',
     dataIndex: 'wallet_balance',
     render: (value) => {
@@ -128,20 +134,20 @@ export default function SupplyPage() {
   }
 
   const labelRender: LabelRender = (props: any) => {
-    let { label, logo } = props;
+    let { name, logo } = props;
 
     // TODO: please remove before release it to PRD
-    if (!label) {
-      label = 'Avalanche';
+    if (!name) {
+      name = 'Avalanche';
       logo = '/images/tokens/avax.png'
     }
 
     return <div className='flex items-center'>
-      <Image src={logo} alt={label} width={24} height={24} style={{
+      <Image src={logo} alt={name} width={24} height={24} style={{
         height: 24,
         width: 24
       }} className='mr-2' />
-      {label}
+      {name}
     </div>;
   };
 
@@ -163,7 +169,15 @@ export default function SupplyPage() {
               }}
               options={SUPPORTED_CHAINS.map((item: any) => ({
                 value: item.id,
-                label: item.name,
+                name: item.name,
+                label:
+                  <div className='chain-dropdown-item-wrapper'>
+                    <Image src={item.logo} alt={item.name} width={12} height={12} style={{
+                      height: 12,
+                      width: 12
+                    }} className='mr-2' />
+                    {item.name}
+                  </div>,
                 logo: item?.logo
               }))}
               suffixIcon={<CaretDownOutlined />}
@@ -174,11 +188,15 @@ export default function SupplyPage() {
           <div className='overview__body__wrapper'>
             <div className='overview__body__wrapper__item'>
               <span className='overview__body__wrapper__item__label'>Total supply</span>
-              <div className='overview__body__wrapper__item__value'>$ <span className='font-bold text-white'>4,567.87</span></div>
+              <div className='overview__body__wrapper__item__value'>$ <span className='font-bold' style={{
+                color: '#F0F0F0'
+              }}>4,567.87</span></div>
             </div>
             <div className='overview__body__wrapper__item'>
               <span className='overview__body__wrapper__item__label'>Net APY (variable)</span>
-              <div className='overview__body__wrapper__item__value'><span className='font-bold text-white'>0.07</span> %</div>
+              <div className='overview__body__wrapper__item__value'><span className='font-bold' style={{
+                color: '#F0F0F0'
+              }}>0.07</span> %</div>
             </div>
             <div className='overview__body__wrapper__item'>
               <span className='overview__body__wrapper__item__label'>Total earned</span>
@@ -191,12 +209,14 @@ export default function SupplyPage() {
       </div>
       <div className='content'>
         <Table
+          title={() => 'My Supplies'}
           expandable={{
             defaultExpandAllRows: true,
             expandedRowRender,
             rowExpandable: (record) => true,
             showExpandColumn: false
           }}
+          virtual
           className='table-wrapper' bordered={false} rowHoverable={false} pagination={false} columns={columns} dataSource={data} />
       </div>
     </div>

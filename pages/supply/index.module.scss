@@ -72,6 +72,10 @@
       margin-top: 16px;
 
       .table-wrapper {
+        border-radius: 2px;
+        border: 1px solid var(--Conditional-divider, #303030);
+        background: var(--Conditional-pop-over, #1F1F1F);
+
         &__asset {
           color: var(--Neutral-13, #fff);
 
@@ -153,7 +157,9 @@
         &__action {
           display: flex;
           justify-content: flex-end;
-          align-items: flex-start;
+          padding-top: 12px;
+          align-self: stretch;
+          border-top: 1px solid var(--Neutral-4, #262626);
         }
       }
     }
@@ -211,9 +217,26 @@
       font-weight: 400;
       line-height: 22px;
 
+      .ant-table-title {
+        color: #FFF;
+
+        /* H5/bold */
+        font-family: Inter;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 24px;
+        display: flex;
+        padding: 12px 16px;
+        align-items: center;
+        gap: 8px;
+        /* 150% */
+      }
+
       /* 157.143% */
       .ant-table-thead {
         .ant-table-cell {
+          padding: 8px 16px;
           background-color: transparent;
           color: var(--Neutral-7, #8c8c8c);
 
@@ -235,10 +258,16 @@
       }
 
       .ant-table-tbody {
+
         .ant-table-row,
         .ant-table-expanded-row {
           .ant-table-cell {
             border-bottom: none;
+          }
+        }
+
+        .ant-table-row {
+          .ant-table-cell {
             border-top: 1px solid var(--Neutral-4, #262626);
           }
         }
