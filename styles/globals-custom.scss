@@ -461,6 +461,48 @@
 
 // select - end
 
+// modal - start
+.ant-modal-root {
+  display: flex;
+  width: 456px;
+  padding-bottom: 16px;
+  flex-direction: column;
+  align-items: flex-start;
+  border-radius: 2px;
+  border: 1px solid var(--Conditional-divider, #303030);
+  background: var(--Conditional-pop-over, #1F1F1F);
+}
+
+// modal - end
+
+// modal - start
+.ant-tooltip {
+  .ant-tooltip-content {
+    .ant-tooltip-inner {
+      color: var(--character-primary-inverse, #FFF);
+
+      /* Body/regular */
+      font-family: Inter;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 22px;
+      /* 157.143% */
+      display: flex;
+      padding: 6px 8px;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+      border-radius: 2px;
+      background: var(--tooltip-75, rgba(0, 0, 0, 0.75));
+      min-height: unset;
+    }
+
+  }
+}
+
+// modal - end
+
 @keyframes rotate {
   from {
     transform: rotate(0deg);
