@@ -10,11 +10,14 @@ import { TYPE_COMMON } from '@/constants/common.constant';
 import LoansComponent from '@/components/borrow/loans.component';
 import AssetComponent from '@/components/borrow/asset.component';
 import ModalBorrowComponent from '@/components/borrow/modal-borrow.component';
+import ModalRepayComponent from '@/components/borrow/modal-repay.component';
 
 export default function BorrowPage() {
   const { t } = useTranslation('common');
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalRepayOpen, setIsModalRepayOpen] = useState(false);
+
   const [currentToken, setCurrentToken] = useState('');
 
   const showModal = (token: string) => {
@@ -24,6 +27,15 @@ export default function BorrowPage() {
   const handleCancel = () => {
     setCurrentToken('');
     setIsModalOpen(false);
+  };
+
+  const showRepayModal = (token: string) => {
+    setCurrentToken(token);
+    setIsModalRepayOpen(true);
+  };
+  const handleRepayCancel = () => {
+    setCurrentToken('');
+    setIsModalRepayOpen(false);
   };
 
   const itemLeft = [
@@ -64,7 +76,7 @@ export default function BorrowPage() {
       </div>
       <div className="flex gap-6 borrow-inner">
         <div className="xl:basis-1/2 basis-full">
-          <LoansComponent showModal={showModal} />
+          <LoansComponent showModal={showModal} showRepayModal={showRepayModal} />
         </div>
         <div className="xl:basis-1/2 basis-full">
           <AssetComponent showModal={showModal} />
@@ -73,6 +85,11 @@ export default function BorrowPage() {
       <ModalBorrowComponent
         isModalOpen={isModalOpen}
         handleCancel={handleCancel}
+        currentToken={currentToken}
+      />
+      <ModalRepayComponent
+        isModalOpen={isModalRepayOpen}
+        handleCancel={handleRepayCancel}
         currentToken={currentToken}
       />
     </div>

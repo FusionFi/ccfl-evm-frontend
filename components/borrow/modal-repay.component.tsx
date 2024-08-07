@@ -9,9 +9,11 @@ import {
   QuestionCircleOutlined,
   DownOutlined,
   CloseOutlined,
+  ArrowRightOutlined,
 } from '@ant-design/icons';
 import { COLLATERAL_TOKEN } from '@/constants/common.constant';
 import TransactionSuccessComponent from '@/components/borrow/transaction-success.component';
+import { useTranslation } from 'next-i18next';
 
 interface ModalBorrowProps {
   isModalOpen: boolean;
@@ -28,11 +30,15 @@ export default function ModalBorrowComponent({
   handleCancel,
   currentToken,
 }: ModalBorrowProps) {
-  const { control, handleSubmit, setValue } = useForm({
+  const { t } = useTranslation('common');
+
+  const { control, handleSubmit, setValue, getValues } = useForm({
     defaultValues: {
       numberfield: 0,
     },
   });
+
+  const [tokenValue, setTokenValue] = useState(0);
 
   const onSubmit: SubmitHandler<IFormInput> = data => {
     console.log(data);
@@ -41,7 +47,7 @@ export default function ModalBorrowComponent({
   const [token, setToken] = useState(COLLATERAL_TOKEN[0].name);
   const [loading, setLoading] = useState<boolean>(false);
   const [isYield, setYield] = useState(false);
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(1);
 
   const handleChange = (value: any) => {
     setToken(value);
@@ -55,7 +61,7 @@ export default function ModalBorrowComponent({
     if (step === 2) {
       return 'All done!';
     }
-    return `Borrow ${currentToken?.toUpperCase()}`;
+    return `Repay ${currentToken?.toUpperCase()}`;
   };
 
   return (
@@ -69,7 +75,7 @@ export default function ModalBorrowComponent({
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="modal-borrow-content">
               <div className="px-6 py-4 ">
-                <div className="modal-borrow-title mb-2 ">Borrow Amount</div>
+                <div className="modal-borrow-title mb-2 ">{t('BORROW_MODAL_REPAY_AMOUNT')}</div>
                 <div className={`modal-borrow-amount ${loading ? 'loading' : ''}`}>
                   <div className="flex items-center">
                     <Controller
@@ -81,7 +87,7 @@ export default function ModalBorrowComponent({
                           className="flex-1"
                           controls={false}
                           onChange={(value: any) => {
-                            setValue('numberfield', value);
+                            setTokenValue(value);
                           }}
                         />
                       )}
@@ -98,11 +104,14 @@ export default function ModalBorrowComponent({
                   </div>
                   <div className="flex justify-between">
                     <span className="modal-borrow-usd">≈ $0.00</span>
-                    <span className="modal-borrow-max ">Max</span>
+                    <span className="modal-borrow-max ">{t('BORROW_MODAL_BORROW_MAX')}</span>
                   </div>
                 </div>
+                <div className="modal-borrow-balance">
+                  {t('BORROW_MODAL_BORROW_WALLET_BALANCE')}: 50,000.00 {currentToken?.toUpperCase()}
+                </div>
               </div>
-              <div className="modal-borrow-overview">
+              {/* <div className="modal-borrow-overview">
                 <div className="modal-borrow-sub-title">Loan overview</div>
                 <div className="flex justify-between items-center">
                   <span className="modal-borrow-sub-content">
@@ -118,44 +127,43 @@ export default function ModalBorrowComponent({
                     <span>%</span>
                   </div>
                 </div>
-              </div>
-              <div className="modal-borrow-collateral">
-                <div className="modal-borrow-sub-title">Collateral Setup</div>
-                <div className="flex justify-between items-center  mb-2">
-                  <span className="modal-borrow-sub-content">
-                    Collateral token
-                    <sup>
-                      <Tooltip placement="top" title={'a'} className="ml-1">
-                        <InfoCircleOutlined />
-                      </Tooltip>
-                    </sup>
-                  </span>
-                  <Select
-                    defaultValue={{
-                      value: token,
-                      label: token,
-                    }}
-                    options={COLLATERAL_TOKEN.map((item: any) => ({
-                      value: item.name,
-                      label: item.name,
-                    }))}
-                    onChange={handleChange}
-                    suffixIcon={<DownOutlined />}
-                    popupClassName="modal-borrow-select"
-                  />
-                </div>
-                <div className="flex justify-between items-center">
-                  <div className="modal-borrow-sub-content">Collateral amount </div>
-                  <div className="modal-borrow-value">
-                    <span>0.00</span>
-                    <span className="ml-1">{token}</span>
+              </div> */}
+              <div className="modal-borrow-overview">
+                <div className="modal-borrow-sub-title">{t('BORROW_MODAL_REPAY_OVERVIEW')}</div>
+                <div className="flex justify-between items-center mb-2">
+                  <div className="modal-borrow-sub-content">
+                    {t('BORROW_MODAL_BORROW_REMAINING')}
+                  </div>
+                  <div className="flex">
+                    <div className="modal-borrow-repay">
+                      <span>5,000.00 </span>
+                      <span className="ml-1">{currentToken.toUpperCase()}</span>
+                    </div>
+                    {tokenValue > 0 && (
+                      <div className="modal-borrow-repay remain">
+                        <ArrowRightOutlined className="mx-1" />
+                        <span>4,999.00</span>
+                        <span className="ml-1">{currentToken.toUpperCase()}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
-                <div className="modal-borrow-value-usd">$0.00</div>
+                <div className="flex justify-between items-center modal-borrow-health">
+                  <div className="modal-borrow-sub-content">{t('BORROW_MODAL_BORROW_HEALTH')}</div>
+                  <div className="flex">
+                    <span>3.31B</span>
+                    {tokenValue > 0 && (
+                      <div className="flex">
+                        <ArrowRightOutlined className="mx-1" />
+                        <span className="">3.33B</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
               <div className="modal-borrow-gas">
                 <div className="modal-borrow-sub-content">
-                  Gas fee
+                  {t('BORROW_MODAL_BORROW_HEALTH')}
                   <sup>
                     <Tooltip placement="top" title={'a'} className="ml-1">
                       <InfoCircleOutlined />
@@ -174,7 +182,7 @@ export default function ModalBorrowComponent({
                       <Tooltip placement="top" title={'a'}>
                         <QuestionCircleOutlined />
                       </Tooltip>
-                      Why do I need to approve?
+                      {t('BORROW_MODAL_BORROW_WHY')}
                     </div>
                     <Button
                       htmlType="submit"
@@ -182,15 +190,17 @@ export default function ModalBorrowComponent({
                       disabled={false}
                       className="w-full"
                       loading={loading}>
-                      Approve {token} to continue
+                      {t('BORROW_MODAL_BORROW_APPROVE', {
+                        currentToken: currentToken.toUpperCase(),
+                      })}
                     </Button>
                   </div>
                 )}
                 {step === 1 && (
                   <div>
-                    <div className="modal-borrow-yield">
+                    {/* <div className="modal-borrow-yield">
                       <Checkbox onChange={handleYield}>Use my deposit for yield earning </Checkbox>
-                    </div>
+                    </div> */}
                     <div className="px-6 py-4">
                       <Button
                         htmlType="submit"
@@ -198,7 +208,7 @@ export default function ModalBorrowComponent({
                         disabled={false}
                         className="w-full"
                         loading={loading}>
-                        Deposit {token} to borrow
+                        {t('BORROW_MODAL_BORROW_PAY', { currentToken: currentToken.toUpperCase() })}
                       </Button>
                     </div>
                   </div>
@@ -212,7 +222,7 @@ export default function ModalBorrowComponent({
             <TransactionSuccessComponent
               handleCancel={handleCancel}
               currentToken={currentToken}
-              token={token}
+              isRepay={true}
             />
           </div>
         )}

@@ -2,12 +2,13 @@ import cssClass from '@/components/borrow/loans.component.module.scss';
 import { twMerge } from 'tailwind-merge';
 import { InfoCircleOutlined, CheckOutlined } from '@ant-design/icons';
 import { Tooltip } from 'antd';
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from 'antd';
 import Image from 'next/image';
 
 interface LoansProps {
   showModal: any;
+  showRepayModal: any;
 }
 
 export default function LoansComponent(props: LoansProps) {
@@ -87,7 +88,9 @@ export default function LoansComponent(props: LoansProps) {
               <Button type="primary" className="mr-2" onClick={() => props.showModal('usdc')}>
                 Borrow More
               </Button>
-              <Button>Repay</Button>
+              <Button className="mr-2" onClick={() => props.showRepayModal('usdc')}>
+                Repay
+              </Button>
             </div>
           </div>
         </div>
