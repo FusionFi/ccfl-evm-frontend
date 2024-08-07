@@ -18,6 +18,7 @@ import { computeWithMinThreashold } from '@/utils/percent.util'
 import { WalletSolidIcon } from '@/components/icons/wallet-solid.icon';
 import { InfoCircleIcon } from '@/components/icons/info-circle.icon';
 import { QuestionCircleIcon } from '@/components/icons/question-circle.icon';
+import { LinkIcon } from '@/components/icons/link.icon';
 
 interface DataType {
   key: string;
@@ -353,7 +354,7 @@ export default function SupplyPage() {
           </div>
           <div className='supply-modal-tx-success-container__action'>
             <div className='supply-modal-tx-success-container__action__helper'>
-              <QuestionCircleIcon />
+              <LinkIcon />
               <Link className='supply-modal-tx-success-container__action__helper__link' href={'https://psychcentral.com/blog/what-drives-our-need-for-approval'} target='_blank' >
                 Review TX detail
               </Link>
