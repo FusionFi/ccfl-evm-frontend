@@ -5,18 +5,12 @@ import { Tooltip } from 'antd';
 import React, { useState } from 'react';
 import { Button } from 'antd';
 import Image from 'next/image';
-import ModalBorrowComponent from '@/components/borrow/modal-borrow.component';
 
-interface LoansProps {}
+interface LoansProps {
+  showModal: any;
+}
 
 export default function LoansComponent(props: LoansProps) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
   return (
     <div className={twMerge(cssClass.loansComponent)}>
       <div className="loans-container">
@@ -45,7 +39,7 @@ export default function LoansComponent(props: LoansProps) {
             <div className="flex items-center basis-1/4">
               <Image
                 className="mr-2"
-                src="/images/borrow/tokens/usdc.png"
+                src="/images/common/usdc.png"
                 alt="USDC"
                 width={40}
                 height={40}
@@ -90,7 +84,7 @@ export default function LoansComponent(props: LoansProps) {
               </div>
             </div>
             <div className="loans-button ">
-              <Button type="primary" className="mr-2" onClick={showModal}>
+              <Button type="primary" className="mr-2" onClick={() => props.showModal('usdc')}>
                 Borrow More
               </Button>
               <Button>Repay</Button>
@@ -99,7 +93,6 @@ export default function LoansComponent(props: LoansProps) {
         </div>
         {/* <div className="loans-empty">There is no loan yet.</div> */}
       </div>
-      <ModalBorrowComponent isModalOpen={isModalOpen} handleCancel={handleCancel} />
     </div>
   );
 }

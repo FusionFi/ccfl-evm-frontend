@@ -3,10 +3,25 @@ import { twMerge } from 'tailwind-merge';
 import Image from 'next/image';
 import { Button } from 'antd';
 
-interface AssetProps {}
+interface AssetProps {
+  showModal: any;
+}
 
 export default function assetComponent(props: AssetProps) {
-  const handleAdjust = () => {};
+  const tokenList = [
+    {
+      name: 'usdc',
+      value: '10,000.00',
+      usd: '4,000.00',
+      percent: '0.07',
+    },
+    {
+      name: 'usdt',
+      value: '10,000.00',
+      usd: '4,000.00',
+      percent: '0.07',
+    },
+  ];
 
   return (
     <div className={twMerge(cssClass.assetComponent)}>
@@ -19,26 +34,28 @@ export default function assetComponent(props: AssetProps) {
             <div className="basis-1/4">APR (variable)</div>
             <div className="basis-1/4"></div>
           </div>
-          <div className="gap-6 asset-body">
-            <div className="basis-1/4">
-              <Image
-                className="mr-2"
-                src="/images/borrow/tokens/usdc.png"
-                alt="USDC"
-                width={40}
-                height={40}
-              />
-              USDC
+          {tokenList.map((item: any) => (
+            <div className="gap-6 asset-body" key={item.name}>
+              <div className="basis-1/4">
+                <Image
+                  className="mr-2"
+                  src={`/images/common/${item.name}.png`}
+                  alt={item.name}
+                  width={40}
+                  height={40}
+                />
+                {item.name.toUpperCase()}
+              </div>
+              <div className="basis-1/4 flex-col items-start justify-center	">
+                <div>{item.value}</div>
+                <div className="usd">$ {item.usd}</div>
+              </div>
+              <div className="basis-1/4">{item.percent}%</div>
+              <div className="basis-1/4  justify-end">
+                <Button onClick={() => props.showModal(item.name)}>Borrow</Button>
+              </div>
             </div>
-            <div className="basis-1/4 flex-col items-start justify-center	">
-              <div>10,000.00</div>
-              <div className="usd">$ 4,000.00</div>
-            </div>
-            <div className="basis-1/4">0.07%</div>
-            <div className="basis-1/4  justify-end">
-              <Button onClick={() => handleAdjust}>Borrow</Button>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
     </div>
