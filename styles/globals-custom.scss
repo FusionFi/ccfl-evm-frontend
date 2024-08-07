@@ -461,21 +461,6 @@
 
 // select - end
 
-// modal - start
-.ant-modal-root {
-  display: flex;
-  width: 456px;
-  padding-bottom: 16px;
-  flex-direction: column;
-  align-items: flex-start;
-  border-radius: 2px;
-  border: 1px solid var(--Conditional-divider, #303030);
-  background: var(--Conditional-pop-over, #1F1F1F);
-}
-
-// modal - end
-
-// modal - start
 .ant-tooltip {
   .ant-tooltip-content {
     .ant-tooltip-inner {

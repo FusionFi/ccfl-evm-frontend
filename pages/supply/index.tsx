@@ -132,7 +132,7 @@ export default function SupplyPage() {
       </Button>
       <Button className={twMerge('btn-default-custom')} style={{
         width: 200,
-      }}>
+      }} onClick={() => setIsModalWithdrawOpen(true)}>
         Withdraw
       </Button>
     </div>
@@ -159,24 +159,27 @@ export default function SupplyPage() {
 
   const selectedChain = CHAIN_INFO.get(chain?.id) || {};
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalSupplyOpen, setIsModalSupplyOpen] = useState(false);
+  const [isModalWithdrawOpen, setIsModalWithdrawOpen] = useState(false);
   const [isModalTxSuccessOpen, setIsModalTxSuccessOpen] = useState(false);
 
   const showModal = () => {
-    setIsModalOpen(true);
+    setIsModalSupplyOpen(true);
   };
 
   const handleOk = () => {
-    setIsModalOpen(false);
+    setIsModalSupplyOpen(false);
   };
 
   const handleCancel = () => {
-    setIsModalOpen(false);
+    setIsModalSupplyOpen(false);
+    setIsModalWithdrawOpen(false)
     setIsApproved(false)
   };
 
   const [isApproved, setIsApproved] = useState(false);
   const [isPending, setIsPending] = useState(false);
+  const [successMsg, setSuccessMsg] = useState("");
 
   const handleApprove = useCallback(() => {
     setIsPending(true)
@@ -191,7 +194,18 @@ export default function SupplyPage() {
     setIsPending(true)
     setTimeout(() => {
       setIsPending(false)
-      setIsModalOpen(false);
+      setSuccessMsg('You Supplied 4,000 USDT')
+      setIsModalSupplyOpen(false);
+      setIsModalTxSuccessOpen(true)
+    }, 1000);
+  }, [])
+
+  const handleWithdraw = useCallback(() => {
+    setIsPending(true)
+    setTimeout(() => {
+      setIsPending(false)
+      setSuccessMsg('You withdrew 500 USDT')
+      setIsModalWithdrawOpen(false);
       setIsModalTxSuccessOpen(true)
     }, 1000);
   }, [])
@@ -268,8 +282,8 @@ export default function SupplyPage() {
       </div>
 
       <Modal width={456} wrapClassName={cssClass['supply-modal-wrapper']} classNames={{
-        mask: cssClass['supply-modal-mask'],
-      }} title="Supply USDT" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} footer={null}>
+        mask: cssClass['modal-mask'],
+      }} title="Supply USDT" open={isModalSupplyOpen} onOk={handleOk} onCancel={handleCancel} footer={null}>
         <div className='supply-modal-container'>
           <div className='supply-modal-container__input'>
             <div className='supply-modal-container__input__title'>Amount</div>
@@ -344,13 +358,15 @@ export default function SupplyPage() {
         </div>
       </Modal>
 
-      <Modal width={456} wrapClassName={cssClass['supply-modal-tx-success-tx-success-wrapper']} classNames={{
+
+
+      <Modal closeIcon={false} width={456} wrapClassName={cssClass['supply-modal-tx-success-tx-success-wrapper']} classNames={{
         mask: cssClass['supply-modal-tx-success-mask'],
       }} title="All done!" open={isModalTxSuccessOpen} onOk={handleTxStatusModallCancel} onCancel={handleTxStatusModallCancel} footer={null}>
         <div className='supply-modal-tx-success-container'>
           <div className='supply-modal-tx-success-container__status'>
             <Image src='/images/status/success.png' alt='Transaction Success' width={80} height={80} />
-            <div className='supply-modal-tx-success-container__status__msg'>You Supplied 4,000 USDT</div>
+            <div className='supply-modal-tx-success-container__status__msg'>{successMsg}</div>
           </div>
           <div className='supply-modal-tx-success-container__action'>
             <div className='supply-modal-tx-success-container__action__helper'>
@@ -363,6 +379,113 @@ export default function SupplyPage() {
             <Button loading={isPending} onClick={handleTxStatusModallCancel} type="primary" className={twMerge('btn-default-custom')} block>
               Ok, got it!
             </Button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal width={456} wrapClassName={cssClass['withdraw-modal-wrapper']} classNames={{
+        mask: cssClass['modal-mask'],
+      }} title="Withdraw supply" open={isModalWithdrawOpen} onOk={handleOk} onCancel={handleCancel} footer={null}>
+        <div className='withdraw-modal-container'>
+          <div className='withdraw-modal-container__supply-overview'>
+            <div className='withdraw-modal-container__supply-overview__container'>
+              <div className='withdraw-modal-container__supply-overview__container__title'>Withdraw overview</div>
+              <div className='withdraw-modal-container__supply-overview__container__alert'>
+                Withdrawals are dependent on pool's utilization
+              </div>
+              <div className='withdraw-modal-container__supply-overview__container__values'>
+                <div className='withdraw-modal-container__supply-overview__container__values__item'>
+                  <span>My supply </span>
+                  <span className='withdraw-modal-container__supply-overview__container__values__item__value'>
+                    45,000.00
+                    <span className='withdraw-modal-container__supply-overview__container__values__item__value__unit'>USDT</span>
+                  </span>
+                </div>
+                <div className='withdraw-modal-container__supply-overview__container__values__item'>
+                  <span>Pool utilization </span>
+                  <span className='withdraw-modal-container__supply-overview__container__values__item__value'>
+                    90
+                    <span className='withdraw-modal-container__supply-overview__container__values__item__value__unit'>%</span>
+                  </span>
+                </div>
+                <div className='withdraw-modal-container__supply-overview__container__values__item'>
+                  <span>Available to withdraw </span>
+                  <span className='withdraw-modal-container__supply-overview__container__values__item__value'>
+                    4,500.00
+                    <span className='withdraw-modal-container__supply-overview__container__values__item__value__unit'>USDT</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          <div className='withdraw-modal-container__input'>
+            <div className='withdraw-modal-container__input__title'>Withdraw Amount</div>
+            <div className='withdraw-modal-container__input__control'>
+              <InputNumber defaultValue={4000} className='withdraw-modal-container__input__control__amount' controls={false} addonAfter={<div className='withdraw-modal-container__input__control__amount__token'>
+                <Image src={`/images/tokens/usdt.png`} alt='USDT' width={24} height={24} style={{
+                  height: 24
+                }} />
+                USDT
+              </div>} />
+              <div className='withdraw-modal-container__input__control__price'>
+                ≈ $4,000.00
+                <Button type="link" className='withdraw-modal-container__input__control__price__max'>
+                  Max
+                </Button>
+              </div>
+            </div>
+          </div>
+          <div className='withdraw-modal-container__overview'>
+            <div className='withdraw-modal-container__overview__title'>Withdraw overview</div>
+            <div className='withdraw-modal-container__supply-overview__container__values'>
+              <div className='withdraw-modal-container__supply-overview__container__values__item'>
+                <span>Remaining supply </span>
+                <span className='withdraw-modal-container__supply-overview__container__values__item__value'>
+                  45,000.00
+                  <span className='withdraw-modal-container__supply-overview__container__values__item__value__unit'>USDT</span>
+                </span>
+              </div>
+              <div className='withdraw-modal-container__supply-overview__container__values__item'>
+                <span>Reward earned </span>
+                <span className='withdraw-modal-container__supply-overview__container__values__item__value'>
+                  45,000.00
+                  <span className='withdraw-modal-container__supply-overview__container__values__item__value__unit'>USDT</span>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div className='withdraw-modal-container__overview'>
+            <div className='withdraw-modal-container__overview__apy'>
+              <div className='withdraw-modal-container__overview__apy__title'>
+                Gas fee
+                <Tooltip color="rgba(0, 0, 0, 0.75)" title="prompt text">
+                  <span>
+                    <InfoCircleIcon className='' />
+                  </span>
+                </Tooltip>
+              </div>
+              <span className='withdraw-modal-container__overview__apy__value text-sm'>
+                $
+                <span className='text-white'>0.02</span>
+              </span>
+            </div>
+          </div>
+          <div className='withdraw-modal-container__action'>
+            {isApproved ? <Button type="primary" loading={isPending} onClick={handleWithdraw} className={twMerge('btn-primary-custom')} block>
+              Withdraw supply
+            </Button> : <div className='withdraw-modal-container__action__approve'>
+              <div className='withdraw-modal-container__action__approve__helper'>
+                <QuestionCircleIcon />
+                <Link className='withdraw-modal-container__action__approve__helper__link' href={'https://psychcentral.com/blog/what-drives-our-need-for-approval'} target='_blank' >
+                  Why do I need to approve?
+                </Link>
+              </div>
+
+              <Button loading={isPending} onClick={handleApprove} type="primary" className={twMerge('btn-primary-custom', 'mt-4')} block>
+                Approve USDT to continue
+              </Button>
+            </div>}
           </div>
         </div>
       </Modal>
