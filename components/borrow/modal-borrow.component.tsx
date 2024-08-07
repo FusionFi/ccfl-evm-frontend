@@ -43,7 +43,7 @@ export default function ModalBorrowComponent(props: ModalBorrowProps) {
               <div className="modal-borrow-title mb-2 ">Borrow Amount</div>
               <div className={`modal-borrow-amount ${loading ? 'loading' : ''}`}>
                 <div className="flex items-center">
-                  <Form.Item
+                  {/* <Form.Item
                     name="input"
                     rules={[
                       {
@@ -59,7 +59,13 @@ export default function ModalBorrowComponent(props: ModalBorrowProps) {
                       controls={false}
                       onChange={handleValue}
                     />
-                  </Form.Item>
+                  </Form.Item> */}
+                  <InputNumber
+                    placeholder="Enter amount"
+                    className="flex-1"
+                    controls={false}
+                    onChange={handleValue}
+                  />
                   <div className="flex">
                     <Image src="/images/borrow/tokens/usdt.png" alt="USDT" width={24} height={24} />
                     <span className="modal-borrow-token ml-2">USDT</span>
