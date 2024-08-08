@@ -40,7 +40,7 @@ export default function LoansComponent(props: LoansProps) {
         </div>
         <div className="px-4 py-1 loans-inner">
           <div className="flex gap-6">
-            <div className="flex items-center basis-1/4">
+            <div className="flex items-center basis-1/4 loans-token">
               <Image
                 className="mr-2"
                 src="/images/common/usdc.png"
@@ -70,7 +70,7 @@ export default function LoansComponent(props: LoansProps) {
               </div>
             </div>
           </div>
-          <div className="flex loans-collateral justify-between">
+          <div className="flex loans-collateral justify-between gap-1">
             <div className="flex">
               <span className="mr-1">{t('BORROW_OVERVIEW_COLLATERAL')}:</span>
               2.5 WETH
@@ -78,7 +78,7 @@ export default function LoansComponent(props: LoansProps) {
             </div>
             <Button>{t('BORROW_MODAL_BORROW_ADJUST_COLLATERAL')}</Button>
           </div>
-          <div className="flex justify-between items-end">
+          <div className="flex justify-between items-end gap-1">
             <div className="loans-yield">
               <div>
                 {t('BORROW_MODAL_BORROW_YIELD_GENERATING')}: <CheckOutlined className="ml-1" />

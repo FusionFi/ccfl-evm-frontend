@@ -1,9 +1,9 @@
 .app-container {
-
   // .hidden {
   //   display: none !important;
   // }
-  .main-container {}
+  .main-container {
+  }
 
   .bg-main-color {
     background: transparent;
@@ -142,6 +142,13 @@
     }
   }
 
+  // custom tooltip arrow ant design
+  .ant-tooltip-arrow {
+    &::before {
+      background: var(--tooltip-75, rgba(0, 0, 0, 0.75));
+    }
+  }
+
   // custom modal ant design
   .ant-modal {
     .ant-modal-content {
@@ -231,6 +238,9 @@
           }
           .ant-input-number {
             border-width: 0;
+          }
+          .ant-input-number-input {
+            border-radius: 0;
           }
           input {
             color: $white-color;
@@ -780,7 +790,7 @@
   }
 
   .ant-upload-list-item-thumbnail {
-    >img {
+    > img {
       object-fit: cover !important;
     }
   }
@@ -818,7 +828,7 @@
     &-tabs {
       padding: 0 24px;
 
-      .ant-tabs.ant-tabs-top>.ant-tabs-nav {
+      .ant-tabs.ant-tabs-top > .ant-tabs-nav {
         margin: 0;
 
         &::before {
@@ -929,7 +939,6 @@
 }
 
 .ant-btn {
-
   &[disabled],
   &[disabled]:hover,
   &:disabled:hover,
@@ -970,16 +979,17 @@
   align-items: flex-start;
   flex-shrink: 0;
   border-radius: 2px;
-  background: var(--Conditional-pop-over, #1F1F1F);
+  background: var(--Conditional-pop-over, #1f1f1f);
 
   /* drop-shadow/0.12+0.8+0.5 */
-  box-shadow: 0px 3px 6px -4px rgba(0, 0, 0, 0.12), 0px 6px 16px 0px rgba(0, 0, 0, 0.08), 0px 9px 28px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0px 3px 6px -4px rgba(0, 0, 0, 0.12), 0px 6px 16px 0px rgba(0, 0, 0, 0.08),
+    0px 9px 28px 8px rgba(0, 0, 0, 0.05);
   padding: 4px 0px;
   flex: 1 0 0;
   align-self: stretch;
   background: #282828;
 
-  >div {
+  > div {
     width: 100%;
   }
 
@@ -1030,7 +1040,7 @@
 .ant-tooltip {
   .ant-tooltip-content {
     .ant-tooltip-inner {
-      color: var(--character-primary-inverse, #FFF);
+      color: var(--character-primary-inverse, #fff);
 
       /* Body/regular */
       font-family: Inter;
@@ -1048,7 +1058,6 @@
       background: var(--tooltip-75, rgba(0, 0, 0, 0.75));
       min-height: unset;
     }
-
   }
 }
 

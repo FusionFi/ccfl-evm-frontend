@@ -3,11 +3,11 @@
     .asset {
       &-container {
         border-radius: 2px;
-        border: 1px solid var(--Conditional-divider, #303030);
-        background: var(--Conditional-pop-over, #1f1f1f);
+        border: $black-common-color;
+        background: $black-light-color;
       }
       &-header {
-        color: #fff;
+        color: $white-color;
 
         /* H5/bold */
         font-family: Inter;
@@ -21,7 +21,7 @@
       &-nav {
         display: flex;
         padding: 8px 16px;
-        color: var(--Neutral-7, #8c8c8c);
+        color: $sub-title-color;
 
         /* Body/regular */
         font-family: Inter;
@@ -60,7 +60,7 @@
         }
 
         .usd {
-          color: var(--Neutral-7, #8c8c8c);
+          color: $sub-title-color;
 
           /* Footnote/description */
           font-family: Inter;
