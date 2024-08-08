@@ -974,6 +974,9 @@
 
 // select - start
 .ant-select-dropdown {
+  &.ant-select-dropdown-hidden {
+    display: none;
+  }
   display: flex;
   flex-direction: column;
   align-items: flex-start;
