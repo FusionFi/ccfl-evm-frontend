@@ -6,7 +6,10 @@ import React from 'react';
 import { Button } from 'antd';
 import Image from 'next/image';
 
-interface LoansProps {}
+interface LoansProps {
+  showModal: any;
+  showRepayModal: any;
+}
 
 export default function LoansComponent(props: LoansProps) {
   return (
@@ -37,7 +40,7 @@ export default function LoansComponent(props: LoansProps) {
             <div className="flex items-center basis-1/4">
               <Image
                 className="mr-2"
-                src="/images/borrow/tokens/usdc.png"
+                src="/images/common/usdc.png"
                 alt="USDC"
                 width={40}
                 height={40}
@@ -82,10 +85,12 @@ export default function LoansComponent(props: LoansProps) {
               </div>
             </div>
             <div className="loans-button ">
-              <Button type="primary" className="mr-2">
+              <Button type="primary" className="mr-2" onClick={() => props.showModal('usdc')}>
                 Borrow More
               </Button>
-              <Button>Repay</Button>
+              <Button className="mr-2" onClick={() => props.showRepayModal('usdc')}>
+                Repay
+              </Button>
             </div>
           </div>
         </div>

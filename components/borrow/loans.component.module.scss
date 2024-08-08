@@ -148,6 +148,7 @@
           background: transparent;
           display: flex;
           align-items: center;
+
           &:active,
           &:hover {
             border-color: 1px solid var(--Neutral-1, #fff);
@@ -216,6 +217,8 @@
             }
           }
           &.ant-btn-default {
+            background: var(--Neutral-1, #fff);
+
             &:hover,
             &:active {
               border-color: white;

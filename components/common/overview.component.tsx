@@ -20,7 +20,9 @@ interface OverviewProps {
 export default function OverviewComponent(props: OverviewProps) {
   const renderItem = (item: ItemProps) => {
     return (
-      <div className={`item ${item.type === TYPE_COMMON.FINANCE_HEALTH ? 'highlight' : ''}`}>
+      <div
+        key={item.text}
+        className={`item ${item.type === TYPE_COMMON.FINANCE_HEALTH ? 'highlight' : ''}`}>
         <div className="overview-title">{item.text}</div>
         <div className="overview-content">
           {item.type === TYPE_COMMON.USD && <span className="overview-symbol mr-1">$</span>}

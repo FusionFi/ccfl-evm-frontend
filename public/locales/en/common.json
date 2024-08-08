@@ -15,5 +15,22 @@
   "BORROW_OVERVIEW_COLLATERAL": "Collateral",
   "BORROW_OVERVIEW_APR": "Net APR",
   "BORROW_OVERVIEW_FINANCE_HEALTH": "Finance health",
-  "BORROW_OVERVIEW_TITLE": "Borrow overview"
+  "BORROW_OVERVIEW_TITLE": "Borrow overview",
+  "BORROW_MODAL_SUCCESS_BORROW_TOKEN": "You successfully borrowed",
+  "BORROW_MODAL_SUCCESS_REPAY_TOKEN": " You successfully paid",
+  "BORROW_MODAL_SUCCESS_BORROW_DEPOSIT": "You deposit",
+  "BORROW_MODAL_SUCCESS_BORROW_RECEIVED": "You have also received",
+  "BORROW_MODAL_SUCCESS_BORROW_METAMASK": "Add to Metamask",
+  "BORROW_MODAL_SUCCESS_BORROW_REVIEW": "Review TX detail",
+  "BORROW_MODAL_SUCCESS_BORROW_OK": " Ok, got it!",
+  "BORROW_MODAL_REPAY_AMOUNT": "Repay Amount",
+  "BORROW_MODAL_BORROW_MAX": "Max",
+  "BORROW_MODAL_BORROW_WALLET_BALANCE": " Wallet balance",
+  "BORROW_MODAL_REPAY_OVERVIEW": "Repay overview",
+  "BORROW_MODAL_BORROW_REMAINING": "Remaining debt ",
+  "BORROW_MODAL_BORROW_HEALTH": "Health factor",
+  "BORROW_MODAL_BORROW_GAS": "Gas fee",
+  "BORROW_MODAL_BORROW_WHY": "Why do I need to approve?",
+  "BORROW_MODAL_BORROW_APPROVE": "Approve {{currentToken}}to continue",
+  "BORROW_MODAL_BORROW_PAY": "Pay the {{currentToken}}"
 }
