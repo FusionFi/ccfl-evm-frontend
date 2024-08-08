@@ -17,6 +17,7 @@ import { Select } from 'antd';
 import { SUPPORTED_CHAINS, CHAIN_INFO } from '@/constants/chains.constant';
 import { CaretDownOutlined } from '@ant-design/icons';
 import { useNetwork } from 'wagmi';
+import { COLLATERAL_TOKEN } from '@/constants/common.constant';
 
 type LabelRender = SelectProps['labelRender'];
 
@@ -28,6 +29,8 @@ export default function BorrowPage() {
   const [isModalRepayOpen, setIsModalRepayOpen] = useState(false);
 
   const [currentToken, setCurrentToken] = useState('');
+  const [step, setStep] = useState(0);
+  const [token, setToken] = useState(COLLATERAL_TOKEN[0].name);
 
   const showModal = (token: string) => {
     setCurrentToken(token);
@@ -36,15 +39,19 @@ export default function BorrowPage() {
   const handleCancel = () => {
     setCurrentToken('');
     setIsModalOpen(false);
+    setStep(0);
+    setToken(token);
   };
 
   const showRepayModal = (token: string) => {
     setCurrentToken(token);
     setIsModalRepayOpen(true);
   };
+
   const handleRepayCancel = () => {
     setCurrentToken('');
     setIsModalRepayOpen(false);
+    setStep(0);
   };
 
   const itemLeft = [
@@ -153,11 +160,17 @@ export default function BorrowPage() {
         isModalOpen={isModalOpen}
         handleCancel={handleCancel}
         currentToken={currentToken}
+        step={step}
+        setStep={setStep}
+        token={token}
+        setToken={setToken}
       />
       <ModalRepayComponent
         isModalOpen={isModalRepayOpen}
         handleCancel={handleRepayCancel}
         currentToken={currentToken}
+        step={step}
+        setStep={setStep}
       />
     </div>
   );

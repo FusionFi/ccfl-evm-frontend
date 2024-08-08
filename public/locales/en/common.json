@@ -55,5 +55,7 @@
   "BORROW_MODAL_BORROW_ASSET_TO_BORROW": "Asset to borrow",
   "BORROW_MODAL_BORROW_BORROW_LOAN_AVAILABLE": "Loan Available",
   "BORROW_MODAL_BORROW_YIELD": "Use my deposit for yield earning",
-  "BORROW_MODAL_BORROW_BORROW": "Borrow"
+  "BORROW_MODAL_BORROW_BORROW": "Borrow",
+  "BORROW_MODAL_BORROW_ENTER_AMOUNT": "Enter amount",
+  "BORROW_MODAL_BORROW_ALL_DONE": "All done!"
 }

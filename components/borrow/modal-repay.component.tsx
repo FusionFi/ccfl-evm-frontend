@@ -11,7 +11,6 @@ import {
   CloseOutlined,
   ArrowRightOutlined,
 } from '@ant-design/icons';
-import { COLLATERAL_TOKEN } from '@/constants/common.constant';
 import TransactionSuccessComponent from '@/components/borrow/transaction-success.component';
 import { useTranslation } from 'next-i18next';
 
@@ -19,6 +18,8 @@ interface ModalBorrowProps {
   isModalOpen: boolean;
   handleCancel: any;
   currentToken: string;
+  step: any;
+  setStep: any;
 }
 
 interface IFormInput {
@@ -29,6 +30,8 @@ export default function ModalBorrowComponent({
   isModalOpen,
   handleCancel,
   currentToken,
+  step,
+  setStep,
 }: ModalBorrowProps) {
   const { t } = useTranslation('common');
 
@@ -44,27 +47,20 @@ export default function ModalBorrowComponent({
     if (step == 1) {
       setTokenValue(0);
     }
-    setStep(step + 1);
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      setStep(step + 1);
+    }, 1000);
   };
 
-  const [token, setToken] = useState(COLLATERAL_TOKEN[0].name);
   const [loading, setLoading] = useState<boolean>(false);
-  const [isYield, setYield] = useState(false);
-  const [step, setStep] = useState(0);
-
-  const handleChange = (value: any) => {
-    setToken(value);
-  };
-
-  const handleYield = (e: any) => {
-    setYield(e.target.checked);
-  };
 
   const renderTitle = () => {
     if (step === 2) {
-      return 'All done!';
+      return `${t('BORROW_MODAL_BORROW_ALL_DONE')}`;
     }
-    return `Repay ${currentToken?.toUpperCase()}`;
+    return `${t('BORROW_MODAL_BORROW_BORROW')} ${currentToken?.toUpperCase()}`;
   };
 
   return (
@@ -86,7 +82,7 @@ export default function ModalBorrowComponent({
                       control={control}
                       render={({ field }) => (
                         <InputNumber
-                          placeholder="Enter amount"
+                          placeholder={t('BORROW_MODAL_BORROW_ENTER_AMOUNT')}
                           className="flex-1"
                           controls={false}
                           onChange={(value: any) => {
@@ -201,9 +197,6 @@ export default function ModalBorrowComponent({
                 )}
                 {step === 1 && (
                   <div>
-                    {/* <div className="modal-borrow-yield">
-                      <Checkbox onChange={handleYield}>Use my deposit for yield earning </Checkbox>
-                    </div> */}
                     <div className="px-6 py-4">
                       <Button
                         htmlType="submit"

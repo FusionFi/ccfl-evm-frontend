@@ -10,14 +10,18 @@ import {
   DownOutlined,
   CloseOutlined,
 } from '@ant-design/icons';
-import { COLLATERAL_TOKEN } from '@/constants/common.constant';
 import TransactionSuccessComponent from '@/components/borrow/transaction-success.component';
 import { useTranslation } from 'next-i18next';
+import { COLLATERAL_TOKEN } from '@/constants/common.constant';
 
 interface ModalBorrowProps {
   isModalOpen: boolean;
   handleCancel: any;
   currentToken: string;
+  step: any;
+  setStep: any;
+  token: any;
+  setToken: any;
 }
 
 interface IFormInput {
@@ -28,6 +32,10 @@ export default function ModalBorrowComponent({
   isModalOpen,
   handleCancel,
   currentToken,
+  step,
+  setStep,
+  token,
+  setToken,
 }: ModalBorrowProps) {
   const { control, handleSubmit, setValue } = useForm({
     defaultValues: {
@@ -37,13 +45,15 @@ export default function ModalBorrowComponent({
   const { t } = useTranslation('common');
 
   const onSubmit: SubmitHandler<IFormInput> = data => {
-    setStep(step + 1);
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      setStep(step + 1);
+    }, 1000);
   };
 
-  const [token, setToken] = useState(COLLATERAL_TOKEN[0].name);
   const [loading, setLoading] = useState<boolean>(false);
   const [isYield, setYield] = useState(false);
-  const [step, setStep] = useState(0);
 
   const handleChange = (value: any) => {
     setToken(value);
@@ -55,9 +65,9 @@ export default function ModalBorrowComponent({
 
   const renderTitle = () => {
     if (step === 2) {
-      return 'All done!';
+      return `${t('BORROW_MODAL_BORROW_ALL_DONE')}`;
     }
-    return `Borrow ${currentToken?.toUpperCase()}`;
+    return `${t('BORROW_MODAL_BORROW_BORROW')} ${currentToken?.toUpperCase()}`;
   };
 
   return (
@@ -81,7 +91,7 @@ export default function ModalBorrowComponent({
                       control={control}
                       render={({ field }) => (
                         <InputNumber
-                          placeholder="Enter amount"
+                          placeholder={t('BORROW_MODAL_BORROW_ENTER_AMOUNT')}
                           className="flex-1"
                           controls={false}
                           onChange={(value: any) => {
