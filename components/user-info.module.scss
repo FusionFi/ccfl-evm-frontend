@@ -45,17 +45,18 @@
       }
       .user-icon {
         position: relative;
-        margin-left: -36px;
-        padding: 2px 8px;
-        border-radius: 32px;
-        background: #ffffff 0% 0% no-repeat padding-box;
+        padding: 0px 8px;
+        border-radius: 2px !important;
+        background: transparent;
         min-width: 160px;
         font-family: Inter;
         font-size: 14px;
         font-style: normal;
         font-weight: 400;
-        line-height: 17px;
-        color: #00377a;
+        line-height: 22px;
+        color: #fff;
+        border: 1px solid #fff;
+        box-shadow: 0px 2px 0px 0px rgba(0, 0, 0, 0.02);
         @media screen and (max-width: 767px) {
           min-width: 80px;
           margin-left: -28px;
@@ -79,7 +80,7 @@
         align-items: center;
         justify-content: center;
         background: transparent;
-        color: #00377a;
+        color: #fff;
         border: 0px;
         padding: 0px;
         font-family: 'Inter';
@@ -93,8 +94,8 @@
           margin-left: 4px;
         }
         &:hover {
-          color: #00377a !important;
-
+          color: #fff !important;
+          background: transparent !important;
           opacity: 0.8;
         }
       }

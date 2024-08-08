@@ -9,12 +9,10 @@ import { NETWORKS, STAKE_DEFAULT_NETWORK } from '@/constants/stake/networks';
 import { useResetState } from '@/hooks/auth.hook';
 import eventBus from '@/hooks/eventBus.hook';
 import { useNotification } from '@/hooks/notifications.hook';
-import { truncateDecimal } from '@/utils/common';
 import { switchOrAddNetwork } from '@/utils/contract/web3';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { getNetwork } from '@wagmi/core';
 import { Button } from 'antd';
-import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { useAccount, useDisconnect } from 'wagmi';
@@ -106,28 +104,28 @@ export const UserInfoComponent = () => {
         </div>
       );
     }
-    return (
-      <div className="user-balance">
-        <div className="token-image">
-          {networkInfo?.nativeCurrency?.img_url && (
-            <Image
-              src={networkInfo?.nativeCurrency?.img_url}
-              alt="token logo"
-              width={24}
-              height={24}
-            />
-          )}
-        </div>
-        <div className="network-image">
-          {networkInfo?.img_url && (
-            <Image src={networkInfo?.img_url} alt="network logo" width={24} height={24} />
-          )}
-        </div>
-        <div className="balance">
-          {truncateDecimal(balance, 2)} {STAKE_DEFAULT_NETWORK?.nativeCurrency?.symbol}
-        </div>
-      </div>
-    );
+    // return (
+    //   <div className="user-balance">
+    //     <div className="token-image">
+    //       {networkInfo?.nativeCurrency?.img_url && (
+    //         <Image
+    //           src={networkInfo?.nativeCurrency?.img_url}
+    //           alt="token logo"
+    //           width={24}
+    //           height={24}
+    //         />
+    //       )}
+    //     </div>
+    //     <div className="network-image">
+    //       {networkInfo?.img_url && (
+    //         <Image src={networkInfo?.img_url} alt="network logo" width={24} height={24} />
+    //       )}
+    //     </div>
+    //     <div className="balance">
+    //       {truncateDecimal(balance, 2)} {STAKE_DEFAULT_NETWORK?.nativeCurrency?.symbol}
+    //     </div>
+    //   </div>
+    // );
   };
   return (
     <div className={twMerge('flex justify-end items-center', cssClass.userInfo)}>
