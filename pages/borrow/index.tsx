@@ -16,11 +16,13 @@ import Image from 'next/image';
 import { Select } from 'antd';
 import { SUPPORTED_CHAINS, CHAIN_INFO } from '@/constants/chains.constant';
 import { CaretDownOutlined } from '@ant-design/icons';
+import { useNetwork } from 'wagmi';
 
 type LabelRender = SelectProps['labelRender'];
 
 export default function BorrowPage() {
   const { t } = useTranslation('common');
+  const { chain, chains } = useNetwork();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalRepayOpen, setIsModalRepayOpen] = useState(false);

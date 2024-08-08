@@ -19,5 +19,46 @@
         flex-direction: column;
       }
     }
+    .select-wrapper {
+      .ant-select .ant-select-selector {
+        border-radius: 2px;
+        border: 1px solid var(--Neutral-1, #fff);
+
+        /* drop-shadow/button-secondary */
+        box-shadow: 0px 2px 0px 0px rgba(0, 0, 0, 0.02);
+        display: flex;
+        padding: 4px 12px;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+        background-color: #000000;
+
+        color: var(--Neutral-3, #f5f5f5);
+
+        /* H5/regular */
+        font-family: Inter;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 24px;
+        /* 150% */
+      }
+
+      .ant-select-single .ant-select-selector {
+        border-color: #fff !important;
+      }
+
+      .ant-select-single.ant-select-open .ant-select-selection-item {
+        color: white;
+      }
+
+      .anticon-caret-down {
+        svg {
+          width: 16px;
+          height: 16px;
+          color: #f5f5f5;
+        }
+      }
+    }
   }
 }
