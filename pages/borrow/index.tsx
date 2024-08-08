@@ -11,9 +11,18 @@ import LoansComponent from '@/components/borrow/loans.component';
 import AssetComponent from '@/components/borrow/asset.component';
 import ModalBorrowComponent from '@/components/borrow/modal-borrow.component';
 import ModalRepayComponent from '@/components/borrow/modal-repay.component';
+import type { SelectProps } from 'antd';
+import Image from 'next/image';
+import { Select } from 'antd';
+import { SUPPORTED_CHAINS, CHAIN_INFO } from '@/constants/chains.constant';
+import { CaretDownOutlined } from '@ant-design/icons';
+import { useNetwork } from 'wagmi';
+
+type LabelRender = SelectProps['labelRender'];
 
 export default function BorrowPage() {
   const { t } = useTranslation('common');
+  const { chain, chains } = useNetwork();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalRepayOpen, setIsModalRepayOpen] = useState(false);
@@ -63,12 +72,70 @@ export default function BorrowPage() {
       type: TYPE_COMMON.FINANCE_HEALTH,
     },
   ];
+  const labelRender: LabelRender = (props: any) => {
+    let { name, logo } = props;
+
+    // TODO: please remove before release it to PRD
+    if (!name) {
+      name = 'Avalanche';
+      logo = '/images/tokens/avax.png';
+    }
+
+    return (
+      <div className="flex items-center">
+        <Image
+          src={logo}
+          alt={name}
+          width={24}
+          height={24}
+          style={{
+            height: 24,
+            width: 24,
+          }}
+          className="mr-2"
+        />
+        {name}
+      </div>
+    );
+  };
+  const selectedChain = CHAIN_INFO.get(chain?.id) || {};
 
   return (
     <div className={twMerge('borrow-page-container', cssClass.borrowPage)}>
       <div className="borrow-header">
         <TitleComponent text={t('BORROW_OVERVIEW_TITLE')}>
-          <SelectComponent />
+          <div className="select-wrapper ml-6">
+            <Select
+              labelRender={labelRender}
+              defaultValue={{
+                value: selectedChain?.id,
+                label: selectedChain?.name,
+                logo: selectedChain?.logo,
+              }}
+              options={SUPPORTED_CHAINS.map((item: any) => ({
+                value: item.id,
+                name: item.name,
+                label: (
+                  <div className="chain-dropdown-item-wrapper">
+                    <Image
+                      src={item.logo}
+                      alt={item.name}
+                      width={12}
+                      height={12}
+                      style={{
+                        height: 12,
+                        width: 12,
+                      }}
+                      className="mr-2"
+                    />
+                    {item.name}
+                  </div>
+                ),
+                logo: item?.logo,
+              }))}
+              suffixIcon={<CaretDownOutlined />}
+            />
+          </div>
         </TitleComponent>
       </div>
       <div className="mb-4">

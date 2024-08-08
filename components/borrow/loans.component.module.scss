@@ -106,6 +106,13 @@
         }
       }
       .loans-inner {
+        img {
+          @media screen and (max-width: 767px) {
+            height: 30px;
+            width: 30px;
+            margin-right: 4px !important;
+          }
+        }
         & > div {
           padding-top: 12px;
           padding-bottom: 12px;
@@ -117,6 +124,11 @@
       }
       .loans-header {
         border-bottom: 1px solid var(--Neutral-4, #262626);
+        @media screen and (max-width: 767px) {
+          div {
+            align-items: start;
+          }
+        }
       }
       .loans-remain {
         max-width: 60%;
@@ -207,6 +219,11 @@
           font-weight: 400;
           line-height: 22px; /* 157.143% */
           height: 32px;
+
+          @media screen and (max-width: 767px) {
+            font-size: 12px;
+            padding: 2px 8px;
+          }
           &.ant-btn-primary {
             background: #1890ff;
             color: var(--character-primary-inverse, #fff);

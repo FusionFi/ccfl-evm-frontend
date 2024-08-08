@@ -3,6 +3,8 @@
     .title-container {
       display: flex;
       align-items: center;
+      @media screen and (max-width: 767px) {
+      }
     }
     .title-content {
       color: #fff;
@@ -14,6 +16,9 @@
       font-weight: 500;
       line-height: 40px; /* 133.333% */
       margin-right: 23px;
+      @media screen and (max-width: 767px) {
+        font-size: 20px;
+      }
     }
   }
 }

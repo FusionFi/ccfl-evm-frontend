@@ -5,6 +5,7 @@ import { Tooltip } from 'antd';
 import React from 'react';
 import { Button } from 'antd';
 import Image from 'next/image';
+import { useTranslation } from 'next-i18next';
 
 interface LoansProps {
   showModal: any;
@@ -12,23 +13,25 @@ interface LoansProps {
 }
 
 export default function LoansComponent(props: LoansProps) {
+  const { t } = useTranslation('common');
+
   return (
     <div className={twMerge(cssClass.loansComponent)}>
       <div className="loans-container">
-        <h3>My Loans</h3>
+        <h3>{t('BORROW_MODAL_BORROW_BORROW_MY_LOANS')}</h3>
         <div className="flex px-4 py-2 gap-6 loans-header">
           <div className="basis-1/4  ">
-            <h4>Asset</h4>
+            <h4>{t('BORROW_MODAL_BORROW_ADJUST_ASSET')}</h4>
           </div>
           <div className="basis-1/4">
-            <h4>Loan size</h4>
+            <h4>{t('BORROW_MODAL_BORROW_BORROW_LOAN_SIZE')}</h4>
           </div>
           <div className="basis-1/4">
-            <h4>APR (variable)</h4>
+            <h4>{t('BORROW_MODAL_BORROW_ADJUST_APR_VARIABLE')}</h4>
           </div>
           <div className="basis-1/4 flex justify-end">
             <h4>
-              Health
+              {t('BORROW_MODAL_BORROW_BORROW_DEBT_HEALTH')}
               <Tooltip placement="top" title={'a'} className="ml-1">
                 <InfoCircleOutlined />
               </Tooltip>
@@ -56,11 +59,11 @@ export default function LoansComponent(props: LoansProps) {
           </div>
           <div className="flex justify-between loans-status gap-4">
             <div className="">
-              Status: <span className="ml-1">Active</span>
+              {t('BORROW_MODAL_BORROW_ADJUST_STATUS')}: <span className="ml-1">Active</span>
             </div>
             <div></div>
             <div className="flex justify-end loans-remain">
-              <div className="">Debt remain:</div>
+              <div className="">{t('BORROW_MODAL_BORROW_BORROW_DEBT_REMAIN')}:</div>
               <div className="flex flex-wrap flex-1">
                 <div className="highlight ml-1">2,780.0 USDC</div>
                 <div className="ml-1">$ 2,780.0</div>
@@ -69,27 +72,27 @@ export default function LoansComponent(props: LoansProps) {
           </div>
           <div className="flex loans-collateral justify-between">
             <div className="flex">
-              <span className="mr-1">Collateral:</span>
+              <span className="mr-1">{t('BORROW_OVERVIEW_COLLATERAL')}:</span>
               2.5 WETH
               <span className="ml-1">$6,540.00</span>
             </div>
-            <Button>Adjust collateral</Button>
+            <Button>{t('BORROW_MODAL_BORROW_ADJUST_COLLATERAL')}</Button>
           </div>
           <div className="flex justify-between items-end">
             <div className="loans-yield">
               <div>
-                Yield-generating: <CheckOutlined className="ml-1" />
+                {t('BORROW_MODAL_BORROW_YIELD_GENERATING')}: <CheckOutlined className="ml-1" />
               </div>
               <div>
-                Yield earned: <span className="ml-1">0.281 WETH</span>
+                {t('BORROW_MODAL_BORROW_YIELD_EARNED')}: <span className="ml-1">0.281 WETH</span>
               </div>
             </div>
             <div className="loans-button ">
               <Button type="primary" className="mr-2" onClick={() => props.showModal('usdc')}>
-                Borrow More
+                {t('BORROW_MODAL_BORROW_BORROW_MORE')}
               </Button>
               <Button className="mr-2" onClick={() => props.showRepayModal('usdc')}>
-                Repay
+                {t('BORROW_MODAL_BORROW_REPAY')}
               </Button>
             </div>
           </div>
