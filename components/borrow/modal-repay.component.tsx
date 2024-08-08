@@ -41,13 +41,16 @@ export default function ModalBorrowComponent({
   const [tokenValue, setTokenValue] = useState(0);
 
   const onSubmit: SubmitHandler<IFormInput> = data => {
-    console.log(data);
+    if (step == 1) {
+      setTokenValue(0);
+    }
+    setStep(step + 1);
   };
 
   const [token, setToken] = useState(COLLATERAL_TOKEN[0].name);
   const [loading, setLoading] = useState<boolean>(false);
   const [isYield, setYield] = useState(false);
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0);
 
   const handleChange = (value: any) => {
     setToken(value);
@@ -222,6 +225,7 @@ export default function ModalBorrowComponent({
             <TransactionSuccessComponent
               handleCancel={handleCancel}
               currentToken={currentToken}
+              setStep={setStep}
               isRepay={true}
             />
           </div>

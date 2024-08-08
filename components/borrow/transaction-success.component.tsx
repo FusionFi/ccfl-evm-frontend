@@ -9,6 +9,7 @@ interface TransactionSuccessProps {
   currentToken?: string;
   isRepay?: any;
   token?: string;
+  setStep: any;
 }
 
 export default function TransactionSuccessComponent({
@@ -16,8 +17,14 @@ export default function TransactionSuccessComponent({
   currentToken,
   isRepay,
   token,
+  setStep,
 }: TransactionSuccessProps) {
   const { t } = useTranslation('common');
+
+  const handleFinish = () => {
+    setStep(0);
+    handleCancel();
+  };
 
   return (
     <div>
@@ -64,7 +71,7 @@ export default function TransactionSuccessComponent({
           {t('BORROW_MODAL_SUCCESS_BORROW_REVIEW')}
         </Link>
         <div className="px-6 py-4">
-          <Button className="w-full" onClick={handleCancel}>
+          <Button className="w-full" onClick={handleFinish}>
             {t('BORROW_MODAL_SUCCESS_BORROW_OK')}
           </Button>
         </div>
