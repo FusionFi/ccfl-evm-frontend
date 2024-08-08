@@ -134,6 +134,30 @@ export const Sidebar = () => {
         mode="inline"
         items={items}
       />
+      <ul className="ant-menu pt-16 ant-menu-root ant-menu-inline ant-menu-light">
+        <li className="ant-menu-item" style={{ paddingLeft: '24px' }}>
+          <span
+            className="ant-menu-title-content"
+            style={{
+              marginInlineStart: '14px',
+            }}>
+            <a href="https://app.v2.tealswap.com/bridge/cbridge/" target="_blank">
+              {t('LAYOUT_MAIN_HEADER_NAV_BTN_TITLE_BRIDGE')}
+            </a>
+          </span>
+        </li>
+        <li className="ant-menu-item" style={{ paddingLeft: '24px' }}>
+          <span
+            className="ant-menu-title-content"
+            style={{
+              marginInlineStart: '14px',
+            }}>
+            <a href="https://app.v2.tealswap.com/bridge/cbridge/" target="_blank">
+              {t('LAYOUT_MAIN_HEADER_NAV_BTN_TITLE_SWAP')}
+            </a>
+          </span>
+        </li>
+      </ul>
     </div>
   );
 };

@@ -1,10 +1,17 @@
-import { sepolia, mainnet } from 'wagmi/chains';
+import { sepolia, mainnet, avalancheFuji, polygonMumbai } from 'wagmi/chains';
 
 export const TESTNET_CHAINS = [
   {
     ...sepolia,
-    logo: '/images/tokens/avax.png' // TODO: update
+    logo: '/images/tokens/eth.png'
+  }, {
+    ...avalancheFuji,
+    logo: '/images/tokens/avax.png'
+  }, {
+    ...polygonMumbai,
+    logo: '/images/tokens/matic.png'
   }
+
 ]
 
 export const MAINNET_CHAINS = [

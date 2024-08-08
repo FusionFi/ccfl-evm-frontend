@@ -56,6 +56,9 @@
     }
     .right-content {
       .external-links {
+        @media screen and (max-width: 767px) {
+          display: none !important;
+        }
         > a {
           min-width: 60px;
         }

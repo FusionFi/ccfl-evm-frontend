@@ -118,6 +118,7 @@ function App({ Component, ...rest }: AppProps) {
         <meta name="description" content="CCFL on EVM" key="desc" />
         <link rel="shortcut icon" href="/favicon.ico" />
         <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet" />
       </Head>
 
       <Provider store={store}>
