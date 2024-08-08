@@ -160,6 +160,7 @@ export default function ModalBorrowComponent({
                     onChange={handleChange}
                     suffixIcon={<DownOutlined />}
                     popupClassName="modal-borrow-select"
+                    value={token}
                   />
                 </div>
                 <div className="flex justify-between items-center">

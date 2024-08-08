@@ -40,7 +40,7 @@ export default function BorrowPage() {
     setCurrentToken('');
     setIsModalOpen(false);
     setStep(0);
-    setToken(token);
+    setToken(COLLATERAL_TOKEN[0].name);
   };
 
   const showRepayModal = (token: string) => {
