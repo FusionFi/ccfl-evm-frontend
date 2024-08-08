@@ -8,11 +8,29 @@
         padding: 16px 32px;
         border-radius: 2px;
         background: var(--Conditional-pop-over, #1f1f1f);
-
+        @media screen and (max-width: 767px) {
+          padding: 4px 8px;
+        }
         article,
         aside {
           display: flex;
           gap: 32px;
+          @media screen and (max-width: 767px) {
+            gap: 6px;
+            flex: 1;
+            .item {
+              flex: 1;
+              text-align: center;
+            }
+            .overview-content {
+              justify-content: center;
+            }
+          }
+        }
+        article {
+          @media screen and (max-width: 767px) {
+            margin-right: 6px;
+          }
         }
         .item.highlight {
           .overview-content {

@@ -42,6 +42,13 @@
         font-style: normal;
         font-weight: 500;
         line-height: 22px; /* 157.143% */
+        @media screen and (max-width: 767px) {
+          img {
+            height: 30px;
+            width: 30px;
+            margin-right: 4px !important;
+          }
+        }
 
         &:last-child {
           margin-bottom: 16px;
