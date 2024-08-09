@@ -3,6 +3,8 @@ import { twMerge } from 'tailwind-merge';
 import Image from 'next/image';
 import { Button } from 'antd';
 import { useTranslation } from 'next-i18next';
+import { useAccount } from 'wagmi';
+import eventBus from '@/hooks/eventBus.hook';
 
 interface AssetProps {
   showModal: any;
@@ -10,6 +12,7 @@ interface AssetProps {
 
 export default function assetComponent(props: AssetProps) {
   const { t } = useTranslation('common');
+  const { isConnected } = useAccount();
 
   const tokenList = [
     {
@@ -32,14 +35,20 @@ export default function assetComponent(props: AssetProps) {
         <div className="asset-header">{t('BORROW_MODAL_BORROW_ASSET_TO_BORROW')}</div>
         <div className="">
           <div className="gap-6 asset-nav">
-            <div className="basis-1/4">{t('BORROW_MODAL_BORROW_ADJUST_ASSET')}</div>
-            <div className="basis-1/4">{t('BORROW_MODAL_BORROW_BORROW_LOAN_AVAILABLE')}</div>
-            <div className="basis-1/4">{t('BORROW_MODAL_BORROW_ADJUST_APR_VARIABLE')}</div>
-            <div className="basis-1/4"></div>
+            <div className={`${isConnected ? 'basis-1/4' : 'basis-1/6'}`}>
+              {t('BORROW_MODAL_BORROW_ADJUST_ASSET')}
+            </div>
+            <div className={`${isConnected ? 'basis-1/4' : 'basis-1/6'}`}>
+              {t('BORROW_MODAL_BORROW_BORROW_LOAN_AVAILABLE')}
+            </div>
+            <div className={`${isConnected ? 'basis-1/4' : 'basis-1/6'}`}>
+              {t('BORROW_MODAL_BORROW_ADJUST_APR_VARIABLE')}
+            </div>
+            <div className={`${isConnected ? 'basis-1/4' : 'basis-3/6'}`}></div>
           </div>
           {tokenList.map((item: any) => (
             <div className="gap-6 asset-body" key={item.name}>
-              <div className="basis-1/4">
+              <div className={`${isConnected ? 'basis-1/4' : 'basis-1/6'}`}>
                 <Image
                   className="mr-2"
                   src={`/images/common/${item.name}.png`}
@@ -49,15 +58,24 @@ export default function assetComponent(props: AssetProps) {
                 />
                 {item.name.toUpperCase()}
               </div>
-              <div className="basis-1/4 flex-col items-start justify-center	">
+              <div
+                className={`${
+                  isConnected ? 'basis-1/4' : 'basis-1/6'
+                } flex-col items-start justify-center	`}>
                 <div>{item.value}</div>
                 <div className="usd">$ {item.usd}</div>
               </div>
-              <div className="basis-1/4">{item.percent}%</div>
-              <div className="basis-1/4  justify-end">
-                <Button onClick={() => props.showModal(item.name)}>
-                  {t('BORROW_MODAL_BORROW_BORROW')}
-                </Button>
+              <div className={`${isConnected ? 'basis-1/4' : 'basis-1/6'}`}>{item.percent}%</div>
+              <div className={`${isConnected ? 'basis-1/4' : 'basis-3/6'}  justify-end`}>
+                {isConnected ? (
+                  <Button onClick={() => props.showModal(item.name)}>
+                    {t('BORROW_MODAL_BORROW_BORROW')}
+                  </Button>
+                ) : (
+                  <Button onClick={() => eventBus.emit('handleWalletConnect')}>
+                    {t('BORROW_CONNECT_WALLET')}
+                  </Button>
+                )}
               </div>
             </div>
           ))}
