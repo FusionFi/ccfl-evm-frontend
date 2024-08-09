@@ -77,7 +77,7 @@ export const Sidebar = () => {
     (item: any) => {
       if (window.innerWidth <= 767) {
         updateSiderbar({
-          collapsed: false,
+          collapsed: true,
         });
       }
       router.push(item.key);
@@ -90,16 +90,10 @@ export const Sidebar = () => {
    */
   useEffect(() => {
     const handleResize = () => {
+      updateSiderbar({
+        collapsed: true,
+      });
       // Close the drawer if window width is less than 768px
-      if (window.innerWidth < 768) {
-        // updateSiderbar({
-        //   collapsed: false,
-        // });
-      } else {
-        updateSiderbar({
-          collapsed: true,
-        });
-      }
     };
     handleResize();
     // Add event listener for window resize
