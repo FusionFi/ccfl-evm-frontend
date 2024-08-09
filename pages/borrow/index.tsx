@@ -1,8 +1,8 @@
 import cssClass from '@/pages/borrow/index.module.scss';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { twMerge } from 'tailwind-merge';
-import React, { useState } from 'react';
-import SelectComponent from '@/components/common/select.component';
+import React, { useCallback, useEffect, useState } from 'react';
+// import SelectComponent from '@/components/common/select.component';
 import TitleComponent from '@/components/common/title.component';
 import OverviewComponent from '@/components/common/overview.component';
 import { useTranslation } from 'next-i18next';
@@ -18,6 +18,10 @@ import { SUPPORTED_CHAINS, CHAIN_INFO } from '@/constants/chains.constant';
 import { CaretDownOutlined } from '@ant-design/icons';
 import { useNetwork, useAccount } from 'wagmi';
 import { COLLATERAL_TOKEN } from '@/constants/common.constant';
+import { NETWORKS, STAKE_DEFAULT_NETWORK } from '@/constants/stake/networks';
+import { switchOrAddNetwork } from '@/utils/contract/web3';
+import { useNotification } from '@/hooks/notifications.hook';
+// import { getNetwork } from '@wagmi/core';
 
 type LabelRender = SelectProps['labelRender'];
 
@@ -31,7 +35,12 @@ export default function BorrowPage() {
   const [currentToken, setCurrentToken] = useState('');
   const [step, setStep] = useState(0);
   const [token, setToken] = useState(COLLATERAL_TOKEN[0].name);
-  const { isConnected } = useAccount();
+  const { address, isConnected } = useAccount();
+
+  //connect wallet
+  const [showSuccess, showError, showWarning, contextHolder] = useNotification();
+  const [networkInfo, setNetworkInfo] = useState<any | null>(null);
+  // const { chain, chains } = getNetwork();
 
   const showModal = (token: string) => {
     setCurrentToken(token);
@@ -108,6 +117,31 @@ export default function BorrowPage() {
   };
   const selectedChain = CHAIN_INFO.get(chain?.id) || {};
 
+  //connect wallet
+  const switchNetwork = async () => {
+    try {
+      const provider = { rpcUrl: STAKE_DEFAULT_NETWORK?.rpc };
+      const rs = await switchOrAddNetwork(STAKE_DEFAULT_NETWORK, provider);
+    } catch (error) {
+      console.log('🚀 ~ switchNetwork ~ error:', error);
+      showError(error);
+    }
+  };
+
+  const initNetworkInfo = useCallback(() => {
+    if (chain) {
+      const networkCurrent = NETWORKS.find(item => item.chain_id_decimals === chain?.id);
+      setNetworkInfo(networkCurrent || null);
+    }
+  }, [chain]);
+
+  useEffect(() => {
+    if (address) {
+      // getBalance();
+      initNetworkInfo();
+    }
+  }, [address, initNetworkInfo]);
+
   return (
     <div className={twMerge('borrow-page-container', cssClass.borrowPage)}>
       <div className="borrow-header">
@@ -146,19 +180,25 @@ export default function BorrowPage() {
           </div>
         </TitleComponent>
       </div>
-      {isConnected && (
+      {isConnected && networkInfo && (
         <div className="mb-4">
           <OverviewComponent itemLeft={itemLeft} itemRight={itemRight} />
         </div>
       )}
       <div className="flex gap-6 borrow-inner">
-        {isConnected && (
+        {isConnected && networkInfo && (
           <div className="xl:basis-1/2 basis-full">
             <LoansComponent showModal={showModal} showRepayModal={showRepayModal} />
           </div>
         )}
-        <div className={`${isConnected ? 'xl:basis-1/2' : 'xl:basis-full'} basis-full`}>
-          <AssetComponent showModal={showModal} />
+        <div
+          className={`${isConnected && networkInfo ? 'xl:basis-1/2' : 'xl:basis-full'} basis-full`}>
+          <AssetComponent
+            showModal={showModal}
+            isConnected={isConnected}
+            switchNetwork={switchNetwork}
+            networkInfo={networkInfo}
+          />
         </div>
       </div>
       <ModalBorrowComponent
