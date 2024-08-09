@@ -7,7 +7,7 @@ import { twMerge } from 'tailwind-merge';
 import { Select } from 'antd';
 import { CaretDownOutlined } from '@ant-design/icons';
 import { useTranslation } from 'next-i18next';
-import { useNetwork } from 'wagmi'
+import { useAccount, useNetwork } from 'wagmi'
 import { SUPPORTED_CHAINS, CHAIN_INFO } from '@/constants/chains.constant'
 import type { SelectProps } from 'antd';
 import Image from 'next/image';
@@ -19,6 +19,7 @@ import { WalletSolidIcon } from '@/components/icons/wallet-solid.icon';
 import { InfoCircleIcon } from '@/components/icons/info-circle.icon';
 import { QuestionCircleIcon } from '@/components/icons/question-circle.icon';
 import { LinkIcon } from '@/components/icons/link.icon';
+import eventBus from '@/hooks/eventBus.hook';
 
 interface DataType {
   key: string;
@@ -33,6 +34,7 @@ type LabelRender = SelectProps['labelRender'];
 export default function SupplyPage() {
   const { t } = useTranslation('common');
   const { chain, chains } = useNetwork()
+  const { connector: activeConnector, isConnected } = useAccount()
 
 
   const columns: TableProps<DataType>['columns'] = [
@@ -124,17 +126,24 @@ export default function SupplyPage() {
   }, [])
   const expandedRowRender = (record: any) => {
     return <div className='table-wrapper__action'>
-      <Button className={twMerge('btn-primary-custom')} style={{
-        width: 200,
-        marginRight: 8
-      }} onClick={() => showModalToSupplyMore(record)}>
-        {t('SUPPLY_TABLE_ACTION_SUPPLY_MORE')}
+      {!isConnected ? <Button className="btn-primary-custom table-wrapper__action__connect" onClick={() => eventBus.emit('handleWalletConnect')}>
+        Connect Wallet
       </Button>
-      <Button className={twMerge('btn-default-custom')} style={{
-        width: 200,
-      }} onClick={() => setIsModalWithdrawOpen(true)}>
-        {t('SUPPLY_TABLE_ACTION_WITHDRAW')}
-      </Button>
+        :
+        <>
+          <Button className={twMerge('btn-primary-custom')} style={{
+            width: 200,
+            marginRight: 8
+          }} onClick={() => showModalToSupplyMore(record)}>
+            {t('SUPPLY_TABLE_ACTION_SUPPLY_MORE')}
+          </Button>
+          <Button className={twMerge('btn-default-custom')} style={{
+            width: 200,
+          }} onClick={() => setIsModalWithdrawOpen(true)}>
+            {t('SUPPLY_TABLE_ACTION_WITHDRAW')}
+          </Button>
+        </>
+      }
     </div>
   }
 
@@ -287,7 +296,7 @@ export default function SupplyPage() {
           className='table-wrapper' bordered={false} rowHoverable={false} pagination={false} columns={columns} dataSource={data} />
       </div>
 
-      <Modal width={456} wrapClassName={cssClass['supply-modal-wrapper']} classNames={{
+      <Modal wrapClassName={cssClass['supply-modal-wrapper']} classNames={{
         mask: cssClass['modal-mask'],
       }} title={t('SUPPLY_MODAL_TITLE', {
         token: 'USDT'
@@ -319,7 +328,7 @@ export default function SupplyPage() {
               <div className='supply-modal-container__overview__apy__title'>
                 {t('SUPPLY_MODAL_TRANSACTION_OVERVIEW_APY')}
                 <Tooltip color="rgba(0, 0, 0, 0.75)" title="prompt text">
-                  <span>
+                  <span className='cursor-pointer'>
                     <InfoCircleIcon className='' />
                   </span>
                 </Tooltip>
@@ -336,7 +345,7 @@ export default function SupplyPage() {
               <div className='supply-modal-container__overview__apy__title'>
                 {t('SUPPLY_MODAL_TRANSACTION_OVERVIEW_GAS_FEE')}
                 <Tooltip color="rgba(0, 0, 0, 0.75)" title="prompt text">
-                  <span>
+                  <span className='cursor-pointer'>
                     <InfoCircleIcon className='' />
                   </span>
                 </Tooltip>
@@ -372,7 +381,7 @@ export default function SupplyPage() {
 
 
 
-      <Modal closeIcon={false} width={456} wrapClassName={cssClass['supply-modal-tx-success-tx-success-wrapper']} classNames={{
+      <Modal closeIcon={false} wrapClassName={cssClass['supply-modal-tx-success-tx-success-wrapper']} classNames={{
         mask: cssClass['supply-modal-tx-success-mask'],
       }} title={t('SUCCESS_MODAL_TITLE')} open={isModalTxSuccessOpen} onOk={handleTxStatusModallCancel} onCancel={handleTxStatusModallCancel} footer={null}>
         <div className='supply-modal-tx-success-container'>
@@ -395,7 +404,7 @@ export default function SupplyPage() {
         </div>
       </Modal>
 
-      <Modal width={456} wrapClassName={cssClass['withdraw-modal-wrapper']} classNames={{
+      <Modal wrapClassName={cssClass['withdraw-modal-wrapper']} classNames={{
         mask: cssClass['modal-mask'],
       }} title={t('WITHDRAW_MODAL_TITLE')} open={isModalWithdrawOpen} onOk={handleOk} onCancel={handleCancel} footer={null}>
         <div className='withdraw-modal-container'>
@@ -472,7 +481,7 @@ export default function SupplyPage() {
               <div className='withdraw-modal-container__overview__apy__title'>
                 {t('WITHDRAW_MODAL_OVERVIEW_GAS_FEE')}
                 <Tooltip color="rgba(0, 0, 0, 0.75)" title="prompt text">
-                  <span>
+                  <span className='cursor-pointer'>
                     <InfoCircleIcon className='' />
                   </span>
                 </Tooltip>
