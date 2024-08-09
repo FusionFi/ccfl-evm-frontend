@@ -5,6 +5,7 @@ import { Button } from 'antd';
 import { useTranslation } from 'next-i18next';
 import { useAccount } from 'wagmi';
 import eventBus from '@/hooks/eventBus.hook';
+import SafeHtmlComponent from '@/components/common/safe-html.component';
 
 interface AssetProps {
   showModal: any;
@@ -34,21 +35,21 @@ export default function assetComponent(props: AssetProps) {
       <div className="asset-container">
         <div className="asset-header">{t('BORROW_MODAL_BORROW_ASSET_TO_BORROW')}</div>
         <div className="">
-          <div className="gap-6 asset-nav">
-            <div className={`${isConnected ? 'basis-1/4' : 'basis-1/6'}`}>
+          <div className="xl:gap-6 asset-nav gap-2">
+            <div className={`${isConnected ? 'xl:basis-1/4' : 'xl:basis-1/6'} basis-1/4`}>
               {t('BORROW_MODAL_BORROW_ADJUST_ASSET')}
             </div>
-            <div className={`${isConnected ? 'basis-1/4' : 'basis-1/6'}`}>
+            <div className={`${isConnected ? 'xl:basis-1/4' : 'xl:basis-1/6'} basis-1/4`}>
               {t('BORROW_MODAL_BORROW_BORROW_LOAN_AVAILABLE')}
             </div>
-            <div className={`${isConnected ? 'basis-1/4' : 'basis-1/6'}`}>
+            <div className={`${isConnected ? 'xl:basis-1/4' : 'xl:basis-1/6'} basis-1/4`}>
               {t('BORROW_MODAL_BORROW_ADJUST_APR_VARIABLE')}
             </div>
-            <div className={`${isConnected ? 'basis-1/4' : 'basis-3/6'}`}></div>
+            <div className={`${isConnected ? 'xl:basis-1/4' : 'xl:basis-3/6'} basis-1/4`}></div>
           </div>
           {tokenList.map((item: any) => (
-            <div className="gap-6 asset-body" key={item.name}>
-              <div className={`${isConnected ? 'basis-1/4' : 'basis-1/6'}`}>
+            <div className="xl:gap-6 asset-body gap-2" key={item.name}>
+              <div className={`${isConnected ? 'xl:basis-1/4' : 'xl:basis-1/6'} basis-1/4`}>
                 <Image
                   className="mr-2"
                   src={`/images/common/${item.name}.png`}
@@ -60,20 +61,27 @@ export default function assetComponent(props: AssetProps) {
               </div>
               <div
                 className={`${
-                  isConnected ? 'basis-1/4' : 'basis-1/6'
-                } flex-col items-start justify-center	`}>
+                  isConnected ? 'xl:basis-1/4' : 'xl:basis-1/6'
+                } flex-col items-start justify-center	basis-1/4`}>
                 <div>{item.value}</div>
                 <div className="usd">$ {item.usd}</div>
               </div>
-              <div className={`${isConnected ? 'basis-1/4' : 'basis-1/6'}`}>{item.percent}%</div>
-              <div className={`${isConnected ? 'basis-1/4' : 'basis-3/6'}  justify-end`}>
+              <div className={`${isConnected ? 'xl:basis-1/4' : 'xl:basis-1/6'} basis-1/4`}>
+                {item.percent}%
+              </div>
+              <div
+                className={`${
+                  isConnected ? 'xl:basis-1/4' : 'xl:basis-3/6'
+                } justify-end basis-1/4`}>
                 {isConnected ? (
                   <Button onClick={() => props.showModal(item.name)}>
                     {t('BORROW_MODAL_BORROW_BORROW')}
                   </Button>
                 ) : (
-                  <Button onClick={() => eventBus.emit('handleWalletConnect')}>
-                    {t('BORROW_CONNECT_WALLET')}
+                  <Button
+                    onClick={() => eventBus.emit('handleWalletConnect')}
+                    className={`${isConnected ? '' : 'guest'}`}>
+                    <SafeHtmlComponent htmlContent={t('BORROW_CONNECT_WALLET')} />
                   </Button>
                 )}
               </div>

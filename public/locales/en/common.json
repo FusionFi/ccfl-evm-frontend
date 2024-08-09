@@ -101,5 +101,5 @@
   "SUCCESS_MODAL_TITLE": "All done!",
   "SUCCESS_MODAL_REVIEW": "Review TX detail",
   "SUCCESS_MODAL_OK": "Ok, got it!",
-  "BORROW_CONNECT_WALLET": "Connect wallet to Borrow"
+  "BORROW_CONNECT_WALLET": "Connect wallet <br> to Borrow"
 }
