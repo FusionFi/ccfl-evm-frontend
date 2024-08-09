@@ -287,7 +287,7 @@ export default function SupplyPage() {
           className='table-wrapper' bordered={false} rowHoverable={false} pagination={false} columns={columns} dataSource={data} />
       </div>
 
-      <Modal width={456} wrapClassName={cssClass['supply-modal-wrapper']} classNames={{
+      <Modal wrapClassName={cssClass['supply-modal-wrapper']} classNames={{
         mask: cssClass['modal-mask'],
       }} title={t('SUPPLY_MODAL_TITLE', {
         token: 'USDT'
@@ -319,7 +319,7 @@ export default function SupplyPage() {
               <div className='supply-modal-container__overview__apy__title'>
                 {t('SUPPLY_MODAL_TRANSACTION_OVERVIEW_APY')}
                 <Tooltip color="rgba(0, 0, 0, 0.75)" title="prompt text">
-                  <span>
+                  <span className='cursor-pointer'>
                     <InfoCircleIcon className='' />
                   </span>
                 </Tooltip>
@@ -336,7 +336,7 @@ export default function SupplyPage() {
               <div className='supply-modal-container__overview__apy__title'>
                 {t('SUPPLY_MODAL_TRANSACTION_OVERVIEW_GAS_FEE')}
                 <Tooltip color="rgba(0, 0, 0, 0.75)" title="prompt text">
-                  <span>
+                  <span className='cursor-pointer'>
                     <InfoCircleIcon className='' />
                   </span>
                 </Tooltip>
@@ -372,7 +372,7 @@ export default function SupplyPage() {
 
 
 
-      <Modal closeIcon={false} width={456} wrapClassName={cssClass['supply-modal-tx-success-tx-success-wrapper']} classNames={{
+      <Modal closeIcon={false} wrapClassName={cssClass['supply-modal-tx-success-tx-success-wrapper']} classNames={{
         mask: cssClass['supply-modal-tx-success-mask'],
       }} title={t('SUCCESS_MODAL_TITLE')} open={isModalTxSuccessOpen} onOk={handleTxStatusModallCancel} onCancel={handleTxStatusModallCancel} footer={null}>
         <div className='supply-modal-tx-success-container'>
@@ -395,7 +395,7 @@ export default function SupplyPage() {
         </div>
       </Modal>
 
-      <Modal width={456} wrapClassName={cssClass['withdraw-modal-wrapper']} classNames={{
+      <Modal wrapClassName={cssClass['withdraw-modal-wrapper']} classNames={{
         mask: cssClass['modal-mask'],
       }} title={t('WITHDRAW_MODAL_TITLE')} open={isModalWithdrawOpen} onOk={handleOk} onCancel={handleCancel} footer={null}>
         <div className='withdraw-modal-container'>
@@ -472,7 +472,7 @@ export default function SupplyPage() {
               <div className='withdraw-modal-container__overview__apy__title'>
                 {t('WITHDRAW_MODAL_OVERVIEW_GAS_FEE')}
                 <Tooltip color="rgba(0, 0, 0, 0.75)" title="prompt text">
-                  <span>
+                  <span className='cursor-pointer'>
                     <InfoCircleIcon className='' />
                   </span>
                 </Tooltip>

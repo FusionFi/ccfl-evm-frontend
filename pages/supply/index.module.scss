@@ -287,7 +287,7 @@
   :global {
     .ant-modal-content {
       display: flex;
-      width: 456px;
+      max-width: 456px;
       padding-bottom: 16px;
       flex-direction: column;
       align-items: flex-start;
@@ -372,8 +372,20 @@
                   background: transparent;
                   border: none;
                   width: auto;
+                  flex: 0 1 auto;
 
                   .ant-input-number-input {
+                    &::placeholder {
+                      color: var(--character-secondary-45, rgba(255, 255, 255, 0.45));
+                      /* H3/medium */
+                      font-family: Inter;
+                      font-size: 24px;
+                      font-style: normal;
+                      font-weight: 500;
+                      line-height: 32px;
+                      /* 133.333% */
+                    }
+
                     color: var(--character-primary-inverse, #FFF);
 
                     /* H3/medium */
@@ -391,9 +403,12 @@
                 .ant-input-number-group-addon {
                   border: none;
                   display: flex;
-                  width: 72px;
+                  width: auto;
+                  padding: 0px;
+                  justify-content: flex-end;
                   align-items: center;
                   border-radius: 100000px;
+                  flex: 1 0 auto;
 
                   /* 150% */
                   .supply-modal-container__input__control__amount__token {
@@ -556,7 +571,7 @@
   :global {
     .ant-modal-content {
       display: flex;
-      width: 456px;
+      max-width: 456px;
       padding-bottom: 16px;
       flex-direction: column;
       align-items: center;
@@ -668,7 +683,7 @@
   :global {
     .ant-modal-content {
       display: flex;
-      width: 456px;
+      max-width: 456px;
       padding-bottom: 16px;
       flex-direction: column;
       align-items: flex-start;
@@ -859,8 +874,21 @@
                   background: transparent;
                   border: none;
                   width: auto;
+                  flex: 0 1 auto;
 
                   .ant-input-number-input {
+                    &::placeholder {
+                      color: var(--character-secondary-45, rgba(255, 255, 255, 0.45));
+
+                      /* H3/medium */
+                      font-family: Inter;
+                      font-size: 24px;
+                      font-style: normal;
+                      font-weight: 500;
+                      line-height: 32px;
+                      /* 133.333% */
+                    }
+
                     color: var(--character-primary-inverse, #FFF);
 
                     /* H3/medium */
@@ -878,10 +906,12 @@
                 .ant-input-number-group-addon {
                   border: none;
                   display: flex;
-                  width: 72px;
                   align-items: center;
+                  width: auto;
+                  justify-content: flex-end;
+                  padding: 0px;
                   border-radius: 100000px;
-
+                  flex: 1 0 auto;
                   /* 150% */
                   .withdraw-modal-container__input__control__amount__token {
                     display: flex;
