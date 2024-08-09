@@ -7,7 +7,7 @@ import { twMerge } from 'tailwind-merge';
 import { Select } from 'antd';
 import { CaretDownOutlined } from '@ant-design/icons';
 import { useTranslation } from 'next-i18next';
-import { useNetwork } from 'wagmi'
+import { useAccount, useNetwork } from 'wagmi'
 import { SUPPORTED_CHAINS, CHAIN_INFO } from '@/constants/chains.constant'
 import type { SelectProps } from 'antd';
 import Image from 'next/image';
@@ -19,6 +19,7 @@ import { WalletSolidIcon } from '@/components/icons/wallet-solid.icon';
 import { InfoCircleIcon } from '@/components/icons/info-circle.icon';
 import { QuestionCircleIcon } from '@/components/icons/question-circle.icon';
 import { LinkIcon } from '@/components/icons/link.icon';
+import eventBus from '@/hooks/eventBus.hook';
 
 interface DataType {
   key: string;
@@ -33,6 +34,7 @@ type LabelRender = SelectProps['labelRender'];
 export default function SupplyPage() {
   const { t } = useTranslation('common');
   const { chain, chains } = useNetwork()
+  const { connector: activeConnector, isConnected } = useAccount()
 
 
   const columns: TableProps<DataType>['columns'] = [
@@ -124,17 +126,24 @@ export default function SupplyPage() {
   }, [])
   const expandedRowRender = (record: any) => {
     return <div className='table-wrapper__action'>
-      <Button className={twMerge('btn-primary-custom')} style={{
-        width: 200,
-        marginRight: 8
-      }} onClick={() => showModalToSupplyMore(record)}>
-        {t('SUPPLY_TABLE_ACTION_SUPPLY_MORE')}
+      {!isConnected ? <Button className="btn-primary-custom table-wrapper__action__connect" onClick={() => eventBus.emit('handleWalletConnect')}>
+        Connect Wallet
       </Button>
-      <Button className={twMerge('btn-default-custom')} style={{
-        width: 200,
-      }} onClick={() => setIsModalWithdrawOpen(true)}>
-        {t('SUPPLY_TABLE_ACTION_WITHDRAW')}
-      </Button>
+        :
+        <>
+          <Button className={twMerge('btn-primary-custom')} style={{
+            width: 200,
+            marginRight: 8
+          }} onClick={() => showModalToSupplyMore(record)}>
+            {t('SUPPLY_TABLE_ACTION_SUPPLY_MORE')}
+          </Button>
+          <Button className={twMerge('btn-default-custom')} style={{
+            width: 200,
+          }} onClick={() => setIsModalWithdrawOpen(true)}>
+            {t('SUPPLY_TABLE_ACTION_WITHDRAW')}
+          </Button>
+        </>
+      }
     </div>
   }
 

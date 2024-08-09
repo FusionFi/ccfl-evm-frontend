@@ -160,6 +160,14 @@
           padding-top: 12px;
           align-self: stretch;
           border-top: 1px solid var(--Neutral-4, #262626);
+
+          &__connect {
+            max-width: 400px;
+
+            @media screen and (max-width: 767px) {
+              max-width: 100%;
+            }
+          }
         }
       }
     }
@@ -912,6 +920,7 @@
                   padding: 0px;
                   border-radius: 100000px;
                   flex: 1 0 auto;
+
                   /* 150% */
                   .withdraw-modal-container__input__control__amount__token {
                     display: flex;
