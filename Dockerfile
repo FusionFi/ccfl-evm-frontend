@@ -1,7 +1,14 @@
 FROM node:18-alpine
-WORKDIR /usr/src/app
-COPY . .
+
+WORKDIR /web-app
+
+COPY package.json ./
+COPY yarn.lock ./
+# install dependencies
 RUN yarn install
-RUN yarn build
+# Bundle app source
+COPY . .
+# build pro source
+RUN yarn run build
 EXPOSE 3000
 CMD ["yarn", "start"]
