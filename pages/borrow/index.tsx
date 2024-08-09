@@ -16,7 +16,7 @@ import Image from 'next/image';
 import { Select } from 'antd';
 import { SUPPORTED_CHAINS, CHAIN_INFO } from '@/constants/chains.constant';
 import { CaretDownOutlined } from '@ant-design/icons';
-import { useNetwork } from 'wagmi';
+import { useNetwork, useAccount } from 'wagmi';
 import { COLLATERAL_TOKEN } from '@/constants/common.constant';
 
 type LabelRender = SelectProps['labelRender'];
@@ -31,6 +31,7 @@ export default function BorrowPage() {
   const [currentToken, setCurrentToken] = useState('');
   const [step, setStep] = useState(0);
   const [token, setToken] = useState(COLLATERAL_TOKEN[0].name);
+  const { isConnected } = useAccount();
 
   const showModal = (token: string) => {
     setCurrentToken(token);
@@ -145,14 +146,18 @@ export default function BorrowPage() {
           </div>
         </TitleComponent>
       </div>
-      <div className="mb-4">
-        <OverviewComponent itemLeft={itemLeft} itemRight={itemRight} />
-      </div>
-      <div className="flex gap-6 borrow-inner">
-        <div className="xl:basis-1/2 basis-full">
-          <LoansComponent showModal={showModal} showRepayModal={showRepayModal} />
+      {isConnected && (
+        <div className="mb-4">
+          <OverviewComponent itemLeft={itemLeft} itemRight={itemRight} />
         </div>
-        <div className="xl:basis-1/2 basis-full">
+      )}
+      <div className="flex gap-6 borrow-inner">
+        {isConnected && (
+          <div className="xl:basis-1/2 basis-full">
+            <LoansComponent showModal={showModal} showRepayModal={showRepayModal} />
+          </div>
+        )}
+        <div className={`${isConnected ? 'xl:basis-1/2' : 'xl:basis-full'} basis-full`}>
           <AssetComponent showModal={showModal} />
         </div>
       </div>
