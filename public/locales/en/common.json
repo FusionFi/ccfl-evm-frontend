@@ -100,5 +100,7 @@
   "WITHDRAW_SUCCESS_MODAL_MESSAGE": "You withdrew {{amount}} {{token}}",
   "SUCCESS_MODAL_TITLE": "All done!",
   "SUCCESS_MODAL_REVIEW": "Review TX detail",
-  "SUCCESS_MODAL_OK": "Ok, got it!"
+  "SUCCESS_MODAL_OK": "Ok, got it!",
+  "COMMON_CONNECT_WALLET": "Connect wallet",
+  "COMMON_CONNECT_WALLET_SWITCH": "Switch to {{network}}"
 }

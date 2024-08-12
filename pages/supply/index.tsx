@@ -1,10 +1,10 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import cssClass from '@/pages/supply/index.module.scss';
 import { Button } from 'antd';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { twMerge } from 'tailwind-merge';
 import { useTranslation } from 'next-i18next';
-import { useAccount } from 'wagmi';
+import { useAccount, useNetwork } from 'wagmi';
 import Image from 'next/image';
 import { Table } from 'antd';
 import type { TableProps } from 'antd';
@@ -16,6 +16,9 @@ import ModalSupply from '@/components/supply/modal-supply/modal-supply.component
 import ModalWithdraw from '@/components/supply/modal-withdraw/modal-withdraw.component'
 import ModalSuccess from '@/components/supply/modal-success/modal-success.component'
 import SupplyOverview from '@/components/supply/supply-overview/supply-overview.component'
+import { NETWORKS, STAKE_DEFAULT_NETWORK } from '@/constants/stake/networks';
+import { switchOrAddNetwork } from '@/utils/contract/web3';
+import { useNotification } from '@/hooks/notifications.hook';
 
 interface DataType {
   key: string;
@@ -29,6 +32,22 @@ interface DataType {
 export default function SupplyPage() {
   const { t } = useTranslation('common');
   const { isConnected } = useAccount();
+  const { address } = useAccount();
+  const { chain } = useNetwork();
+
+  const [_, showError] = useNotification();
+
+  const [networkInfo, setNetworkInfo] = useState<any | null>(null);
+
+  const switchNetwork = async () => {
+    try {
+      const provider = { rpcUrl: STAKE_DEFAULT_NETWORK?.rpc };
+      await switchOrAddNetwork(STAKE_DEFAULT_NETWORK, provider);
+    } catch (error) {
+      console.log('🚀 ~ switchNetwork ~ error:', error);
+      showError(error);
+    }
+  };
 
   const columns: TableProps<DataType>['columns'] = [
     {
@@ -129,6 +148,20 @@ export default function SupplyPage() {
     },
   ];
 
+  const initNetworkInfo = useCallback(() => {
+    if (chain) {
+      const networkCurrent = NETWORKS.find(item => item.chain_id_decimals === chain?.id);
+      setNetworkInfo(networkCurrent || null);
+    }
+  }, [chain]);
+
+  useEffect(() => {
+    if (address) {
+      // getBalance();
+      initNetworkInfo();
+    }
+  }, [address, initNetworkInfo]);
+
   const TableAction = ({ children }: any) => {
     return <div className="table-wrapper__action">{children}</div>;
   };
@@ -140,10 +173,20 @@ export default function SupplyPage() {
           <Button
             className="btn-primary-custom table-wrapper__action__connect"
             onClick={() => eventBus.emit('handleWalletConnect')}>
-            Connect Wallet
+            {t('COMMON_CONNECT_WALLET')}
           </Button>
         </TableAction>
       );
+    }
+
+    if (!networkInfo) {
+      return <TableAction>
+        <Button onClick={() => switchNetwork()} className="btn-primary-custom table-wrapper__action__connect">
+          {t('COMMON_CONNECT_WALLET_SWITCH', {
+            network: STAKE_DEFAULT_NETWORK?.name
+          })}
+        </Button>
+      </TableAction>
     }
 
     return (
