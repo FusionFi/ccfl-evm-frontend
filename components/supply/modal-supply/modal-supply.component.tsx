@@ -29,6 +29,8 @@ export default function ModalSupplyComponent({
   }, []);
 
   const _handleOk = useCallback(() => {
+    _setIsApproved(false)
+    _setIsPending(false)
     handleOk();
   }, [])
 

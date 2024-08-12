@@ -29,6 +29,8 @@ export default function ModalWithdrawComponent({
   }, []);
 
   const _handleOk = useCallback(() => {
+    _setIsApproved(false)
+    _setIsPending(false)
     handleOk();
   }, [])
 

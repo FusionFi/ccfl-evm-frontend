@@ -1,27 +1,21 @@
 import React, { useCallback, useState } from 'react';
-import Link from 'next/link';
 import cssClass from '@/pages/supply/index.module.scss';
-import { Button, InputNumber, Tooltip } from 'antd';
+import { Button } from 'antd';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { twMerge } from 'tailwind-merge';
-import { Select } from 'antd';
-import { CaretDownOutlined } from '@ant-design/icons';
 import { useTranslation } from 'next-i18next';
-import { useAccount, useNetwork } from 'wagmi';
-import { SUPPORTED_CHAINS, CHAIN_INFO } from '@/constants/chains.constant';
-import type { SelectProps } from 'antd';
+import { useAccount } from 'wagmi';
 import Image from 'next/image';
-import { Table, Modal } from 'antd';
+import { Table } from 'antd';
 import type { TableProps } from 'antd';
 import { toCurrency } from '@/utils/common';
 import { computeWithMinThreashold } from '@/utils/percent.util';
 import { WalletSolidIcon } from '@/components/icons/wallet-solid.icon';
-import { InfoCircleIcon } from '@/components/icons/info-circle.icon';
-import { QuestionCircleIcon } from '@/components/icons/question-circle.icon';
-import { LinkIcon } from '@/components/icons/link.icon';
 import eventBus from '@/hooks/eventBus.hook';
 import ModalSupply from '@/components/supply/modal-supply/modal-supply.component'
 import ModalWithdraw from '@/components/supply/modal-withdraw/modal-withdraw.component'
+import ModalSuccess from '@/components/supply/modal-success/modal-success.component'
+import SupplyOverview from '@/components/supply/supply-overview/supply-overview.component'
 
 interface DataType {
   key: string;
@@ -31,12 +25,10 @@ interface DataType {
   apy: string;
   wallet_balance: string;
 }
-type LabelRender = SelectProps['labelRender'];
 
 export default function SupplyPage() {
   const { t } = useTranslation('common');
-  const { chain, chains } = useNetwork();
-  const { connector: activeConnector, isConnected } = useAccount();
+  const { isConnected } = useAccount();
 
   const columns: TableProps<DataType>['columns'] = [
     {
@@ -137,10 +129,6 @@ export default function SupplyPage() {
     },
   ];
 
-  const showModalToSupplyMore = useCallback((asset: any) => {
-    showModal();
-  }, []);
-
   const TableAction = ({ children }: any) => {
     return <div className="table-wrapper__action">{children}</div>;
   };
@@ -166,7 +154,7 @@ export default function SupplyPage() {
             width: 200,
             marginRight: 8,
           }}
-          onClick={() => showModalToSupplyMore(record)}>
+          onClick={() => setIsModalSupplyOpen(record)}>
           {t('SUPPLY_TABLE_ACTION_SUPPLY_MORE')}
         </Button>
         <Button
@@ -174,53 +162,16 @@ export default function SupplyPage() {
           style={{
             width: 200,
           }}
-          onClick={() => setIsModalWithdrawOpen(true)}>
+          onClick={() => setIsModalWithdrawOpen(record)}>
           {t('SUPPLY_TABLE_ACTION_WITHDRAW')}
         </Button>
       </TableAction>
     );
   };
 
-  const labelRender: LabelRender = (props: any) => {
-    let { name, logo } = props;
-
-    // TODO: please remove before release it to PRD
-    if (!name) {
-      name = 'Avalanche';
-      logo = '/images/tokens/avax.png';
-    }
-
-    return (
-      <div className="flex items-center">
-        <Image
-          src={logo}
-          alt={name}
-          width={24}
-          height={24}
-          style={{
-            height: 24,
-            width: 24,
-          }}
-          className="mr-2"
-        />
-        {name}
-      </div>
-    );
-  };
-
-  const selectedChain = CHAIN_INFO.get(chain?.id) || {};
-
   const [isModalSupplyOpen, setIsModalSupplyOpen] = useState(false);
   const [isModalWithdrawOpen, setIsModalWithdrawOpen] = useState(false);
-  const [isModalTxSuccessOpen, setIsModalTxSuccessOpen] = useState(false);
-
-  const showModal = () => {
-    setIsModalSupplyOpen(true);
-  };
-
-  const handleOk = () => {
-    setIsModalSupplyOpen(false);
-  };
+  const [isModalSuccessOpen, setIsModalSuccessOpen] = useState(false);
 
   const handleModalSupplyCancel = () => {
     setIsModalSupplyOpen(false);
@@ -236,7 +187,7 @@ export default function SupplyPage() {
       }),
     );
 
-    setIsModalTxSuccessOpen(true)
+    setIsModalSuccessOpen(true)
   };
 
   const handleModalWithdrawCancel = () => {
@@ -253,102 +204,19 @@ export default function SupplyPage() {
       }),
     );
 
-    setIsModalTxSuccessOpen(true)
+    setIsModalSuccessOpen(true)
   };
 
   const [successMsg, setSuccessMsg] = useState('');
 
-  const handleTxStatusModallCancel = useCallback(() => {
-    setIsModalTxSuccessOpen(false);
+  const handleModalSuccessCancel = useCallback(() => {
+    setIsModalSuccessOpen(false);
   }, []);
+
 
   return (
     <div className={twMerge('supply-page-container', cssClass.supplyPage)}>
-      <div className="overview">
-        <div className="flex">
-          {t('SUPPLY_OVERVIEW_TITLE')}
-          <div className="select-wrapper ml-6">
-            <Select
-              labelRender={labelRender}
-              defaultValue={{
-                value: selectedChain?.id,
-                label: selectedChain?.name,
-                logo: selectedChain?.logo,
-              }}
-              options={SUPPORTED_CHAINS.map((item: any) => ({
-                value: item.id,
-                name: item.name,
-                label: (
-                  <div className="chain-dropdown-item-wrapper">
-                    <Image
-                      src={item.logo}
-                      alt={item.name}
-                      width={12}
-                      height={12}
-                      style={{
-                        height: 12,
-                        width: 12,
-                      }}
-                      className="mr-2"
-                    />
-                    {item.name}
-                  </div>
-                ),
-                logo: item?.logo,
-              }))}
-              suffixIcon={<CaretDownOutlined />}
-            />
-          </div>
-        </div>
-        <div className="overview__body">
-          <div className="overview__body__wrapper">
-            <div className="overview__body__wrapper__item">
-              <span className="overview__body__wrapper__item__label">
-                {t('SUPPLY_OVERVIEW_TOTAL_SUPPLY')}
-              </span>
-              <div className="overview__body__wrapper__item__value">
-                ${' '}
-                <span
-                  className="font-bold"
-                  style={{
-                    color: '#F0F0F0',
-                  }}>
-                  4,567.87
-                </span>
-              </div>
-            </div>
-            <div className="overview__body__wrapper__item">
-              <span className="overview__body__wrapper__item__label">
-                {t('SUPPLY_OVERVIEW_NET_APY')}
-              </span>
-              <div className="overview__body__wrapper__item__value">
-                <span
-                  className="font-bold"
-                  style={{
-                    color: '#F0F0F0',
-                  }}>
-                  0.07
-                </span>{' '}
-                %
-              </div>
-            </div>
-            <div className="overview__body__wrapper__item">
-              <span className="overview__body__wrapper__item__label">
-                {t('SUPPLY_OVERVIEW_TOTAL_EARNED')}
-              </span>
-              <div className="overview__body__wrapper__item__value">
-                <span
-                  className="font-bold"
-                  style={{
-                    color: '#52C41A',
-                  }}>
-                  +$65.87
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <SupplyOverview />
       <div className="content">
         <Table
           title={() => t('SUPPLY_TABLE_TITLE')}
@@ -370,49 +238,7 @@ export default function SupplyPage() {
 
       <ModalSupply handleOk={handleModalSupplyOk} isModalOpen={isModalSupplyOpen} handleCancel={handleModalSupplyCancel} />
       <ModalWithdraw handleOk={handleModalWithdrawOk} isModalOpen={isModalWithdrawOpen} handleCancel={handleModalWithdrawCancel} />
-
-      <Modal
-        closeIcon={false}
-        wrapClassName={cssClass['supply-modal-tx-success-tx-success-wrapper']}
-        classNames={{
-          mask: cssClass['supply-modal-tx-success-mask'],
-        }}
-        title={t('SUCCESS_MODAL_TITLE')}
-        open={isModalTxSuccessOpen}
-        onOk={handleTxStatusModallCancel}
-        onCancel={handleTxStatusModallCancel}
-        footer={null}>
-        <div className="supply-modal-tx-success-container">
-          <div className="supply-modal-tx-success-container__status">
-            <Image
-              src="/images/status/success.png"
-              alt="Transaction Success"
-              width={80}
-              height={80}
-            />
-            <div className="supply-modal-tx-success-container__status__msg">{successMsg}</div>
-          </div>
-          <div className="supply-modal-tx-success-container__action">
-            <div className="supply-modal-tx-success-container__action__helper">
-              <LinkIcon />
-              <Link
-                className="supply-modal-tx-success-container__action__helper__link"
-                href={'https://psychcentral.com/blog/what-drives-our-need-for-approval'}
-                target="_blank">
-                {t('SUCCESS_MODAL_REVIEW')}
-              </Link>
-            </div>
-
-            <Button
-              onClick={handleTxStatusModallCancel}
-              type="primary"
-              className={twMerge('btn-default-custom')}
-              block>
-              {t('SUCCESS_MODAL_OK')}
-            </Button>
-          </div>
-        </div>
-      </Modal>
+      <ModalSuccess message={successMsg} isModalOpen={isModalSuccessOpen} handleCancel={handleModalSuccessCancel} />
     </div>
   );
 }

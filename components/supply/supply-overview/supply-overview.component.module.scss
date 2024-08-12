@@ -1,0 +1,59 @@
+.supply-overview {
+  font-family: Inter;
+  font-size: 30px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 40px;
+
+  :global {
+    .supply-overview__body {
+      display: flex;
+      padding: 16px 32px;
+      align-items: center;
+      border-radius: 2px;
+      background: var(--Conditional-pop-over, #1f1f1f);
+      margin-top: 20px;
+      gap: 60px;
+
+      &__wrapper {
+        display: flex;
+        align-items: center;
+        gap: 32px;
+
+        &__item {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 2px;
+
+          &__label {
+            color: var(--Neutral-9, #f0f0f0);
+            /* Body/regular */
+            font-family: Inter;
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 22px;
+            /* 157.143% */
+          }
+
+          &__value {
+            color: var(--Neutral-4, #f0f0f0);
+            /* H5/regular */
+            font-family: Inter;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 24px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            align-self: stretch;
+            /* 150% */
+          }
+        }
+      }
+    }
+  }
+
+}
