@@ -21,6 +21,7 @@ import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
 import { useAccount, useNetwork } from 'wagmi';
 // import { getNetwork } from '@wagmi/core';
+import ModalCollateralComponent from '@/components/borrow/modal-collateral.component';
 
 type LabelRender = SelectProps['labelRender'];
 
@@ -30,8 +31,10 @@ export default function BorrowPage() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalRepayOpen, setIsModalRepayOpen] = useState(false);
-
+  const [isModalCollateralOpen, setIsModalCollateralOpen] = useState(false);
   const [currentToken, setCurrentToken] = useState('');
+
+  const [collateralToken, setCollateralToken] = useState(COLLATERAL_TOKEN[0].name);
   const [step, setStep] = useState(0);
   const [token, setToken] = useState(COLLATERAL_TOKEN[0].name);
   const { address, isConnected } = useAccount();
@@ -57,9 +60,20 @@ export default function BorrowPage() {
     setIsModalRepayOpen(true);
   };
 
+  const showCollateralModal = (token: string) => {
+    setCollateralToken(token);
+    setIsModalCollateralOpen(true);
+  };
+
   const handleRepayCancel = () => {
     setCurrentToken('');
     setIsModalRepayOpen(false);
+    setStep(0);
+  };
+
+  const handleCollateralCancel = () => {
+    setCollateralToken('');
+    setIsModalCollateralOpen(false);
     setStep(0);
   };
 
@@ -187,7 +201,11 @@ export default function BorrowPage() {
       <div className="flex gap-6 borrow-inner">
         {isConnected && networkInfo && (
           <div className="xl:basis-1/2 basis-full">
-            <LoansComponent showModal={showModal} showRepayModal={showRepayModal} />
+            <LoansComponent
+              showModal={showModal}
+              showRepayModal={showRepayModal}
+              showCollateralModal={showCollateralModal}
+            />
           </div>
         )}
         <div
@@ -213,6 +231,13 @@ export default function BorrowPage() {
         isModalOpen={isModalRepayOpen}
         handleCancel={handleRepayCancel}
         currentToken={currentToken}
+        step={step}
+        setStep={setStep}
+      />
+      <ModalCollateralComponent
+        isModalOpen={isModalCollateralOpen}
+        handleCancel={handleCollateralCancel}
+        currentToken={collateralToken}
         step={step}
         setStep={setStep}
       />

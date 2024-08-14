@@ -36,13 +36,7 @@ export default function ModalBorrowComponent({
 }: ModalBorrowProps) {
   const { t } = useTranslation('common');
 
-  const {
-    control,
-    handleSubmit,
-    setValue,
-    getValues,
-    formState: { errors },
-  } = useForm<IFormInput>({
+  const { control, handleSubmit, setValue, getValues } = useForm({
     defaultValues: {
       numberfield: 0,
     },
@@ -63,7 +57,7 @@ export default function ModalBorrowComponent({
 
   const [loading, setLoading] = useState<boolean>(false);
 
-  const status = 'SUCCESS';
+  const status = 'FAILED';
   const renderTitle = () => {
     if (step === 2) {
       if (status === TRANSACTION_STATUS.FAILED) {
@@ -71,7 +65,7 @@ export default function ModalBorrowComponent({
       }
       return `${t('BORROW_MODAL_BORROW_ALL_DONE')}`;
     }
-    return `${t('BORROW_MODAL_BORROW_REPAY')} ${currentToken?.toUpperCase()}`;
+    return `${t('BORROW_MODAL_COLLATERAL_TITLE')}`;
   };
 
   return (
@@ -85,7 +79,9 @@ export default function ModalBorrowComponent({
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="modal-borrow-content">
               <div className="px-6 py-4 ">
-                <div className="modal-borrow-title mb-2 ">{t('BORROW_MODAL_REPAY_AMOUNT')}</div>
+                <div className="modal-borrow-title mb-2 ">
+                  {t('BORROW_MODAL_COLLATERAL_AMOUNT')}
+                </div>
                 <div className={`modal-borrow-amount ${loading ? 'loading' : ''}`}>
                   <div className="flex items-center">
                     <Controller
@@ -117,7 +113,6 @@ export default function ModalBorrowComponent({
                     <Button disabled={loading} className="modal-borrow-max">
                       {t('BORROW_MODAL_BORROW_MAX')}
                     </Button>
-                    {errors.numberfield && <div>{errors.numberfield.message}</div>}
                   </div>
                 </div>
                 <div className="modal-borrow-balance">
@@ -145,16 +140,18 @@ export default function ModalBorrowComponent({
                   </div>
                 </div>
               </div> */}
-              <div className="modal-borrow-overview">
-                <div className="modal-borrow-sub-title">{t('BORROW_MODAL_REPAY_OVERVIEW')}</div>
-                <div className="flex justify-between items-center mb-2">
+              <div className="modal-borrow-overview collateral">
+                <div className="modal-borrow-sub-title">
+                  {t('BORROW_MODAL_BORROW_COLLATERAL_SETUP')}
+                </div>
+                <div className="flex justify-between items-center">
                   <div className="modal-borrow-sub-content">
-                    {t('BORROW_MODAL_BORROW_REMAINING')}
+                    {t('BORROW_MODAL_COLLATERAL_AMOUNT_SETUP')}
                   </div>
                   <div className="flex">
                     <div className="modal-borrow-repay">
                       <span>5,000.00 </span>
-                      <span className="ml-1">{currentToken.toUpperCase()}</span>
+                      {!tokenValue && <span className="ml-1">{currentToken.toUpperCase()}</span>}
                     </div>
                     {tokenValue > 0 && (
                       <div className="modal-borrow-repay remain">
@@ -163,6 +160,13 @@ export default function ModalBorrowComponent({
                         <span className="ml-1">{currentToken.toUpperCase()}</span>
                       </div>
                     )}
+                  </div>
+                </div>
+                <div className="flex justify-end items-center mb-2">
+                  <div className="flex">
+                    <div className="modal-borrow-usd">
+                      <span>$1,100.00</span>
+                    </div>
                   </div>
                 </div>
                 <div className="flex justify-between items-center modal-borrow-health">
@@ -222,7 +226,7 @@ export default function ModalBorrowComponent({
                         disabled={!tokenValue}
                         className="w-full"
                         loading={loading}>
-                        {t('BORROW_MODAL_BORROW_PAY', { currentToken: currentToken.toUpperCase() })}
+                        {t('BORROW_MODAL_BORROW_ADJUST_COLLATERAL')}
                       </Button>
                     </div>
                   </div>
@@ -237,7 +241,7 @@ export default function ModalBorrowComponent({
               handleCancel={handleCancel}
               currentToken={currentToken}
               setStep={setStep}
-              isRepay={true}
+              isCollateral={true}
               status={status}
             />
           </div>

@@ -13,6 +13,7 @@ import {
 import TransactionSuccessComponent from '@/components/borrow/transaction-success.component';
 import { useTranslation } from 'next-i18next';
 import { COLLATERAL_TOKEN } from '@/constants/common.constant';
+import { TRANSACTION_STATUS } from '@/constants/common.constant';
 
 interface ModalBorrowProps {
   isModalOpen: boolean;
@@ -45,6 +46,9 @@ export default function ModalBorrowComponent({
   const { t } = useTranslation('common');
 
   const onSubmit: SubmitHandler<IFormInput> = data => {
+    if (step == 1) {
+      setTokenValue(0);
+    }
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
@@ -63,8 +67,14 @@ export default function ModalBorrowComponent({
     setYield(e.target.checked);
   };
 
+  const [tokenValue, setTokenValue] = useState(0);
+
+  const status = 'SUCCESS';
   const renderTitle = () => {
     if (step === 2) {
+      if (status === TRANSACTION_STATUS.FAILED) {
+        return `${t('BORROW_MODAL_FAILED')}`;
+      }
       return `${t('BORROW_MODAL_BORROW_ALL_DONE')}`;
     }
     return `${t('BORROW_MODAL_BORROW_BORROW')} ${currentToken?.toUpperCase()}`;
@@ -95,7 +105,7 @@ export default function ModalBorrowComponent({
                           className="flex-1"
                           controls={false}
                           onChange={(value: any) => {
-                            setValue('numberfield', value);
+                            setTokenValue(value);
                           }}
                         />
                       )}
@@ -112,7 +122,9 @@ export default function ModalBorrowComponent({
                   </div>
                   <div className="flex justify-between">
                     <span className="modal-borrow-usd">≈ $0.00</span>
-                    <span className="modal-borrow-max ">{t('BORROW_MODAL_BORROW_MAX')}</span>
+                    <Button disabled={loading} className="modal-borrow-max">
+                      {t('BORROW_MODAL_BORROW_MAX')}
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -200,7 +212,7 @@ export default function ModalBorrowComponent({
                     <Button
                       htmlType="submit"
                       type="primary"
-                      disabled={false}
+                      disabled={!tokenValue}
                       className="w-full"
                       loading={loading}>
                       {t('BORROW_MODAL_BORROW_APPROVE', { currentToken: token })}
@@ -216,7 +228,7 @@ export default function ModalBorrowComponent({
                       <Button
                         htmlType="submit"
                         type="primary"
-                        disabled={false}
+                        disabled={!tokenValue}
                         className="w-full"
                         loading={loading}>
                         {t('BORROW_MODAL_BORROW_DEPOSIT', { token: token })}
@@ -235,6 +247,8 @@ export default function ModalBorrowComponent({
               currentToken={currentToken}
               setStep={setStep}
               token={token}
+              isBorrow={true}
+              status={status}
             />
           </div>
         )}

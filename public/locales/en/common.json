@@ -44,7 +44,7 @@
   "BORROW_MODAL_BORROW_BORROW_MORE": "Borrow More",
   "BORROW_MODAL_BORROW_YIELD_EARNED": " Yield earned",
   "BORROW_MODAL_BORROW_YIELD_GENERATING": "Yield-generating",
-  "BORROW_MODAL_BORROW_ADJUST_COLLATERAL": "Adjust collateral",
+  "BORROW_MODAL_BORROW_ADJUST_COLLATERAL": "Add collateral",
   "BORROW_MODAL_BORROW_BORROW_DEBT_REMAIN": "Debt remain",
   "BORROW_MODAL_BORROW_ADJUST_STATUS": "Status",
   "BORROW_MODAL_BORROW_BORROW_DEBT_HEALTH": "Health",
@@ -104,5 +104,18 @@
   "BORROW_CONNECT_WALLET": "Connect wallet <br> to Borrow",
   "BORROW_CONNECT_WALLET_SWITCH": "Switch to <br> {{networkName}}",
   "COMMON_CONNECT_WALLET": "Connect wallet",
-  "COMMON_CONNECT_WALLET_SWITCH": "Switch to {{network}}"
+  "COMMON_CONNECT_WALLET_SWITCH": "Switch to {{network}}",
+  "BORROW_LOANS_ACTIVE": "Active",
+  "BORROW_LOANS_REPAID_FULL": "Repaid in full",
+  "BORROW_LOANS_LIQUIDATION_APPROACHING": "Liquidation approaching...",
+  "BORROW_LOANS_LIQUIDATED": "Liquidated",
+  "BORROW_MODAL_BORROW_CLAIM_COLLATERAL": "Claim collateral",
+  "BORROW_MODAL_BORROW_BORROW_AGAIN": "Borrow Again",
+  "BORROW_MODAL_COLLATERAL_TITLE": "Add Collateral",
+  "BORROW_MODAL_COLLATERAL_AMOUNT": "Collateral Amount",
+  "BORROW_MODAL_COLLATERAL_DONE": "You successfully add {{amount}} {{token}} as collateral",
+  "BORROW_MODAL_COLLATERAL_AMOUNT_SETUP": "Collateral amount",
+  "BORROW_MODAL_INSUFFICIENT_BALANCE": "Insufficient balance",
+  "BORROW_MODAL_ERROR_CODE": "Error code",
+  "BORROW_MODAL_FAILED": "Failed!"
 }

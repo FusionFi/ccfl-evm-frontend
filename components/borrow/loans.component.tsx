@@ -6,14 +6,30 @@ import React from 'react';
 import { Button } from 'antd';
 import Image from 'next/image';
 import { useTranslation } from 'next-i18next';
+import { LOAN_STATUS } from '@/constants/common.constant';
 
 interface LoansProps {
   showModal: any;
   showRepayModal: any;
+  showCollateralModal: any;
 }
 
 export default function LoansComponent(props: LoansProps) {
   const { t } = useTranslation('common');
+
+  const statusLoans = 'ACTIVE';
+  const renderStatusClass = () => {
+    switch (statusLoans) {
+      case LOAN_STATUS.LIQUIDATED:
+        return 'liquidated';
+      case LOAN_STATUS.LIQUIDATION_APPROACHING:
+        return 'warning';
+      case LOAN_STATUS.REPAID_FULL:
+        return 'repaid';
+      default:
+        return '';
+    }
+  };
 
   return (
     <div className={twMerge(cssClass.loansComponent)}>
@@ -59,7 +75,10 @@ export default function LoansComponent(props: LoansProps) {
           </div>
           <div className="flex justify-between loans-status gap-4">
             <div className="">
-              {t('BORROW_MODAL_BORROW_ADJUST_STATUS')}: <span className="ml-1">Active</span>
+              {t('BORROW_MODAL_BORROW_ADJUST_STATUS')}:
+              <span className={`ml-1 ${renderStatusClass()}`}>
+                {t(`BORROW_LOANS_${LOAN_STATUS[statusLoans]}`)}
+              </span>
             </div>
             <div></div>
             <div className="flex justify-end loans-remain">
@@ -76,7 +95,15 @@ export default function LoansComponent(props: LoansProps) {
               2.5 WETH
               <span className="ml-1">$6,540.00</span>
             </div>
-            <Button>{t('BORROW_MODAL_BORROW_ADJUST_COLLATERAL')}</Button>
+            {statusLoans !== LOAN_STATUS.REPAID_FULL ? (
+              <Button
+                disabled={statusLoans === LOAN_STATUS.LIQUIDATED}
+                onClick={() => props.showCollateralModal('weth')}>
+                {t('BORROW_MODAL_BORROW_ADJUST_COLLATERAL')}
+              </Button>
+            ) : (
+              <Button>{t('BORROW_MODAL_BORROW_CLAIM_COLLATERAL')}</Button>
+            )}
           </div>
           <div className="flex justify-between items-end gap-1">
             <div className="loans-yield">
@@ -88,12 +115,18 @@ export default function LoansComponent(props: LoansProps) {
               </div>
             </div>
             <div className="loans-button ">
-              <Button type="primary" className="mr-2" onClick={() => props.showModal('usdc')}>
-                {t('BORROW_MODAL_BORROW_BORROW_MORE')}
-              </Button>
-              <Button className="mr-2" onClick={() => props.showRepayModal('usdc')}>
-                {t('BORROW_MODAL_BORROW_REPAY')}
-              </Button>
+              {statusLoans === LOAN_STATUS.REPAID_FULL ? (
+                <Button type="primary" className="" onClick={() => props.showModal('usdc')}>
+                  {t('BORROW_MODAL_BORROW_BORROW_AGAIN')}
+                </Button>
+              ) : (
+                <Button
+                  disabled={statusLoans === LOAN_STATUS.LIQUIDATED}
+                  className=""
+                  onClick={() => props.showRepayModal('usdc')}>
+                  {t('BORROW_MODAL_BORROW_REPAY')}
+                </Button>
+              )}
             </div>
           </div>
         </div>
