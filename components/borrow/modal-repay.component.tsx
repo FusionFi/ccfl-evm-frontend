@@ -125,7 +125,7 @@ export default function ModalBorrowComponent({
                     {t('BORROW_MODAL_BORROW_WALLET_BALANCE')}: 50,000.00{' '}
                     {currentToken?.toUpperCase()}
                   </span>
-                  <span className="insufficient">{t('BORROW_MODAL_INSUFFICIENT_BALANCE')}</span>
+                  {/* <span className="insufficient">{t('BORROW_MODAL_INSUFFICIENT_BALANCE')}</span> */}
                 </div>
               </div>
               {/* <div className="modal-borrow-overview">
