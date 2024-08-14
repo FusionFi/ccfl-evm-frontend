@@ -5,7 +5,7 @@ import { truncate } from '@/utils/address.util';
 //import css class module
 import { UserAvatar } from '@/components/user-avatar.component';
 import cssClass from '@/components/user-info.module.scss';
-import { NETWORKS, STAKE_DEFAULT_NETWORK } from '@/constants/stake/networks';
+import { NETWORKS, STAKE_DEFAULT_NETWORK } from '@/constants/networks';
 import { useResetState } from '@/hooks/auth.hook';
 import eventBus from '@/hooks/eventBus.hook';
 import { useNotification } from '@/hooks/notifications.hook';

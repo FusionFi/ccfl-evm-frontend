@@ -1,8 +1,6 @@
 import defiIcon from '@/public/images/stake/networks/defi.png';
 import oasIcon from '@/public/images/stake/networks/oas.png';
 import oasTokenIcon from '@/public/images/stake/tokens/oas.png';
-export const ST_OAS_OASYS_TESTNET = process.env.NEXT_PUBLIC_ST_OAS_OASYS_TESTNET;
-export const ST_OAS_DEFI_TESTNET = process.env.NEXT_PUBLIC_ST_OAS_DEFI_TESTNET;
 
 export const NETWORKS_MAINNET = [
   {
@@ -14,7 +12,6 @@ export const NETWORKS_MAINNET = [
     gasPrice: null,
     explorer: 'https://explorer.oasys.games/',
     rpc: 'https://rpc.mainnet.oasys.games',
-    stOASContract: '0x4200000000000000000000000000000000000010',
     nativeCurrency: {
       name: 'OASYS',
       symbol: 'OAS',
@@ -30,7 +27,6 @@ export const NETWORKS_MAINNET = [
     gasPrice: 5000000000000,
     explorer: 'https://scan.defi-verse.org/',
     rpc: 'https://rpc.defi-verse.org',
-    stOASContract: '0x4200000000000000000000000000000000000010', /// I2ERC20Bridge
     nativeCurrency: {
       name: 'OASYS',
       symbol: 'OAS',
@@ -52,7 +48,6 @@ export const NETWORKS_TESTNET = [
     gasPrice: null,
     explorer: 'https://explorer.testnet.oasys.games/',
     rpc: 'https://rpc.testnet.oasys.games/',
-    stOASContract: ST_OAS_OASYS_TESTNET,
     nativeCurrency: {
       name: 'OASYS',
       symbol: 'OAS',
@@ -68,7 +63,6 @@ export const NETWORKS_TESTNET = [
     gasPrice: 50000000000,
     explorer: 'https://scan-testnet.defi-verse.org',
     rpc: 'https://rpc-testnet.defi-verse.org',
-    stOASContract: ST_OAS_DEFI_TESTNET,
     nativeCurrency: {
       name: 'OASYS',
       symbol: 'OAS',

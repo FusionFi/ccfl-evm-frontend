@@ -1,24 +1,23 @@
-import React, { useCallback, useState, useEffect } from 'react';
-import cssClass from '@/pages/supply/index.module.scss';
-import { Button } from 'antd';
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { twMerge } from 'tailwind-merge';
-import { useTranslation } from 'next-i18next';
-import { useAccount, useNetwork } from 'wagmi';
-import Image from 'next/image';
-import { Table } from 'antd';
-import type { TableProps } from 'antd';
-import { toCurrency } from '@/utils/common';
-import { computeWithMinThreashold } from '@/utils/percent.util';
 import { WalletSolidIcon } from '@/components/icons/wallet-solid.icon';
+import ModalSuccess from '@/components/supply/modal-success/modal-success.component';
+import ModalSupply from '@/components/supply/modal-supply/modal-supply.component';
+import ModalWithdraw from '@/components/supply/modal-withdraw/modal-withdraw.component';
+import SupplyOverview from '@/components/supply/supply-overview/supply-overview.component';
+import { NETWORKS, STAKE_DEFAULT_NETWORK } from '@/constants/networks';
 import eventBus from '@/hooks/eventBus.hook';
-import ModalSupply from '@/components/supply/modal-supply/modal-supply.component'
-import ModalWithdraw from '@/components/supply/modal-withdraw/modal-withdraw.component'
-import ModalSuccess from '@/components/supply/modal-success/modal-success.component'
-import SupplyOverview from '@/components/supply/supply-overview/supply-overview.component'
-import { NETWORKS, STAKE_DEFAULT_NETWORK } from '@/constants/stake/networks';
-import { switchOrAddNetwork } from '@/utils/contract/web3';
 import { useNotification } from '@/hooks/notifications.hook';
+import cssClass from '@/pages/supply/index.module.scss';
+import { toCurrency } from '@/utils/common';
+import { switchOrAddNetwork } from '@/utils/contract/web3';
+import { computeWithMinThreashold } from '@/utils/percent.util';
+import type { TableProps } from 'antd';
+import { Button, Table } from 'antd';
+import { useTranslation } from 'next-i18next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import Image from 'next/image';
+import { useCallback, useEffect, useState } from 'react';
+import { twMerge } from 'tailwind-merge';
+import { useAccount, useNetwork } from 'wagmi';
 
 interface DataType {
   key: string;
@@ -180,13 +179,17 @@ export default function SupplyPage() {
     }
 
     if (!networkInfo) {
-      return <TableAction>
-        <Button onClick={() => switchNetwork()} className="btn-primary-custom table-wrapper__action__connect">
-          {t('COMMON_CONNECT_WALLET_SWITCH', {
-            network: STAKE_DEFAULT_NETWORK?.name
-          })}
-        </Button>
-      </TableAction>
+      return (
+        <TableAction>
+          <Button
+            onClick={() => switchNetwork()}
+            className="btn-primary-custom table-wrapper__action__connect">
+            {t('COMMON_CONNECT_WALLET_SWITCH', {
+              network: STAKE_DEFAULT_NETWORK?.name,
+            })}
+          </Button>
+        </TableAction>
+      );
     }
 
     return (
@@ -230,7 +233,7 @@ export default function SupplyPage() {
       }),
     );
 
-    setIsModalSuccessOpen(true)
+    setIsModalSuccessOpen(true);
   };
 
   const handleModalWithdrawCancel = () => {
@@ -247,7 +250,7 @@ export default function SupplyPage() {
       }),
     );
 
-    setIsModalSuccessOpen(true)
+    setIsModalSuccessOpen(true);
   };
 
   const [successMsg, setSuccessMsg] = useState('');
@@ -255,7 +258,6 @@ export default function SupplyPage() {
   const handleModalSuccessCancel = useCallback(() => {
     setIsModalSuccessOpen(false);
   }, []);
-
 
   return (
     <div className={twMerge('supply-page-container', cssClass.supplyPage)}>
@@ -279,9 +281,21 @@ export default function SupplyPage() {
         />
       </div>
 
-      <ModalSupply handleOk={handleModalSupplyOk} isModalOpen={isModalSupplyOpen} handleCancel={handleModalSupplyCancel} />
-      <ModalWithdraw handleOk={handleModalWithdrawOk} isModalOpen={isModalWithdrawOpen} handleCancel={handleModalWithdrawCancel} />
-      <ModalSuccess message={successMsg} isModalOpen={isModalSuccessOpen} handleCancel={handleModalSuccessCancel} />
+      <ModalSupply
+        handleOk={handleModalSupplyOk}
+        isModalOpen={isModalSupplyOpen}
+        handleCancel={handleModalSupplyCancel}
+      />
+      <ModalWithdraw
+        handleOk={handleModalWithdrawOk}
+        isModalOpen={isModalWithdrawOpen}
+        handleCancel={handleModalWithdrawCancel}
+      />
+      <ModalSuccess
+        message={successMsg}
+        isModalOpen={isModalSuccessOpen}
+        handleCancel={handleModalSuccessCancel}
+      />
     </div>
   );
 }
