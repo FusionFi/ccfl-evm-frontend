@@ -5,7 +5,7 @@ import eventBus from '@/hooks/eventBus.hook';
 import { Button } from 'antd';
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 import service from '@/utils/backend/borrow';
 import { toCurrency } from '@/utils/common';
@@ -29,15 +29,22 @@ export default function assetComponent({
 
   const handlePrice = async () => {
     try {
-      let data = await service.getAllPool();
+      let data = (await service.getAllPool()) as any;
+
       if (data && data[0]) {
-        let priceUSDC = await service.getPrice(1, data[0].asset ? data[0].asset : ASSET_LIST.USDC);
+        let priceUSDC = (await service.getPrice(
+          1,
+          data[0].asset ? data[0].asset : ASSET_LIST.USDC,
+        )) as any;
         if (priceUSDC && priceUSDC[0]) {
           data[0].usd = data[0].loan_available * priceUSDC[0].price;
         }
       }
       if (data && data[1]) {
-        let priceUSDT = await service.getPrice(1, data[1].asset ? data[1].asset : ASSET_LIST.USDT);
+        let priceUSDT = (await service.getPrice(
+          1,
+          data[1].asset ? data[1].asset : ASSET_LIST.USDT,
+        )) as any;
         if (priceUSDT && priceUSDT[0]) {
           data[1].usd = data[1].loan_available * priceUSDT[0].price;
         }

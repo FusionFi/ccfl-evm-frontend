@@ -4,6 +4,7 @@ const URL = process.env.NEXT_PUBLIC_API_URL;
 
 const getAllPool = async () => {
   let res = await http.get(`${URL}/pool/all`);
+
   return res;
 };
 
