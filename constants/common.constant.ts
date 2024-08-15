@@ -22,3 +22,7 @@ export const TRANSACTION_STATUS = {
   SUCCESS: 'SUCCESS',
   FAILED: 'FAILED',
 };
+export const ASSET_LIST = {
+  USDC: 'USDC',
+  USDT: 'USDT',
+};
