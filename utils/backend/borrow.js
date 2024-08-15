@@ -13,8 +13,14 @@ const getPrice = async (chainId, symbol) => {
   return res;
 };
 
+const getLoans = async user_address => {
+  let res = await http.get(`${URL}/user/${user_address}/loan`);
+  return res;
+};
+
 const service = {
   getAllPool,
   getPrice,
+  getLoans,
 };
 export default service;

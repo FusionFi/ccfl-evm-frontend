@@ -3,15 +3,33 @@ import { twMerge } from 'tailwind-merge';
 import { InfoCircleOutlined, CheckOutlined } from '@ant-design/icons';
 import { Tooltip } from 'antd';
 import React from 'react';
-import { Button } from 'antd';
+import { Button, Table } from 'antd';
 import Image from 'next/image';
 import { useTranslation } from 'next-i18next';
 import { LOAN_STATUS } from '@/constants/common.constant';
+import type { TableProps } from 'antd';
 
 interface LoansProps {
   showModal: any;
   showRepayModal: any;
   showCollateralModal: any;
+}
+
+interface DataType {
+  key: string;
+  asset: string;
+  balance: string;
+  balance_usd: string;
+  apr: string;
+  health: string;
+  status: string;
+  debt: string;
+  debt_usd: string;
+  collateral: string;
+  collateral_usd: string;
+  isYield: boolean;
+  yield_token: string;
+  yield_balance: string;
 }
 
 export default function LoansComponent(props: LoansProps) {
@@ -30,6 +48,17 @@ export default function LoansComponent(props: LoansProps) {
         return '';
     }
   };
+
+  const columns: TableProps<DataType>['columns'] = [
+    {
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name',
+      render: values => {
+        return <></>;
+      },
+    },
+  ];
 
   return (
     <div className={twMerge(cssClass.loansComponent)}>
