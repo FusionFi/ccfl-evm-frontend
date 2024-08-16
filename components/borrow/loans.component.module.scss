@@ -1,10 +1,13 @@
 .loansComponent {
   :global {
     .loans-container {
-      border-radius: 2px;
       border: 1px solid $black-common-color;
-      background: $black-light-color;
-      h3 {
+
+      .ant-table {
+        border-radius: 2px;
+        background: $black-light-color;
+      }
+      .ant-table-title {
         color: $white-color;
 
         /* H5/bold */
@@ -14,6 +17,90 @@
         font-weight: 700;
         line-height: 24px; /* 150% */
         padding: 12px 16px;
+        @media screen and (max-width: 767px) {
+          padding: 8px 12px;
+        }
+      }
+      .ant-table-thead {
+        th {
+          padding: 8px 16px;
+          background: transparent;
+          border-bottom: 1px solid var(--Neutral-4, #262626);
+          @media screen and (max-width: 767px) {
+            padding: 4px 12px;
+          }
+          &:last-child {
+            text-align: right;
+          }
+          &::before {
+            width: 0 !important;
+          }
+        }
+      }
+      .ant-table-tbody {
+        padding: 16px;
+        @media screen and (max-width: 767px) {
+          padding: 12px;
+        }
+      }
+      .ant-table-row {
+        td {
+          border-bottom: 0;
+          padding: 16px 16px 12px;
+          @media screen and (max-width: 767px) {
+            padding: 12px 12px 6px;
+          }
+          &:first-child {
+            padding-left: 16px;
+            @media screen and (max-width: 767px) {
+              padding-left: 12px;
+            }
+          }
+          &:last-child {
+            padding-right: 16px;
+            @media screen and (max-width: 767px) {
+              padding-right: 12px;
+            }
+          }
+        }
+      }
+      .ant-table-tbody {
+        tr {
+          &:last-child {
+            td {
+              border-bottom: 0;
+            }
+          }
+        }
+      }
+      .ant-table-expanded-row {
+        td {
+          border-bottom: 1px solid var(--Neutral-4, #262626);
+          padding: 0 16px 16px;
+
+          @media screen and (max-width: 767px) {
+            padding: 0 12px 12px;
+          }
+        }
+      }
+      .ant-table-cell {
+        padding: 0;
+      }
+      .ant-table-expanded-row-fixed {
+        margin: 0;
+        padding: 0;
+      }
+      .ant-table-placeholder {
+        &:hover,
+        &:active {
+          background: var(--Conditional-pop-over, #1f1f1f);
+          .ant-table-cell {
+            background: var(--Conditional-pop-over, #1f1f1f);
+          }
+        }
+      }
+      .ant-table-cell {
+        background: var(--Conditional-pop-over, #1f1f1f);
       }
       h4 {
         color: $sub-title-color;
@@ -24,7 +111,7 @@
         font-style: normal;
         font-weight: 400;
         line-height: 22px; /* 157.143% */
-        display: flex;
+        // display: flex;
 
         svg {
           color: $primary-color;
@@ -74,8 +161,15 @@
         font-style: normal;
         font-weight: 500;
         line-height: 22px; /* 157.143% */
+        &.warning {
+          color: var(--Dust-Red-6, #f5222d);
+        }
       }
       .loans-status {
+        border-top: 1px solid var(--Neutral-4, #262626);
+        border-bottom: 1px solid var(--Neutral-4, #262626);
+
+        padding: 12px 0;
         color: $sub-title-color;
 
         /* Body/regular */
@@ -131,18 +225,20 @@
           }
         }
       }
-      .loans-header {
-        border-bottom: 1px solid var(--Neutral-4, #262626);
-        @media screen and (max-width: 767px) {
-          div {
-            align-items: start;
-          }
-        }
-      }
+      // .ant-table-thead {
+      //   border-bottom: 1px solid var(--Neutral-4, #262626);
+      //   @media screen and (max-width: 767px) {
+      //     div {
+      //       align-items: start;
+      //     }
+      //   }
+      // }
       .loans-remain {
         max-width: 60%;
       }
       .loans-collateral {
+        padding: 12px 0;
+        border-bottom: 1px solid var(--Neutral-4, #262626);
         color: $white-color;
 
         /* Body/medium */
@@ -194,6 +290,10 @@
         }
       }
       .loans-yield {
+        &-wrapper {
+          padding-top: 12px;
+          border-top: 1px solid var(--Neutral-4, #262626);
+        }
         color: $white-color;
 
         /* Body/regular */
@@ -292,15 +392,21 @@
         border-bottom: 1px solid $black-common-color;
       }
       .loans-token {
-        @media screen and (max-width: 767px) {
-          color: $white-color;
+        color: $white-color;
 
-          /* Body/medium */
-          font-family: Inter;
-          font-size: 14px;
-          font-style: normal;
-          font-weight: 500;
-          line-height: 22px; /* 157.143% */
+        /* Body/medium */
+        font-family: Inter;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 22px; /* 157.143% */
+        @media screen and (max-width: 767px) {
+          font-size: 12px;
+
+          img {
+            width: 20px;
+            height: 20px;
+          }
         }
       }
     }
