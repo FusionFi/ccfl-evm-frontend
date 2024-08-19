@@ -108,5 +108,9 @@
   "BORROW_CONNECT_WALLET": "Connect wallet <br> to Borrow",
   "BORROW_CONNECT_WALLET_SWITCH": "Switch to <br> {{networkName}}",
   "COMMON_CONNECT_WALLET": "Connect wallet",
-  "COMMON_CONNECT_WALLET_SWITCH": "Switch to {{network}}"
+  "COMMON_CONNECT_WALLET_SWITCH": "Switch to {{network}}",
+  "ERROR_MODAL_TITLE": "Failed!",
+  "ERROR_MODAL_CODE": "Error code: {{code}}",
+  "ERROR_MODAL_OK": "Ok, got it!",
+  "ERROR_MODAL_REVIEW":"Review TX detail"
 }

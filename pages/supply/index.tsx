@@ -15,6 +15,7 @@ import eventBus from '@/hooks/eventBus.hook';
 import ModalSupply from '@/components/supply/modal-supply/modal-supply.component'
 import ModalWithdraw from '@/components/supply/modal-withdraw/modal-withdraw.component'
 import ModalSuccess from '@/components/supply/modal-success/modal-success.component'
+import ModalError from '@/components/supply/modal-error/modal-error.component'
 import SupplyOverview from '@/components/supply/supply-overview/supply-overview.component'
 import { NETWORKS, STAKE_DEFAULT_NETWORK } from '@/constants/stake/networks';
 import { switchOrAddNetwork } from '@/utils/contract/web3';
@@ -27,6 +28,13 @@ interface DataType {
   earned_reward: string;
   apy: string;
   wallet_balance: string;
+}
+
+enum ModalType {
+  Supply = 1,
+  Withdraw,
+  Success,
+  Error,
 }
 
 export default function SupplyPage() {
@@ -166,6 +174,8 @@ export default function SupplyPage() {
     return <div className="table-wrapper__action">{children}</div>;
   };
 
+  const [modal, setModal] = useState({} as any);
+
   const expandedRowRender = (record: any) => {
     if (!isConnected) {
       return (
@@ -197,7 +207,9 @@ export default function SupplyPage() {
             width: 200,
             marginRight: 8,
           }}
-          onClick={() => setIsModalSupplyOpen(record)}>
+          onClick={() => setModal({
+            type: ModalType.Supply,
+          })}>
           {t('SUPPLY_TABLE_ACTION_SUPPLY_MORE')}
         </Button>
         <Button
@@ -205,57 +217,34 @@ export default function SupplyPage() {
           style={{
             width: 200,
           }}
-          onClick={() => setIsModalWithdrawOpen(record)}>
+          onClick={() => setModal({
+            type: ModalType.Withdraw,
+          })}>
           {t('SUPPLY_TABLE_ACTION_WITHDRAW')}
         </Button>
       </TableAction>
     );
   };
 
-  const [isModalSupplyOpen, setIsModalSupplyOpen] = useState(false);
-  const [isModalWithdrawOpen, setIsModalWithdrawOpen] = useState(false);
-  const [isModalSuccessOpen, setIsModalSuccessOpen] = useState(false);
-
-  const handleModalSupplyCancel = () => {
-    setIsModalSupplyOpen(false);
-  };
-
   const handleModalSupplyOk = () => {
-    setIsModalSupplyOpen(false);
-
-    setSuccessMsg(
-      t('SUPPLY_SUCCESS_MODAL_MESSAGE', {
+    setModal({
+      type: ModalType.Success,
+      txhash: 'input here',
+      message: t('SUPPLY_SUCCESS_MODAL_MESSAGE', {
         token: 'USDT',
         amount: 4000,
-      }),
-    );
-
-    setIsModalSuccessOpen(true)
-  };
-
-  const handleModalWithdrawCancel = () => {
-    setIsModalWithdrawOpen(false);
+      })
+    })
   };
 
   const handleModalWithdrawOk = () => {
-    setIsModalWithdrawOpen(false);
-
-    setSuccessMsg(
-      t('WITHDRAW_SUCCESS_MODAL_MESSAGE', {
-        token: 'USDT',
-        amount: 4000,
-      }),
-    );
-
-    setIsModalSuccessOpen(true)
+    setModal({
+      type: ModalType.Error,
+      code: '503',
+      txhash: 'input here',
+      message: 'Error message'
+    })
   };
-
-  const [successMsg, setSuccessMsg] = useState('');
-
-  const handleModalSuccessCancel = useCallback(() => {
-    setIsModalSuccessOpen(false);
-  }, []);
-
 
   return (
     <div className={twMerge('supply-page-container', cssClass.supplyPage)}>
@@ -279,9 +268,10 @@ export default function SupplyPage() {
         />
       </div>
 
-      <ModalSupply handleOk={handleModalSupplyOk} isModalOpen={isModalSupplyOpen} handleCancel={handleModalSupplyCancel} />
-      <ModalWithdraw handleOk={handleModalWithdrawOk} isModalOpen={isModalWithdrawOpen} handleCancel={handleModalWithdrawCancel} />
-      <ModalSuccess message={successMsg} isModalOpen={isModalSuccessOpen} handleCancel={handleModalSuccessCancel} />
+      <ModalSupply {...modal} handleOk={handleModalSupplyOk} isModalOpen={modal?.type == ModalType.Supply} handleCancel={() => setModal({})} />
+      <ModalWithdraw {...modal} handleOk={handleModalWithdrawOk} isModalOpen={modal?.type == ModalType.Withdraw} handleCancel={() => setModal({})} />
+      <ModalSuccess {...modal} isModalOpen={modal?.type == ModalType.Success} handleCancel={() => setModal({})} />
+      <ModalError {...modal} isModalOpen={modal?.type == ModalType.Error} handleCancel={() => setModal({})} />
     </div>
   );
 }
