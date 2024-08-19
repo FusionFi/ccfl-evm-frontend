@@ -219,9 +219,9 @@ export default function BorrowPage() {
           </div>
         </TitleComponent>
       </div>
-      {isConnected && networkInfo && (
+      {isConnected && networkInfo && !loading && (
         <div className="mb-4">
-          <OverviewComponent itemLeft={itemLeft} itemRight={itemRight} />
+          <OverviewComponent itemLeft={itemLeft} itemRight={itemRight} loading={loading} />
         </div>
       )}
       <div className="flex gap-6 borrow-inner">
