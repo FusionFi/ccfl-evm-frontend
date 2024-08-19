@@ -126,5 +126,6 @@
   "ERROR_MODAL_TITLE": "Failed!",
   "ERROR_MODAL_CODE": "Error code: {{code}}",
   "ERROR_MODAL_OK": "Ok, got it!",
-  "ERROR_MODAL_REVIEW": "Review TX detail"
+  "ERROR_MODAL_REVIEW": "Review TX detail",
+  "BORROW_MODAL_ASSET_NO_DATA": "There is no asset yet."
 }

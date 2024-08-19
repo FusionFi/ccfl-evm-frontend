@@ -2,8 +2,8 @@ import http from '@/utils/backend/http.js';
 
 const URL = process.env.NEXT_PUBLIC_API_URL;
 
-const getAllPool = async () => {
-  let res = await http.get(`${URL}/pool/all`);
+const getPool = async chainId => {
+  let res = await http.get(`${URL}/pool/all/${chainId}`);
 
   return res;
 };
@@ -19,7 +19,7 @@ const getLoans = async user_address => {
 };
 
 const service = {
-  getAllPool,
+  getPool,
   getPrice,
   getLoans,
 };
