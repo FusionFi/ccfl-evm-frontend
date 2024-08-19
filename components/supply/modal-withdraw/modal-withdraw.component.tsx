@@ -5,10 +5,14 @@ import { Button, InputNumber, Tooltip } from 'antd';
 import { twMerge } from 'tailwind-merge';
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
-import { Modal } from 'antd';
+import { Modal, Form } from 'antd';
+import type { FormProps } from 'antd';
 import { InfoCircleIcon } from '@/components/icons/info-circle.icon';
 import { QuestionCircleIcon } from '@/components/icons/question-circle.icon';
 
+type FieldType = {
+  amount?: any;
+};
 
 export default function ModalWithdrawComponent({
   isModalOpen,
@@ -39,6 +43,19 @@ export default function ModalWithdrawComponent({
     handleCancel();
   }, [])
 
+  const onFinish: FormProps<FieldType>['onFinish'] = (data) => {
+    _setIsPending(true);
+    setTimeout(() => {
+      if (_isApproved) {
+        _handleOk();
+      } else {
+        handleApprove();
+      }
+
+      _setIsPending(false)
+    }, 1000);
+  };
+
   return (
     <Modal
       wrapClassName={cssClass['withdraw-modal-wrapper']}
@@ -47,156 +64,171 @@ export default function ModalWithdrawComponent({
       onOk={_handleOk}
       onCancel={_handleCancel}
       footer={null}>
-      <div className="withdraw-modal-container">
-        <div className="withdraw-modal-container__supply-overview">
-          <div className="withdraw-modal-container__supply-overview__container">
-            <div className="withdraw-modal-container__supply-overview__container__title">
-              {t('WITHDRAW_MODAL_OVERVIEW_TITLE')}
-            </div>
-            <div className="withdraw-modal-container__supply-overview__container__alert">
-              {t('WITHDRAW_MODAL_OVERVIEW_NOTE')}
-            </div>
-            <div className="withdraw-modal-container__supply-overview__container__values">
-              <div className="withdraw-modal-container__supply-overview__container__values__item">
-                <span>{t('WITHDRAW_MODAL_OVERVIEW_MY_SUPPLY')}</span>
-                <span className="withdraw-modal-container__supply-overview__container__values__item__value">
-                  45,000.00
-                  <span className="withdraw-modal-container__supply-overview__container__values__item__value__unit">
-                    USDT
-                  </span>
-                </span>
-              </div>
-              <div className="withdraw-modal-container__supply-overview__container__values__item">
-                <span>{t('WITHDRAW_MODAL_OVERVIEW_POOL_UTILIZATION')}</span>
-                <span className="withdraw-modal-container__supply-overview__container__values__item__value">
-                  90
-                  <span className="withdraw-modal-container__supply-overview__container__values__item__value__unit">
-                    %
-                  </span>
-                </span>
-              </div>
-              <div className="withdraw-modal-container__supply-overview__container__values__item">
-                <span>{t('WITHDRAW_MODAL_OVERVIEW_AVAILABLE_TO_WITHDRAW')}</span>
-                <span className="withdraw-modal-container__supply-overview__container__values__item__value">
-                  4,500.00
-                  <span className="withdraw-modal-container__supply-overview__container__values__item__value__unit">
-                    USDT
-                  </span>
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="withdraw-modal-container__input">
-          <div className="withdraw-modal-container__input__title">
-            {t('WITHDRAW_MODAL_OVERVIEW_AMOUNT')}
-          </div>
-          <div className="withdraw-modal-container__input__control">
-            <InputNumber
-              placeholder={t('WITHDRAW_MODAL_INPUT_AMOUNT')}
-              className="withdraw-modal-container__input__control__amount"
-              controls={false}
-              addonAfter={
-                <div className="withdraw-modal-container__input__control__amount__token">
-                  <Image
-                    src={`/images/tokens/usdt.png`}
-                    alt="USDT"
-                    width={24}
-                    height={24}
-                    style={{
-                      height: 24,
-                    }}
-                  />
-                  USDT
+      <Form onFinish={onFinish}>
+        {(_, formInstance) => {
+          const isNotValidForm = formInstance.getFieldsError().some(item => item.errors.length > 0)
+          return (
+            <div className="withdraw-modal-container">
+              <div className="withdraw-modal-container__supply-overview">
+                <div className="withdraw-modal-container__supply-overview__container">
+                  <div className="withdraw-modal-container__supply-overview__container__title">
+                    {t('WITHDRAW_MODAL_OVERVIEW_TITLE')}
+                  </div>
+                  <div className="withdraw-modal-container__supply-overview__container__alert">
+                    {t('WITHDRAW_MODAL_OVERVIEW_NOTE')}
+                  </div>
+                  <div className="withdraw-modal-container__supply-overview__container__values">
+                    <div className="withdraw-modal-container__supply-overview__container__values__item">
+                      <span>{t('WITHDRAW_MODAL_OVERVIEW_MY_SUPPLY')}</span>
+                      <span className="withdraw-modal-container__supply-overview__container__values__item__value">
+                        45,000.00
+                        <span className="withdraw-modal-container__supply-overview__container__values__item__value__unit">
+                          USDT
+                        </span>
+                      </span>
+                    </div>
+                    <div className="withdraw-modal-container__supply-overview__container__values__item">
+                      <span>{t('WITHDRAW_MODAL_OVERVIEW_POOL_UTILIZATION')}</span>
+                      <span className="withdraw-modal-container__supply-overview__container__values__item__value">
+                        90
+                        <span className="withdraw-modal-container__supply-overview__container__values__item__value__unit">
+                          %
+                        </span>
+                      </span>
+                    </div>
+                    <div className="withdraw-modal-container__supply-overview__container__values__item">
+                      <span>{t('WITHDRAW_MODAL_OVERVIEW_AVAILABLE_TO_WITHDRAW')}</span>
+                      <span className="withdraw-modal-container__supply-overview__container__values__item__value">
+                        4,500.00
+                        <span className="withdraw-modal-container__supply-overview__container__values__item__value__unit">
+                          USDT
+                        </span>
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              }
-            />
-            <div className="withdraw-modal-container__input__control__price">
-              ≈ $4,000.00
-              <Button
-                type="link"
-                className="withdraw-modal-container__input__control__price__max">
-                {t('WITHDRAW_MODAL_INPUT_MAX')}
-              </Button>
-            </div>
-          </div>
-        </div>
-        <div className="withdraw-modal-container__overview">
-          <div className="withdraw-modal-container__overview__title">
-            {t('WITHDRAW_MODAL_OVERVIEW_TITLE')}
-          </div>
-          <div className="withdraw-modal-container__supply-overview__container__values">
-            <div className="withdraw-modal-container__supply-overview__container__values__item">
-              <span>{t('WITHDRAW_MODAL_OVERVIEW_REMAINING_SUPPLY')}</span>
-              <span className="withdraw-modal-container__supply-overview__container__values__item__value">
-                45,000.00
-                <span className="withdraw-modal-container__supply-overview__container__values__item__value__unit">
-                  USDT
-                </span>
-              </span>
-            </div>
-            <div className="withdraw-modal-container__supply-overview__container__values__item">
-              <span>{t('WITHDRAW_MODAL_OVERVIEW_REWARD_EARNED')}</span>
-              <span className="withdraw-modal-container__supply-overview__container__values__item__value">
-                45,000.00
-                <span className="withdraw-modal-container__supply-overview__container__values__item__value__unit">
-                  USDT
-                </span>
-              </span>
-            </div>
-          </div>
-        </div>
-        <div className="withdraw-modal-container__overview">
-          <div className="withdraw-modal-container__overview__apy">
-            <div className="withdraw-modal-container__overview__apy__title">
-              {t('WITHDRAW_MODAL_OVERVIEW_GAS_FEE')}
-              <Tooltip color="rgba(0, 0, 0, 0.75)" title="prompt text">
-                <span className="cursor-pointer">
-                  <InfoCircleIcon className="" />
-                </span>
-              </Tooltip>
-            </div>
-            <span className="withdraw-modal-container__overview__apy__value text-sm">
-              $<span className="text-white">0.02</span>
-            </span>
-          </div>
-        </div>
-        <div className="withdraw-modal-container__action">
-          {_isApproved ? (
-            <Button
-              type="primary"
-              loading={_isPending}
-              onClick={_handleOk}
-              className={twMerge('btn-primary-custom')}
-              block>
-              {t('WITHDRAW_MODAL_WITHDRAW_SUPPLY')}
-            </Button>
-          ) : (
-            <div className="withdraw-modal-container__action__approve">
-              <div className="withdraw-modal-container__action__approve__helper">
-                <QuestionCircleIcon />
-                <Link
-                  className="withdraw-modal-container__action__approve__helper__link"
-                  href={'https://psychcentral.com/blog/what-drives-our-need-for-approval'}
-                  target="_blank">
-                  {t('WITHDRAW_MODAL_APPROVE_EXPLAIN')}
-                </Link>
               </div>
+              <div className="withdraw-modal-container__input">
+                <div className="withdraw-modal-container__input__title">
+                  {t('WITHDRAW_MODAL_OVERVIEW_AMOUNT')}
+                </div>
+                <div className="withdraw-modal-container__input__control">
+                  <Form.Item name="amount" help="" rules={[{ max: 10, type: 'number', message: t('WITHDRAW_MODAL_VALIDATE_EXCEED_WITHDRAW_LIMIT') }, {
+                    required: true,
+                    message: t('WITHDRAW_MODAL_VALIDATE_REQUIRE_AMOUNT')
+                  }]}>
+                    <InputNumber
+                      placeholder={t('WITHDRAW_MODAL_INPUT_AMOUNT')}
+                      className="withdraw-modal-container__input__control__amount"
+                      controls={false}
+                      addonAfter={
+                        <div className="withdraw-modal-container__input__control__amount__token">
+                          <Image
+                            src={`/images/tokens/usdt.png`}
+                            alt="USDT"
+                            width={24}
+                            height={24}
+                            style={{
+                              height: 24,
+                            }}
+                          />
+                          USDT
+                        </div>
+                      }
+                    />
+                  </Form.Item>
+                  <div className="withdraw-modal-container__input__control__price">
+                    ≈ $4,000.00
+                    <Button
+                      type="link"
+                      className="withdraw-modal-container__input__control__price__max">
+                      {t('WITHDRAW_MODAL_INPUT_MAX')}
+                    </Button>
+                  </div>
+                </div>
+                <div className="withdraw-modal-container__input__error">{formInstance.getFieldError('amount')[0]}</div>
+              </div>
+              <div className="withdraw-modal-container__overview">
+                <div className="withdraw-modal-container__overview__title">
+                  {t('WITHDRAW_MODAL_OVERVIEW_TITLE')}
+                </div>
+                <div className="withdraw-modal-container__supply-overview__container__values">
+                  <div className="withdraw-modal-container__supply-overview__container__values__item">
+                    <span>{t('WITHDRAW_MODAL_OVERVIEW_REMAINING_SUPPLY')}</span>
+                    <span className="withdraw-modal-container__supply-overview__container__values__item__value">
+                      45,000.00
+                      <span className="withdraw-modal-container__supply-overview__container__values__item__value__unit">
+                        USDT
+                      </span>
+                    </span>
+                  </div>
+                  <div className="withdraw-modal-container__supply-overview__container__values__item">
+                    <span>{t('WITHDRAW_MODAL_OVERVIEW_REWARD_EARNED')}</span>
+                    <span className="withdraw-modal-container__supply-overview__container__values__item__value">
+                      45,000.00
+                      <span className="withdraw-modal-container__supply-overview__container__values__item__value__unit">
+                        USDT
+                      </span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="withdraw-modal-container__overview">
+                <div className="withdraw-modal-container__overview__apy">
+                  <div className="withdraw-modal-container__overview__apy__title">
+                    {t('WITHDRAW_MODAL_OVERVIEW_GAS_FEE')}
+                    <Tooltip color="rgba(0, 0, 0, 0.75)" title="prompt text">
+                      <span className="cursor-pointer">
+                        <InfoCircleIcon className="" />
+                      </span>
+                    </Tooltip>
+                  </div>
+                  <span className="withdraw-modal-container__overview__apy__value text-sm">
+                    $<span className="text-white">0.02</span>
+                  </span>
+                </div>
+              </div>
+              <div className="withdraw-modal-container__action">
+                {_isApproved ? (
+                  <Button
+                    type="primary"
+                    loading={_isPending}
+                    disabled={isNotValidForm}
+                    onClick={_handleOk}
+                    className={twMerge('btn-primary-custom')}
+                    block>
+                    {t('WITHDRAW_MODAL_WITHDRAW_SUPPLY')}
+                  </Button>
+                ) : (
+                  <div className="withdraw-modal-container__action__approve">
+                    <div className="withdraw-modal-container__action__approve__helper">
+                      <QuestionCircleIcon />
+                      <Link
+                        className="withdraw-modal-container__action__approve__helper__link"
+                        href={'https://psychcentral.com/blog/what-drives-our-need-for-approval'}
+                        target="_blank">
+                        {t('WITHDRAW_MODAL_APPROVE_EXPLAIN')}
+                      </Link>
+                    </div>
 
-              <Button
-                loading={_isPending}
-                onClick={handleApprove}
-                type="primary"
-                className={twMerge('btn-primary-custom', 'mt-4')}
-                block>
-                {t('WITHDRAW_MODAL_APPROVE', {
-                  token: 'USDT',
-                })}
-              </Button>
+                    <Button
+                      loading={_isPending}
+                      onClick={handleApprove}
+                      type="primary"
+                      disabled={isNotValidForm}
+                      className={twMerge('btn-primary-custom', 'mt-4')}
+                      block>
+                      {t('WITHDRAW_MODAL_APPROVE', {
+                        token: 'USDT',
+                      })}
+                    </Button>
+                  </div>
+                )}
+              </div>
             </div>
-          )}
-        </div>
-      </div>
+          );
+        }}
+      </Form>
     </Modal>
   );
 }
