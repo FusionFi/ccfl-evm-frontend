@@ -6,9 +6,13 @@ import { twMerge } from 'tailwind-merge';
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
 import { Modal, Form } from 'antd';
+import type { FormProps } from 'antd';
 import { InfoCircleIcon } from '@/components/icons/info-circle.icon';
 import { QuestionCircleIcon } from '@/components/icons/question-circle.icon';
-import { useForm, Controller, SubmitHandler } from 'react-hook-form';
+
+type FieldType = {
+  amount?: any;
+};
 
 export default function ModalSupplyComponent({
   isModalOpen,
@@ -19,24 +23,6 @@ export default function ModalSupplyComponent({
 
   const [_isApproved, _setIsApproved] = useState(false);
   const [_isPending, _setIsPending] = useState(false);
-
-  const onFinish: SubmitHandler<any> = data => {
-    console.log("data: ", data)
-    _setIsPending(true);
-    setTimeout(() => {
-      if (data.amount < 10) {
-
-        return;
-      }
-      if (_isApproved) {
-        _handleOk();
-      } else {
-        handleApprove();
-      }
-
-      _setIsPending(false)
-    }, 1000);
-  };
 
   const handleApprove = useCallback(() => {
     _setIsApproved(true);
@@ -53,10 +39,18 @@ export default function ModalSupplyComponent({
     handleCancel();
   }, [])
 
-  const onFinishFailed = (data: any) => {
-    console.log('onFinishFailed: ', data)
+  const onFinish: FormProps<FieldType>['onFinish'] = (data) => {
+    _setIsPending(true);
+    setTimeout(() => {
+      if (_isApproved) {
+        _handleOk();
+      } else {
+        handleApprove();
+      }
 
-  }
+      _setIsPending(false)
+    }, 1000);
+  };
 
   return (
     <Modal
@@ -68,8 +62,9 @@ export default function ModalSupplyComponent({
       onOk={_handleOk}
       onCancel={_handleCancel}
       footer={null}>
-      <Form onFinish={onFinish} onFinishFailed={onFinishFailed}>
+      <Form onFinish={onFinish}>
         {(_, formInstance) => {
+          const isNotValidForm = formInstance.getFieldsError().some(item => item.errors.length > 0)
           return (
             <div className="supply-modal-container">
               <div className="supply-modal-container__input">
@@ -77,7 +72,10 @@ export default function ModalSupplyComponent({
                   {t('SUPPLY_MODAL_INPUT_AMOUNT')}
                 </div>
                 <div className="supply-modal-container__input__control">
-                  <Form.Item name="amount" help="" rules={[{ max: 10, type: 'number', message: 'Insufficient balance' }]}>
+                  <Form.Item name="amount" help="" rules={[{ max: 10, type: 'number', message: t('SUPPLY_MODAL_VALIDATE_INSUFFICIENT_BALANCE') }, {
+                    required: true,
+                    message: t('SUPPLY_MODAL_VALIDATE_REQUIRE_AMOUNT')
+                  }]}>
                     <InputNumber
                       placeholder={t('SUPPLY_MODAL_INPUT_PLACEHOLDER')}
                       className="supply-modal-container__input__control__amount"
@@ -155,6 +153,7 @@ export default function ModalSupplyComponent({
                   <Button
                     type="primary"
                     loading={_isPending}
+                    disabled={isNotValidForm}
                     htmlType='submit'
                     className={twMerge('btn-primary-custom')}
                     block>
@@ -178,6 +177,7 @@ export default function ModalSupplyComponent({
                       loading={_isPending}
                       type="primary"
                       htmlType='submit'
+                      disabled={isNotValidForm}
                       className={twMerge('btn-primary-custom', 'mt-4')}
                       block>
                       {t('SUPPLY_MODAL_APPROVE', {
