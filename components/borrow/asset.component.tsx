@@ -105,19 +105,19 @@ export default function assetComponent({
                   </Button>
                 ) : (
                   <React.Fragment>
-                    {networkInfo ? (
-                      <Button
-                        onClick={() => eventBus.emit('handleWalletConnect')}
-                        className={'guest'}>
-                        <SafeHtmlComponent htmlContent={t('BORROW_CONNECT_WALLET')} />
-                      </Button>
-                    ) : (
+                    {isConnected ? (
                       <Button onClick={() => switchNetwork()} className={'guest'}>
                         <SafeHtmlComponent
                           htmlContent={t('BORROW_CONNECT_WALLET_SWITCH', {
                             networkName: STAKE_DEFAULT_NETWORK?.name,
                           })}
                         />
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={() => eventBus.emit('handleWalletConnect')}
+                        className={'guest'}>
+                        <SafeHtmlComponent htmlContent={t('BORROW_CONNECT_WALLET')} />
                       </Button>
                     )}
                   </React.Fragment>
