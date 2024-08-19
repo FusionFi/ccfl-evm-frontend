@@ -251,6 +251,7 @@ export default function LoansComponent(props: LoansProps) {
           columns={columns}
           dataSource={props.dataLoan}
           locale={locale}
+          rowKey={index => `${index}`}
         />
       )}
     </div>

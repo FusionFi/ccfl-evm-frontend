@@ -118,5 +118,6 @@
   "BORROW_MODAL_INSUFFICIENT_BALANCE": "Insufficient balance",
   "BORROW_MODAL_ERROR_CODE": "Error code",
   "BORROW_MODAL_FAILED": "Failed!",
-  "BORROW_MODAL_NO_DATA": "There is no loan yet."
+  "BORROW_MODAL_NO_DATA": "There is no loan yet.",
+  "BORROW_MODAL_ASSET_NO_DATA": "There is no asset yet."
 }
