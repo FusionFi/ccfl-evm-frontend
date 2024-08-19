@@ -33,7 +33,6 @@ export default function assetComponent({
     try {
       setLoading(true);
       let data = (await service.getPool('11155111')) as any;
-
       if (data && data[0]) {
         let priceUSDC = (await service.getPrice(
           1,
@@ -104,8 +103,8 @@ export default function assetComponent({
             <>
               {tokenList && tokenList.length > 0 ? (
                 <>
-                  {tokenList?.map((index: any, item: any) => (
-                    <div className="xl:gap-6 asset-body gap-1" key={item.asset}>
+                  {tokenList?.map((item: any, index: any) => (
+                    <div className="xl:gap-6 asset-body gap-1" key={index}>
                       <div
                         className={`${
                           isConnected && networkInfo ? 'xl:basis-1/4' : 'xl:basis-1/6'
