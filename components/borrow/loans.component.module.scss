@@ -2,7 +2,9 @@
   :global {
     .loans-container {
       border: 1px solid $black-common-color;
-
+      &.skeleton {
+        border: 0;
+      }
       .ant-table {
         border-radius: 2px;
         background: $black-light-color;
@@ -408,11 +410,6 @@
             height: 20px;
           }
         }
-      }
-
-      .ant-skeleton-title,
-      .ant-skeleton-paragraph li {
-        background: var(--Neutral-7, #8c8c8c);
       }
     }
   }

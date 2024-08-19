@@ -42,7 +42,7 @@ export default function BorrowPage() {
   const [token, setToken] = useState(COLLATERAL_TOKEN[0].name);
 
   const [dataLoan, setDataLoan] = useState<DataType>();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const { address, isConnected } = useAccount();
 
@@ -60,7 +60,7 @@ export default function BorrowPage() {
     } catch (error) {
       console.log('error', error);
     } finally {
-      // setLoading(false);
+      setLoading(false);
     }
   };
 

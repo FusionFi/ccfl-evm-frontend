@@ -1,16 +1,14 @@
 import cssClass from '@/components/borrow/loans.component.module.scss';
 import { twMerge } from 'tailwind-merge';
 import { InfoCircleOutlined, CheckOutlined } from '@ant-design/icons';
-import { Tooltip } from 'antd';
 import React from 'react';
-import { Button, Table } from 'antd';
+import { Button, Table, Skeleton, Tooltip } from 'antd';
 import Image from 'next/image';
 import { useTranslation } from 'next-i18next';
 import { LOAN_STATUS } from '@/constants/common.constant';
 import type { TableProps } from 'antd';
 import { toCurrency } from '@/utils/common';
 import { loanType } from '@/components/borrow/borrow';
-import { Skeleton } from 'antd';
 
 interface LoansProps {
   showModal: any;
@@ -233,7 +231,7 @@ export default function LoansComponent(props: LoansProps) {
   return (
     <div className={twMerge(cssClass.loansComponent)}>
       {props.loading ? (
-        <div className="loans-container">
+        <div className="loans-container skeleton">
           <Skeleton active />
         </div>
       ) : (
