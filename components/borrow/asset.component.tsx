@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import cssClass from '@/components/borrow/asset.component.module.scss';
 import SafeHtmlComponent from '@/components/common/safe-html.component';
 import { STAKE_DEFAULT_NETWORK } from '@/constants/networks';

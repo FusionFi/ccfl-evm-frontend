@@ -70,7 +70,7 @@ export default function LoansComponent(props: LoansProps) {
       },
     },
     {
-      title: <h4>{t('BORROW_MODAL_BORROW_ADJUST_APR_VARIABLE')}</h4>,
+      title: <h4 className="text-center">{t('BORROW_MODAL_BORROW_ADJUST_APR_VARIABLE')}</h4>,
       dataIndex: 'apr',
       key: 'apr',
       render: value => {
@@ -128,7 +128,7 @@ export default function LoansComponent(props: LoansProps) {
           <div className="flex">
             <span className="mr-1">{t('BORROW_OVERVIEW_COLLATERAL')}:</span>
             {record.collateral_amount} {record.collateral_asset}
-            <span className="ml-1">$6,540.00</span>
+            <span className="ml-1">${toCurrency('6540.00')}</span>
           </div>
           {final_status !== LOAN_STATUS.REPAID_FULL ? (
             <Button

@@ -60,7 +60,7 @@ export default function BorrowPage() {
     } catch (error) {
       console.log('error', error);
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   };
 

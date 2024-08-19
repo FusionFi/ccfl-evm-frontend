@@ -409,6 +409,11 @@
           }
         }
       }
+
+      .ant-skeleton-title,
+      .ant-skeleton-paragraph li {
+        background: var(--Neutral-7, #8c8c8c);
+      }
     }
   }
 }
