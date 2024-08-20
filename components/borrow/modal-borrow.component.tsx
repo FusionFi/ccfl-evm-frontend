@@ -9,6 +9,8 @@ import {
   QuestionCircleOutlined,
   DownOutlined,
   CloseOutlined,
+  WalletOutlined,
+  ArrowRightOutlined,
 } from '@ant-design/icons';
 import TransactionSuccessComponent from '@/components/borrow/transaction-success.component';
 import { useTranslation } from 'next-i18next';
@@ -27,6 +29,7 @@ interface ModalBorrowProps {
 
 interface IFormInput {
   numberfield: number;
+  collateralField: number;
 }
 
 export default function ModalBorrowComponent({
@@ -41,6 +44,7 @@ export default function ModalBorrowComponent({
   const { control, handleSubmit, setValue } = useForm({
     defaultValues: {
       numberfield: 0,
+      collateralField: 0,
     },
   });
   const { t } = useTranslation('common');
@@ -48,6 +52,7 @@ export default function ModalBorrowComponent({
   const onSubmit: SubmitHandler<IFormInput> = data => {
     if (step == 1) {
       setTokenValue(0);
+      setCollateralValue(0);
     }
     setLoading(true);
     setTimeout(() => {
@@ -68,6 +73,8 @@ export default function ModalBorrowComponent({
   };
 
   const [tokenValue, setTokenValue] = useState(0);
+  const [collateralValue, setCollateralValue] = useState(0);
+  const minimumAmount = 2;
 
   const status = 'SUCCESS';
   const renderTitle = () => {
@@ -175,16 +182,53 @@ export default function ModalBorrowComponent({
                     value={token}
                   />
                 </div>
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center mb-2">
                   <div className="modal-borrow-sub-content">
-                    {t('BORROW_MODAL_BORROW_COLLATERAL')}
+                    <WalletOutlined className="wallet-icon" /> {token} {t('BORROW_MODAL_BALANCE')}
                   </div>
                   <div className="modal-borrow-value">
                     <span>0.00</span>
-                    <span className="ml-1">{token}</span>
+                    <span className="ml-1 token">{token}</span>
+                    <div className="modal-borrow-value-usd">$0.00</div>
                   </div>
                 </div>
-                <div className="modal-borrow-value-usd">$0.00</div>
+                <div className="flex justify-between items-start">
+                  <div className="modal-borrow-sub-content">
+                    {t('BORROW_MODAL_BORROW_COLLATERAL')}
+                  </div>
+                  <div className="flex items-center modal-borrow-collateral-amount">
+                    <Controller
+                      name="collateralField"
+                      control={control}
+                      render={({ field }) => (
+                        <InputNumber
+                          placeholder={t('BORROW_MODAL_BORROW_ENTER_AMOUNT')}
+                          className="flex-1 "
+                          controls={false}
+                          onChange={(value: any) => {
+                            setCollateralValue(value);
+                          }}
+                        />
+                      )}
+                    />
+                    <span className="">{token?.toUpperCase()}</span>
+                  </div>
+                </div>
+                <div className="modal-borrow-minimum">
+                  <span className="mr-1">Minimum amount: </span> {minimumAmount} {token}
+                </div>
+                <div className="flex justify-between items-center modal-borrow-health c-white">
+                  <div className="modal-borrow-sub-content">{t('BORROW_MODAL_BORROW_HEALTH')}</div>
+                  <div className="flex">
+                    <span className="c-white">3.31B</span>
+                    {collateralValue > 0 && (
+                      <div className="flex">
+                        <ArrowRightOutlined className="mx-1" />
+                        <span className="">3.33B</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
               <div className="modal-borrow-gas">
                 <div className="modal-borrow-sub-content">
@@ -212,7 +256,7 @@ export default function ModalBorrowComponent({
                     <Button
                       htmlType="submit"
                       type="primary"
-                      disabled={!tokenValue}
+                      disabled={!tokenValue || collateralValue < minimumAmount}
                       className="w-full"
                       loading={loading}>
                       {t('BORROW_MODAL_BORROW_APPROVE', { currentToken: token })}
@@ -228,7 +272,7 @@ export default function ModalBorrowComponent({
                       <Button
                         htmlType="submit"
                         type="primary"
-                        disabled={!tokenValue}
+                        disabled={!tokenValue || collateralValue < minimumAmount}
                         className="w-full"
                         loading={loading}>
                         {t('BORROW_MODAL_BORROW_DEPOSIT', { token: token })}
