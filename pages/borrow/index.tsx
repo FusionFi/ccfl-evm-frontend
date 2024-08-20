@@ -22,14 +22,19 @@ import Image from 'next/image';
 import { useAccount, useNetwork } from 'wagmi';
 // import { getNetwork } from '@wagmi/core';
 import ModalCollateralComponent from '@/components/borrow/modal-collateral.component';
+import ModalBorrowFiatComponent from '@/components/borrow/modal-borrow-fiat/modal-borrow-fiat.component';
 
 type LabelRender = SelectProps['labelRender'];
+enum BorrowModalType {
+  Crypto = 'crypto',
+  Fiat = 'fiat'
+}
 
 export default function BorrowPage() {
   const { t } = useTranslation('common');
   const { chain, chains } = useNetwork();
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modal, setModal] = useState({} as any);
   const [isModalRepayOpen, setIsModalRepayOpen] = useState(false);
   const [isModalCollateralOpen, setIsModalCollateralOpen] = useState(false);
   const [currentToken, setCurrentToken] = useState('');
@@ -45,12 +50,15 @@ export default function BorrowPage() {
   // const { chain, chains } = getNetwork();
 
   const showModal = (token: string) => {
-    setCurrentToken(token);
-    setIsModalOpen(true);
+    setModal({
+      type: token == BorrowModalType.Fiat ? BorrowModalType.Fiat : BorrowModalType.Crypto,
+      token
+    })
   };
   const handleCancel = () => {
-    setCurrentToken('');
-    setIsModalOpen(false);
+    setModal({
+      type: '',
+    })
     setStep(0);
     setToken(COLLATERAL_TOKEN[0].name);
   };
@@ -219,9 +227,9 @@ export default function BorrowPage() {
         </div>
       </div>
       <ModalBorrowComponent
-        isModalOpen={isModalOpen}
+        isModalOpen={BorrowModalType.Crypto == modal.type}
         handleCancel={handleCancel}
-        currentToken={currentToken}
+        currentToken={modal.token}
         step={step}
         setStep={setStep}
         token={token}
@@ -241,6 +249,14 @@ export default function BorrowPage() {
         step={step}
         setStep={setStep}
       />
+      <ModalBorrowFiatComponent i
+        isModalOpen={BorrowModalType.Fiat == modal.type}
+        handleCancel={handleCancel}
+        currentToken={modal.token}
+        step={step}
+        setStep={setStep}
+        token={token}
+        setToken={setToken} />
     </div>
   );
 }

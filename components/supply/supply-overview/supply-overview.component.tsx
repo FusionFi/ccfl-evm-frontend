@@ -11,11 +11,7 @@ import Image from 'next/image';
 
 type LabelRender = SelectProps['labelRender'];
 
-export default function SupplyOverviewComponent({
-  isModalOpen,
-  handleCancel,
-  message
-}: any) {
+export default function SupplyOverviewComponent({ isModalOpen, handleCancel, message }: any) {
   const { t } = useTranslation('common');
 
   const { chain, chains } = useNetwork();
@@ -23,19 +19,18 @@ export default function SupplyOverviewComponent({
   const selectedChain = CHAIN_INFO.get(chain?.id) || {};
 
   const labelRender: LabelRender = (props: any) => {
-    let { name, logo } = props;
+    let { value } = props;
 
-    // TODO: please remove before release it to PRD
-    if (!name) {
-      name = 'Avalanche';
-      logo = '/images/tokens/avax.png';
-    }
+    const _chain: any = CHAIN_MAP.get(value) || {
+      name: 'Avalanche',
+      logo: '/images/tokens/avax.png',
+    };
 
     return (
       <div className="flex items-center">
         <Image
-          src={logo}
-          alt={name}
+          src={_chain?.logo}
+          alt={_chain?.name}
           width={24}
           height={24}
           style={{
@@ -44,10 +39,12 @@ export default function SupplyOverviewComponent({
           }}
           className="mr-2"
         />
-        {name}
+        {_chain?.name}
       </div>
     );
   };
+
+  const CHAIN_MAP = new Map(SUPPORTED_CHAINS.map(item => [item.id, item]));
 
   return (
     <div className={cssClass['supply-overview']}>
@@ -58,17 +55,17 @@ export default function SupplyOverviewComponent({
             labelRender={labelRender}
             defaultValue={{
               value: selectedChain?.id,
-              label: selectedChain?.name,
-              logo: selectedChain?.logo,
             }}
-            options={SUPPORTED_CHAINS.map((item: any) => ({
+            options={[...(CHAIN_MAP.values() as any)].map(item => ({
               value: item.id,
-              name: item.name,
-              label: (
+            }))}
+            optionRender={(option: any) => {
+              const _chain: any = CHAIN_MAP.get(option.value);
+              return (
                 <div className="chain-dropdown-item-wrapper">
                   <Image
-                    src={item.logo}
-                    alt={item.name}
+                    src={_chain?.logo}
+                    alt={_chain?.name}
                     width={12}
                     height={12}
                     style={{
@@ -77,11 +74,10 @@ export default function SupplyOverviewComponent({
                     }}
                     className="mr-2"
                   />
-                  {item.name}
+                  {_chain?.name}
                 </div>
-              ),
-              logo: item?.logo,
-            }))}
+              );
+            }}
             suffixIcon={<CaretDownOutlined />}
           />
         </div>

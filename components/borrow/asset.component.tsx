@@ -36,6 +36,12 @@ export default function assetComponent({
       usd: '4,000.00',
       percent: '0.07',
     },
+    {
+      name: 'fiat',
+      value: '',
+      usd: '',
+      percent: '2.08',
+    },
   ];
 
   return (
@@ -87,7 +93,7 @@ export default function assetComponent({
                   isConnected && networkInfo ? 'xl:basis-1/4' : 'xl:basis-1/6'
                 } flex-col items-start justify-center	basis-1/4`}>
                 <div>{item.value}</div>
-                <div className="usd">$ {item.usd}</div>
+                {item.usd && <div className="usd">$ {item.usd}</div>}
               </div>
               <div
                 className={`${
