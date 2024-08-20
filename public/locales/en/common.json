@@ -128,5 +128,6 @@
   "ERROR_MODAL_REVIEW": "Review TX detail",
   "BORROW_MODAL_BALANCE": "balance",
   "BORROW_LOANS_DISBURSEMENT": "Waiting for disbursement",
-  "BORROW_LOANS_UNPROCESSED": "Unprocessed"
+  "BORROW_LOANS_UNPROCESSED": "Unprocessed",
+  "BORROW_MODAL_DELETE": "Delete"
 }

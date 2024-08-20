@@ -23,8 +23,10 @@ export default function LoansComponent(props: LoansProps) {
   const renderStatusClass = (status: string) => {
     switch (status) {
       case LOAN_STATUS.LIQUIDATED:
+      case LOAN_STATUS.DISBURSEMENT:
         return 'liquidated';
       case LOAN_STATUS.LIQUIDATION_APPROACHING:
+      case LOAN_STATUS.UNPROCESSED:
         return 'warning';
       case LOAN_STATUS.REPAID_FULL:
         return 'repaid';
@@ -32,6 +34,8 @@ export default function LoansComponent(props: LoansProps) {
         return '';
     }
   };
+
+  const handleDeleteLoan = () => {};
 
   const columns: TableProps<any>['columns'] = [
     {
@@ -125,7 +129,7 @@ export default function LoansComponent(props: LoansProps) {
           <div className="flex">
             <span className="mr-1">{t('BORROW_OVERVIEW_COLLATERAL')}:</span>
             {record.collateral_amount} {record.collateral_asset}
-            <span className="ml-1">${toCurrency('6540.00')}</span>
+            <span className="ml-1">${toCurrency('6540')}</span>
           </div>
           {final_status !== LOAN_STATUS.REPAID_FULL ? (
             <Button
@@ -154,16 +158,24 @@ export default function LoansComponent(props: LoansProps) {
             <div></div>
           )}
           <div className="loans-button ">
-            {final_status === LOAN_STATUS.REPAID_FULL ? (
+            {final_status === LOAN_STATUS.REPAID_FULL && (
               <Button type="primary" className="" onClick={() => props.showModal(record.asset)}>
                 {t('BORROW_MODAL_BORROW_BORROW_AGAIN')}
               </Button>
-            ) : (
+            )}
+            {![LOAN_STATUS.REPAID_FULL, LOAN_STATUS.UNPROCESSED].find(
+              status => status === final_status,
+            ) && (
               <Button
                 disabled={final_status === LOAN_STATUS.LIQUIDATED}
                 className=""
                 onClick={() => props.showRepayModal(record.asset)}>
                 {t('BORROW_MODAL_BORROW_REPAY')}
+              </Button>
+            )}
+            {final_status === LOAN_STATUS.UNPROCESSED && (
+              <Button type="primary" className="" onClick={handleDeleteLoan}>
+                {t('BORROW_MODAL_DELETE')}
               </Button>
             )}
           </div>
@@ -179,6 +191,30 @@ export default function LoansComponent(props: LoansProps) {
       apr: '1.82',
       health: '12.76',
       status: 'ACTIVE',
+      debt_remain: '2780',
+      collateral_amount: '2.5',
+      collateral_asset: 'WETH',
+      yield_generating: true,
+      yield_earned: '0.281',
+    },
+    {
+      asset: 'USD',
+      loan_size: '3000',
+      apr: '1.82',
+      health: '12.76',
+      status: 'DISBURSEMENT',
+      debt_remain: '2780',
+      collateral_amount: '2.5',
+      collateral_asset: 'WETH',
+      yield_generating: true,
+      yield_earned: '0.281',
+    },
+    {
+      asset: 'USD',
+      loan_size: '3000',
+      apr: '1.82',
+      health: '12.76',
+      status: 'UNPROCESSED',
       debt_remain: '2780',
       collateral_amount: '2.5',
       collateral_asset: 'WETH',
