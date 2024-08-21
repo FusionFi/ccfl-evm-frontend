@@ -356,6 +356,11 @@
               background: $primary-color;
               color: $white-color;
             }
+            &.delete {
+              color: var(--Dust-Red-6, #f5222d);
+              background: var(--Neutral-1, #141414);
+              box-shadow: 0px 2px 0px 0px rgba(0, 0, 0, 0.02);
+            }
           }
           &.ant-btn-default {
             background: var(--Neutral-1, #141414);
@@ -370,7 +375,7 @@
             }
             &:disabled {
               background: transparent !important;
-              border: 1px solid var(--Neutral-5, #434343) !important;
+              // border: 1px solid var(--Neutral-5, #434343) !important;
               color: var(
                 --character-disabled-amp-placeholder-25,
                 rgba(255, 255, 255, 0.3)

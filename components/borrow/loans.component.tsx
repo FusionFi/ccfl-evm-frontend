@@ -174,7 +174,7 @@ export default function LoansComponent(props: LoansProps) {
               </Button>
             )}
             {final_status === LOAN_STATUS.UNPROCESSED && (
-              <Button type="primary" className="" onClick={handleDeleteLoan}>
+              <Button type="primary" className="delete" onClick={handleDeleteLoan}>
                 {t('BORROW_MODAL_DELETE')}
               </Button>
             )}
