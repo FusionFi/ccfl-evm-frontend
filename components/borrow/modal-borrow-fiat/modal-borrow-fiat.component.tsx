@@ -10,8 +10,9 @@ import type { FormProps, TabsProps } from 'antd';
 import { InfoCircleIcon } from '@/components/icons/info-circle.icon';
 import { QuestionCircleIcon } from '@/components/icons/question-circle.icon';
 import type { SelectProps } from 'antd';
-import { RightOutlined } from '@ant-design/icons';
+import { RightOutlined, CheckOutlined } from '@ant-design/icons';
 import ModalBorrowFiatMethodComponent from './borrow-fiat-method.component'
+import ModalBorrowFiatPaymentComponent from './borrow-fiat-payment.component'
 type FieldType = {
   amount?: any;
 };
@@ -26,7 +27,7 @@ export default function ModalBorrowFiatComponent({ isModalOpen, handleCancel, ha
   const [_isApproved, _setIsApproved] = useState(false);
   const [_isPending, _setIsPending] = useState(false);
   const [tab, setTab] = useState({
-    active: '1'
+    active: '2'
   });
 
   const _handleOk = useCallback(() => {
@@ -41,7 +42,6 @@ export default function ModalBorrowFiatComponent({ isModalOpen, handleCancel, ha
   }, []);
 
   const onChange = (key: string) => {
-    console.log(key);
     setTab({
       active: key
     })
@@ -56,12 +56,22 @@ export default function ModalBorrowFiatComponent({ isModalOpen, handleCancel, ha
     key,
     title
   }: any) => {
-    const style = key == tab.active ? {
-      background: '#1890FF',
-      border: "1px solid #1890FF",
-      fontFamily: 'Inter',
-      color: 'white'
-    } : {}
+    let style = {}
+
+    if (key == tab.active) {
+      style = {
+        background: '#1890FF',
+        border: "1px solid #1890FF",
+        fontFamily: 'Inter',
+        color: 'white'
+      }
+    } else if (key < tab.active) {
+      style = {
+        background: 'transparent',
+        border: "1px solid #1890FF",
+        color: '#1890FF'
+      }
+    }
 
     return (
       <div className='modal-borrow-fiat__tabbar__label'>
@@ -69,7 +79,7 @@ export default function ModalBorrowFiatComponent({ isModalOpen, handleCancel, ha
           <div className='modal-borrow-fiat__tabbar__label__wrapper__key' style={{
             ...style
           }}>
-            {key}
+            {key < tab.active ? <CheckOutlined /> : key}
           </div>
           {title}
           {key != 4 && <RightOutlined className='modal-borrow-fiat__tabbar__label__wrapper__arrow' />}
@@ -99,7 +109,14 @@ export default function ModalBorrowFiatComponent({ isModalOpen, handleCancel, ha
         key: '2',
         title: 'Setup Payment'
       }),
-      children: 'Content of Tab Pane 2',
+      children: ModalBorrowFiatPaymentComponent({
+        next: () => setTab({
+          active: '3'
+        }),
+        back: () => setTab({
+          active: '1'
+        })
+      }),
     },
     {
       key: '3',
