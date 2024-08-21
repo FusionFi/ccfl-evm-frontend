@@ -15,7 +15,7 @@ import TransactionSuccessComponent from '@/components/borrow/transaction-success
 import { useTranslation } from 'next-i18next';
 import { TRANSACTION_STATUS } from '@/constants/common.constant';
 
-interface ModalBorrowProps {
+interface ModalCollateralProps {
   isModalOpen: boolean;
   handleCancel: any;
   currentToken: string;
@@ -27,13 +27,13 @@ interface IFormInput {
   numberfield: number;
 }
 
-export default function ModalBorrowComponent({
+export default function ModalCollateralComponent({
   isModalOpen,
   handleCancel,
   currentToken,
   step,
   setStep,
-}: ModalBorrowProps) {
+}: ModalCollateralProps) {
   const { t } = useTranslation('common');
 
   const { control, handleSubmit, setValue, getValues } = useForm({

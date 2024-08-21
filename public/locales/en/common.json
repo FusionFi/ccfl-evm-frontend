@@ -129,5 +129,10 @@
   "BORROW_MODAL_BALANCE": "balance",
   "BORROW_LOANS_DISBURSEMENT": "Waiting for disbursement",
   "BORROW_LOANS_UNPROCESSED": "Unprocessed",
-  "BORROW_MODAL_DELETE": "Delete"
+  "BORROW_MODAL_DELETE": "Delete",
+  "BORROW_MODAL_WITHDRAW_COLLATERAL": "Withdraw collateral",
+  "BORROW_MODAL_COLLATERAL_OVERVIEW": "Collateral overview",
+  "BORROW_MODAL_YIELD_REWARD": "Yield reward",
+  "BORROW_MODAL_WITHDRAW_MY_COLLATERAL": "Withdraw my collateral",
+  "BORROW_MODAL_WITHDRAW_DONE": "You successfully withdraw"
 }

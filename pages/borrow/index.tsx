@@ -22,6 +22,7 @@ import Image from 'next/image';
 import { useAccount, useNetwork } from 'wagmi';
 // import { getNetwork } from '@wagmi/core';
 import ModalCollateralComponent from '@/components/borrow/modal-collateral.component';
+import ModalWithdrawCollateralComponent from '@/components/borrow/modal-withdraw-collateral.component';
 
 type LabelRender = SelectProps['labelRender'];
 
@@ -32,6 +33,8 @@ export default function BorrowPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalRepayOpen, setIsModalRepayOpen] = useState(false);
   const [isModalCollateralOpen, setIsModalCollateralOpen] = useState(false);
+  const [isModalWithdrawCollateral, setIsModalWithdrawCollateral] = useState(false);
+
   const [currentToken, setCurrentToken] = useState('');
 
   const [collateralToken, setCollateralToken] = useState(COLLATERAL_TOKEN[0].name);
@@ -48,32 +51,38 @@ export default function BorrowPage() {
     setCurrentToken(token);
     setIsModalOpen(true);
   };
+  const showWithdrawCollateralModal = (token: string) => {
+    setCollateralToken(token);
+    setIsModalWithdrawCollateral(true);
+  };
+  const showRepayModal = (token: string) => {
+    setCurrentToken(token);
+    setIsModalRepayOpen(true);
+  };
+  const showCollateralModal = (token: string) => {
+    setCollateralToken(token);
+    setIsModalCollateralOpen(true);
+  };
+
   const handleCancel = () => {
     setCurrentToken('');
     setIsModalOpen(false);
     setStep(0);
     setToken(COLLATERAL_TOKEN[0].name);
   };
-
-  const showRepayModal = (token: string) => {
-    setCurrentToken(token);
-    setIsModalRepayOpen(true);
-  };
-
-  const showCollateralModal = (token: string) => {
-    setCollateralToken(token);
-    setIsModalCollateralOpen(true);
-  };
-
   const handleRepayCancel = () => {
     setCurrentToken('');
     setIsModalRepayOpen(false);
     setStep(0);
   };
-
   const handleCollateralCancel = () => {
     setCollateralToken('');
     setIsModalCollateralOpen(false);
+    setStep(0);
+  };
+  const handleWithdrawCollateralCancel = () => {
+    setCollateralToken('');
+    setIsModalWithdrawCollateral(false);
     setStep(0);
   };
 
@@ -205,6 +214,7 @@ export default function BorrowPage() {
               showModal={showModal}
               showRepayModal={showRepayModal}
               showCollateralModal={showCollateralModal}
+              showWithdrawCollateralModal={showWithdrawCollateralModal}
             />
           </div>
         )}
@@ -237,6 +247,13 @@ export default function BorrowPage() {
       <ModalCollateralComponent
         isModalOpen={isModalCollateralOpen}
         handleCancel={handleCollateralCancel}
+        currentToken={collateralToken}
+        step={step}
+        setStep={setStep}
+      />
+      <ModalWithdrawCollateralComponent
+        isModalOpen={isModalWithdrawCollateral}
+        handleCancel={handleWithdrawCollateralCancel}
         currentToken={collateralToken}
         step={step}
         setStep={setStep}

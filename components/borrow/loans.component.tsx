@@ -15,6 +15,7 @@ interface LoansProps {
   showModal: any;
   showRepayModal: any;
   showCollateralModal: any;
+  showWithdrawCollateralModal: any;
 }
 
 export default function LoansComponent(props: LoansProps) {
@@ -138,7 +139,11 @@ export default function LoansComponent(props: LoansProps) {
               {t('BORROW_MODAL_BORROW_ADJUST_COLLATERAL')}
             </Button>
           ) : (
-            <Button>{t('BORROW_MODAL_BORROW_CLAIM_COLLATERAL')}</Button>
+            <Button
+              disabled={record.collateral_amount == 0}
+              onClick={() => props.showWithdrawCollateralModal('weth')}>
+              {t('BORROW_MODAL_WITHDRAW_COLLATERAL')}
+            </Button>
           )}
         </div>
         <div className="flex justify-between items-end gap-1 loans-yield-wrapper">
@@ -159,7 +164,11 @@ export default function LoansComponent(props: LoansProps) {
           )}
           <div className="loans-button ">
             {final_status === LOAN_STATUS.REPAID_FULL && (
-              <Button type="primary" className="" onClick={() => props.showModal(record.asset)}>
+              <Button
+                disabled={record.collateral_amount > 0}
+                type="primary"
+                className=""
+                onClick={() => props.showModal(record.asset)}>
                 {t('BORROW_MODAL_BORROW_BORROW_AGAIN')}
               </Button>
             )}
@@ -240,7 +249,7 @@ export default function LoansComponent(props: LoansProps) {
       health: '12.76',
       status: 'REPAID_FULL',
       debt_remain: '2780',
-      collateral_amount: '2.5',
+      collateral_amount: '1',
       collateral_asset: 'WETH',
       yield_generating: true,
       yield_earned: '0.281',
