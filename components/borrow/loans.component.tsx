@@ -1,14 +1,13 @@
-import cssClass from '@/components/borrow/loans.component.module.scss';
-import { twMerge } from 'tailwind-merge';
-import { InfoCircleOutlined, CheckOutlined } from '@ant-design/icons';
-import React from 'react';
-import { Button, Table, Skeleton, Tooltip } from 'antd';
-import Image from 'next/image';
-import { useTranslation } from 'next-i18next';
-import { LOAN_STATUS } from '@/constants/common.constant';
-import type { TableProps } from 'antd';
-import { toCurrency } from '@/utils/common';
 import { loanType } from '@/components/borrow/borrow';
+import cssClass from '@/components/borrow/loans.component.module.scss';
+import { LOAN_STATUS } from '@/constants/common.constant';
+import { toCurrency } from '@/utils/common';
+import { CheckOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import type { TableProps } from 'antd';
+import { Button, Table, Tooltip } from 'antd';
+import { useTranslation } from 'next-i18next';
+import Image from 'next/image';
+import { twMerge } from 'tailwind-merge';
 
 interface LoansProps {
   showModal: any;
@@ -16,6 +15,7 @@ interface LoansProps {
   showCollateralModal: any;
   dataLoan?: loanType[];
   loading: any;
+  showWithdrawCollateralModal: any;
 }
 
 export default function LoansComponent(props: LoansProps) {
@@ -24,8 +24,10 @@ export default function LoansComponent(props: LoansProps) {
   const renderStatusClass = (status: string) => {
     switch (status) {
       case LOAN_STATUS.LIQUIDATED:
+      case LOAN_STATUS.DISBURSEMENT:
         return 'liquidated';
       case LOAN_STATUS.LIQUIDATION_APPROACHING:
+      case LOAN_STATUS.UNPROCESSED:
         return 'warning';
       case LOAN_STATUS.REPAID_FULL:
         return 'repaid';
@@ -33,6 +35,8 @@ export default function LoansComponent(props: LoansProps) {
         return '';
     }
   };
+
+  const handleDeleteLoan = () => {};
 
   const columns: TableProps<any>['columns'] = [
     {
@@ -126,7 +130,7 @@ export default function LoansComponent(props: LoansProps) {
           <div className="flex">
             <span className="mr-1">{t('BORROW_OVERVIEW_COLLATERAL')}:</span>
             {record.collateral_amount} {record.collateral_asset}
-            <span className="ml-1">${toCurrency('6540.00')}</span>
+            <span className="ml-1">${toCurrency('6540')}</span>
           </div>
           {final_status !== LOAN_STATUS.REPAID_FULL ? (
             <Button
@@ -135,7 +139,11 @@ export default function LoansComponent(props: LoansProps) {
               {t('BORROW_MODAL_BORROW_ADJUST_COLLATERAL')}
             </Button>
           ) : (
-            <Button>{t('BORROW_MODAL_BORROW_CLAIM_COLLATERAL')}</Button>
+            <Button
+              disabled={record.collateral_amount == 0}
+              onClick={() => props.showWithdrawCollateralModal('weth')}>
+              {t('BORROW_MODAL_WITHDRAW_COLLATERAL')}
+            </Button>
           )}
         </div>
         <div className="flex justify-between items-end gap-1 loans-yield-wrapper">
@@ -155,16 +163,28 @@ export default function LoansComponent(props: LoansProps) {
             <div></div>
           )}
           <div className="loans-button ">
-            {final_status === LOAN_STATUS.REPAID_FULL ? (
-              <Button type="primary" className="" onClick={() => props.showModal(record.asset)}>
+            {final_status === LOAN_STATUS.REPAID_FULL && (
+              <Button
+                disabled={record.collateral_amount > 0}
+                type="primary"
+                className=""
+                onClick={() => props.showModal(record.asset)}>
                 {t('BORROW_MODAL_BORROW_BORROW_AGAIN')}
               </Button>
-            ) : (
+            )}
+            {![LOAN_STATUS.REPAID_FULL, LOAN_STATUS.UNPROCESSED].find(
+              status => status === final_status,
+            ) && (
               <Button
                 disabled={final_status === LOAN_STATUS.LIQUIDATED}
                 className=""
                 onClick={() => props.showRepayModal(record.asset)}>
                 {t('BORROW_MODAL_BORROW_REPAY')}
+              </Button>
+            )}
+            {final_status === LOAN_STATUS.UNPROCESSED && (
+              <Button type="primary" className="delete" onClick={handleDeleteLoan}>
+                {t('BORROW_MODAL_DELETE')}
               </Button>
             )}
           </div>
@@ -173,56 +193,92 @@ export default function LoansComponent(props: LoansProps) {
     );
   };
 
-  // const dataLoan: loanType[] = [
-  //   {
-  //     asset: 'USDC',
-  //     loan_size: '3000',
-  //     apr: '1.82',
-  //     health: '12.76',
-  //     status: 'ACTIVE',
-  //     debt_remain: '2780',
-  //     collateral_amount: '2.5',
-  //     collateral_asset: 'WETH',
-  //     yield_generating: true,
-  //     yield_earned: '0.281',
-  //   },
-  //   {
-  //     asset: 'USDC',
-  //     loan_size: '3000',
-  //     apr: '1.82',
-  //     health: '12.76',
-  //     status: 'REPAID_FULL',
-  //     debt_remain: '2780',
-  //     collateral_amount: '2.5',
-  //     collateral_asset: 'WETH',
-  //     yield_generating: true,
-  //     yield_earned: '0.281',
-  //   },
-  //   {
-  //     asset: 'USDT',
-  //     loan_size: '3000',
-  //     apr: '1.82',
-  //     health: '12.76',
-  //     status: 'LIQUIDATION_APPROACHING',
-  //     debt_remain: '2780',
-  //     collateral_amount: '2.5',
-  //     collateral_asset: 'WBTC',
-  //     yield_generating: true,
-  //     yield_earned: '0.281',
-  //   },
-  //   {
-  //     asset: 'USDT',
-  //     loan_size: '3000',
-  //     apr: '1.82',
-  //     health: '12.76',
-  //     status: 'LIQUIDATED',
-  //     debt_remain: '2780',
-  //     collateral_amount: '2.5',
-  //     collateral_asset: 'WBTC',
-  //     yield_generating: true,
-  //     yield_earned: '0.281',
-  //   },
-  // ];
+  const dataLoan: loanType[] = [
+    {
+      asset: 'USD',
+      loan_size: '3000',
+      apr: '1.82',
+      health: '12.76',
+      status: 'ACTIVE',
+      debt_remain: '2780',
+      collateral_amount: '2.5',
+      collateral_asset: 'WETH',
+      yield_generating: true,
+      yield_earned: '0.281',
+    },
+    {
+      asset: 'USD',
+      loan_size: '3000',
+      apr: '1.82',
+      health: '12.76',
+      status: 'DISBURSEMENT',
+      debt_remain: '2780',
+      collateral_amount: '2.5',
+      collateral_asset: 'WETH',
+      yield_generating: true,
+      yield_earned: '0.281',
+    },
+    {
+      asset: 'USD',
+      loan_size: '3000',
+      apr: '1.82',
+      health: '12.76',
+      status: 'UNPROCESSED',
+      debt_remain: '2780',
+      collateral_amount: '2.5',
+      collateral_asset: 'WETH',
+      yield_generating: true,
+      yield_earned: '0.281',
+    },
+    {
+      asset: 'USDC',
+      loan_size: '3000',
+      apr: '1.82',
+      health: '12.76',
+      status: 'ACTIVE',
+      debt_remain: '2780',
+      collateral_amount: '2.5',
+      collateral_asset: 'WETH',
+      yield_generating: true,
+      yield_earned: '0.281',
+    },
+    {
+      asset: 'USDC',
+      loan_size: '3000',
+      apr: '1.82',
+      health: '12.76',
+      status: 'REPAID_FULL',
+      debt_remain: '2780',
+      collateral_amount: '1',
+      collateral_asset: 'WETH',
+      yield_generating: true,
+      yield_earned: '0.281',
+    },
+    {
+      asset: 'USDT',
+      loan_size: '3000',
+      apr: '1.82',
+      health: '12.76',
+      status: 'LIQUIDATION_APPROACHING',
+      debt_remain: '2780',
+      collateral_amount: '2.5',
+      collateral_asset: 'WBTC',
+      yield_generating: true,
+      yield_earned: '0.281',
+    },
+    {
+      asset: 'USDT',
+      loan_size: '3000',
+      apr: '1.82',
+      health: '12.76',
+      status: 'LIQUIDATED',
+      debt_remain: '2780',
+      collateral_amount: '2.5',
+      collateral_asset: 'WBTC',
+      yield_generating: true,
+      yield_earned: '0.281',
+    },
+  ];
 
   let locale = {
     emptyText: <div className="loans-empty">{t('BORROW_MODAL_NO_DATA')}</div>,
@@ -230,30 +286,24 @@ export default function LoansComponent(props: LoansProps) {
 
   return (
     <div className={twMerge(cssClass.loansComponent)}>
-      {props.loading ? (
-        <div className="loans-container skeleton">
-          <Skeleton active />
-        </div>
-      ) : (
-        <Table
-          title={() => t('BORROW_MODAL_BORROW_BORROW_MY_LOANS')}
-          expandable={{
-            defaultExpandAllRows: true,
-            expandedRowRender,
-            rowExpandable: record => true,
-            showExpandColumn: false,
-          }}
-          virtual
-          className="loans-container"
-          bordered={false}
-          rowHoverable={false}
-          pagination={false}
-          columns={columns}
-          dataSource={props.dataLoan}
-          locale={locale}
-          rowKey={index => `${index}`}
-        />
-      )}
+      <Table
+        title={() => t('BORROW_MODAL_BORROW_BORROW_MY_LOANS')}
+        expandable={{
+          defaultExpandAllRows: true,
+          expandedRowRender,
+          rowExpandable: record => true,
+          showExpandColumn: false,
+        }}
+        virtual
+        className="loans-container"
+        bordered={false}
+        rowHoverable={false}
+        pagination={false}
+        columns={columns}
+        dataSource={dataLoan}
+        locale={locale}
+        rowKey={index => `${index}`}
+      />
     </div>
   );
 }

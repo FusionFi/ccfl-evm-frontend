@@ -306,6 +306,7 @@
         line-height: 22px; /* 157.143% */
         svg {
           color: #52c41a;
+          font-size: 18px;
         }
         span {
           color: var(--Polar-Green-6, #52c41a);
@@ -355,18 +356,34 @@
               background: $primary-color;
               color: $white-color;
             }
+            &.delete {
+              color: var(--Dust-Red-6, #f5222d);
+              background: var(--Neutral-1, #141414);
+              box-shadow: 0px 2px 0px 0px rgba(0, 0, 0, 0.02);
+            }
+            &:disabled {
+              border-radius: 2px;
+              border: 1px solid var(--Neutral-5, #434343) !important;
+              background-color: var(--Neutral-3, #1f1f1f) !important;
+              span {
+                color: var(--character-disabled-amp-placeholder-25, rgba(255, 255, 255, 0.3));
+              }
+            }
           }
           &.ant-btn-default {
-            background: $white-color;
+            background: var(--Neutral-1, #141414);
+            box-shadow: 0px 2px 0px 0px rgba(0, 0, 0, 0.02);
+            color: var(--character-title-85, rgba(255, 255, 255, 0.85));
+            border: 0;
+            height: 30px;
 
             &:hover,
             &:active {
-              border-color: white;
-              color: var(--character-title-85, rgba(0, 0, 0, 0.85));
+              color: var(--character-title-85, rgba(255, 255, 255, 0.85));
             }
             &:disabled {
               background: transparent !important;
-              border: 1px solid var(--Neutral-5, #434343) !important;
+              // border: 1px solid var(--Neutral-5, #434343) !important;
               color: var(
                 --character-disabled-amp-placeholder-25,
                 rgba(255, 255, 255, 0.3)
