@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 import ModalComponent from '@/components/common/modal.component';
 import { InputNumber } from 'antd';
@@ -50,7 +50,7 @@ export default function ModalBorrowComponent({
     },
   });
 
-  const [tokenValue, setTokenValue] = useState(0);
+  const [tokenValue, setTokenValue] = useState();
 
   const onSubmit: SubmitHandler<IFormInput> = data => {
     setLoading(true);
@@ -76,6 +76,12 @@ export default function ModalBorrowComponent({
     return `${t('BORROW_MODAL_BORROW_REPAY')} ${currentToken?.toUpperCase()}`;
   };
 
+  useEffect(() => {
+    if (isModalOpen) {
+      setTokenValue(undefined);
+    }
+  }, [isModalOpen]);
+
   return (
     <div>
       <ModalComponent
@@ -98,6 +104,7 @@ export default function ModalBorrowComponent({
                           placeholder={t('BORROW_MODAL_BORROW_ENTER_AMOUNT')}
                           className="flex-1"
                           controls={false}
+                          value={tokenValue}
                           onChange={(value: any) => {
                             setTokenValue(value);
                           }}

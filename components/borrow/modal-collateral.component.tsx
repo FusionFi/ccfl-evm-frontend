@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 import ModalComponent from '@/components/common/modal.component';
 import { InputNumber } from 'antd';
@@ -42,14 +42,14 @@ export default function ModalCollateralComponent({
     },
   });
 
-  const [tokenValue, setTokenValue] = useState(0);
+  const [tokenValue, setTokenValue] = useState();
 
   const onSubmit: SubmitHandler<IFormInput> = data => {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
       if (step == 1) {
-        setTokenValue(0);
+        setTokenValue(undefined);
       }
       setStep(step + 1);
     }, 1000);
@@ -67,6 +67,12 @@ export default function ModalCollateralComponent({
     }
     return `${t('BORROW_MODAL_COLLATERAL_TITLE')}`;
   };
+
+  useEffect(() => {
+    if (isModalOpen) {
+      setTokenValue(undefined);
+    }
+  }, [isModalOpen]);
 
   return (
     <div>
@@ -92,6 +98,7 @@ export default function ModalCollateralComponent({
                           placeholder={t('BORROW_MODAL_BORROW_ENTER_AMOUNT')}
                           className="flex-1"
                           controls={false}
+                          value={tokenValue}
                           onChange={(value: any) => {
                             setTokenValue(value);
                           }}
