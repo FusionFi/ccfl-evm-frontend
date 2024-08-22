@@ -4,7 +4,7 @@ import { LOAN_STATUS } from '@/constants/common.constant';
 import { toCurrency } from '@/utils/common';
 import { CheckOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import type { TableProps } from 'antd';
-import { Button, Table, Tooltip } from 'antd';
+import { Button, Table, Skeleton, Tooltip } from 'antd';
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
@@ -286,24 +286,30 @@ export default function LoansComponent(props: LoansProps) {
 
   return (
     <div className={twMerge(cssClass.loansComponent)}>
-      <Table
-        title={() => t('BORROW_MODAL_BORROW_BORROW_MY_LOANS')}
-        expandable={{
-          defaultExpandAllRows: true,
-          expandedRowRender,
-          rowExpandable: record => true,
-          showExpandColumn: false,
-        }}
-        virtual
-        className="loans-container"
-        bordered={false}
-        rowHoverable={false}
-        pagination={false}
-        columns={columns}
-        dataSource={dataLoan}
-        locale={locale}
-        rowKey={index => `${index}`}
-      />
+      {props.loading ? (
+        <div className="loans-container skeleton">
+          <Skeleton active />
+        </div>
+      ) : (
+        <Table
+          title={() => t('BORROW_MODAL_BORROW_BORROW_MY_LOANS')}
+          expandable={{
+            defaultExpandAllRows: true,
+            expandedRowRender,
+            rowExpandable: record => true,
+            showExpandColumn: false,
+          }}
+          virtual
+          className="loans-container"
+          bordered={false}
+          rowHoverable={false}
+          pagination={false}
+          columns={columns}
+          dataSource={dataLoan}
+          locale={locale}
+          rowKey={index => `${index}`}
+        />
+      )}
     </div>
   );
 }
