@@ -18,4 +18,5 @@ export interface loanType {
   collateral_asset: string;
   yield_generating: boolean;
   yield_earned: string;
+  repayment_currency?: string;
 }

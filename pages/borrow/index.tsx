@@ -41,6 +41,7 @@ export default function BorrowPage() {
   const [step, setStep] = useState(0);
   const [token, setToken] = useState(COLLATERAL_TOKEN[0].name);
   const { address, isConnected } = useAccount();
+  const [isFiat, setIsFiat] = useState(false);
 
   //connect wallet
   const [showSuccess, showError, showWarning, contextHolder] = useNotification();
@@ -55,8 +56,14 @@ export default function BorrowPage() {
     setCollateralToken(token);
     setIsModalWithdrawCollateral(true);
   };
-  const showRepayModal = (token: string) => {
-    setCurrentToken(token);
+  const showRepayModal = (token: string, repaymentCurrency: string) => {
+    if (repaymentCurrency) {
+      setIsFiat(true);
+      setCurrentToken(repaymentCurrency);
+    } else {
+      setIsFiat(false);
+      setCurrentToken(token);
+    }
     setIsModalRepayOpen(true);
   };
   const showCollateralModal = (token: string) => {
@@ -243,6 +250,7 @@ export default function BorrowPage() {
         currentToken={currentToken}
         step={step}
         setStep={setStep}
+        isFiat={isFiat}
       />
       <ModalCollateralComponent
         isModalOpen={isModalCollateralOpen}

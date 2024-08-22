@@ -45,12 +45,12 @@ export default function ModalCollateralComponent({
   const [tokenValue, setTokenValue] = useState(0);
 
   const onSubmit: SubmitHandler<IFormInput> = data => {
-    if (step == 1) {
-      setTokenValue(0);
-    }
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
+      if (step == 1) {
+        setTokenValue(0);
+      }
       setStep(step + 1);
     }, 1000);
   };

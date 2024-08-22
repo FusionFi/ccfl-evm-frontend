@@ -50,13 +50,13 @@ export default function ModalBorrowComponent({
   const { t } = useTranslation('common');
 
   const onSubmit: SubmitHandler<IFormInput> = data => {
-    if (step == 1) {
-      setTokenValue(0);
-      setCollateralValue(0);
-    }
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
+      if (step == 1) {
+        setTokenValue(0);
+        setCollateralValue(0);
+      }
       setStep(step + 1);
     }, 1000);
   };
