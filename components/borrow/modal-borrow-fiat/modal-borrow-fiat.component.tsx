@@ -13,6 +13,8 @@ import type { SelectProps } from 'antd';
 import { RightOutlined, CheckOutlined } from '@ant-design/icons';
 import ModalBorrowFiatMethodComponent from './borrow-fiat-method.component'
 import ModalBorrowFiatPaymentComponent from './borrow-fiat-payment.component'
+import ModalBorrowFiatCollateralComponent from './borrow-fiat-collateral.component'
+
 type FieldType = {
   amount?: any;
 };
@@ -27,7 +29,7 @@ export default function ModalBorrowFiatComponent({ isModalOpen, handleCancel, ha
   const [_isApproved, _setIsApproved] = useState(false);
   const [_isPending, _setIsPending] = useState(false);
   const [tab, setTab] = useState({
-    active: '2'
+    active: '3'
   });
 
   const _handleOk = useCallback(() => {
@@ -125,7 +127,14 @@ export default function ModalBorrowFiatComponent({ isModalOpen, handleCancel, ha
         key: '3',
         title: 'Collateral'
       }),
-      children: 'Content of Tab Pane 2',
+      children: ModalBorrowFiatCollateralComponent({
+        next: () => setTab({
+          active: '4'
+        }),
+        back: () => setTab({
+          active: '2'
+        })
+      }),
     },
     {
       key: '4',

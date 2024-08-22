@@ -153,7 +153,7 @@ export default function ModalBorrowFiatPaymentComponent({
                     loading={_isPending}
                     disabled={isNotValidForm}
                     onClick={back}
-                    className={twMerge('btn-outline-custom')}
+                    className={twMerge('borrow-fiat-payment-container__action__item__back')}
                     style={{
                       borderColor: "#434343",
                       background: '#141414',
