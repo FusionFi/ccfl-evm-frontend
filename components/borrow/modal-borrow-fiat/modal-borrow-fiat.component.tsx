@@ -14,6 +14,7 @@ import { RightOutlined, CheckOutlined } from '@ant-design/icons';
 import ModalBorrowFiatMethodComponent from './borrow-fiat-method.component'
 import ModalBorrowFiatPaymentComponent from './borrow-fiat-payment.component'
 import ModalBorrowFiatCollateralComponent from './borrow-fiat-collateral.component'
+import ModalBorrowFiatConfirmComponent from './borrow-fiat-confirm.component'
 
 type FieldType = {
   amount?: any;
@@ -29,7 +30,7 @@ export default function ModalBorrowFiatComponent({ isModalOpen, handleCancel, ha
   const [_isApproved, _setIsApproved] = useState(false);
   const [_isPending, _setIsPending] = useState(false);
   const [tab, setTab] = useState({
-    active: '3'
+    active: '4'
   });
 
   const _handleOk = useCallback(() => {
@@ -143,7 +144,11 @@ export default function ModalBorrowFiatComponent({ isModalOpen, handleCancel, ha
         key: '4',
         title: 'Confirm'
       }),
-      children: 'Content of Tab Pane 2',
+      children: ModalBorrowFiatConfirmComponent({
+        back: () => setTab({
+          active: '3'
+        })
+      }),
     },
   ];
 

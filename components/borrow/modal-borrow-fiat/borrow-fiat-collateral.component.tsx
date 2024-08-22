@@ -83,7 +83,7 @@ export default function ModalBorrowFiatCollateralComponent({
                 </div>
                 <div className='borrow-fiat-collateral-container__loan__item'>
                   <div className='borrow-fiat-collateral-container__loan__item__title'>
-                    FIAT transaction fee (4%
+                    FIAT transaction fee (4%)
                     <Tooltip color="rgba(0, 0, 0, 0.75)" title="prompt text">
                       <span className="cursor-pointer">
                         <InfoCircleIcon className="" />
@@ -124,7 +124,7 @@ export default function ModalBorrowFiatCollateralComponent({
                       <WalletOutlined style={{
                         fontSize: 16,
                         color: '#177DDC'
-                      }} />  Collateral token
+                      }} />  WETH balance
                     </div>
                     <div className='borrow-fiat-collateral-container__detail__content__item__value'>
                       7.87
@@ -155,10 +155,12 @@ export default function ModalBorrowFiatCollateralComponent({
                       <span className="font-bold text-base">
                         3.31B
                       </span>
-                      <ArrowRightOutlined />
-                      <span className="font-bold text-base" style={{
-                        color: "#52C41A"
-                      }}>3.33B</span>
+                      {amount > 0 && <>
+                        <ArrowRightOutlined />
+                        <span className="font-bold text-base" style={{
+                          color: "#52C41A"
+                        }}>3.33B</span>
+                      </>}
                     </div>
                   </div>
                 </div>
