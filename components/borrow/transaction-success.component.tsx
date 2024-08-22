@@ -15,6 +15,7 @@ interface TransactionSuccessProps {
   isBorrow?: boolean;
   isCollateral?: boolean;
   status?: string;
+  isWithdrawCollateral?: boolean;
 }
 
 export default function TransactionSuccessComponent({
@@ -26,6 +27,7 @@ export default function TransactionSuccessComponent({
   isCollateral = false,
   isBorrow = false,
   status = TRANSACTION_STATUS.FAILED,
+  isWithdrawCollateral = false,
 }: TransactionSuccessProps) {
   const { t } = useTranslation('common');
 
@@ -71,6 +73,11 @@ export default function TransactionSuccessComponent({
                     amount: 500,
                     token: currentToken?.toUpperCase(),
                   })}
+                </span>
+              )}
+              {isWithdrawCollateral && (
+                <span>
+                  {t('BORROW_MODAL_WITHDRAW_DONE')} 4,000 {currentToken?.toUpperCase()}
                 </span>
               )}
             </React.Fragment>
