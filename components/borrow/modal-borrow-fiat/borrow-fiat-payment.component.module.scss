@@ -205,9 +205,13 @@
               .ant-select-arrow {
                 color: rgba(255, 255, 255, 0.65);
                 top: 14px;
-                width: 10px;
-                height: 11.25px;
+
                 flex-shrink: 0;
+
+                .ant-select-suffix {
+                  width: 10px;
+                  height: 11.25px;
+                }
               }
             }
 

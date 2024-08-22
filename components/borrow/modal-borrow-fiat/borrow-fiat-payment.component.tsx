@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import cssClass from './borrow-fiat-payment.component.module.scss';
 import { twMerge } from 'tailwind-merge';
 import { useTranslation } from 'next-i18next';
-import Image from 'next/image';
 import { Tooltip, Form, Select, Checkbox, InputNumber, Input, Radio, Button } from 'antd';
 import type { SelectProps, CheckboxProps, FormProps } from 'antd';
 import { InfoCircleIcon } from '@/components/icons/info-circle.icon';
@@ -11,12 +10,179 @@ type FieldType = {
   amount?: any;
 };
 
-type LabelRender = SelectProps['labelRender'];
+enum PayoutMethod {
+  BankWire = 1,
+  GiftCode,
+}
+
+
+const IncomeMap = new Map(
+  [
+    {
+      value: 'Salary',
+      name: 'Salary',
+    },
+  ].map(item => [item.value, item]),
+);
+
+const PurposeMap = new Map(
+  [
+    {
+      value: 'Gift',
+      name: 'Gift',
+    },
+  ].map(item => [item.value, item]),
+);
+
+const BankMap = new Map(
+  [
+    {
+      value: 'Citibank',
+      name: 'Citibank',
+    },
+  ].map(item => [item.value, item]),
+);
+
+const BankOutletMap = new Map(
+  [
+    {
+      value: 'Costco Gift Card',
+      name: 'Costco Gift Card',
+    },
+  ].map(item => [item.value, item]),
+);
+
+const GiftCodeAmountMap = new Map(
+  [
+    {
+      value: '100 USD',
+      name: '100 USD',
+    },
+  ].map(item => [item.value, item]),
+);
+
+const PaymentDetail = ({ paymentMethod }: any) => {
+  if (paymentMethod == PayoutMethod.GiftCode) {
+    return <>
+      <div className="borrow-fiat-payment-container__detail">
+        <div className='borrow-fiat-payment-container__detail__title'>
+          Payout detail
+        </div>
+        <div className='borrow-fiat-payment-container__detail__content'>
+          <div className='borrow-fiat-payment-container__detail__content__item'>
+            Choose brand outlet:
+            <Select placeholder="Select" className='borrow-fiat-payment-container__detail__content__item__control-select'
+              popupClassName={cssClass['borrow-fiat-payment-select']}
+              options={[...(BankOutletMap.values() as any)].map(item => ({
+                value: item.value,
+                lable: item.name
+              }))}
+            />
+          </div>
+          <div className='borrow-fiat-payment-container__detail__content__item'>
+            Choose gift code amount:
+            <Select placeholder="Select" className='borrow-fiat-payment-container__detail__content__item__control-select'
+              popupClassName={cssClass['borrow-fiat-payment-select']}
+              options={[...(GiftCodeAmountMap.values() as any)].map(item => ({
+                value: item.value,
+                lable: item.name
+              }))}
+            />
+          </div>
+          <div className='borrow-fiat-payment-container__detail__content__item'>
+            Description:
+            <Input placeholder="Enter description" className='borrow-fiat-payment-container__detail__content__item__control-input' />
+          </div>
+        </div>
+      </div>
+    </>
+  }
+  return <>
+    <div className="borrow-fiat-payment-container__input">
+      <div className="borrow-fiat-payment-container__input__title">
+        Borrow Amount
+      </div>
+      <div className="borrow-fiat-payment-container__input__control">
+        <Form.Item name="amount" help="">
+          <InputNumber controls={false} placeholder="Enter Amount" suffix="USD" className="borrow-fiat-payment-container__input__control__amount" />
+        </Form.Item>
+      </div>
+    </div>
+    <div className="borrow-fiat-payment-container__detail">
+      <div className='borrow-fiat-payment-container__detail__title'>
+        Payout detail
+      </div>
+      <div className='borrow-fiat-payment-container__detail__content'>
+        <div className='borrow-fiat-payment-container__detail__content__item'>
+          Choose bank:
+          <Select placeholder="Select" className='borrow-fiat-payment-container__detail__content__item__control-select'
+            popupClassName={cssClass['borrow-fiat-payment-select']}
+            options={[...(BankMap.values() as any)].map(item => ({
+              value: item.value,
+              lable: item.name
+            }))}
+          />
+        </div>
+        <div className='borrow-fiat-payment-container__detail__content__item'>
+          Account Number:
+          <Input placeholder="Enter account number" className='borrow-fiat-payment-container__detail__content__item__control-input' />
+        </div>
+        <div className='borrow-fiat-payment-container__detail__content__item'>
+          Account owner:
+          <Input placeholder="Enter owner name" className='borrow-fiat-payment-container__detail__content__item__control-input' />
+        </div>
+        <div className='borrow-fiat-payment-container__detail__content__item'>
+          Purpose of Payment:
+          <Select placeholder="Select" className='borrow-fiat-payment-container__detail__content__item__control-select'
+            popupClassName={cssClass['borrow-fiat-payment-select']}
+            options={[...(PurposeMap.values() as any)].map(item => ({
+              value: item.value,
+              lable: item.name
+            }))}
+          />
+        </div>
+        <div className='borrow-fiat-payment-container__detail__content__item'>
+          Source of Income:
+          <Select placeholder="Select" className='borrow-fiat-payment-container__detail__content__item__control-select'
+            popupClassName={cssClass['borrow-fiat-payment-select']}
+            options={[...(IncomeMap.values() as any)].map(item => ({
+              value: item.value,
+              lable: item.name
+            }))}
+          />
+        </div>
+        <div className='borrow-fiat-payment-container__detail__content__item'>
+          Description:
+          <Input placeholder="Enter description" className='borrow-fiat-payment-container__detail__content__item__control-input' />
+        </div>
+      </div>
+    </div>
+
+    <div className='borrow-fiat-payment-container__transaction'>
+      <div className='borrow-fiat-payment-container__transaction__title'>
+        FIAT transaction fee (4%)
+        <Tooltip color="rgba(0, 0, 0, 0.75)" title="prompt text">
+          <span className="cursor-pointer">
+            <InfoCircleIcon className="" />
+          </span>
+        </Tooltip>
+      </div>
+
+      <div className='borrow-fiat-payment-container__transaction__value'>
+        <span className='borrow-fiat-payment-container__transaction__value__uint'>$</span>
+        520.00
+      </div>
+    </div>
+  </>
+}
 
 export default function ModalBorrowFiatPaymentComponent({
   next,
-  back
+  back,
+  detail
 }: any) {
+  const { paymentMethod } = detail;
+  console.log('paymentMethod: ', paymentMethod)
   const { t } = useTranslation('common');
   const [_isPending, _setIsPending] = useState(false);
 
@@ -32,31 +198,6 @@ export default function ModalBorrowFiatPaymentComponent({
     }, 1000);
   };
 
-  const IncomeMap = new Map(
-    [
-      {
-        value: 'Salary',
-        name: 'Salary',
-      },
-    ].map(item => [item.value, item]),
-  );
-
-  const PurposeMap = new Map(
-    [
-      {
-        value: 'Gift',
-        name: 'Gift',
-      },
-    ].map(item => [item.value, item]),
-  );
-  const BankMap = new Map(
-    [
-      {
-        value: 'Citibank',
-        name: 'Citibank',
-      },
-    ].map(item => [item.value, item]),
-  );
 
   return (
     <Form onFinish={onFinish}>
@@ -66,82 +207,8 @@ export default function ModalBorrowFiatPaymentComponent({
         return (
           <div className={cssClass['borrow-fiat-payment-wrapper']}>
             <div className={'borrow-fiat-payment-container'}>
-              <div className="borrow-fiat-payment-container__input">
-                <div className="borrow-fiat-payment-container__input__title">
-                  Borrow Amount
-                </div>
-                <div className="borrow-fiat-payment-container__input__control">
-                  <Form.Item name="amount" help="">
-                    <InputNumber controls={false} placeholder="Enter Amount" suffix="USD" className="borrow-fiat-payment-container__input__control__amount" />
-                  </Form.Item>
-                </div>
-              </div>
-              <div className="borrow-fiat-payment-container__detail">
-                <div className='borrow-fiat-payment-container__detail__title'>
-                  Payout detail
-                </div>
-                <div className='borrow-fiat-payment-container__detail__content'>
-                  <div className='borrow-fiat-payment-container__detail__content__item'>
-                    Choose bank:
-                    <Select placeholder="Select" className='borrow-fiat-payment-container__detail__content__item__control-select'
-                      popupClassName={cssClass['borrow-fiat-payment-select']}
-                      options={[...(BankMap.values() as any)].map(item => ({
-                        value: item.value,
-                        lable: item.name
-                      }))}
-                    />
-                  </div>
-                  <div className='borrow-fiat-payment-container__detail__content__item'>
-                    Account Number:
-                    <Input placeholder="Enter account number" className='borrow-fiat-payment-container__detail__content__item__control-input' />
-                  </div>
-                  <div className='borrow-fiat-payment-container__detail__content__item'>
-                    Account owner:
-                    <Input placeholder="Enter owner name" className='borrow-fiat-payment-container__detail__content__item__control-input' />
-                  </div>
-                  <div className='borrow-fiat-payment-container__detail__content__item'>
-                    Purpose of Payment:
-                    <Select placeholder="Select" className='borrow-fiat-payment-container__detail__content__item__control-select'
-                      popupClassName={cssClass['borrow-fiat-payment-select']}
-                      options={[...(PurposeMap.values() as any)].map(item => ({
-                        value: item.value,
-                        lable: item.name
-                      }))}
-                    />
-                  </div>
-                  <div className='borrow-fiat-payment-container__detail__content__item'>
-                    Source of Income:
-                    <Select placeholder="Select" className='borrow-fiat-payment-container__detail__content__item__control-select'
-                      popupClassName={cssClass['borrow-fiat-payment-select']}
-                      options={[...(IncomeMap.values() as any)].map(item => ({
-                        value: item.value,
-                        lable: item.name
-                      }))}
-                    />
-                  </div>
-                  <div className='borrow-fiat-payment-container__detail__content__item'>
-                    Description:
-                    <Input placeholder="Enter description" className='borrow-fiat-payment-container__detail__content__item__control-input' />
-                  </div>
-                </div>
-              </div>
 
-              <div className='borrow-fiat-payment-container__transaction'>
-                <div className='borrow-fiat-payment-container__transaction__title'>
-                  FIAT transaction fee (4%)
-                  <Tooltip color="rgba(0, 0, 0, 0.75)" title="prompt text">
-                    <span className="cursor-pointer">
-                      <InfoCircleIcon className="" />
-                    </span>
-                  </Tooltip>
-                </div>
-
-                <div className='borrow-fiat-payment-container__transaction__value'>
-                  <span className='borrow-fiat-payment-container__transaction__value__uint'>$</span>
-                  520.00
-                </div>
-              </div>
-
+              <PaymentDetail paymentMethod={paymentMethod} />
               <div className='borrow-fiat-payment-container__term-condition'>
                 <Checkbox onChange={handleReceiveEmailCheck}>I agree with Terms & Conditions</Checkbox>
               </div>

@@ -118,6 +118,7 @@ export default function ModalBorrowFiatComponent({ isModalOpen, handleCancel, ha
         title: 'Setup Payment'
       }),
       children: ModalBorrowFiatPaymentComponent({
+        detail: tab,
         next: (data: any) => setTab({
           ...tab,
           ...data,
@@ -137,6 +138,7 @@ export default function ModalBorrowFiatComponent({ isModalOpen, handleCancel, ha
         title: 'Collateral'
       }),
       children: ModalBorrowFiatCollateralComponent({
+        detail: tab,
         next: (data: any) => setTab({
           ...tab,
           ...data,
@@ -156,6 +158,7 @@ export default function ModalBorrowFiatComponent({ isModalOpen, handleCancel, ha
         title: 'Confirm'
       }),
       children: ModalBorrowFiatConfirmComponent({
+        detail: tab,
         next: () => {
           _handleOk(tab);
           setTab({
@@ -182,148 +185,6 @@ export default function ModalBorrowFiatComponent({ isModalOpen, handleCancel, ha
       footer={null}>
 
       <Tabs activeKey={tab.active} items={items} onChange={onChange} renderTabBar={renderTabBar} />
-      {/* <Form onFinish={onFinish}>
-        {(_, formInstance) => {
-          const isNotValidForm = formInstance.getFieldsError().some(item => item.errors.length > 0);
-          return (
-            <div className="modal-borrow-fiat-container">
-              <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
-              
-              <div className="modal-borrow-fiat-container__input">
-                <div className="modal-borrow-fiat-container__input__title">
-                  {t('SUPPLY_MODAL_INPUT_AMOUNT')}
-                </div>
-                <div className="modal-borrow-fiat-container__input__control">
-                  <Form.Item
-                    name="amount"
-                    help=""
-                    rules={[
-                      {
-                        max: 10,
-                        type: 'number',
-                        message: t('SUPPLY_MODAL_VALIDATE_INSUFFICIENT_BALANCE'),
-                      },
-                      {
-                        required: true,
-                        message: t('SUPPLY_MODAL_VALIDATE_REQUIRE_AMOUNT'),
-                      },
-                    ]}>
-                    <InputNumber
-                      placeholder={t('SUPPLY_MODAL_INPUT_PLACEHOLDER')}
-                      className="modal-borrow-fiat-container__input__control__amount"
-                      controls={false}
-                      addonAfter={
-                        <div className="modal-borrow-fiat-container__input__control__amount__token">
-                          <Image
-                            src={`/images/tokens/usdt.png`}
-                            alt="USDT"
-                            width={24}
-                            height={24}
-                            style={{
-                              height: 24,
-                            }}
-                          />
-                          USDT
-                        </div>
-                      }
-                    />
-                  </Form.Item>
-
-                  <div className="modal-borrow-fiat-container__input__control__price">
-                    ≈ $4,000.00
-                    <Button
-                      type="link"
-                      className="modal-borrow-fiat-container__input__control__price__max">
-                      {t('SUPPLY_MODAL_MAX')}
-                    </Button>
-                  </div>
-                </div>
-                <div className="flex justify-between w-full">
-                  <div className="modal-borrow-fiat-container__input__balance">
-                    {t('SUPPLY_MODAL_WALLET_BALANCE')}: 50,000.00 USDT
-                  </div>
-                  <span className="modal-borrow-fiat-container__input__error">
-                    {formInstance.getFieldError('amount')[0]}
-                  </span>
-                </div>
-              </div>
-              <div className="modal-borrow-fiat-container__overview">
-                <div className="modal-borrow-fiat-container__overview__title">
-                  {t('SUPPLY_MODAL_TRANSACTION_OVERVIEW_TITLE')}
-                </div>
-                <div className="modal-borrow-fiat-container__overview__apy">
-                  <div className="modal-borrow-fiat-container__overview__apy__title">
-                    {t('SUPPLY_MODAL_TRANSACTION_OVERVIEW_APY')}
-                    <Tooltip color="rgba(0, 0, 0, 0.75)" title="prompt text">
-                      <span className="cursor-pointer">
-                        <InfoCircleIcon className="" />
-                      </span>
-                    </Tooltip>
-                  </div>
-                  <span className="modal-borrow-fiat-container__overview__apy__value">
-                    &#60;
-                    <span className="text-white font-bold">0.01</span>%
-                  </span>
-                </div>
-              </div>
-              <div className="modal-borrow-fiat-container__overview">
-                <div className="modal-borrow-fiat-container__overview__apy">
-                  <div className="modal-borrow-fiat-container__overview__apy__title">
-                    {t('SUPPLY_MODAL_TRANSACTION_OVERVIEW_GAS_FEE')}
-                    <Tooltip color="rgba(0, 0, 0, 0.75)" title="prompt text">
-                      <span className="cursor-pointer">
-                        <InfoCircleIcon className="" />
-                      </span>
-                    </Tooltip>
-                  </div>
-                  <span className="modal-borrow-fiat-container__overview__apy__value text-sm">
-                    $<span className="text-white">0.02</span>
-                  </span>
-                </div>
-              </div>
-              <div className="modal-borrow-fiat-container__action">
-                {_isApproved ? (
-                  <Button
-                    type="primary"
-                    loading={_isPending}
-                    disabled={isNotValidForm}
-                    htmlType="submit"
-                    className={twMerge('btn-primary-custom')}
-                    block>
-                    {t('SUPPLY_MODAL_SUPPLY_BUTTON', {
-                      token: 'USDT',
-                    })}
-                  </Button>
-                ) : (
-                  <div className="modal-borrow-fiat-container__action__approve">
-                    <div className="modal-borrow-fiat-container__action__approve__helper">
-                      <QuestionCircleIcon />
-                      <Link
-                        className="modal-borrow-fiat-container__action__approve__helper__link"
-                        href={'https://psychcentral.com/blog/what-drives-our-need-for-approval'}
-                        target="_blank">
-                        {t('SUPPLY_MODAL_APPROVE_EXPLAIN')}
-                      </Link>
-                    </div>
-
-                    <Button
-                      loading={_isPending}
-                      type="primary"
-                      htmlType="submit"
-                      disabled={isNotValidForm}
-                      className={twMerge('btn-primary-custom', 'mt-4')}
-                      block>
-                      {t('SUPPLY_MODAL_APPROVE', {
-                        token: 'USDT',
-                      })}
-                    </Button>
-                  </div>
-                )}
-              </div>
-            </div>
-          );
-        }}
-      </Form> */}
     </Modal>
   );
 }

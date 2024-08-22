@@ -132,6 +132,7 @@
           display: flex;
           align-items: flex-start;
           gap: 8px;
+          flex-wrap: wrap;
           align-self: stretch;
 
           .borrow-fiat-method-container__payout__method__value {
@@ -339,6 +340,8 @@
 
         .ant-radio-group {
           display: flex;
+          row-gap: 8px;
+          flex-wrap: wrap;
           align-items: flex-start;
           align-self: stretch;
 

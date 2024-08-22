@@ -14,8 +14,10 @@ type FieldType = {
 
 export default function ModalBorrowFiatCollateralComponent({
   next,
-  back
+  back,
+  detail
 }: any) {
+  const { paymentMethod } = detail;
   const { t } = useTranslation('common');
   const [_isPending, _setIsPending] = useState(false);
 
@@ -60,7 +62,7 @@ export default function ModalBorrowFiatCollateralComponent({
                     <span className='borrow-fiat-collateral-container__loan__item__value__price'>$13,000.12</span>
                   </div>
                 </div>
-                <div className='borrow-fiat-collateral-container__loan__item'>
+                {paymentMethod == 1 && <div className='borrow-fiat-collateral-container__loan__item'>
                   <div className='borrow-fiat-collateral-container__loan__item__title'>
                     FIAT transaction fee (4%)
                     <Tooltip color="rgba(0, 0, 0, 0.75)" title="prompt text">
@@ -74,7 +76,7 @@ export default function ModalBorrowFiatCollateralComponent({
                     <span className='borrow-fiat-collateral-container__loan__item__value__unit'>$</span>
                     520.00
                   </div>
-                </div>
+                </div>}
               </div>
               <div className="borrow-fiat-collateral-container__detail">
                 <div className='borrow-fiat-collateral-container__detail__title'>
