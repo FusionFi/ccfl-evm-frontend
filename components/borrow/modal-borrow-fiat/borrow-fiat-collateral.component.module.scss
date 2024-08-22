@@ -32,7 +32,7 @@
 
           &__value {
             display: flex;
-            align-items: center;
+            align-items: flex-end;
             gap: 4px;
             color: var(--Neutral-1, #FFF);
 
@@ -329,7 +329,7 @@
 
           &__value {
             display: flex;
-            align-items: center;
+            align-items: flex-end;
             gap: 4px;
             color: var(--Neutral-1, #FFF);
 
@@ -394,6 +394,9 @@
 
             &:hover {
               opacity: 0.8;
+              background: var(--Neutral-1, #141414) !important;
+              border: 1px solid var(--Neutral-5, #434343) !important;
+              color: var(--character-title-85, rgba(255, 255, 255, 0.85)) !important;
             }
           }
         }

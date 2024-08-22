@@ -27,7 +27,7 @@ export default function ModalBorrowFiatPaymentComponent({
   const onFinish: FormProps<FieldType>['onFinish'] = (data) => {
     _setIsPending(true);
     setTimeout(() => {
-      next();
+      next(data);
       _setIsPending(false)
     }, 1000);
   };
@@ -62,6 +62,7 @@ export default function ModalBorrowFiatPaymentComponent({
     <Form onFinish={onFinish}>
       {(_, formInstance) => {
         const isNotValidForm = formInstance.getFieldsError().some(item => item.errors.length > 0)
+        console.log(isNotValidForm)
         return (
           <div className={cssClass['borrow-fiat-payment-wrapper']}>
             <div className={'borrow-fiat-payment-container'}>
@@ -70,10 +71,7 @@ export default function ModalBorrowFiatPaymentComponent({
                   Borrow Amount
                 </div>
                 <div className="borrow-fiat-payment-container__input__control">
-                  <Form.Item name="amount" help="" rules={[{ max: 10, type: 'number', message: t('SUPPLY_MODAL_VALIDATE_INSUFFICIENT_BALANCE') }, {
-                    required: true,
-                    message: t('SUPPLY_MODAL_VALIDATE_REQUIRE_AMOUNT')
-                  }]}>
+                  <Form.Item name="amount" help="">
                     <InputNumber controls={false} placeholder="Enter Amount" suffix="USD" className="borrow-fiat-payment-container__input__control__amount" />
                   </Form.Item>
                 </div>
@@ -130,7 +128,7 @@ export default function ModalBorrowFiatPaymentComponent({
 
               <div className='borrow-fiat-payment-container__transaction'>
                 <div className='borrow-fiat-payment-container__transaction__title'>
-                  FIAT transaction fee (4%
+                  FIAT transaction fee (4%)
                   <Tooltip color="rgba(0, 0, 0, 0.75)" title="prompt text">
                     <span className="cursor-pointer">
                       <InfoCircleIcon className="" />
@@ -150,15 +148,8 @@ export default function ModalBorrowFiatPaymentComponent({
               <div className='borrow-fiat-payment-container__action'>
                 <div className='borrow-fiat-payment-container__action__item'>
                   <Button
-                    loading={_isPending}
-                    disabled={isNotValidForm}
                     onClick={back}
                     className={twMerge('borrow-fiat-payment-container__action__item__back')}
-                    style={{
-                      borderColor: "#434343",
-                      background: '#141414',
-                      color: "rgba(255, 255, 255, 0.85)"
-                    }}
                   >
                     Back
                   </Button>
@@ -168,7 +159,6 @@ export default function ModalBorrowFiatPaymentComponent({
                     loading={_isPending}
                     type="primary"
                     htmlType='submit'
-                    disabled={isNotValidForm}
                     className={twMerge('btn-primary-custom')}
                   >
                     Next

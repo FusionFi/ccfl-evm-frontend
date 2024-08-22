@@ -16,7 +16,7 @@ type FieldType = {
 
 export default function ModalBorrowFiatCollateralComponent({
   next,
-  back
+  back,
 }: any) {
   const { t } = useTranslation('common');
   const [_isPending, _setIsPending] = useState(false);
@@ -142,9 +142,10 @@ export default function ModalBorrowFiatCollateralComponent({
                     Repayment currency
                   </div>
 
-                  <div className='borrow-fiat-confirm-container__loan__item__value'>
+                  <div className='borrow-fiat-confirm-container__loan__item__value' style={{
+                    alignItems: 'center'
+                  }}>
                     <Image
-                      className="mr-2"
                       src="/images/common/usdc.png"
                       alt="USDC"
                       width={14}
@@ -154,6 +155,7 @@ export default function ModalBorrowFiatCollateralComponent({
                     <span className='font-base'>
                       (Avalance)
                     </span>
+
                   </div>
                 </div>
               </div>
@@ -202,9 +204,10 @@ export default function ModalBorrowFiatCollateralComponent({
                         </span>
                       </Tooltip>
                     </div>
-                    <div className='borrow-fiat-confirm-container__detail__content__item__value'>
+                    <div className='borrow-fiat-confirm-container__detail__content__item__value' style={{
+                      alignItems: 'center'
+                    }}>
                       <Image
-                        className="mr-2"
                         src="/images/common/weth.png"
                         alt="USDC"
                         width={16}

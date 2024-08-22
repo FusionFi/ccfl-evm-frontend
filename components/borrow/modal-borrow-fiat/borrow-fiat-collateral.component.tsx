@@ -19,10 +19,6 @@ export default function ModalBorrowFiatCollateralComponent({
   const { t } = useTranslation('common');
   const [_isPending, _setIsPending] = useState(false);
 
-  const handleReceiveEmailCheck: CheckboxProps['onChange'] = (e) => {
-    console.log(`checked = ${e.target.checked}`);
-  };
-
   const [form] = Form.useForm()
 
   const onFinish: FormProps<FieldType>['onFinish'] = (data) => {
@@ -33,23 +29,6 @@ export default function ModalBorrowFiatCollateralComponent({
     }, 1000);
   };
 
-  const IncomeMap = new Map(
-    [
-      {
-        value: 'Salary',
-        name: 'Salary',
-      },
-    ].map(item => [item.value, item]),
-  );
-
-  const PurposeMap = new Map(
-    [
-      {
-        value: 'Gift',
-        name: 'Gift',
-      },
-    ].map(item => [item.value, item]),
-  );
   const TokenMap = new Map(
     [
       {
@@ -184,14 +163,8 @@ export default function ModalBorrowFiatCollateralComponent({
               <div className='borrow-fiat-collateral-container__action'>
                 <div className='borrow-fiat-collateral-container__action__item'>
                   <Button
-                    disabled={isNotValidForm}
                     onClick={back}
                     className={twMerge('borrow-fiat-collateral-container__action__item__back')}
-                    style={{
-                      borderColor: "#434343",
-                      background: '#141414',
-                      color: "rgba(255, 255, 255, 0.85)"
-                    }}
                   >
                     Back
                   </Button>

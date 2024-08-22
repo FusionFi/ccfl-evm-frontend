@@ -23,11 +23,13 @@ import { useAccount, useNetwork } from 'wagmi';
 // import { getNetwork } from '@wagmi/core';
 import ModalCollateralComponent from '@/components/borrow/modal-collateral.component';
 import ModalBorrowFiatComponent from '@/components/borrow/modal-borrow-fiat/modal-borrow-fiat.component';
+import ModalBorrowFiatSuccessComponent from '@/components/borrow/modal-borrow-fiat/modal-borrow-fiat-success.component';
 
 type LabelRender = SelectProps['labelRender'];
 enum BorrowModalType {
   Crypto = 'crypto',
-  Fiat = 'fiat'
+  Fiat = 'fiat',
+  FiatSuccess = 'fiat-success'
 }
 
 export default function BorrowPage() {
@@ -163,6 +165,14 @@ export default function BorrowPage() {
     }
   }, [address, initNetworkInfo]);
 
+  const handleBorrowFiatOk = ({
+    paymentMethod
+  }: any) => {
+    setModal({
+      type: BorrowModalType.FiatSuccess,
+      paymentMethod
+    })
+  }
   return (
     <div className={twMerge('borrow-page-container', cssClass.borrowPage)}>
       <div className="borrow-header">
@@ -252,11 +262,18 @@ export default function BorrowPage() {
       <ModalBorrowFiatComponent i
         isModalOpen={BorrowModalType.Fiat == modal.type}
         handleCancel={handleCancel}
+        handleOk={handleBorrowFiatOk}
         currentToken={modal.token}
         step={step}
         setStep={setStep}
         token={token}
         setToken={setToken} />
+
+      <ModalBorrowFiatSuccessComponent
+        isModalOpen={BorrowModalType.FiatSuccess == modal.type}
+        paymentMethod={modal.paymentMethod}
+        handleCancel={handleCancel}
+      />
     </div>
   );
 }

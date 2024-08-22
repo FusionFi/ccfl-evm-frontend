@@ -30,12 +30,12 @@ export default function ModalBorrowFiatComponent({ isModalOpen, handleCancel, ha
   const [_isApproved, _setIsApproved] = useState(false);
   const [_isPending, _setIsPending] = useState(false);
   const [tab, setTab] = useState({
-    active: '4'
+    active: '1'
   });
 
-  const _handleOk = useCallback(() => {
+  const _handleOk = useCallback((params: any) => {
     _setIsApproved(false);
-    handleOk();
+    handleOk(params);
   }, []);
 
   const _handleCancel = useCallback(() => {
@@ -100,9 +100,14 @@ export default function ModalBorrowFiatComponent({ isModalOpen, handleCancel, ha
       }),
       disabled: true,
       children: ModalBorrowFiatMethodComponent({
-        next: () => setTab({
-          active: '2'
-        })
+        next: (data: any) => {
+          console.log('ModalBorrowFiatMethodComponent: ', data)
+          setTab({
+            ...tab,
+            ...data,
+            active: '2'
+          })
+        }
       }),
     },
     {
@@ -113,10 +118,13 @@ export default function ModalBorrowFiatComponent({ isModalOpen, handleCancel, ha
         title: 'Setup Payment'
       }),
       children: ModalBorrowFiatPaymentComponent({
-        next: () => setTab({
+        next: (data: any) => setTab({
+          ...tab,
+          ...data,
           active: '3'
         }),
         back: () => setTab({
+          ...tab,
           active: '1'
         })
       }),
@@ -129,10 +137,13 @@ export default function ModalBorrowFiatComponent({ isModalOpen, handleCancel, ha
         title: 'Collateral'
       }),
       children: ModalBorrowFiatCollateralComponent({
-        next: () => setTab({
+        next: (data: any) => setTab({
+          ...tab,
+          ...data,
           active: '4'
         }),
         back: () => setTab({
+          ...tab,
           active: '2'
         })
       }),
@@ -145,13 +156,21 @@ export default function ModalBorrowFiatComponent({ isModalOpen, handleCancel, ha
         title: 'Confirm'
       }),
       children: ModalBorrowFiatConfirmComponent({
+        next: () => {
+          _handleOk(tab);
+          setTab({
+            active: '1'
+          })
+        },
         back: () => setTab({
+          ...tab,
           active: '3'
         })
       }),
     },
   ];
 
+  console.log('tab: ', tab)
   return (
     <Modal
       wrapClassName={cssClass['modal-borrow-fiat-wrapper']}

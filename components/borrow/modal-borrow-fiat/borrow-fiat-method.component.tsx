@@ -75,7 +75,11 @@ export default function ModalBorrowFiatMethodComponent({
   const onFinish: FormProps<FieldType>['onFinish'] = (data) => {
     _setIsPending(true);
     setTimeout(() => {
-      next();
+      console.log('data: ', data)
+      next({
+        ...data,
+        paymentMethod: payoutMethod
+      });
       _setIsPending(false)
     }, 1000);
   };
