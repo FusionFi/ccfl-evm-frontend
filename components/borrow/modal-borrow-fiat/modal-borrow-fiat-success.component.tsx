@@ -207,7 +207,7 @@ export default function ModalBorrowFiatSuccessComponent({
           />
           {t('BORROW_FIAT_MODAL_SUCCESS_DEPOSIT', {
             amount: '0.22',
-            currency: 'WETH'
+            token: 'WETH'
           })}
         </div>
         <div className='modal-borrow-fiat-success-container__received'>

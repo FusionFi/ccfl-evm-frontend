@@ -213,7 +213,10 @@ export default function ModalBorrowFiatPaymentComponent({
 
               <PaymentDetail paymentMethod={paymentMethod} />
               <div className='borrow-fiat-payment-container__term-condition'>
-                <Checkbox onChange={handleReceiveEmailCheck}>{t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_TERM_CONDITION')}</Checkbox>
+                <Checkbox onChange={handleReceiveEmailCheck}>
+                  I agree with
+                  <a href="#" target='_blank'>{" "}Terms & Conditions</a>
+                </Checkbox>
               </div>
               <div className='borrow-fiat-payment-container__action'>
                 <div className='borrow-fiat-payment-container__action__item'>

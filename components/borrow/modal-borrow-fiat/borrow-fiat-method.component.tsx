@@ -16,8 +16,9 @@ export default function ModalBorrowFiatMethodComponent({
   next,
 }: any) {
   const { t } = useTranslation('common');
-  const [payoutMethod, setPayoutMethod] = useState(1)
-  const [repaymentCurrency, setRepaymentCurrency] = useState(1)
+  const [payoutMethod, setPayoutMethod] = useState(0)
+  const [repaymentCurrency, setRepaymentCurrency] = useState(0)
+  const [country, setCountry] = useState("")
   const [_isPending, _setIsPending] = useState(false);
 
   const handleReceiveEmailCheck: CheckboxProps['onChange'] = (e) => {
@@ -29,11 +30,13 @@ export default function ModalBorrowFiatMethodComponent({
       {
         value: 'USA',
         label: 'USA',
+        currency: 'USD',
         logo: '/images/country/usa.png',
       },
       {
         value: 'Singapore',
         label: 'Singapore',
+        currency: 'SGD',
         logo: '/images/country/singapore.png',
       },
     ].map(item => [item.value, item]),
@@ -70,6 +73,10 @@ export default function ModalBorrowFiatMethodComponent({
     setRepaymentCurrency(e.target.value)
   }
 
+  const handleCountryChange = (value: any) => {
+    setCountry(value)
+  }
+
   const onFinish: FormProps<FieldType>['onFinish'] = (data) => {
     _setIsPending(true);
     setTimeout(() => {
@@ -80,6 +87,10 @@ export default function ModalBorrowFiatMethodComponent({
       _setIsPending(false)
     }, 1000);
   };
+
+  console.log('value: ', country)
+
+  const currency = CountryMap.get(country)?.currency || '--'
 
   return (
     <Form onFinish={onFinish}>
@@ -94,11 +105,10 @@ export default function ModalBorrowFiatMethodComponent({
                   <div className="borrow-fiat-method-container__loan__body__country">
                     {t('BORROW_FIAT_MODAL_TAB_SELECT_METHOD_LOAN_CHOOSE_COUNTRY')}
                     <Select
+                      onChange={handleCountryChange}
                       popupClassName={cssClass['borrow-fiat-method-country']}
+                      placeholder="Select country"
                       labelRender={SelectLableCountry}
-                      defaultValue={{
-                        value: 'USA',
-                      }}
                       options={[...(CountryMap.values() as any)].map(item => ({
                         value: item.value,
                       }))}
@@ -125,7 +135,7 @@ export default function ModalBorrowFiatMethodComponent({
                   </div>
                   <div className="borrow-fiat-method-container__loan__body__currency">
                     {t('BORROW_FIAT_MODAL_TAB_SELECT_METHOD_LOAN_CURRENCY')}
-                    <span className="borrow-fiat-method-container__loan__body__currency__value">USD</span>
+                    <span className="borrow-fiat-method-container__loan__body__currency__value">{currency}</span>
                   </div>
                 </div>
               </div>
@@ -135,49 +145,46 @@ export default function ModalBorrowFiatMethodComponent({
                 </div>
                 <Radio.Group onChange={handlePayoutMethodSelect} value={payoutMethod}>
                   <div className="borrow-fiat-method-container__payout__method__value">
-                    <Radio value={1}>
+                    <Radio value={1} disabled={!country}>
                       {t('BORROW_FIAT_MODAL_TAB_SELECT_METHOD_PAYOUT_VALUE_BANK_WIRE')}
                     </Radio>
                   </div >
                   <div className="borrow-fiat-method-container__payout__method__value">
-                    <Radio value={2}>{t('BORROW_FIAT_MODAL_TAB_SELECT_METHOD_PAYOUT_VALUE_GIFT_CODE')}</Radio>
+                    <Radio disabled={!country} value={2}>{t('BORROW_FIAT_MODAL_TAB_SELECT_METHOD_PAYOUT_VALUE_GIFT_CODE')}</Radio>
                   </div>
                   <div className="borrow-fiat-method-container__payout__method__value">
                     <Radio disabled={true} value={3}>
                       {t('BORROW_FIAT_MODAL_TAB_SELECT_METHOD_PAYOUT_VALUE_MOBILE_WALLET')}
                     </Radio>
-                    <div className='borrow-fiat-method-container__payout__method__msg'>{t('BORROW_FIAT_MODAL_TAB_SELECT_METHOD_PAYOUT_MSG_NOT_AVAILABLE')}</div>
+                    {country && <div className='borrow-fiat-method-container__payout__method__msg'>{t('BORROW_FIAT_MODAL_TAB_SELECT_METHOD_PAYOUT_MSG_NOT_AVAILABLE')}</div>}
                   </div>
                   <div className="borrow-fiat-method-container__payout__method__value">
                     <Radio disabled={true} value={4}>{t('BORROW_FIAT_MODAL_TAB_SELECT_METHOD_PAYOUT_VALUE_MOBILE_TOP_UP')}</Radio>
-                    <div className='borrow-fiat-method-container__payout__method__msg'>{t('BORROW_FIAT_MODAL_TAB_SELECT_METHOD_PAYOUT_MSG_NOT_AVAILABLE')} </div>
+                    {country && <div className='borrow-fiat-method-container__payout__method__msg'>{t('BORROW_FIAT_MODAL_TAB_SELECT_METHOD_PAYOUT_MSG_NOT_AVAILABLE')} </div>}
                   </div>
                 </Radio.Group>
               </div>
-              <div className='borrow-fiat-method-container__email'>
-                <div className='borrow-fiat-method-container__email__control'>
-                  <Checkbox onChange={handleReceiveEmailCheck}>{t('BORROW_FIAT_MODAL_TAB_SELECT_METHOD_EMAIL_CONTROL')}</Checkbox>
-                </div>
-                <div className='borrow-fiat-method-container__email__input'>
-                  {t('BORROW_FIAT_MODAL_TAB_SELECT_METHOD_EMAIL_RECIPIENT_TITLE')}
-                  <Input placeholder="mail@mail.com" />
-                </div>
-              </div>
+
               <div className='borrow-fiat-method-container__repayment'>
                 <div className='borrow-fiat-method-container__repayment__title'>
                   {t('BORROW_FIAT_MODAL_TAB_SELECT_METHOD_REPAYMENT_TITLE')}
                 </div>
                 <Radio.Group onChange={handleRepaymentCurrencySelect} value={repaymentCurrency}>
-                  <Radio value={1}>USDT (Avalanche)</Radio>
-                  <Radio value={2}>USDC (Avalanche)</Radio>
+                  <Radio disabled={!country} value={1}>USDT (Avalanche)</Radio>
+                  <Radio disabled={!country} value={2}>USDC (Avalanche)</Radio>
                 </Radio.Group>
+              </div>
+              <div className='borrow-fiat-method-container__email'>
+                <div className='borrow-fiat-method-container__email__control'>
+                  <Checkbox disabled={!country} onChange={handleReceiveEmailCheck}>{t('BORROW_FIAT_MODAL_TAB_SELECT_METHOD_EMAIL_CONTROL')}</Checkbox>
+                </div>
               </div>
               <div className='borrow-fiat-method-container__action'>
                 <Button
                   loading={_isPending}
                   type="primary"
                   htmlType='submit'
-                  disabled={isNotValidForm}
+                  disabled={isNotValidForm || !country}
                   className={twMerge('btn-primary-custom')}
                   block>
                   {t('BORROW_FIAT_MODAL_TAB_SELECT_METHOD_ACTION_NEXT')}
