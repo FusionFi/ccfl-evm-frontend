@@ -68,6 +68,16 @@
               /* 157.143% */
             }
 
+            .ant-select-selection-placeholder {
+
+              color: var(--character-secondary-45, rgba(255, 255, 255, 0.45));
+              font-family: Inter;
+              font-size: 14px;
+              font-style: normal;
+              font-weight: 500;
+              line-height: 32px;
+            }
+
             .ant-select-single.ant-select-open .ant-select-selection-item {
               color: white;
             }
@@ -246,12 +256,41 @@
             font-weight: 400;
             line-height: 22px;
 
+            &.ant-checkbox-wrapper-disabled {
+              >span {
+                color: var(--character-disabled-amp-placeholder-25, rgba(255, 255, 255, 0.30));
+
+                /* Body/regular */
+                font-family: Inter;
+                font-size: 14px;
+                font-style: normal;
+                font-weight: 400;
+                line-height: 22px;
+                /* 157.143% */
+              }
+
+              &:hover {
+                .ant-checkbox {
+                  .ant-checkbox-inner {
+                    background: var(--Neutral-3, #1F1F1F);
+                  }
+                }
+              }
+
+              .ant-checkbox-disabled {
+                .ant-checkbox-inner {
+                  border-radius: 2px;
+                  border: 1px solid var(--Neutral-5, #434343);
+                  background: var(--Neutral-3, #1F1F1F);
+                }
+              }
+            }
+
             /* 157.143% */
             &:hover {
               .ant-checkbox {
                 .ant-checkbox-inner {
                   background: var(--Primary-6, #1890FF);
-                  opacity: 0.5;
                 }
               }
             }
@@ -262,7 +301,7 @@
                 background: var(--Primary-6, #1890FF);
                 width: 16px;
                 height: 16px;
-                border-radius: 2px;
+                border: 1px solid rgba(24, 144, 255, 0.00);
 
                 &::after {
                   width: 6.142857px;
@@ -424,6 +463,14 @@
         gap: 16px;
         align-self: stretch;
         border-top: 1px solid var(--Conditional-divider, #303030);
+
+        .btn-primary-custom {
+          &:disabled {
+            border-radius: 2px;
+            border: 1px solid var(--Neutral-5, #434343)!important;
+            background: var(--Neutral-3, #1F1F1F)!important;
+          }
+        }
       }
     }
   }

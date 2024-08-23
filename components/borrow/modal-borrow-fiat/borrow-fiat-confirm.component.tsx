@@ -52,7 +52,9 @@ export default function ModalBorrowFiatCollateralComponent({
               {t('BORROW_FIAT_MODAL_TAB_CONFIRM_LOAN_CURRENCY')}
             </div>
 
-            <div className='borrow-fiat-confirm-container__loan__item__value'>
+            <div className='borrow-fiat-confirm-container__loan__item__value' style={{
+              alignItems: 'center'
+            }}>
               <Image
                 src={'/images/country/usa.png'}
                 alt={'USA'}

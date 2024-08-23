@@ -339,7 +339,6 @@
               .ant-checkbox {
                 .ant-checkbox-inner {
                   background: var(--Primary-6, #1890FF);
-                  opacity: 0.5;
                 }
               }
             }
@@ -350,7 +349,7 @@
                 background: var(--Primary-6, #1890FF);
                 width: 16px;
                 height: 16px;
-                border-radius: 2px;
+                border: 1px solid rgba(24, 144, 255, 0.00);
 
                 &::after {
                   width: 6.142857px;
@@ -495,6 +494,14 @@
                 color: var(--character-title-85, rgba(255, 255, 255, 0.85)) !important;
               }
             }
+          }
+        }
+
+        .btn-primary-custom {
+          &:disabled {
+            border-radius: 2px;
+            border: 1px solid var(--Neutral-5, #434343)!important;
+            background: var(--Neutral-3, #1F1F1F)!important;
           }
         }
       }
