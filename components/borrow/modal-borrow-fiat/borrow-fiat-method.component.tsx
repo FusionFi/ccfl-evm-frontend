@@ -1,12 +1,10 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import Link from 'next/link';
+import React, { useState } from 'react';
 import cssClass from './borrow-fiat-method.component.module.scss';
 import { twMerge } from 'tailwind-merge';
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
-import { Modal, Form, Select, Checkbox, Input, Radio, Button } from 'antd';
+import { Form, Select, Checkbox, Input, Radio, Button } from 'antd';
 import type { SelectProps, CheckboxProps, FormProps } from 'antd';
-import { RightOutlined } from '@ant-design/icons';
 
 type FieldType = {
   amount?: any;
@@ -75,7 +73,6 @@ export default function ModalBorrowFiatMethodComponent({
   const onFinish: FormProps<FieldType>['onFinish'] = (data) => {
     _setIsPending(true);
     setTimeout(() => {
-      console.log('data: ', data)
       next({
         ...data,
         paymentMethod: payoutMethod
@@ -92,10 +89,10 @@ export default function ModalBorrowFiatMethodComponent({
           <div className={cssClass['borrow-fiat-method-wrapper']}>
             <div className={'borrow-fiat-method-container'}>
               <div className="borrow-fiat-method-container__loan">
-                <span className="borrow-fiat-method-container__loan__title">Setup Loan</span>
+                <span className="borrow-fiat-method-container__loan__title">{t('BORROW_FIAT_MODAL_TAB_SELECT_METHOD_LOAN_TITLE')}</span>
                 <div className="borrow-fiat-method-container__loan__body">
                   <div className="borrow-fiat-method-container__loan__body__country">
-                    Choose country
+                    {t('BORROW_FIAT_MODAL_TAB_SELECT_METHOD_LOAN_CHOOSE_COUNTRY')}
                     <Select
                       popupClassName={cssClass['borrow-fiat-method-country']}
                       labelRender={SelectLableCountry}
@@ -127,48 +124,48 @@ export default function ModalBorrowFiatMethodComponent({
                     />
                   </div>
                   <div className="borrow-fiat-method-container__loan__body__currency">
-                    Currency
+                    {t('BORROW_FIAT_MODAL_TAB_SELECT_METHOD_LOAN_CURRENCY')}
                     <span className="borrow-fiat-method-container__loan__body__currency__value">USD</span>
                   </div>
                 </div>
               </div>
               <div className="borrow-fiat-method-container__payout">
                 <div className='borrow-fiat-method-container__payout__title'>
-                  <div>Select Payout Method</div>
+                  <div>{t('BORROW_FIAT_MODAL_TAB_SELECT_METHOD_PAYOUT_TITLE')}</div>
                 </div>
                 <Radio.Group onChange={handlePayoutMethodSelect} value={payoutMethod}>
                   <div className="borrow-fiat-method-container__payout__method__value">
                     <Radio value={1}>
-                      Bank Wire
+                      {t('BORROW_FIAT_MODAL_TAB_SELECT_METHOD_PAYOUT_VALUE_BANK_WIRE')}
                     </Radio>
                   </div >
                   <div className="borrow-fiat-method-container__payout__method__value">
-                    <Radio value={2}>Gift Code</Radio>
+                    <Radio value={2}>{t('BORROW_FIAT_MODAL_TAB_SELECT_METHOD_PAYOUT_VALUE_GIFT_CODE')}</Radio>
                   </div>
                   <div className="borrow-fiat-method-container__payout__method__value">
                     <Radio disabled={true} value={3}>
-                      Mobile Wallet
+                      {t('BORROW_FIAT_MODAL_TAB_SELECT_METHOD_PAYOUT_VALUE_MOBILE_WALLET')}
                     </Radio>
-                    <div className='borrow-fiat-method-container__payout__method__msg'>Not available </div>
+                    <div className='borrow-fiat-method-container__payout__method__msg'>{t('BORROW_FIAT_MODAL_TAB_SELECT_METHOD_PAYOUT_MSG_NOT_AVAILABLE')}</div>
                   </div>
                   <div className="borrow-fiat-method-container__payout__method__value">
-                    <Radio disabled={true} value={4}>Mobile Top-Up</Radio>
-                    <div className='borrow-fiat-method-container__payout__method__msg'>Not available </div>
+                    <Radio disabled={true} value={4}>{t('BORROW_FIAT_MODAL_TAB_SELECT_METHOD_PAYOUT_VALUE_MOBILE_TOP_UP')}</Radio>
+                    <div className='borrow-fiat-method-container__payout__method__msg'>{t('BORROW_FIAT_MODAL_TAB_SELECT_METHOD_PAYOUT_MSG_NOT_AVAILABLE')} </div>
                   </div>
                 </Radio.Group>
               </div>
               <div className='borrow-fiat-method-container__email'>
                 <div className='borrow-fiat-method-container__email__control'>
-                  <Checkbox onChange={handleReceiveEmailCheck}>Receive email for transaction update</Checkbox>
+                  <Checkbox onChange={handleReceiveEmailCheck}>{t('BORROW_FIAT_MODAL_TAB_SELECT_METHOD_EMAIL_CONTROL')}</Checkbox>
                 </div>
                 <div className='borrow-fiat-method-container__email__input'>
-                  Recipient email
+                  {t('BORROW_FIAT_MODAL_TAB_SELECT_METHOD_EMAIL_RECIPIENT_TITLE')}
                   <Input placeholder="mail@mail.com" />
                 </div>
               </div>
               <div className='borrow-fiat-method-container__repayment'>
                 <div className='borrow-fiat-method-container__repayment__title'>
-                  Repayment Currency
+                  {t('BORROW_FIAT_MODAL_TAB_SELECT_METHOD_REPAYMENT_TITLE')}
                 </div>
                 <Radio.Group onChange={handleRepaymentCurrencySelect} value={repaymentCurrency}>
                   <Radio value={1}>USDT (Avalanche)</Radio>
@@ -183,7 +180,7 @@ export default function ModalBorrowFiatMethodComponent({
                   disabled={isNotValidForm}
                   className={twMerge('btn-primary-custom')}
                   block>
-                  Next
+                  {t('BORROW_FIAT_MODAL_TAB_SELECT_METHOD_ACTION_NEXT')}
                 </Button>
               </div>
             </div>

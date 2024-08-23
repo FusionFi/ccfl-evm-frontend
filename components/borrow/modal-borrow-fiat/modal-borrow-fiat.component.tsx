@@ -96,7 +96,7 @@ export default function ModalBorrowFiatComponent({ isModalOpen, handleCancel, ha
       key: '1',
       label: TabbarLabelRender({
         key: '1',
-        title: 'Select Method'
+        title: t('BORROW_FIAT_MODAL_TAB_SELECT_METHOD_TITLE')
       }),
       disabled: true,
       children: ModalBorrowFiatMethodComponent({
@@ -115,7 +115,7 @@ export default function ModalBorrowFiatComponent({ isModalOpen, handleCancel, ha
       disabled: true,
       label: TabbarLabelRender({
         key: '2',
-        title: 'Setup Payment'
+        title: t('BORROW_FIAT_MODAL_TAB_SETUP_PAYMENT_TITLE')
       }),
       children: ModalBorrowFiatPaymentComponent({
         detail: tab,
@@ -135,7 +135,7 @@ export default function ModalBorrowFiatComponent({ isModalOpen, handleCancel, ha
       disabled: true,
       label: TabbarLabelRender({
         key: '3',
-        title: 'Collateral'
+        title: t('BORROW_FIAT_MODAL_TAB_SETUP_COLLATERAL_TITLE')
       }),
       children: ModalBorrowFiatCollateralComponent({
         detail: tab,
@@ -155,7 +155,7 @@ export default function ModalBorrowFiatComponent({ isModalOpen, handleCancel, ha
       disabled: true,
       label: TabbarLabelRender({
         key: '4',
-        title: 'Confirm'
+        title: t('BORROW_FIAT_MODAL_TAB_SETUP_CONFIRM_TITLE')
       }),
       children: ModalBorrowFiatConfirmComponent({
         detail: tab,
@@ -177,7 +177,7 @@ export default function ModalBorrowFiatComponent({ isModalOpen, handleCancel, ha
   return (
     <Modal
       wrapClassName={cssClass['modal-borrow-fiat-wrapper']}
-      title="Borrow FIAT"
+      title={t('BORROW_FIAT_MODAL_TITLE')}
       open={isModalOpen}
       onOk={_handleOk}
       onCancel={_handleCancel}
