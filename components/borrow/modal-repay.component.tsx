@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 import ModalComponent from '@/components/common/modal.component';
 import { InputNumber } from 'antd';
@@ -21,6 +21,7 @@ interface ModalBorrowProps {
   currentToken: string;
   step: any;
   setStep: any;
+  isFiat?: boolean;
 }
 
 interface IFormInput {
@@ -33,6 +34,7 @@ export default function ModalBorrowComponent({
   currentToken,
   step,
   setStep,
+  isFiat,
 }: ModalBorrowProps) {
   const { t } = useTranslation('common');
 
@@ -48,15 +50,15 @@ export default function ModalBorrowComponent({
     },
   });
 
-  const [tokenValue, setTokenValue] = useState(0);
+  const [tokenValue, setTokenValue] = useState();
 
   const onSubmit: SubmitHandler<IFormInput> = data => {
-    if (step == 1) {
-      setTokenValue(0);
-    }
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
+      if (step == 1) {
+        setTokenValue(0);
+      }
       setStep(step + 1);
     }, 1000);
   };
@@ -73,6 +75,12 @@ export default function ModalBorrowComponent({
     }
     return `${t('BORROW_MODAL_BORROW_REPAY')} ${currentToken?.toUpperCase()}`;
   };
+
+  useEffect(() => {
+    if (isModalOpen) {
+      setTokenValue(undefined);
+    }
+  }, [isModalOpen]);
 
   return (
     <div>
@@ -96,6 +104,7 @@ export default function ModalBorrowComponent({
                           placeholder={t('BORROW_MODAL_BORROW_ENTER_AMOUNT')}
                           className="flex-1"
                           controls={false}
+                          value={tokenValue}
                           onChange={(value: any) => {
                             setTokenValue(value);
                           }}
@@ -153,14 +162,14 @@ export default function ModalBorrowComponent({
                   </div>
                   <div className="flex">
                     <div className="modal-borrow-repay">
-                      <span>5,000.00 </span>
-                      <span className="ml-1">{currentToken.toUpperCase()}</span>
+                      <span>5,000.00</span>
+                      <span className="ml-1">{isFiat ? 'USD' : currentToken?.toUpperCase()}</span>
                     </div>
                     {tokenValue > 0 && (
                       <div className="modal-borrow-repay remain">
                         <ArrowRightOutlined className="mx-1" />
                         <span>4,999.00</span>
-                        <span className="ml-1">{currentToken.toUpperCase()}</span>
+                        <span className="ml-1">{isFiat ? 'USD' : currentToken?.toUpperCase()}</span>
                       </div>
                     )}
                   </div>
@@ -208,7 +217,7 @@ export default function ModalBorrowComponent({
                       className="w-full"
                       loading={loading}>
                       {t('BORROW_MODAL_BORROW_APPROVE', {
-                        currentToken: currentToken.toUpperCase(),
+                        currentToken: currentToken?.toUpperCase(),
                       })}
                     </Button>
                   </div>
@@ -222,7 +231,9 @@ export default function ModalBorrowComponent({
                         disabled={!tokenValue}
                         className="w-full"
                         loading={loading}>
-                        {t('BORROW_MODAL_BORROW_PAY', { currentToken: currentToken.toUpperCase() })}
+                        {t('BORROW_MODAL_BORROW_PAY', {
+                          currentToken: currentToken?.toUpperCase(),
+                        })}
                       </Button>
                     </div>
                   </div>

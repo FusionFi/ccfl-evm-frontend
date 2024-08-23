@@ -4,7 +4,7 @@ import { LOAN_STATUS } from '@/constants/common.constant';
 import { toCurrency } from '@/utils/common';
 import { CheckOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import type { TableProps } from 'antd';
-import { Button, Table, Tooltip } from 'antd';
+import { Button, Skeleton, Table, Tooltip } from 'antd';
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
@@ -14,8 +14,8 @@ interface LoansProps {
   showRepayModal: any;
   showCollateralModal: any;
   dataLoan?: loanType[];
-  loading: any;
   showWithdrawCollateralModal: any;
+  loading?: any;
 }
 
 export default function LoansComponent(props: LoansProps) {
@@ -178,7 +178,7 @@ export default function LoansComponent(props: LoansProps) {
               <Button
                 disabled={final_status === LOAN_STATUS.LIQUIDATED}
                 className=""
-                onClick={() => props.showRepayModal(record.asset)}>
+                onClick={() => props.showRepayModal(record.asset, record.repayment_currency)}>
                 {t('BORROW_MODAL_BORROW_REPAY')}
               </Button>
             )}
@@ -205,6 +205,7 @@ export default function LoansComponent(props: LoansProps) {
       collateral_asset: 'WETH',
       yield_generating: true,
       yield_earned: '0.281',
+      repayment_currency: 'USDT',
     },
     {
       asset: 'USD',
@@ -217,6 +218,7 @@ export default function LoansComponent(props: LoansProps) {
       collateral_asset: 'WETH',
       yield_generating: true,
       yield_earned: '0.281',
+      repayment_currency: 'USDT',
     },
     {
       asset: 'USD',
@@ -229,6 +231,7 @@ export default function LoansComponent(props: LoansProps) {
       collateral_asset: 'WETH',
       yield_generating: true,
       yield_earned: '0.281',
+      repayment_currency: 'USDT',
     },
     {
       asset: 'USDC',
@@ -286,24 +289,30 @@ export default function LoansComponent(props: LoansProps) {
 
   return (
     <div className={twMerge(cssClass.loansComponent)}>
-      <Table
-        title={() => t('BORROW_MODAL_BORROW_BORROW_MY_LOANS')}
-        expandable={{
-          defaultExpandAllRows: true,
-          expandedRowRender,
-          rowExpandable: record => true,
-          showExpandColumn: false,
-        }}
-        virtual
-        className="loans-container"
-        bordered={false}
-        rowHoverable={false}
-        pagination={false}
-        columns={columns}
-        dataSource={dataLoan}
-        locale={locale}
-        rowKey={index => `${index}`}
-      />
+      {props.loading ? (
+        <div className="loans-container skeleton">
+          <Skeleton active />
+        </div>
+      ) : (
+        <Table
+          title={() => t('BORROW_MODAL_BORROW_BORROW_MY_LOANS')}
+          expandable={{
+            defaultExpandAllRows: true,
+            expandedRowRender,
+            rowExpandable: record => true,
+            showExpandColumn: false,
+          }}
+          virtual
+          className="loans-container"
+          bordered={false}
+          rowHoverable={false}
+          pagination={false}
+          columns={columns}
+          dataSource={dataLoan}
+          locale={locale}
+          rowKey={(record, index) => `${index}-${record.asset}`}
+        />
+      )}
     </div>
   );
 }

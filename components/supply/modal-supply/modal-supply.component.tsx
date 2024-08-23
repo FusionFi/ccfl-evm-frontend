@@ -47,7 +47,6 @@ export default function ModalSupplyComponent({
       } else {
         handleApprove();
       }
-
       _setIsPending(false)
     }, 1000);
   };

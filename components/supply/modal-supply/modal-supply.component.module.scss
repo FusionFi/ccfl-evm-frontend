@@ -89,6 +89,10 @@
                   width: auto;
                   flex: 0 1 auto;
 
+                  &:focus-within {
+                    box-shadow: none;
+                  }
+
                   .ant-input-number-input {
                     &::placeholder {
                       color: var(--character-secondary-45, rgba(255, 255, 255, 0.45));

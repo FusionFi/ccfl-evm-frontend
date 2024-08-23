@@ -22,18 +22,25 @@ import Image from 'next/image';
 import { useAccount, useNetwork } from 'wagmi';
 // import { getNetwork } from '@wagmi/core';
 import { DataType } from '@/components/borrow/borrow';
+import ModalBorrowFiatSuccessComponent from '@/components/borrow/modal-borrow-fiat/modal-borrow-fiat-success.component';
+import ModalBorrowFiatComponent from '@/components/borrow/modal-borrow-fiat/modal-borrow-fiat.component';
 import ModalCollateralComponent from '@/components/borrow/modal-collateral.component';
 import ModalWithdrawCollateralComponent from '@/components/borrow/modal-withdraw-collateral.component';
 import service from '@/utils/backend/borrow';
 import { toCurrency } from '@/utils/common';
 
 type LabelRender = SelectProps['labelRender'];
+enum BorrowModalType {
+  Crypto = 'crypto',
+  Fiat = 'fiat',
+  FiatSuccess = 'fiat-success',
+}
 
 export default function BorrowPage() {
   const { t } = useTranslation('common');
   const { chain, chains } = useNetwork();
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modal, setModal] = useState({} as any);
   const [isModalRepayOpen, setIsModalRepayOpen] = useState(false);
   const [isModalCollateralOpen, setIsModalCollateralOpen] = useState(false);
   const [isModalWithdrawCollateral, setIsModalWithdrawCollateral] = useState(false);
@@ -48,6 +55,7 @@ export default function BorrowPage() {
   const [loading, setLoading] = useState(false);
 
   const { address, isConnected } = useAccount();
+  const [isFiat, setIsFiat] = useState(false);
 
   //connect wallet
   const [showSuccess, showError, showWarning, contextHolder] = useNotification();
@@ -72,15 +80,23 @@ export default function BorrowPage() {
   }, []);
 
   const showModal = (token: string) => {
-    setCurrentToken(token);
-    setIsModalOpen(true);
+    setModal({
+      type: token == BorrowModalType.Fiat ? BorrowModalType.Fiat : BorrowModalType.Crypto,
+      token,
+    });
   };
   const showWithdrawCollateralModal = (token: string) => {
     setCollateralToken(token);
     setIsModalWithdrawCollateral(true);
   };
-  const showRepayModal = (token: string) => {
-    setCurrentToken(token);
+  const showRepayModal = (token: string, repaymentCurrency: string) => {
+    if (repaymentCurrency) {
+      setIsFiat(true);
+      setCurrentToken(repaymentCurrency);
+    } else {
+      setIsFiat(false);
+      setCurrentToken(token);
+    }
     setIsModalRepayOpen(true);
   };
   const showCollateralModal = (token: string) => {
@@ -89,8 +105,9 @@ export default function BorrowPage() {
   };
 
   const handleCancel = () => {
-    setCurrentToken('');
-    setIsModalOpen(false);
+    setModal({
+      type: '',
+    });
     setStep(0);
     setToken(COLLATERAL_TOKEN[0].name);
   };
@@ -190,6 +207,12 @@ export default function BorrowPage() {
     }
   }, [address, initNetworkInfo]);
 
+  const handleBorrowFiatOk = ({ paymentMethod }: any) => {
+    setModal({
+      type: BorrowModalType.FiatSuccess,
+      paymentMethod,
+    });
+  };
   return (
     <div className={twMerge('borrow-page-container', cssClass.borrowPage)}>
       <div className="borrow-header">
@@ -257,9 +280,9 @@ export default function BorrowPage() {
         </div>
       </div>
       <ModalBorrowComponent
-        isModalOpen={isModalOpen}
+        isModalOpen={BorrowModalType.Crypto == modal.type}
         handleCancel={handleCancel}
-        currentToken={currentToken}
+        currentToken={modal.token}
         step={step}
         setStep={setStep}
         token={token}
@@ -271,6 +294,7 @@ export default function BorrowPage() {
         currentToken={currentToken}
         step={step}
         setStep={setStep}
+        isFiat={isFiat}
       />
       <ModalCollateralComponent
         isModalOpen={isModalCollateralOpen}
@@ -285,6 +309,22 @@ export default function BorrowPage() {
         currentToken={collateralToken}
         step={step}
         setStep={setStep}
+      />
+      <ModalBorrowFiatComponent
+        isModalOpen={BorrowModalType.Fiat == modal.type}
+        handleCancel={handleCancel}
+        handleOk={handleBorrowFiatOk}
+        currentToken={modal.token}
+        step={step}
+        setStep={setStep}
+        token={token}
+        setToken={setToken}
+      />
+
+      <ModalBorrowFiatSuccessComponent
+        isModalOpen={BorrowModalType.FiatSuccess == modal.type}
+        paymentMethod={modal.paymentMethod}
+        handleCancel={handleCancel}
       />
     </div>
   );

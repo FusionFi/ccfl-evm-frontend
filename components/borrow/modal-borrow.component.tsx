@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 import ModalComponent from '@/components/common/modal.component';
 import { InputNumber } from 'antd';
@@ -50,13 +50,13 @@ export default function ModalBorrowComponent({
   const { t } = useTranslation('common');
 
   const onSubmit: SubmitHandler<IFormInput> = data => {
-    if (step == 1) {
-      setTokenValue(0);
-      setCollateralValue(0);
-    }
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
+      if (step == 1) {
+        setTokenValue(undefined);
+        setCollateralValue(undefined);
+      }
       setStep(step + 1);
     }, 1000);
   };
@@ -72,8 +72,8 @@ export default function ModalBorrowComponent({
     setYield(e.target.checked);
   };
 
-  const [tokenValue, setTokenValue] = useState(0);
-  const [collateralValue, setCollateralValue] = useState(0);
+  const [tokenValue, setTokenValue] = useState();
+  const [collateralValue, setCollateralValue] = useState();
   const minimumAmount = 2;
 
   const status = 'SUCCESS';
@@ -86,6 +86,13 @@ export default function ModalBorrowComponent({
     }
     return `${t('BORROW_MODAL_BORROW_BORROW')} ${currentToken?.toUpperCase()}`;
   };
+
+  useEffect(() => {
+    if (isModalOpen) {
+      setTokenValue(undefined);
+      setCollateralValue(undefined);
+    }
+  }, [isModalOpen]);
 
   return (
     <div>
@@ -111,6 +118,7 @@ export default function ModalBorrowComponent({
                           placeholder={t('BORROW_MODAL_BORROW_ENTER_AMOUNT')}
                           className="flex-1"
                           controls={false}
+                          value={tokenValue}
                           onChange={(value: any) => {
                             setTokenValue(value);
                           }}
@@ -205,6 +213,7 @@ export default function ModalBorrowComponent({
                           placeholder={t('BORROW_MODAL_BORROW_ENTER_AMOUNT')}
                           className="flex-1 "
                           controls={false}
+                          value={collateralValue}
                           onChange={(value: any) => {
                             setCollateralValue(value);
                           }}
@@ -221,7 +230,7 @@ export default function ModalBorrowComponent({
                   <div className="modal-borrow-sub-content">{t('BORROW_MODAL_BORROW_HEALTH')}</div>
                   <div className="flex">
                     <span className="c-white">3.31B</span>
-                    {collateralValue > 0 && (
+                    {collateralValue && collateralValue > 0 && (
                       <div className="flex">
                         <ArrowRightOutlined className="mx-1" />
                         <span className="">3.33B</span>
@@ -256,7 +265,7 @@ export default function ModalBorrowComponent({
                     <Button
                       htmlType="submit"
                       type="primary"
-                      disabled={!tokenValue || collateralValue < minimumAmount}
+                      disabled={!tokenValue || !collateralValue || collateralValue < minimumAmount}
                       className="w-full"
                       loading={loading}>
                       {t('BORROW_MODAL_BORROW_APPROVE', { currentToken: token })}
@@ -272,7 +281,9 @@ export default function ModalBorrowComponent({
                       <Button
                         htmlType="submit"
                         type="primary"
-                        disabled={!tokenValue || collateralValue < minimumAmount}
+                        disabled={
+                          !tokenValue || !collateralValue || collateralValue < minimumAmount
+                        }
                         className="w-full"
                         loading={loading}>
                         {t('BORROW_MODAL_BORROW_DEPOSIT', { token: token })}

@@ -1,16 +1,16 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import cssClass from '@/components/borrow/asset.component.module.scss';
 import SafeHtmlComponent from '@/components/common/safe-html.component';
+import { ASSET_LIST } from '@/constants/common.constant';
 import { STAKE_DEFAULT_NETWORK } from '@/constants/networks';
 import eventBus from '@/hooks/eventBus.hook';
+import service from '@/utils/backend/borrow';
+import { toCurrency } from '@/utils/common';
 import { Button, Skeleton } from 'antd';
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
-import service from '@/utils/backend/borrow';
-import { toCurrency } from '@/utils/common';
-import { ASSET_LIST } from '@/constants/common.constant';
 
 interface AssetProps {
   showModal: any;
@@ -63,8 +63,6 @@ export default function assetComponent({
   useEffect(() => {
     handlePrice();
   }, []);
-
-  console.log('tokenList', tokenList);
 
   return (
     <div className={twMerge(cssClass.assetComponent)}>
