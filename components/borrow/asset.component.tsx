@@ -94,9 +94,9 @@ export default function assetComponent({
               } basis-1/4`}></div>
           </div>
           {loading ? (
-            <>
-              <Skeleton active className="p-2" />
-            </>
+            <div className="asset-empty">
+              <Skeleton active />
+            </div>
           ) : (
             <>
               {tokenList && tokenList.length > 0 ? (
