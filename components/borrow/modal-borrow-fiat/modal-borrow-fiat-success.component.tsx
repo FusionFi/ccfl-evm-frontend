@@ -14,18 +14,23 @@ enum PayoutMethod {
 }
 
 const SuccessMessage = ({ paymentMethod }: any) => {
+  const { t } = useTranslation('common');
+
   if (paymentMethod == PayoutMethod.GiftCode) {
     return <>
-      Your gift card of 100.00 USD is ready
+      {t('BORROW_FIAT_MODAL_SUCCESS_GIFT_CODE_MSG', {
+        amount: '100.00',
+        currency: 'USD'
+      })}
     </>
   }
 
   return <>
     <span>
-      You successfully borrowed <span className='modal-borrow-fiat-success-container__status__msg--emphasize'>13,000 USD</span>
+      {t('BORROW_FIAT_MODAL_SUCCESS_BANK_WIRE_MSG')} <span className='modal-borrow-fiat-success-container__status__msg--emphasize'>13,000 USD</span>
     </span>
     <span className='modal-borrow-fiat-success-container__status__msg__note'>
-      The loan will be available to you in 3-5 working days
+      {t('BORROW_FIAT_MODAL_SUCCESS_BANK_WIRE_NOTE')}
     </span>
   </>
 }
@@ -34,6 +39,7 @@ const BorrowFiatGiftDetail = () => {
   const [_isPending, _setIsPending] = useState(false)
   const [isUnseal, setIsUnseal] = useState(false)
   const [isTooltipDisplayed, setIsTooltipDisplayed] = useState(false)
+  const { t } = useTranslation('common');
 
   const handleUnseal = () => {
     _setIsPending(true)
@@ -66,19 +72,19 @@ const BorrowFiatGiftDetail = () => {
 
   return <>
     <div className="modal-borrow-fiat-success-container__detail__content__item">
-      We sent the voucher code to your email or Click the unseal button below to review
+      {t('BORROW_FIAT_MODAL_SUCCESS_GIFT_UNSEAL_TITLE')}
     </div>
     <div className="modal-borrow-fiat-success-container__detail__content__item">
       {isUnseal ? <Input className='modal-borrow-fiat-success-container__detail__content__item__unseal-box' disabled={true} defaultValue="https://costco.gift/v612io872g265423g5" addonAfter={<Tooltip
         visible={isTooltipDisplayed}
         trigger="click"
-        title='Copied'
+        title={t('BORROW_FIAT_MODAL_SUCCESS_GIFT_UNSEAL_COPIED')}
       >
         <Button
           type="link"
           size="small"
           onClick={copyAddress}
-          icon={<CopyOutlined className='text-white'/>}
+          icon={<CopyOutlined className='text-white' />}
         ></Button>
       </Tooltip>} />
         : <Button
@@ -87,7 +93,7 @@ const BorrowFiatGiftDetail = () => {
           onClick={handleUnseal}
           className={twMerge('btn-primary-custom')}
           block>
-          Click to Unseal
+          {t('BORROW_FIAT_MODAL_SUCCESS_GIFT_UNSEAL_ACTION')}
         </Button>
       }
     </div>
@@ -95,15 +101,16 @@ const BorrowFiatGiftDetail = () => {
 }
 
 const BorrowFiatDetail = ({ paymentMethod }: any) => {
-  if (paymentMethod == PayoutMethod.GiftCode) {
+  const { t } = useTranslation('common');
 
+  if (paymentMethod == PayoutMethod.GiftCode) {
     return <BorrowFiatGiftDetail />
   }
 
   return <>
     <div className="modal-borrow-fiat-success-container__detail__content__item">
       <span className="modal-borrow-fiat-success-container__detail__content__item__title">
-        Bank:
+        {t('BORROW_FIAT_MODAL_SUCCESS_BANK')}:
       </span>
       <span className="modal-borrow-fiat-success-container__detail__content__item__value">
         Citibank USA
@@ -111,7 +118,7 @@ const BorrowFiatDetail = ({ paymentMethod }: any) => {
     </div>
     <div className="modal-borrow-fiat-success-container__detail__content__item">
       <span className="modal-borrow-fiat-success-container__detail__content__item__title">
-        Acc. Number:
+        {t('BORROW_FIAT_MODAL_SUCCESS_ACC_NUMBER')}:
       </span>
       <span className="modal-borrow-fiat-success-container__detail__content__item__value">
         8876984
@@ -119,7 +126,7 @@ const BorrowFiatDetail = ({ paymentMethod }: any) => {
     </div>
     <div className="modal-borrow-fiat-success-container__detail__content__item">
       <span className="modal-borrow-fiat-success-container__detail__content__item__title">
-        Acc. owner:
+        {t('BORROW_FIAT_MODAL_SUCCESS_ACC_OWNER')}:
       </span>
       <span className="modal-borrow-fiat-success-container__detail__content__item__value">
         James E. Gunn
@@ -127,7 +134,7 @@ const BorrowFiatDetail = ({ paymentMethod }: any) => {
     </div>
     <div className="modal-borrow-fiat-success-container__detail__content__item">
       <span className="modal-borrow-fiat-success-container__detail__content__item__title">
-        Purpose of Payment:
+        {t('BORROW_FIAT_MODAL_SUCCESS_PURPOSE_OF_PAYMENT')}:
       </span>
       <span className="modal-borrow-fiat-success-container__detail__content__item__value">
         Gift
@@ -135,7 +142,7 @@ const BorrowFiatDetail = ({ paymentMethod }: any) => {
     </div>
     <div className="modal-borrow-fiat-success-container__detail__content__item">
       <span className="modal-borrow-fiat-success-container__detail__content__item__title">
-        Source of Income:
+        {t('BORROW_FIAT_MODAL_SUCCESS_SOURCE_OF_INCOME')}:
       </span>
       <span className="modal-borrow-fiat-success-container__detail__content__item__value">
         Salary
@@ -143,7 +150,7 @@ const BorrowFiatDetail = ({ paymentMethod }: any) => {
     </div>
     <div className="modal-borrow-fiat-success-container__detail__content__item">
       <span className="modal-borrow-fiat-success-container__detail__content__item__title">
-        Description:
+        {t('BORROW_FIAT_MODAL_SUCCESS_DESCRIPTION')}:
       </span>
       <span className="modal-borrow-fiat-success-container__detail__content__item__value">
         Self
@@ -198,15 +205,18 @@ export default function ModalBorrowFiatSuccessComponent({
             width={24}
             height={24}
           />
-          You deposit 0.22 WETH
+          {t('BORROW_FIAT_MODAL_SUCCESS_DEPOSIT', {
+            amount: '0.22',
+            currency: 'WETH'
+          })}
         </div>
         <div className='modal-borrow-fiat-success-container__received'>
           <div className='modal-borrow-fiat-success-container__received__title'>
-            You have also received
+            {t('BORROW_FIAT_MODAL_SUCCESS_RECEIVED')}
           </div>
           <div className='modal-borrow-fiat-success-container__received__content'>
             4,000 LP-USDT
-            <Button type="link">Add to Metamask</Button>
+            <Button type="link">{t('BORROW_FIAT_MODAL_SUCCESS_ADD_TO_METAMASK')}</Button>
           </div>
         </div>
         <div className="modal-borrow-fiat-success-container__action">

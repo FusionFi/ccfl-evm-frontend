@@ -221,7 +221,7 @@ export default function ModalBorrowFiatPaymentComponent({
                     onClick={back}
                     className={twMerge('borrow-fiat-payment-container__action__item__back')}
                   >
-                    {t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_TERM_CONDITION')}
+                    {t('BORROW_FIAT_MODAL_TAB_PAYOUT_ACTION_BACK')}
                   </Button>
                 </div>
                 <div className='borrow-fiat-payment-container__action__item'>
