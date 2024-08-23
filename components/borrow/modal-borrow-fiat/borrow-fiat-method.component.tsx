@@ -107,7 +107,7 @@ export default function ModalBorrowFiatMethodComponent({
                     <Select
                       onChange={handleCountryChange}
                       popupClassName={cssClass['borrow-fiat-method-country']}
-                      placeholder="Select country"
+                      placeholder={t('BORROW_FIAT_MODAL_TAB_SELECT_METHOD_LOAN_CHOOSE_COUNTRY_PLACEHOLDER')}
                       labelRender={SelectLableCountry}
                       options={[...(CountryMap.values() as any)].map(item => ({
                         value: item.value,

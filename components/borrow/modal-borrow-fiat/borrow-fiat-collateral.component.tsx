@@ -64,7 +64,7 @@ export default function ModalBorrowFiatCollateralComponent({
                 </div>
                 {paymentMethod == 1 && <div className='borrow-fiat-collateral-container__loan__item'>
                   <div className='borrow-fiat-collateral-container__loan__item__title'>
-                    APR (variable)
+                    {t('BORROW_FIAT_MODAL_TAB_COLLATERAL_APY')}
                     <Tooltip color="rgba(0, 0, 0, 0.75)" title="prompt text">
                       <span className="cursor-pointer">
                         <InfoCircleIcon className="" />

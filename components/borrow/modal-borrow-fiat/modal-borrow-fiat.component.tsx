@@ -1,28 +1,14 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import Link from 'next/link';
+import React, { useCallback, useState } from 'react';
 import cssClass from './modal-borrow-fiat.component.module.scss';
-import { Button, InputNumber, Tooltip } from 'antd';
-import { twMerge } from 'tailwind-merge';
 import { useTranslation } from 'next-i18next';
-import Image from 'next/image';
-import { Modal, Form, Select, Tabs } from 'antd';
-import type { FormProps, TabsProps } from 'antd';
-import { InfoCircleIcon } from '@/components/icons/info-circle.icon';
-import { QuestionCircleIcon } from '@/components/icons/question-circle.icon';
+import { Modal, Tabs } from 'antd';
+import type { TabsProps } from 'antd';
 import type { SelectProps } from 'antd';
 import { RightOutlined, CheckOutlined } from '@ant-design/icons';
 import ModalBorrowFiatMethodComponent from './borrow-fiat-method.component'
 import ModalBorrowFiatPaymentComponent from './borrow-fiat-payment.component'
 import ModalBorrowFiatCollateralComponent from './borrow-fiat-collateral.component'
 import ModalBorrowFiatConfirmComponent from './borrow-fiat-confirm.component'
-
-type FieldType = {
-  amount?: any;
-};
-
-type LabelRender = SelectProps['labelRender'];
-
-
 
 export default function ModalBorrowFiatComponent({ isModalOpen, handleCancel, handleOk }: any) {
   const { t } = useTranslation('common');
