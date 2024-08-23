@@ -53,7 +53,7 @@ export default function ModalBorrowFiatCollateralComponent({
               <div className='borrow-fiat-collateral-container__loan'>
                 <div className='borrow-fiat-collateral-container__loan__item'>
                   <div className='borrow-fiat-collateral-container__loan__item__title'>
-                    Loan amount
+                    {t('BORROW_FIAT_MODAL_TAB_COLLATERAL_LOAN_TITLE')}
                   </div>
 
                   <div className='borrow-fiat-collateral-container__loan__item__value'>
@@ -64,7 +64,9 @@ export default function ModalBorrowFiatCollateralComponent({
                 </div>
                 {paymentMethod == 1 && <div className='borrow-fiat-collateral-container__loan__item'>
                   <div className='borrow-fiat-collateral-container__loan__item__title'>
-                    FIAT transaction fee (4%)
+                    {t('BORROW_FIAT_MODAL_TAB_COLLATERAL_ FIAT_TRANSACTION _FEE', {
+                      percent: 4
+                    })}
                     <Tooltip color="rgba(0, 0, 0, 0.75)" title="prompt text">
                       <span className="cursor-pointer">
                         <InfoCircleIcon className="" />
@@ -80,19 +82,19 @@ export default function ModalBorrowFiatCollateralComponent({
               </div>
               <div className="borrow-fiat-collateral-container__detail">
                 <div className='borrow-fiat-collateral-container__detail__title'>
-                  Collateral Setup
+                  {t('BORROW_FIAT_MODAL_TAB_COLLATERAL_DETAIL_TITLE')}
                 </div>
                 <div className='borrow-fiat-collateral-container__detail__content'>
                   <div className='borrow-fiat-collateral-container__detail__content__item'>
                     <div className='borrow-fiat-collateral-container__detail__content__item__title'>
-                      Collateral token
+                      {t('BORROW_FIAT_MODAL_TAB_COLLATERAL_TOKEN')}
                       <Tooltip color="rgba(0, 0, 0, 0.75)" title="prompt text">
                         <span className="cursor-pointer">
                           <InfoCircleIcon className="" />
                         </span>
                       </Tooltip>
                     </div>
-                    <Select placeholder="Select" className='borrow-fiat-collateral-container__detail__content__item__control-select'
+                    <Select placeholder={t('BORROW_FIAT_MODAL_TAB_COLLATERAL_TOKEN_PLACEHOLDER')} className='borrow-fiat-collateral-container__detail__content__item__control-select'
                       popupClassName={cssClass['borrow-fiat-collateral-select']}
                       options={[...(TokenMap.values() as any)].map(item => ({
                         value: item.value,
@@ -105,7 +107,9 @@ export default function ModalBorrowFiatCollateralComponent({
                       <WalletOutlined style={{
                         fontSize: 16,
                         color: '#177DDC'
-                      }} />  WETH balance
+                      }} />  {t('BORROW_FIAT_MODAL_TAB_COLLATERAL_BALANCE', {
+                        token: 'WETH'
+                      })}
                     </div>
                     <div className='borrow-fiat-collateral-container__detail__content__item__value'>
                       7.87
@@ -115,7 +119,7 @@ export default function ModalBorrowFiatCollateralComponent({
                   </div>
                   <div className='borrow-fiat-collateral-container__detail__content__item'>
                     <div className="self-start">
-                      Collateral amount
+                      {t('BORROW_FIAT_MODAL_TAB_COLLATERAL_AMOUNT')}
                     </div>
                     <div className='borrow-fiat-collateral-container__detail__content__item__value'>
                       <div className="borrow-fiat-collateral-container__detail__content__item__value__wrapper">
@@ -123,13 +127,13 @@ export default function ModalBorrowFiatCollateralComponent({
                           <InputNumber controls={false} suffix="WETH" placeholder='Enter amount' className='borrow-fiat-collateral-container__detail__content__item__control-input' />
                         </Form.Item>
                         <div className='borrow-fiat-collateral-container__detail__content__item__value__note'>
-                          Minimum amount: <span className='text-white'>1.7 WETH</span>
+                          {t('BORROW_FIAT_MODAL_TAB_COLLATERAL_MINIMUM_AMOUNT')}: <span className='text-white'>1.7 WETH</span>
                         </div>
                       </div>
                     </div>
                   </div>
                   <div className='borrow-fiat-collateral-container__detail__content__item'>
-                    Health factor
+                    {t('BORROW_FIAT_MODAL_TAB_COLLATERAL_HEALTH_FACTOR')}
                     <div className='borrow-fiat-collateral-container__detail__content__item__value' style={{
                       alignItems: 'center'
                     }}>
@@ -149,7 +153,7 @@ export default function ModalBorrowFiatCollateralComponent({
               <div className='borrow-fiat-collateral-container__tx'>
                 <div className='borrow-fiat-collateral-container__tx__item'>
                   <div className='borrow-fiat-collateral-container__tx__item__title'>
-                    Gas fee
+                    {t('BORROW_FIAT_MODAL_TAB_COLLATERAL_GAS_FEE')}
                     <Tooltip color="rgba(0, 0, 0, 0.75)" title="prompt text">
                       <span className="cursor-pointer">
                         <InfoCircleIcon className="" />
@@ -168,7 +172,7 @@ export default function ModalBorrowFiatCollateralComponent({
                     onClick={back}
                     className={twMerge('borrow-fiat-collateral-container__action__item__back')}
                   >
-                    Back
+                    {t('BORROW_FIAT_MODAL_TAB_COLLATERAL_BACK')}
                   </Button>
                 </div>
                 <div className='borrow-fiat-collateral-container__action__item'>
@@ -179,7 +183,7 @@ export default function ModalBorrowFiatCollateralComponent({
                     disabled={isNotValidForm}
                     className={twMerge('btn-primary-custom')}
                   >
-                    Preview loan
+                    {t('BORROW_FIAT_MODAL_TAB_COLLATERAL_NEXT')}
                   </Button>
                 </div>
               </div>

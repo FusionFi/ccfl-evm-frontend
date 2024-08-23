@@ -62,16 +62,18 @@ const GiftCodeAmountMap = new Map(
 );
 
 const PaymentDetail = ({ paymentMethod }: any) => {
+  const { t } = useTranslation('common');
+
   if (paymentMethod == PayoutMethod.GiftCode) {
     return <>
       <div className="borrow-fiat-payment-container__detail">
         <div className='borrow-fiat-payment-container__detail__title'>
-          Payout detail
+          {t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_TITLE')}
         </div>
         <div className='borrow-fiat-payment-container__detail__content'>
           <div className='borrow-fiat-payment-container__detail__content__item'>
-            Choose brand outlet:
-            <Select placeholder="Select" className='borrow-fiat-payment-container__detail__content__item__control-select'
+            {t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_CHOOSE_BRAND_OUTLET')}:
+            <Select placeholder={t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_CHOOSE_BRAND_OUTLET_PLACEHOLDER')} className='borrow-fiat-payment-container__detail__content__item__control-select'
               popupClassName={cssClass['borrow-fiat-payment-select']}
               options={[...(BankOutletMap.values() as any)].map(item => ({
                 value: item.value,
@@ -80,8 +82,8 @@ const PaymentDetail = ({ paymentMethod }: any) => {
             />
           </div>
           <div className='borrow-fiat-payment-container__detail__content__item'>
-            Choose gift code amount:
-            <Select placeholder="Select" className='borrow-fiat-payment-container__detail__content__item__control-select'
+            {t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_CHOOSE_GIFT_CODE_AMOUNT')}:
+            <Select placeholder={t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_CHOOSE_GIFT_CODE_AMOUNT_PLACEHOLDER')} className='borrow-fiat-payment-container__detail__content__item__control-select'
               popupClassName={cssClass['borrow-fiat-payment-select']}
               options={[...(GiftCodeAmountMap.values() as any)].map(item => ({
                 value: item.value,
@@ -90,8 +92,8 @@ const PaymentDetail = ({ paymentMethod }: any) => {
             />
           </div>
           <div className='borrow-fiat-payment-container__detail__content__item'>
-            Description:
-            <Input placeholder="Enter description" className='borrow-fiat-payment-container__detail__content__item__control-input' />
+            {t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_DESCRIPTION')}:
+            <Input placeholder={t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_DESCRIPTION_PLACEHOLDER')} className='borrow-fiat-payment-container__detail__content__item__control-input' />
           </div>
         </div>
       </div>
@@ -100,22 +102,22 @@ const PaymentDetail = ({ paymentMethod }: any) => {
   return <>
     <div className="borrow-fiat-payment-container__input">
       <div className="borrow-fiat-payment-container__input__title">
-        Borrow Amount
+        {t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_BORROW_AMOUNT')}
       </div>
       <div className="borrow-fiat-payment-container__input__control">
         <Form.Item name="amount" help="">
-          <InputNumber controls={false} placeholder="Enter Amount" suffix="USD" className="borrow-fiat-payment-container__input__control__amount" />
+          <InputNumber controls={false} placeholder={t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_BORROW_AMOUNT_PLACEHOLDER')} suffix="USD" className="borrow-fiat-payment-container__input__control__amount" />
         </Form.Item>
       </div>
     </div>
     <div className="borrow-fiat-payment-container__detail">
       <div className='borrow-fiat-payment-container__detail__title'>
-        Payout detail
+        {t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_TITLE')}
       </div>
       <div className='borrow-fiat-payment-container__detail__content'>
         <div className='borrow-fiat-payment-container__detail__content__item'>
-          Choose bank:
-          <Select placeholder="Select" className='borrow-fiat-payment-container__detail__content__item__control-select'
+          {t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_CHOOSE_BANK')}:
+          <Select placeholder={t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_CHOOSE_BANK_PLACEHOLDER')} className='borrow-fiat-payment-container__detail__content__item__control-select'
             popupClassName={cssClass['borrow-fiat-payment-select']}
             options={[...(BankMap.values() as any)].map(item => ({
               value: item.value,
@@ -124,16 +126,16 @@ const PaymentDetail = ({ paymentMethod }: any) => {
           />
         </div>
         <div className='borrow-fiat-payment-container__detail__content__item'>
-          Account Number:
-          <Input placeholder="Enter account number" className='borrow-fiat-payment-container__detail__content__item__control-input' />
+          {t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_ACCOUNT_NUMBER')}:
+          <Input placeholder={t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_ACCOUNT_NUMBER_PLACEHOLDER')} className='borrow-fiat-payment-container__detail__content__item__control-input' />
         </div>
         <div className='borrow-fiat-payment-container__detail__content__item'>
-          Account owner:
-          <Input placeholder="Enter owner name" className='borrow-fiat-payment-container__detail__content__item__control-input' />
+          {t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_ACCOUNT_OWNER')}:
+          <Input placeholder={t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_ACCOUNT_OWNER_PLACEHOLDER')} className='borrow-fiat-payment-container__detail__content__item__control-input' />
         </div>
         <div className='borrow-fiat-payment-container__detail__content__item'>
-          Purpose of Payment:
-          <Select placeholder="Select" className='borrow-fiat-payment-container__detail__content__item__control-select'
+          {t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_PURPOSE_OF_PAYMENT')}:
+          <Select placeholder={t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_PURPOSE_OF_PAYMENT_PLACEHOLDER')} className='borrow-fiat-payment-container__detail__content__item__control-select'
             popupClassName={cssClass['borrow-fiat-payment-select']}
             options={[...(PurposeMap.values() as any)].map(item => ({
               value: item.value,
@@ -142,8 +144,8 @@ const PaymentDetail = ({ paymentMethod }: any) => {
           />
         </div>
         <div className='borrow-fiat-payment-container__detail__content__item'>
-          Source of Income:
-          <Select placeholder="Select" className='borrow-fiat-payment-container__detail__content__item__control-select'
+          {t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_SOURCE_OF_INCOME')}:
+          <Select placeholder={t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_SOURCE_OF_INCOME_PLACEHOLDER')} className='borrow-fiat-payment-container__detail__content__item__control-select'
             popupClassName={cssClass['borrow-fiat-payment-select']}
             options={[...(IncomeMap.values() as any)].map(item => ({
               value: item.value,
@@ -152,15 +154,17 @@ const PaymentDetail = ({ paymentMethod }: any) => {
           />
         </div>
         <div className='borrow-fiat-payment-container__detail__content__item'>
-          Description:
-          <Input placeholder="Enter description" className='borrow-fiat-payment-container__detail__content__item__control-input' />
+          {t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_DESCRIPTION')}:
+          <Input placeholder={t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_DESCRIPTION_PLACEHOLDER')} className='borrow-fiat-payment-container__detail__content__item__control-input' />
         </div>
       </div>
     </div>
 
     <div className='borrow-fiat-payment-container__transaction'>
       <div className='borrow-fiat-payment-container__transaction__title'>
-        FIAT transaction fee (4%)
+        {t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_ FIAT_TRANSACTION _FEE', {
+          percent: 4
+        })}
         <Tooltip color="rgba(0, 0, 0, 0.75)" title="prompt text">
           <span className="cursor-pointer">
             <InfoCircleIcon className="" />
@@ -182,7 +186,6 @@ export default function ModalBorrowFiatPaymentComponent({
   detail
 }: any) {
   const { paymentMethod } = detail;
-  console.log('paymentMethod: ', paymentMethod)
   const { t } = useTranslation('common');
   const [_isPending, _setIsPending] = useState(false);
 
@@ -210,7 +213,7 @@ export default function ModalBorrowFiatPaymentComponent({
 
               <PaymentDetail paymentMethod={paymentMethod} />
               <div className='borrow-fiat-payment-container__term-condition'>
-                <Checkbox onChange={handleReceiveEmailCheck}>I agree with Terms & Conditions</Checkbox>
+                <Checkbox onChange={handleReceiveEmailCheck}>{t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_TERM_CONDITION')}</Checkbox>
               </div>
               <div className='borrow-fiat-payment-container__action'>
                 <div className='borrow-fiat-payment-container__action__item'>
@@ -218,7 +221,7 @@ export default function ModalBorrowFiatPaymentComponent({
                     onClick={back}
                     className={twMerge('borrow-fiat-payment-container__action__item__back')}
                   >
-                    Back
+                    {t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_TERM_CONDITION')}
                   </Button>
                 </div>
                 <div className='borrow-fiat-payment-container__action__item'>
@@ -228,7 +231,7 @@ export default function ModalBorrowFiatPaymentComponent({
                     htmlType='submit'
                     className={twMerge('btn-primary-custom')}
                   >
-                    Next
+                    {t('BORROW_FIAT_MODAL_TAB_PAYOUT_ACTION_NEXT')}
                   </Button>
                 </div>
               </div>
