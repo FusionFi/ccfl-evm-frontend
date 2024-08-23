@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 import ModalComponent from '@/components/common/modal.component';
 import { InputNumber } from 'antd';
@@ -15,7 +15,7 @@ import TransactionSuccessComponent from '@/components/borrow/transaction-success
 import { useTranslation } from 'next-i18next';
 import { TRANSACTION_STATUS } from '@/constants/common.constant';
 
-interface ModalBorrowProps {
+interface ModalCollateralProps {
   isModalOpen: boolean;
   handleCancel: any;
   currentToken: string;
@@ -27,13 +27,13 @@ interface IFormInput {
   numberfield: number;
 }
 
-export default function ModalBorrowComponent({
+export default function ModalCollateralComponent({
   isModalOpen,
   handleCancel,
   currentToken,
   step,
   setStep,
-}: ModalBorrowProps) {
+}: ModalCollateralProps) {
   const { t } = useTranslation('common');
 
   const { control, handleSubmit, setValue, getValues } = useForm({
@@ -42,15 +42,15 @@ export default function ModalBorrowComponent({
     },
   });
 
-  const [tokenValue, setTokenValue] = useState(0);
+  const [tokenValue, setTokenValue] = useState();
 
   const onSubmit: SubmitHandler<IFormInput> = data => {
-    if (step == 1) {
-      setTokenValue(0);
-    }
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
+      if (step == 1) {
+        setTokenValue(undefined);
+      }
       setStep(step + 1);
     }, 1000);
   };
@@ -67,6 +67,12 @@ export default function ModalBorrowComponent({
     }
     return `${t('BORROW_MODAL_COLLATERAL_TITLE')}`;
   };
+
+  useEffect(() => {
+    if (isModalOpen) {
+      setTokenValue(undefined);
+    }
+  }, [isModalOpen]);
 
   return (
     <div>
@@ -92,6 +98,7 @@ export default function ModalBorrowComponent({
                           placeholder={t('BORROW_MODAL_BORROW_ENTER_AMOUNT')}
                           className="flex-1"
                           controls={false}
+                          value={tokenValue}
                           onChange={(value: any) => {
                             setTokenValue(value);
                           }}
