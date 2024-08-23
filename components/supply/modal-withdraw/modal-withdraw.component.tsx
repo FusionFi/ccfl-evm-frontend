@@ -113,9 +113,9 @@ export default function ModalWithdrawComponent({
                   {t('WITHDRAW_MODAL_OVERVIEW_AMOUNT')}
                 </div>
                 <div className="withdraw-modal-container__input__control">
-                  <Form.Item name="amount" help="" rules={[{ max: 10, type: 'number', message: t('WITHDRAW_MODAL_VALIDATE_EXCEED_WITHDRAW_LIMIT') }, {
+                  <Form.Item name="amount" help="" rules={[{ max: 10, type: 'number', message: t('WITHDRAW_SUCCESS_MODAL_EXCEED_WITHDRAW_LIMIT') }, {
                     required: true,
-                    message: t('WITHDRAW_MODAL_VALIDATE_REQUIRE_AMOUNT')
+                    message: t('')
                   }]}>
                     <InputNumber
                       placeholder={t('WITHDRAW_MODAL_INPUT_AMOUNT')}

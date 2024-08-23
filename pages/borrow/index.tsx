@@ -21,16 +21,23 @@ import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
 import { useAccount, useNetwork } from 'wagmi';
 // import { getNetwork } from '@wagmi/core';
+import ModalBorrowFiatSuccessComponent from '@/components/borrow/modal-borrow-fiat/modal-borrow-fiat-success.component';
+import ModalBorrowFiatComponent from '@/components/borrow/modal-borrow-fiat/modal-borrow-fiat.component';
 import ModalCollateralComponent from '@/components/borrow/modal-collateral.component';
 import ModalWithdrawCollateralComponent from '@/components/borrow/modal-withdraw-collateral.component';
 
 type LabelRender = SelectProps['labelRender'];
+enum BorrowModalType {
+  Crypto = 'crypto',
+  Fiat = 'fiat',
+  FiatSuccess = 'fiat-success',
+}
 
 export default function BorrowPage() {
   const { t } = useTranslation('common');
   const { chain, chains } = useNetwork();
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modal, setModal] = useState({} as any);
   const [isModalRepayOpen, setIsModalRepayOpen] = useState(false);
   const [isModalCollateralOpen, setIsModalCollateralOpen] = useState(false);
   const [isModalWithdrawCollateral, setIsModalWithdrawCollateral] = useState(false);
@@ -49,8 +56,10 @@ export default function BorrowPage() {
   // const { chain, chains } = getNetwork();
 
   const showModal = (token: string) => {
-    setCurrentToken(token);
-    setIsModalOpen(true);
+    setModal({
+      type: token == BorrowModalType.Fiat ? BorrowModalType.Fiat : BorrowModalType.Crypto,
+      token,
+    });
   };
   const showWithdrawCollateralModal = (token: string) => {
     setCollateralToken(token);
@@ -72,8 +81,9 @@ export default function BorrowPage() {
   };
 
   const handleCancel = () => {
-    setCurrentToken('');
-    setIsModalOpen(false);
+    setModal({
+      type: '',
+    });
     setStep(0);
     setToken(COLLATERAL_TOKEN[0].name);
   };
@@ -171,6 +181,12 @@ export default function BorrowPage() {
     }
   }, [address, initNetworkInfo]);
 
+  const handleBorrowFiatOk = ({ paymentMethod }: any) => {
+    setModal({
+      type: BorrowModalType.FiatSuccess,
+      paymentMethod,
+    });
+  };
   return (
     <div className={twMerge('borrow-page-container', cssClass.borrowPage)}>
       <div className="borrow-header">
@@ -236,9 +252,9 @@ export default function BorrowPage() {
         </div>
       </div>
       <ModalBorrowComponent
-        isModalOpen={isModalOpen}
+        isModalOpen={BorrowModalType.Crypto == modal.type}
         handleCancel={handleCancel}
-        currentToken={currentToken}
+        currentToken={modal.token}
         step={step}
         setStep={setStep}
         token={token}
@@ -265,6 +281,22 @@ export default function BorrowPage() {
         currentToken={collateralToken}
         step={step}
         setStep={setStep}
+      />
+      <ModalBorrowFiatComponent
+        isModalOpen={BorrowModalType.Fiat == modal.type}
+        handleCancel={handleCancel}
+        handleOk={handleBorrowFiatOk}
+        currentToken={modal.token}
+        step={step}
+        setStep={setStep}
+        token={token}
+        setToken={setToken}
+      />
+
+      <ModalBorrowFiatSuccessComponent
+        isModalOpen={BorrowModalType.FiatSuccess == modal.type}
+        paymentMethod={modal.paymentMethod}
+        handleCancel={handleCancel}
       />
     </div>
   );
