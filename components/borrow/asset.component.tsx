@@ -1,11 +1,10 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import cssClass from '@/components/borrow/asset.component.module.scss';
 import SafeHtmlComponent from '@/components/common/safe-html.component';
-import { ASSET_LIST } from '@/constants/common.constant';
 import { STAKE_DEFAULT_NETWORK } from '@/constants/networks';
 import eventBus from '@/hooks/eventBus.hook';
 import service from '@/utils/backend/borrow';
-import { toCurrency } from '@/utils/common';
+import { toCurrency, toAmountShow } from '@/utils/common';
 import { Button, Skeleton } from 'antd';
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
@@ -17,6 +16,8 @@ interface AssetProps {
   isConnected: any;
   switchNetwork: any;
   networkInfo: any;
+  tokenList: any;
+  loadingAsset: any;
 }
 
 export default function assetComponent({
@@ -24,45 +25,10 @@ export default function assetComponent({
   isConnected,
   switchNetwork,
   networkInfo,
+  tokenList,
+  loadingAsset
 }: AssetProps) {
   const { t } = useTranslation('common');
-  const [tokenList, setTokenList] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
-
-  const handlePrice = async () => {
-    try {
-      setLoading(true);
-      let data = (await service.getPool('11155111')) as any;
-      if (data && data[0]) {
-        let priceUSDC = (await service.getPrice(
-          1,
-          data[0].asset ? data[0].asset : ASSET_LIST.USDC,
-        )) as any;
-        if (priceUSDC && priceUSDC[0]) {
-          data[0].usd = data[0].loan_available * priceUSDC[0].price;
-        }
-      }
-      if (data && data[1]) {
-        let priceUSDT = (await service.getPrice(
-          1,
-          data[1].asset ? data[1].asset : ASSET_LIST.USDT,
-        )) as any;
-        if (priceUSDT && priceUSDT[0]) {
-          data[1].usd = data[1].loan_available * priceUSDT[0].price;
-        }
-      }
-
-      setTokenList(data);
-    } catch (error) {
-      console.log('error', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    handlePrice();
-  }, []);
 
   return (
     <div className={twMerge(cssClass.assetComponent)}>
@@ -93,7 +59,7 @@ export default function assetComponent({
                 isConnected && networkInfo ? 'xl:basis-1/4' : 'xl:basis-3/6'
               } basis-1/4`}></div>
           </div>
-          {loading ? (
+          {loadingAsset ? (
             <div className="asset-empty">
               <Skeleton active />
             </div>
@@ -120,8 +86,8 @@ export default function assetComponent({
                         className={`${
                           isConnected && networkInfo ? 'xl:basis-1/4' : 'xl:basis-1/6'
                         } flex-col items-start justify-center	basis-1/4`}>
-                        <div>{toCurrency(item.loan_available, 2)}</div>
-                        <div className="usd">$ {toCurrency(item.usd, 2)}</div>
+                        <div>{toCurrency(toAmountShow(item.loan_available, item.decimals), 2)}</div>
+                        <div className="usd">$ {toCurrency(toAmountShow(item.usd, item.decimals), 2)}</div>
                       </div>
                       <div
                         className={`${

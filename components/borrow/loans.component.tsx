@@ -1,7 +1,7 @@
 import { loanType } from '@/components/borrow/borrow';
 import cssClass from '@/components/borrow/loans.component.module.scss';
 import { LOAN_STATUS } from '@/constants/common.constant';
-import { toCurrency } from '@/utils/common';
+import { toCurrency, toAmountShow } from '@/utils/common';
 import { CheckOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import type { TableProps } from 'antd';
 import { Button, Skeleton, Table, Tooltip } from 'antd';
@@ -62,10 +62,10 @@ export default function LoansComponent(props: LoansProps) {
       title: <h4>{t('BORROW_MODAL_BORROW_BORROW_LOAN_SIZE')}</h4>,
       dataIndex: 'loan_size',
       key: 'loan_size',
-      render: value => {
+      render: (value, record) => {
         return (
           <div className="loans-size basis-1/4">
-            <h5>{toCurrency(value, 2)}</h5>
+            <h5>{toCurrency(toAmountShow(value, record.collateral_decimals), 2)}</h5>
             <div className="usd">$ {toCurrency(value, 2)}</div>
           </div>
         );
@@ -308,7 +308,7 @@ export default function LoansComponent(props: LoansProps) {
           rowHoverable={false}
           pagination={false}
           columns={columns}
-          dataSource={dataLoan}
+          dataSource={props.dataLoan}
           locale={locale}
           rowKey={(record, index) => `${index}-${record.asset}`}
         />

@@ -9,12 +9,12 @@ const getPool = async chainId => {
 };
 
 const getPrice = async (chainId, symbol) => {
-  let res = await http.get(`${URL}/asset?chainId=${chainId}&symbol=${symbol}`);
+  let res = await http.get(`${URL}/price/${chainId}/${symbol}`);
   return res;
 };
 
-const getLoans = async user_address => {
-  let res = await http.get(`${URL}/user/${user_address}/loan`);
+const getLoans = async (user_address, chainId) => {
+  let res = await http.get(`${URL}/user/${user_address}/${chainId}/loan`);
   return res;
 };
 
