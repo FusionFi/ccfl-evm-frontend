@@ -87,7 +87,7 @@ export default function TransactionSuccessComponent({
           <div className="coin">
             <Image
               className="mr-2"
-              src={`/images/common/${token?.toLowerCase()}.png`}
+              src={`/images/common/${token}.png`}
               alt="weth"
               width={24}
               height={24}

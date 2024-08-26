@@ -25,19 +25,19 @@ export default function assetComponent({
 
   const tokenList = [
     {
-      name: 'usdc',
+      name: 'USDC',
       value: '10,000.00',
       usd: '4,000.00',
       percent: '0.07',
     },
     {
-      name: 'usdt',
+      name: 'USDT',
       value: '10,000.00',
       usd: '4,000.00',
       percent: '0.07',
     },
     {
-      name: 'fiat',
+      name: 'FIAT',
       value: '',
       usd: '',
       percent: '2.08',
