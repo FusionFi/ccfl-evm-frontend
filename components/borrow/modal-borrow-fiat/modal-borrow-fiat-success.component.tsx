@@ -200,7 +200,7 @@ export default function ModalBorrowFiatSuccessComponent({
         </div>
         <div className='modal-borrow-fiat-success-container__deposit'>
           <Image
-            src="/images/common/weth.png"
+            src="/images/common/WETH.png"
             alt="weth"
             width={24}
             height={24}

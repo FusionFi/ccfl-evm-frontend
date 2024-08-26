@@ -32,7 +32,7 @@ import { toCurrency } from '@/utils/common';
 type LabelRender = SelectProps['labelRender'];
 enum BorrowModalType {
   Crypto = 'crypto',
-  Fiat = 'fiat',
+  Fiat = 'FIAT',
   FiatSuccess = 'fiat-success',
 }
 

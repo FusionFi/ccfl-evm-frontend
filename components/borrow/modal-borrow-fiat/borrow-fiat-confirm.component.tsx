@@ -144,7 +144,7 @@ export default function ModalBorrowFiatCollateralComponent({
               alignItems: 'center'
             }}>
               <Image
-                src="/images/common/usdc.png"
+                src="/images/common/USDC.png"
                 alt="USDC"
                 width={14}
                 height={14}
@@ -208,7 +208,7 @@ export default function ModalBorrowFiatCollateralComponent({
                 alignItems: 'center'
               }}>
                 <Image
-                  src="/images/common/weth.png"
+                  src="/images/common/WETH.png"
                   alt="USDC"
                   width={16}
                   height={16}
