@@ -43,9 +43,9 @@ export default function LoansComponent(props: LoansProps) {
       title: <h4>{t('BORROW_MODAL_BORROW_ADJUST_ASSET')}</h4>,
       dataIndex: 'asset',
       key: 'asset',
-      render: asset => {
+      render: (asset, record) => {
         return (
-          <div className="flex items-center basis-1/4 loans-token">
+          <div className="flex items-center basis-1/7 loans-token">
             <Image
               className="mr-2"
               src={`/images/common/${asset}.png`}
@@ -53,7 +53,7 @@ export default function LoansComponent(props: LoansProps) {
               width={40}
               height={40}
             />
-            {asset}
+            {asset !== 'USD' ? asset : record.sub_name}
           </div>
         );
       },
@@ -62,21 +62,40 @@ export default function LoansComponent(props: LoansProps) {
       title: <h4>{t('BORROW_MODAL_BORROW_BORROW_LOAN_SIZE')}</h4>,
       dataIndex: 'loan_size',
       key: 'loan_size',
-      render: value => {
+      render: (value, record) => {
         return (
-          <div className="loans-size basis-1/4">
-            <h5>{toCurrency(value, 2)}</h5>
+          <div className="loans-size basis-1/7">
+            <h5>
+              {toCurrency(value, 2)} {record.asset !== 'USD' ? record.asset : record.currency}
+            </h5>
             <div className="usd">$ {toCurrency(value, 2)}</div>
           </div>
         );
       },
     },
     {
-      title: <h4 className="text-center">{t('BORROW_MODAL_BORROW_ADJUST_APR_VARIABLE')}</h4>,
+      title: <h4 className="">{t('BORROW_MODAL_BORROW_ADJUST_APR_VARIABLE')}</h4>,
       dataIndex: 'apr',
       key: 'apr',
       render: value => {
-        return <div className="loans-apr basis-1/4 justify-center flex items-center">{value}%</div>;
+        return <div className="loans-apr basis-1/7 flex items-center">{value}%</div>;
+      },
+    },
+    {
+      title: <h4 className="">{t('BORROW_MODAL_BORROW_ADJUST_STATUS')}</h4>,
+      dataIndex: 'status',
+      key: 'status',
+      render: value => {
+        let status: keyof typeof LOAN_STATUS = value;
+        let final_status = LOAN_STATUS[status] ? LOAN_STATUS[status] : LOAN_STATUS.ACTIVE;
+        console.log('a', status, final_status, renderStatusClass(final_status));
+        return (
+          <div className="loans-status basis-1/7  flex items-center">
+            <span className={`${renderStatusClass(final_status)}`}>
+              {t(`BORROW_LOANS_${final_status}`)}
+            </span>
+          </div>
+        );
       },
     },
     {
@@ -93,10 +112,41 @@ export default function LoansComponent(props: LoansProps) {
       render: (value, record) => {
         return (
           <div
-            className={`loans-health basis-1/4 flex items-center justify-end ${
+            className={`loans-health basis-1/7 flex items-center ${
               record.status === LOAN_STATUS.LIQUIDATION_APPROACHING ? 'warning' : ''
             }`}>
             {value}
+          </div>
+        );
+      },
+    },
+    {
+      title: <h4 className="">{t('BORROW_OVERVIEW_COLLATERAL')}</h4>,
+      dataIndex: 'collateral',
+      key: 'collateral',
+      render: (value, record) => {
+        return (
+          <div className="loans-collateral basis-1/7 justify-center items-center">
+            {record.collateral_amount} {record.collateral_asset}
+            <div className="">
+              <span className="">${toCurrency('6540')}</span>
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      title: <h4 className="">{t('BORROW_MODAL_BORROW_BORROW_DEBT_REMAIN')}</h4>,
+      dataIndex: 'debt_remain',
+      key: 'debt_remain',
+      render: (value, record) => {
+        return (
+          <div className="loans-status basis-1/7 ">
+            <div className="highlight ml-1">
+              {toCurrency(record.debt_remain, 2)}{' '}
+              {record.asset !== 'USD' ? record.asset : record.repayment_currency}
+            </div>
+            <div className="ml-1">$ {toCurrency(record.debt_remain, 2)}</div>
           </div>
         );
       },
@@ -108,14 +158,8 @@ export default function LoansComponent(props: LoansProps) {
     let final_status = LOAN_STATUS[status] ? LOAN_STATUS[status] : LOAN_STATUS.ACTIVE;
     return (
       <>
-        <div className="flex justify-between loans-status gap-4">
-          <div className="">
-            {t('BORROW_MODAL_BORROW_ADJUST_STATUS')}:
-            <span className={`ml-1 ${renderStatusClass(final_status)}`}>
-              {t(`BORROW_LOANS_${final_status}`)}
-            </span>
-          </div>
-          <div></div>
+        {/* <div className="flex justify-between loans-status gap-4">
+          <div className="">{t('BORROW_MODAL_BORROW_ADJUST_STATUS')}:</div>
           <div className="flex justify-end loans-remain">
             <div className="">{t('BORROW_MODAL_BORROW_BORROW_DEBT_REMAIN')}:</div>
             <div className="flex flex-wrap flex-1">
@@ -125,8 +169,8 @@ export default function LoansComponent(props: LoansProps) {
               <div className="ml-1">$ {toCurrency(record.debt_remain, 2)}</div>
             </div>
           </div>
-        </div>
-        <div className="flex loans-collateral justify-between gap-1">
+        </div> */}
+        {/* <div className="flex loans-collateral justify-between gap-1">
           <div className="flex">
             <span className="mr-1">{t('BORROW_OVERVIEW_COLLATERAL')}:</span>
             {record.collateral_amount} {record.collateral_asset}
@@ -145,11 +189,11 @@ export default function LoansComponent(props: LoansProps) {
               {t('BORROW_MODAL_WITHDRAW_COLLATERAL')}
             </Button>
           )}
-        </div>
+        </div> */}
         <div className="flex justify-between items-end gap-1 loans-yield-wrapper">
           {record.yield_generating ? (
             <div className="loans-yield">
-              <div className="mb-2">
+              <div className="mr-2">
                 {t('BORROW_MODAL_BORROW_YIELD_GENERATING')}: <CheckOutlined className="ml-1" />
               </div>
               <div>
@@ -162,31 +206,57 @@ export default function LoansComponent(props: LoansProps) {
           ) : (
             <div></div>
           )}
-          <div className="loans-button ">
-            {final_status === LOAN_STATUS.REPAID_FULL && (
-              <Button
-                disabled={record.collateral_amount > 0}
-                type="primary"
-                className=""
-                onClick={() => props.showModal(record.asset)}>
-                {t('BORROW_MODAL_BORROW_BORROW_AGAIN')}
-              </Button>
-            )}
-            {![LOAN_STATUS.REPAID_FULL, LOAN_STATUS.UNPROCESSED].find(
-              status => status === final_status,
-            ) && (
-              <Button
-                disabled={final_status === LOAN_STATUS.LIQUIDATED}
-                className=""
-                onClick={() => props.showRepayModal(record.asset, record.repayment_currency)}>
-                {t('BORROW_MODAL_BORROW_REPAY')}
-              </Button>
-            )}
-            {final_status === LOAN_STATUS.UNPROCESSED && (
-              <Button type="primary" className="delete" onClick={handleDeleteLoan}>
-                {t('BORROW_MODAL_DELETE')}
-              </Button>
-            )}
+          <div className="flex items-center">
+            <div className="loans-collateral">
+              {![LOAN_STATUS.REPAID_FULL, LOAN_STATUS.UNPROCESSED].find(e => e === final_status) ? (
+                <Button
+                  disabled={
+                    !![LOAN_STATUS.LIQUIDATED, LOAN_STATUS.DISBURSEMENT].find(
+                      e => e === final_status,
+                    )
+                  }
+                  onClick={() => props.showCollateralModal('WETH')}>
+                  {t('BORROW_MODAL_BORROW_ADJUST_COLLATERAL')}
+                </Button>
+              ) : (
+                <Button
+                  disabled={record.collateral_amount == 0}
+                  onClick={() => props.showWithdrawCollateralModal('WETH')}>
+                  {t('BORROW_MODAL_WITHDRAW_COLLATERAL')}
+                </Button>
+              )}
+            </div>
+            <div className="loans-button">
+              {final_status === LOAN_STATUS.REPAID_FULL && (
+                <Button
+                  disabled={record.collateral_amount > 0}
+                  type="primary"
+                  className=""
+                  onClick={() => props.showModal(record.asset)}>
+                  {t('BORROW_MODAL_BORROW_BORROW_AGAIN')}
+                </Button>
+              )}
+              {![LOAN_STATUS.REPAID_FULL, LOAN_STATUS.UNPROCESSED].find(
+                status => status === final_status,
+              ) && (
+                <Button
+                  disabled={
+                    !![LOAN_STATUS.LIQUIDATED, LOAN_STATUS.DISBURSEMENT].find(
+                      e => e === final_status,
+                    )
+                  }
+                  type="primary"
+                  className=""
+                  onClick={() => props.showRepayModal(record.asset, record.repayment_currency)}>
+                  {t('BORROW_MODAL_BORROW_REPAY')}
+                </Button>
+              )}
+              {final_status === LOAN_STATUS.UNPROCESSED && (
+                <Button type="primary" className="delete" onClick={handleDeleteLoan}>
+                  {t('BORROW_MODAL_DELETE')}
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </>
@@ -206,6 +276,8 @@ export default function LoansComponent(props: LoansProps) {
       yield_generating: true,
       yield_earned: '0.281',
       repayment_currency: 'USDT',
+      currency: 'EUR',
+      sub_name: 'FIAT',
     },
     {
       asset: 'USD',
@@ -219,6 +291,8 @@ export default function LoansComponent(props: LoansProps) {
       yield_generating: true,
       yield_earned: '0.281',
       repayment_currency: 'USDT',
+      currency: 'EUR',
+      sub_name: 'FIAT',
     },
     {
       asset: 'USD',
@@ -232,6 +306,8 @@ export default function LoansComponent(props: LoansProps) {
       yield_generating: true,
       yield_earned: '0.281',
       repayment_currency: 'USDT',
+      currency: 'EUR',
+      sub_name: 'FIAT',
     },
     {
       asset: 'USDC',

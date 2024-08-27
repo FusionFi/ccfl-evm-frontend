@@ -1,0 +1,11 @@
+.myProfilePage {
+  padding: 128px 156px;
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+
+  @media screen and (max-width: 767px) {
+    min-height: 100vh;
+    padding: 128px 16px;
+  }
+}

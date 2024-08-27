@@ -118,7 +118,7 @@ export default function BorrowPage() {
 
   const itemRight = [
     {
-      text: t('BORROW_OVERVIEW_APR'),
+      text: t('BORROW_APY'),
       content: '0.07',
       type: TYPE_COMMON.PERCENT,
     },
@@ -230,7 +230,7 @@ export default function BorrowPage() {
           <OverviewComponent itemLeft={itemLeft} itemRight={itemRight} />
         </div>
       )}
-      <div className="flex gap-6 borrow-inner">
+      <div className="flex gap-4 borrow-inner">
         {isConnected && networkInfo && (
           <div className="xl:basis-1/2 basis-full">
             <LoansComponent
