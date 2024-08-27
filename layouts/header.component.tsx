@@ -113,16 +113,10 @@ export const MainHeader = () => {
           <div className="right-content ml-auto flex items-center">
             {!isLandingPage && (
               <div className="external-links flex items-center">
-                <a
-                  target="_blank"
-                  className="btn-outline-custom mr-4"
-                  href="https://app.v2.tealswap.com/bridge/cbridge/">
+                <a target="_blank" className="btn-outline-custom mr-4" href="#">
                   <BridgeIcon className="mr-2" /> {t('LAYOUT_MAIN_HEADER_NAV_BTN_TITLE_BRIDGE')}
                 </a>
-                <a
-                  className="btn-outline-custom mr-4"
-                  target="_blank"
-                  href="https://app.v2.tealswap.com/bridge/cbridge/">
+                <a className="btn-outline-custom mr-4" target="_blank" href="#">
                   <SwapIcon className="mr-2" /> {t('LAYOUT_MAIN_HEADER_NAV_BTN_TITLE_SWAP')}
                 </a>
               </div>
