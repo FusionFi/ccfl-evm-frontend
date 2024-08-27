@@ -386,6 +386,25 @@
               }
             }
           }
+
+          .btn-primary-custom {
+            &:disabled {
+              border-radius: 2px;
+              border: 1px solid var(--Neutral-5, #434343) !important;
+              background: var(--Neutral-3, #1F1F1F) !important;
+              color: var(--character-disabled-amp-placeholder-25, rgba(255, 255, 255, 0.30)) !important;
+              text-align: center;
+              opacity: 1 !important;
+
+              /* Body/regular */
+              font-family: Inter;
+              font-size: 14px;
+              font-style: normal;
+              font-weight: 400;
+              line-height: 22px;
+              /* 157.143% */
+            }
+          }
         }
       }
     }

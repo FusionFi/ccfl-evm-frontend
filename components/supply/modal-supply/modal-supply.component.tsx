@@ -64,6 +64,8 @@ export default function ModalSupplyComponent({
       <Form onFinish={onFinish}>
         {(_, formInstance) => {
           const isNotValidForm = formInstance.getFieldsError().some(item => item.errors.length > 0)
+          const amount = formInstance.getFieldValue('amount')
+          console.log('amount: ', amount)
           return (
             <div className="supply-modal-container">
               <div className="supply-modal-container__input">
@@ -71,7 +73,9 @@ export default function ModalSupplyComponent({
                   {t('SUPPLY_MODAL_INPUT_AMOUNT')}
                 </div>
                 <div className="supply-modal-container__input__control">
-                  <Form.Item name="amount" help="" rules={[{ max: 10, type: 'number', message: t('SUPPLY_MODAL_VALIDATE_INSUFFICIENT_BALANCE') }, {
+                  <Form.Item name="amount" help="" style={{
+                    width: '100%'
+                  }} rules={[{ max: 10, type: 'number', message: t('SUPPLY_MODAL_VALIDATE_INSUFFICIENT_BALANCE') }, {
                     required: true,
                     message: t('SUPPLY_MODAL_VALIDATE_REQUIRE_AMOUNT')
                   }]}>
@@ -176,7 +180,7 @@ export default function ModalSupplyComponent({
                       loading={_isPending}
                       type="primary"
                       htmlType='submit'
-                      disabled={isNotValidForm}
+                      disabled={isNotValidForm || !amount}
                       className={twMerge('btn-primary-custom', 'mt-4')}
                       block>
                       {t('SUPPLY_MODAL_APPROVE', {
