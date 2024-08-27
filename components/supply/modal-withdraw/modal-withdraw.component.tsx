@@ -67,6 +67,7 @@ export default function ModalWithdrawComponent({
       <Form onFinish={onFinish}>
         {(_, formInstance) => {
           const isNotValidForm = formInstance.getFieldsError().some(item => item.errors.length > 0)
+          const amount = formInstance.getFieldValue('amount')
           return (
             <div className="withdraw-modal-container">
               <div className="withdraw-modal-container__supply-overview">
@@ -113,10 +114,10 @@ export default function ModalWithdrawComponent({
                   {t('WITHDRAW_MODAL_OVERVIEW_AMOUNT')}
                 </div>
                 <div className="withdraw-modal-container__input__control">
-                  <Form.Item name="amount" help="" rules={[{ max: 10, type: 'number', message: t('WITHDRAW_SUCCESS_MODAL_EXCEED_WITHDRAW_LIMIT') }, {
+                  <Form.Item name="amount" help="" rules={[{ max: 10, type: 'number', message: t('WITHDRAW_MODAL_VALIDATE_EXCEED_WITHDRAW_LIMIT') }, {
                     required: true,
-                    message: t('')
-                  }]}>
+                    message: t('WITHDRAW_MODAL_VALIDATE_REQUIRE_AMOUNT')
+                  }]} className='w-full'>
                     <InputNumber
                       placeholder={t('WITHDRAW_MODAL_INPUT_AMOUNT')}
                       className="withdraw-modal-container__input__control__amount"
@@ -215,7 +216,7 @@ export default function ModalWithdrawComponent({
                       loading={_isPending}
                       onClick={handleApprove}
                       type="primary"
-                      disabled={isNotValidForm}
+                      disabled={isNotValidForm || !amount}
                       className={twMerge('btn-primary-custom', 'mt-4')}
                       block>
                       {t('WITHDRAW_MODAL_APPROVE', {
