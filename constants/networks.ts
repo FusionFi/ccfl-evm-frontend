@@ -1,7 +1,7 @@
+import ethTokenIcon from '@/public/images/common/WETH.png';
 import defiIcon from '@/public/images/stake/networks/defi.png';
 import oasIcon from '@/public/images/stake/networks/oas.png';
 import oasTokenIcon from '@/public/images/stake/tokens/oas.png';
-
 export const NETWORKS_MAINNET = [
   {
     id: 248,
@@ -38,6 +38,22 @@ export const NETWORKS_MAINNET = [
 ];
 
 export const NETWORKS_TESTNET = [
+  {
+    id: 11155111,
+    chain_id: '0xF8',
+    chain_id_decimals: 11155111,
+    img_url: ethTokenIcon,
+    name: 'Sepolia Test Network',
+    gasPrice: null,
+    explorer: 'https://explorer.oasys.games/',
+    rpc: 'https://1rpc.io/sepolia',
+    nativeCurrency: {
+      name: 'SepoliaETH',
+      symbol: 'ETH',
+      decimals: 18,
+      img_url: ethTokenIcon,
+    },
+  },
   {
     id: '9372',
     chain_id: '0x249C',
