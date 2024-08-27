@@ -63,6 +63,7 @@
   "SUPPLY_OVERVIEW_NET_APY": "Net APY (variable)",
   "SUPPLY_OVERVIEW_TOTAL_EARNED": "Total earned",
   "SUPPLY_TABLE_TITLE": "My Supplies",
+  "SUPPLY_GUEST_TABLE_TITLE": "Supply pools",
   "SUPPLY_TABLE_HEADER_ASSET": "Asset",
   "SUPPLY_TABLE_HEADER_SUPPLY_BALANCE": "Supply Balance",
   "SUPPLY_TABLE_HEADER_EARNED_REWARD": "Earned reward",
