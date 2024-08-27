@@ -66,7 +66,7 @@ export default function SupplyPage() {
         return (
           <div className="flex items-center table-wrapper__asset">
             <Image
-              src={`/images/tokens/${symbol}.png`}
+              src={`/images/common/${symbol}.png`}
               style={{
                 marginRight: 8,
               }}
