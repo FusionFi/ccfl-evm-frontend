@@ -5,10 +5,12 @@ import thunkMiddleware from 'redux-thunk';
 
 import auth from '@/reducers/auth.reducer';
 import global from '@/reducers/global.reducer';
-import storage from '@/store/sync-storage.store';
+import supply from '@/reducers/supply.reducer';
+import storage from 'redux-persist/lib/storage';
 const rootReducer = combineReducers({
   global,
   auth,
+  supply
 });
 
 const bindMiddleware = (middleware: any) => {
@@ -29,7 +31,7 @@ const makeStore = ({ isServer }: { isServer: boolean }) => {
     const persistConfig = getPersistConfig({
       timeout: 1000,
       key: 'ccfl-evm-frontend',
-      whitelist: ['global', 'auth'],
+      whitelist: ['global', 'auth', 'supply'],
       storage,
       rootReducer,
     });

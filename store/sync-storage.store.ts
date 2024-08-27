@@ -13,6 +13,7 @@ const createNoopStorage = () => {
     },
   };
 };
+console.log(typeof window !== 'undefined', 'typteof window')
 
 const storage = typeof window !== 'undefined' ? createWebStorage('ccfl') : createNoopStorage();
 

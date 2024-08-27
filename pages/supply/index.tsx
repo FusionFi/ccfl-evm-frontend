@@ -19,6 +19,8 @@ import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { useAccount, useNetwork } from 'wagmi';
+import supplyBE from '@/utils/backend/supply';
+import { useAssetManager } from '@/hooks/supply.hook'
 
 interface DataType {
   key: string;
@@ -45,6 +47,18 @@ export default function SupplyPage() {
   const [_, showError] = useNotification();
 
   const [networkInfo, setNetworkInfo] = useState<any | null>(null);
+  const [assets, updateAssets] = useAssetManager();
+
+  const fetchInitiaData = async () => {
+    try {
+      const [assets] = await Promise.all([
+        supplyBE.fetchAssets()
+      ])
+      updateAssets(assets)
+    } catch (error) {
+      console.error("fetch initial data on supply page failed: ", error)
+    }
+  }
 
   const switchNetwork = async () => {
     try {
@@ -136,24 +150,16 @@ export default function SupplyPage() {
     },
   ];
 
-  const data: DataType[] = [
-    {
-      key: '1',
-      asset: ['USDC', 'USDC'],
-      supply_balance: '3500',
-      earned_reward: '350',
-      apy: '0.009',
-      wallet_balance: '1000',
-    },
-    {
-      key: '2',
-      asset: ['USDT', 'USDT'],
-      supply_balance: '3500',
-      earned_reward: '350',
-      apy: '0.009',
-      wallet_balance: '1000',
-    },
-  ];
+  const data: DataType[] = assets.map((item: any) => {
+    return {
+      key: `${item.chainId}_${item.symbol}`,
+      asset: [item.symbol, item.name],
+      supply_balance: '3500', // TODO: please update
+      earned_reward: '350', // TODO: please update
+      apy: '0.009', //TODO: please update
+      wallet_balance: '1000', // TODO: please update
+    }
+  })
 
   const initNetworkInfo = useCallback(() => {
     if (chain) {
@@ -167,6 +173,8 @@ export default function SupplyPage() {
       // getBalance();
       initNetworkInfo();
     }
+
+    fetchInitiaData();
   }, [address, initNetworkInfo]);
 
   const TableAction = ({ children }: any) => {

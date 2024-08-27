@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import cssClass from './supply-overview.component.module.scss';
 
 import { Select } from 'antd';
 import { CaretDownOutlined } from '@ant-design/icons';
 import { useTranslation } from 'next-i18next';
 import { useNetwork } from 'wagmi';
-import { SUPPORTED_CHAINS, CHAIN_INFO } from '@/constants/chains.constant';
+import { CHAIN_LOGO_MAP, CHAIN_INFO } from '@/constants/chains.constant';
 import type { SelectProps } from 'antd';
 import Image from 'next/image';
+import supplyBE from '@/utils/backend/supply';
+import { useNetworkManager } from '@/hooks/supply.hook';
 
 type LabelRender = SelectProps['labelRender'];
 
@@ -16,20 +18,42 @@ export default function SupplyOverviewComponent({ isModalOpen, handleCancel, mes
 
   const { chain, chains } = useNetwork();
 
+  const [networks, updateNetworks] = useNetworkManager();
+
+  const CHAIN_MAP = new Map(networks.map((item: any) => [item.chainId, item]));
+
+  const fetchInitiaData = async () => {
+    try {
+      const [_networks] = await Promise.all([
+        supplyBE.fetchNetworks()
+      ])
+      updateNetworks(_networks);
+
+    } catch (error) {
+      console.error("fetch initial data on SupplyOverviewComponent failed: ", error)
+    }
+  }
+
+  useEffect(() => {
+    fetchInitiaData()
+  }, [])
+
   const selectedChain = CHAIN_INFO.get(chain?.id) || {};
 
   const labelRender: LabelRender = (props: any) => {
     let { value } = props;
 
-    const _chain: any = CHAIN_MAP.get(value) || {
-      name: 'Avalanche',
-      logo: '/images/tokens/avax.png',
-    };
+    const _chain: any = CHAIN_MAP.get(value);
+    if (!_chain) {
+      return null;
+    }
+
+    const logo = CHAIN_LOGO_MAP.get(_chain?.chainId)
 
     return (
       <div className="flex items-center">
         <Image
-          src={_chain?.logo}
+          src={logo as any}
           alt={_chain?.name}
           width={24}
           height={24}
@@ -44,7 +68,6 @@ export default function SupplyOverviewComponent({ isModalOpen, handleCancel, mes
     );
   };
 
-  const CHAIN_MAP = new Map(SUPPORTED_CHAINS.map(item => [item.id, item]));
 
   return (
     <div className={cssClass['supply-overview']}>
@@ -57,14 +80,16 @@ export default function SupplyOverviewComponent({ isModalOpen, handleCancel, mes
               value: selectedChain?.id,
             }}
             options={[...(CHAIN_MAP.values() as any)].map(item => ({
-              value: item.id,
+              value: item.chainId,
             }))}
             optionRender={(option: any) => {
               const _chain: any = CHAIN_MAP.get(option.value);
+              const _logo: any = CHAIN_LOGO_MAP.get(_chain.chainId)
+
               return (
                 <div className="chain-dropdown-item-wrapper">
                   <Image
-                    src={_chain?.logo}
+                    src={_logo}
                     alt={_chain?.name}
                     width={12}
                     height={12}
