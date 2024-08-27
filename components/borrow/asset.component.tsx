@@ -21,6 +21,7 @@ export default function assetComponent({
   switchNetwork,
   networkInfo,
 }: AssetProps) {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const { t } = useTranslation('common');
 
   const tokenList = [
@@ -38,9 +39,9 @@ export default function assetComponent({
     },
     {
       name: 'FIAT',
-      value: '',
-      usd: '',
-      percent: '2.08',
+      value: '10,000.00',
+      usd: '4,000.00',
+      percent: '0.07',
     },
   ];
 
@@ -48,8 +49,8 @@ export default function assetComponent({
     <div className={twMerge(cssClass.assetComponent)}>
       <div className="asset-container">
         <div className="asset-header">{t('BORROW_MODAL_BORROW_ASSET_TO_BORROW')}</div>
-        <div className="">
-          <div className="xl:gap-6 asset-nav gap-1">
+        <div className="flex asset-wrapper">
+          {/* <div className="xl:gap-6 asset-nav gap-1">
             <div
               className={`${
                 isConnected && networkInfo ? 'xl:basis-1/4' : 'xl:basis-1/6'
@@ -72,62 +73,60 @@ export default function assetComponent({
               className={`${
                 isConnected && networkInfo ? 'xl:basis-1/4' : 'xl:basis-3/6'
               } basis-1/4`}></div>
-          </div>
+          </div> */}
           {tokenList.map((item: any) => (
             <div className="xl:gap-6 asset-body gap-1" key={item.name}>
-              <div
-                className={`${
-                  isConnected && networkInfo ? 'xl:basis-1/4' : 'xl:basis-1/6'
-                } basis-1/4`}>
-                <Image
-                  className="mr-2"
-                  src={`/images/common/${item.name}.png`}
-                  alt={item.name}
-                  width={40}
-                  height={40}
-                />
-                {item.name.toUpperCase()}
+              <div className="flex ">
+                <div className={`flex items-center`}>
+                  <Image
+                    className="mr-2"
+                    src={`/images/common/${item.name}.png`}
+                    alt={item.name}
+                    width={40}
+                    height={40}
+                  />
+                  {item.name.toUpperCase()}
+                </div>
+                <div className={` flex justify-end `}>
+                  {isConnected && networkInfo ? (
+                    <Button onClick={() => showModal(item.name)}>
+                      {t('BORROW_MODAL_BORROW_BORROW')}
+                    </Button>
+                  ) : (
+                    <React.Fragment>
+                      {isConnected ? (
+                        <Button onClick={() => switchNetwork()} className={'guest'}>
+                          <SafeHtmlComponent
+                            htmlContent={t('BORROW_SWITCH_NETWORK', {
+                              networkName: STAKE_DEFAULT_NETWORK?.name,
+                            })}
+                          />
+                        </Button>
+                      ) : (
+                        <Button
+                          onClick={() => eventBus.emit('handleWalletConnect')}
+                          className={'guest'}>
+                          <SafeHtmlComponent htmlContent={t('BORROW_CONNECT')} />
+                        </Button>
+                      )}
+                    </React.Fragment>
+                  )}
+                </div>
               </div>
-              <div
-                className={`${
-                  isConnected && networkInfo ? 'xl:basis-1/4' : 'xl:basis-1/6'
-                } flex-col items-start justify-center	basis-1/4`}>
-                <div>{item.value}</div>
-                {item.usd && <div className="usd">$ {item.usd}</div>}
-              </div>
-              <div
-                className={`${
-                  isConnected && networkInfo ? 'xl:basis-1/4' : 'xl:basis-1/6'
-                } basis-1/4`}>
-                {item.percent}%
-              </div>
-              <div
-                className={`${
-                  isConnected && networkInfo ? 'xl:basis-1/4' : 'xl:basis-3/6'
-                } justify-end basis-1/4`}>
-                {isConnected && networkInfo ? (
-                  <Button onClick={() => showModal(item.name)}>
-                    {t('BORROW_MODAL_BORROW_BORROW')}
-                  </Button>
-                ) : (
-                  <React.Fragment>
-                    {isConnected ? (
-                      <Button onClick={() => switchNetwork()} className={'guest'}>
-                        <SafeHtmlComponent
-                          htmlContent={t('BORROW_CONNECT_WALLET_SWITCH', {
-                            networkName: STAKE_DEFAULT_NETWORK?.name,
-                          })}
-                        />
-                      </Button>
-                    ) : (
-                      <Button
-                        onClick={() => eventBus.emit('handleWalletConnect')}
-                        className={'guest'}>
-                        <SafeHtmlComponent htmlContent={t('BORROW_CONNECT_WALLET')} />
-                      </Button>
-                    )}
-                  </React.Fragment>
+              <div className="flex items-start">
+                {item.name !== 'FIAT' && (
+                  <div className={`flex-col items-start justify-center`}>
+                    <div className="asset-title">
+                      {t('BORROW_MODAL_BORROW_BORROW_LOAN_AVAILABLE')}
+                    </div>
+                    <div>{item.value}</div>
+                    {item.usd && <div className="usd">$ {item.usd}</div>}
+                  </div>
                 )}
+                <div className={``}>
+                  <div className="asset-title">{t('BORROW_MODAL_BORROW_ADJUST_APR_VARIABLE')}</div>
+                  {item.percent}%
+                </div>
               </div>
             </div>
           ))}

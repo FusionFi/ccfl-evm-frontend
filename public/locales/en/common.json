@@ -225,5 +225,9 @@
   "BORROW_FIAT_MODAL_SUCCESS_DESCRIPTION": "Description",
   "BORROW_FIAT_MODAL_SUCCESS_DEPOSIT": "You deposit {{amount}} {{token}}",
   "BORROW_FIAT_MODAL_SUCCESS_RECEIVED": "You have also received",
-  "BORROW_FIAT_MODAL_SUCCESS_ADD_TO_METAMASK": "Add to Metamask"
+  "BORROW_FIAT_MODAL_SUCCESS_ADD_TO_METAMASK": "Add to Metamask",
+  "BORROW_APY": "Net APY",
+  "BORROW_CONNECT": "Connect",
+  "BORROW_SWITCH_NETWORK": "Switch network",
+  "BORROW_MODAL_NO_DATA": "There is no loan yet."
 }

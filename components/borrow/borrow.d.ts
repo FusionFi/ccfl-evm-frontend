@@ -19,4 +19,6 @@ export interface loanType {
   yield_generating: boolean;
   yield_earned: string;
   repayment_currency?: string;
+  currency?: string;
+  sub_name?: string;
 }
