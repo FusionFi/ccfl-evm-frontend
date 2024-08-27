@@ -1,11 +1,11 @@
 import { useAuth, useResetState } from '@/hooks/auth.hook';
+import eventBus from '@/hooks/eventBus.hook';
 import cssClass from '@/pages/my-profile/index.module.scss';
 import { Button } from 'antd';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { twMerge } from 'tailwind-merge';
 import { useAccount } from 'wagmi';
-
 export default function MyProfilePage() {
   /**
    * HOOKS
@@ -25,6 +25,15 @@ export default function MyProfilePage() {
 
   const handleResetState = () => {
     resetState();
+  };
+  const openSuccessModal = () => {
+    eventBus.emit('toggleActivationSuccessModal', true);
+  };
+  const openSignUpSuccessModal = () => {
+    eventBus.emit('toggleSignUpSuccessModal', { isOpen: true, email: 'johndoe@example.com' });
+  };
+  const openKycWarningModal = () => {
+    eventBus.emit('toggleKycWarningModal', true);
   };
   return (
     <div className={twMerge('my-profile-page-container', cssClass.myProfilePage)}>
@@ -47,6 +56,15 @@ export default function MyProfilePage() {
           className="btn-primary-custom"
           onClick={() => updateAuth({ kyc: false })}>
           remove kyc
+        </Button>
+        <Button className="btn-primary-custom" onClick={() => openKycWarningModal()}>
+          Open kyc warning modal
+        </Button>
+        <Button className="btn-primary-custom" onClick={() => openSuccessModal()}>
+          Open activation success modal
+        </Button>
+        <Button className="btn-primary-custom" onClick={() => openSignUpSuccessModal()}>
+          Open signup success modal
         </Button>
       </div>
     </div>

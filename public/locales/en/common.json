@@ -231,5 +231,16 @@
   "BORROW_CONNECT": "Connect",
   "BORROW_SWITCH_NETWORK": "Switch network",
   "BORROW_MODAL_NO_DATA": "There is no loan yet.",
-  "LAYOUT_MAIN_HEADER_NAV_MY_PROFILE": "My profile"
+  "LAYOUT_MAIN_HEADER_NAV_MY_PROFILE": "My profile",
+  "ACTIVATION_SUCCESS_MODAL_TITLE": "Activation completed!",
+  "ACTIVATION_SUCCESS_MODAL_DESCRIPTION": "You account is now activated!",
+  "ACTIVATION_SUCCESS_MODAL_BTN_SIGNIN": "Sign in",
+  "SIGNUP_SUCCESS_MODAL_TITLE": "Sign up completed!",
+  "SIGNUP_SUCCESS_MODAL_DESCRIPTION": "Thank you for signing up. An activation email has been sent to the address of <span>{{email}}.</span> Please follow the instruction to activate the account.",
+  "SIGNUP_SUCCESS_MODAL_BTN_OK": "Ok, got it!",
+  "SIGNUP_SUCCESS_MODAL_BTN_SIGNIN": "Sign in",
+  "KYC_WARNING_MODAL_TITLE": "KYC required for FIAT Loan",
+  "KYC_WARNING_MODAL_DESCRIPTION": "Regulation require KYC to receive FIAT. To start the KYC process, click the button below to create an KYC account.",
+  "KYC_WARNING_MODAL_BTN_SIGNUP": "Signup",
+  "KYC_WARNING_MODAL_BTN_SIGNIN": "<label> Already had an account? </label> Signin"
 }

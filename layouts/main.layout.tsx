@@ -10,9 +10,11 @@ import { Button, ConfigProvider } from 'antd';
 import { useRouter } from 'next/router';
 import { PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
 
+import ModalActivationSuccessComponent from '@/layouts/modal-activation-success/modal-activation-success.component';
+import ModalKycWarningComponent from '@/layouts/modal-kyc-warning/modal-kyc-warning.component';
+import ModalSignUpSuccessComponent from '@/layouts/modal-signup-success/modal-signup-success.component';
 import layout from '@/styles/layout/layout.module.scss';
 import { twMerge } from 'tailwind-merge';
-
 export const MainLayout = ({ children }: PropsWithChildren<{}>) => {
   /**
    * STATES
@@ -95,6 +97,9 @@ export const MainLayout = ({ children }: PropsWithChildren<{}>) => {
         </div>
       </div>
       {isLandingPage && <MainFooter />}
+      <ModalActivationSuccessComponent />
+      <ModalSignUpSuccessComponent />
+      <ModalKycWarningComponent />
     </ConfigProvider>
   );
 };
