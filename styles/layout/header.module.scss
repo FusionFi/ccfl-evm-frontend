@@ -32,12 +32,11 @@
         color: #ffffff;
         background: transparent;
         height: auto;
-        padding: 4px 12px;
+        padding: 8px 0px;
+        margin-right: 32px;
         transition: all 0.5s ease-in-out !important;
         &.active {
-          font-size: 20px;
-          line-height: 24px;
-          font-weight: bold;
+          border-bottom: 2px solid #2e77e3;
           color: #2e77e3;
           box-shadow: none;
         }
