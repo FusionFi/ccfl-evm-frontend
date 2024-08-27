@@ -135,13 +135,13 @@ export default function LoansComponent(props: LoansProps) {
           {final_status !== LOAN_STATUS.REPAID_FULL ? (
             <Button
               disabled={final_status === LOAN_STATUS.LIQUIDATED}
-              onClick={() => props.showCollateralModal('weth')}>
+              onClick={() => props.showCollateralModal('WETH')}>
               {t('BORROW_MODAL_BORROW_ADJUST_COLLATERAL')}
             </Button>
           ) : (
             <Button
               disabled={record.collateral_amount == 0}
-              onClick={() => props.showWithdrawCollateralModal('weth')}>
+              onClick={() => props.showWithdrawCollateralModal('WETH')}>
               {t('BORROW_MODAL_WITHDRAW_COLLATERAL')}
             </Button>
           )}
