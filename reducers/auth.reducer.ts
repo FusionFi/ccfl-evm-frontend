@@ -6,7 +6,6 @@ import { createReducer } from '@reduxjs/toolkit';
  */
 // Define an async thunk for API call
 
-
 export interface AuthState {
   auth: object;
   loading: boolean;
@@ -19,16 +18,16 @@ export const initialState: AuthState = {
   error: null,
 };
 
-export default createReducer(initialState, (builder) =>
+export default createReducer(initialState, builder =>
   builder
-    .addCase(AuthActions.resetState, (state) => {
+    .addCase(AuthActions.resetState, state => {
       console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>resetState');
       state.auth = Object.assign({}, initialState.auth);
       state.loading = initialState.loading;
       state.error = initialState.error;
     })
     .addCase(AuthActions.updateAuth, (state, { payload: { auth } }) => {
+      console.log('🚀 ~ .addCase ~ auth:', auth);
       state.auth = Object.assign({}, state.auth, auth);
-    })
-  
+    }),
 );

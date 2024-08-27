@@ -8,8 +8,7 @@ import { twMerge } from 'tailwind-merge';
 import header from '@/styles/layout/header.module.scss';
 import { useNetwork } from 'wagmi';
 // imports components
-import { BridgeIcon } from '@/components/icons/bridge';
-import { SwapIcon } from '@/components/icons/swap';
+import { UserIcon } from '@/components/icons/user.icon';
 import { WagmiButton } from '@/components/wagmi/wagmi.btn.component';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
@@ -111,14 +110,15 @@ export const MainHeader = () => {
             </div>
           )}
           <div className="right-content ml-auto flex items-center">
-            {!isLandingPage && (
+            {!isLandingPage && address && (
               <div className="external-links flex items-center">
-                <a target="_blank" className="btn-outline-custom mr-4" href="#">
-                  <BridgeIcon className="mr-2" /> {t('LAYOUT_MAIN_HEADER_NAV_BTN_TITLE_BRIDGE')}
-                </a>
-                <a className="btn-outline-custom mr-4" target="_blank" href="#">
-                  <SwapIcon className="mr-2" /> {t('LAYOUT_MAIN_HEADER_NAV_BTN_TITLE_SWAP')}
-                </a>
+                <Link
+                  href="/my-profile"
+                  className={`btn-outline-custom mr-4 ${
+                    router?.pathname === '/my-profile' ? 'active' : ''
+                  }`}>
+                  <UserIcon className="mr-2" /> {t('LAYOUT_MAIN_HEADER_NAV_MY_PROFILE')}
+                </Link>
               </div>
             )}
             <div className={!address ? 'hidden' : 'visible'}>
