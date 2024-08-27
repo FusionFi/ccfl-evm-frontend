@@ -74,16 +74,16 @@ export default function BorrowPage() {
     try {
       setLoadingAsset(true);
       let data = (await service.getPool(DEFAULT_PARAMS.chainId)) as any;
+      let price = {
+        USDT: null,
+        USDC: null,
+      };
 
       let priceUSDC = (await service.getPrice(DEFAULT_PARAMS.chainId, ASSET_LIST.USDC)) as any;
       let priceUSDT = (await service.getPrice(DEFAULT_PARAMS.chainId, ASSET_LIST.USDT)) as any;
-
-      if (priceUSDC) {
-        setPrice({ ...price, USDC: priceUSDC.price });
-      }
-      if (priceUSDT && priceUSDC) {
-        setPrice({ ...price, USDT: priceUSDT.price });
-      }
+      price.USDC = priceUSDC?.price;
+      price.USDT = priceUSDT?.price;
+      setPrice(price);
 
       if (data && data[0] && priceUSDC) {
         data[0].usd = data[0].loan_available * priceUSDC.price;
@@ -99,7 +99,6 @@ export default function BorrowPage() {
       setLoadingAsset(false);
     }
   };
-  console.log('price3', price);
 
   const handleLoans = async () => {
     try {
