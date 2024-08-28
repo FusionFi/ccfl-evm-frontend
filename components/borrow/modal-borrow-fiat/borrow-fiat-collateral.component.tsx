@@ -195,7 +195,7 @@ export default function ModalBorrowFiatCollateralComponent({
                     loading={_isPending}
                     type="primary"
                     htmlType='submit'
-                    disabled={isNotValidForm}
+                    disabled={isNotValidForm || !amount}
                     className={twMerge('btn-primary-custom')}
                   >
                     {t('BORROW_FIAT_MODAL_TAB_COLLATERAL_NEXT')}
