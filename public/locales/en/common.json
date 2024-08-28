@@ -242,5 +242,16 @@
   "KYC_WARNING_MODAL_TITLE": "KYC required for FIAT Loan",
   "KYC_WARNING_MODAL_DESCRIPTION": "Regulation require KYC to receive FIAT. To start the KYC process, click the button below to create an KYC account.",
   "KYC_WARNING_MODAL_BTN_SIGNUP": "Signup",
-  "KYC_WARNING_MODAL_BTN_SIGNIN": "<label> Already had an account? </label> Signin"
+  "KYC_WARNING_MODAL_BTN_SIGNIN": "<label> Already had an account? </label> Signin",
+  "SIGNUP_TITLE": "Sign up for an account",
+  "SIGNUP_USERNAME": "Username",
+  "SIGNUP_EMAIL": "Email",
+  "SIGNUP_PASSWORD": "Password",
+  "SIGNUP_CONFIRM_PASSWORD": "Confirm password",
+  "SIGNUP_USERNAME_PLACEHOLDER": "Enter username",
+  "SIGNUP_EMAIL_PLACEHOLDER": "Enter email",
+  "SIGNUP_PASSWORD_PLACEHOLDER": "Enter password",
+  "SIGNUP_CONFIRM_PASSWORD_PLACEHOLDER": "Re-enter password",
+  "SIGNIN_FORGOT PASSWORD": "Forgot password?",
+  "SIGNUP_BUTTON": "Sign up"
 }
