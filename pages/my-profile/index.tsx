@@ -6,6 +6,7 @@ import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { twMerge } from 'tailwind-merge';
 import { useAccount } from 'wagmi';
+
 export default function MyProfilePage() {
   /**
    * HOOKS
@@ -15,12 +16,12 @@ export default function MyProfilePage() {
   const [auth, updateAuth] = useAuth();
   console.log('🚀 ~ MyProfilePage ~ auth:', auth);
   const [resetState] = useResetState();
-
   /**
    * FUNCTIONS
    */
   const handleUpdateAuth = () => {
-    updateAuth({ userName: 'JohnDoe', email: 'johndoe@example.com' });
+    eventBus.emit('openSignInModal');
+    // updateAuth({ userName: 'JohnDoe', email: 'johndoe@example.com' });
   };
 
   const handleResetState = () => {
@@ -35,9 +36,15 @@ export default function MyProfilePage() {
   const openKycWarningModal = () => {
     eventBus.emit('toggleKycWarningModal', true);
   };
+  console.log(auth);
   return (
     <div className={twMerge('my-profile-page-container', cssClass.myProfilePage)}>
       My profile page here
+      <div>
+        <div>username: {auth?.userName}</div>
+        <div>email: {auth?.email}</div>
+        <div>password: {auth?.password}</div>
+      </div>
       <div className="flex items-center gap-8">
         <Button disabled={auth?.email} className="btn-primary-custom" onClick={handleUpdateAuth}>
           Sign in
