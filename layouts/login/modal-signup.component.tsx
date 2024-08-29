@@ -58,7 +58,6 @@ export default function ModalCollateralComponent({}: ModalCollateralProps) {
   });
 
   const onSubmit: SubmitHandler<IFormInput> = data => {
-    console.log(data);
     updateAuth(data);
     setLoading(true);
     setTimeout(() => {

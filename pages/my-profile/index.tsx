@@ -36,7 +36,9 @@ export default function MyProfilePage() {
   const openKycWarningModal = () => {
     eventBus.emit('toggleKycWarningModal', true);
   };
-  console.log(auth);
+  const openNewPasswordModal = () => {
+    eventBus.emit('openNewPasswordModal', true);
+  };
   return (
     <div className={twMerge('my-profile-page-container', cssClass.myProfilePage)}>
       My profile page here
@@ -45,7 +47,7 @@ export default function MyProfilePage() {
         <div>email: {auth?.email}</div>
         <div>password: {auth?.password}</div>
       </div>
-      <div className="flex items-center gap-8">
+      <div className="flex items-center gap-4 flex-wrap">
         <Button disabled={auth?.email} className="btn-primary-custom" onClick={handleUpdateAuth}>
           Sign in
         </Button>
@@ -72,6 +74,9 @@ export default function MyProfilePage() {
         </Button>
         <Button className="btn-primary-custom" onClick={() => openSignUpSuccessModal()}>
           Open signup success modal
+        </Button>
+        <Button className="btn-primary-custom" onClick={() => openNewPasswordModal()}>
+          Open new password modal
         </Button>
       </div>
     </div>

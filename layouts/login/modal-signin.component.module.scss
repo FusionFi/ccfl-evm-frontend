@@ -1,4 +1,4 @@
-.signup-wrapper {
+.signin-wrapper {
   :global {
     .ant-modal-content {
       display: flex;
@@ -64,6 +64,13 @@
           svg {
             cursor: pointer;
           }
+        }
+        input:-webkit-autofill,
+        input:-webkit-autofill:focus {
+          transition: background-color 600000s 0s, color 600000s 0s;
+        }
+        input[data-autocompleted] {
+          background-color: transparent !important;
         }
         input {
           outline: unset;

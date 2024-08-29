@@ -20,7 +20,7 @@ interface IFormInput {
 
 export default function ModalCollateralComponent({}: ModalCollateralProps) {
   const { t } = useTranslation('common');
-  const [isModalOpen, setIsModalOpen] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isVisiblePassword, setIsVisiblePassword] = useState(false);
 
   const {
@@ -76,6 +76,10 @@ export default function ModalCollateralComponent({}: ModalCollateralProps) {
   const _handleOk = useCallback(() => {
     setIsModalOpen(false);
   }, []);
+  const _handleForgotPaswrod = useCallback(() => {
+    setIsModalOpen(false);
+    eventBus.emit('openForgotModal');
+  }, []);
 
   /**
    * USE EFFECTS
@@ -95,7 +99,7 @@ export default function ModalCollateralComponent({}: ModalCollateralProps) {
 
   return (
     <Modal
-      wrapClassName={cssClass['signup-wrapper']}
+      wrapClassName={cssClass['signin-wrapper']}
       title={t('SIGNUP_SUCCESS_MODAL_BTN_SIGNIN')}
       open={isModalOpen}
       onOk={_handleOk}
@@ -129,7 +133,9 @@ export default function ModalCollateralComponent({}: ModalCollateralProps) {
                 </div>
               </div>
             </div>
-            <div className="flex justify-end items-center forgot-password">
+            <div
+              className="flex justify-end items-center forgot-password"
+              onClick={_handleForgotPaswrod}>
               {t('SIGNIN_FORGOT_PASSWORD')}
             </div>
           </div>

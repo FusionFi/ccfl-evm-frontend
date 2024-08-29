@@ -15,6 +15,9 @@ import ModalKycWarningComponent from '@/layouts/modal-kyc-warning/modal-kyc-warn
 import ModalSignUpSuccessComponent from '@/layouts/modal-signup-success/modal-signup-success.component';
 import ModalSignUpComponent from '@/layouts/login/modal-signup.component';
 import ModalSignInComponent from '@/layouts/login/modal-signin.component';
+import ModalForgotPasswordComponent from '@/layouts/login/modal-forgot-password.component';
+import ModalNewPasswordComponent from '@/layouts/login/modal-new-password.component';
+
 import layout from '@/styles/layout/layout.module.scss';
 import { twMerge } from 'tailwind-merge';
 export const MainLayout = ({ children }: PropsWithChildren<{}>) => {
@@ -104,6 +107,8 @@ export const MainLayout = ({ children }: PropsWithChildren<{}>) => {
       <ModalKycWarningComponent />
       <ModalSignUpComponent />
       <ModalSignInComponent />
+      <ModalForgotPasswordComponent />
+      <ModalNewPasswordComponent />
     </ConfigProvider>
   );
 };

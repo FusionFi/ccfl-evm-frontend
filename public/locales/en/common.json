@@ -253,5 +253,14 @@
   "SIGNUP_PASSWORD_PLACEHOLDER": "Enter password",
   "SIGNUP_CONFIRM_PASSWORD_PLACEHOLDER": "Re-enter password",
   "SIGNIN_FORGOT_PASSWORD": "Forgot password?",
-  "SIGNUP_BUTTON": "Sign up"
+  "SIGNUP_BUTTON": "Sign up",
+  "FORGOT_PASSWORD_CONTENT": "To recover your password, please enter your email below",
+  "FORGOT_PASSWORD_TITLE": "Recover email sent!",
+  "FORGOT_PASSWORD_RECOVER": "A recovery email has been sent to the address of <span>{{email}}</span>. Please follow the instruction to set up new password",
+  "NEW_PASSWORD_TITLE": "Setup new password",
+  "NEW_PASSWORD_CONTENT": "Enter new password:",
+  "NEW_PASSWORD_CONFIRM": "Confirm new password:",
+  "NEW_PASSWORD_CONFIRM_PLACEHOLDER": "Re-enter password",
+  "NEW_PASSWORD_BUTTON": "Create new password",
+  "NEW_PASSWORD_SUCCESS": "New password set!"
 }
