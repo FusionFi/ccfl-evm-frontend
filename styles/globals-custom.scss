@@ -179,6 +179,12 @@
       margin-top: 0px;
     }
 
+    &.non-close {
+      .ant-modal-header {
+        justify-content: center;
+      }
+    }
+
     &.modal-common {
       border-radius: 2px;
       border: 1px solid $black-common-color;
