@@ -1,10 +1,9 @@
-import { useAuth, useResetState } from '@/hooks/auth.hook';
+import { useAuth } from '@/hooks/auth.hook';
 import cssClass from '@/pages/my-profile/index.module.scss';
 
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { twMerge } from 'tailwind-merge';
-import { useEffect } from 'react';
 
 import { ProfileAccount } from '@/components/profile/profile-account.component'
 import { ProfileKycStatus } from '@/components/profile/profile-kyc-status.component'
@@ -18,15 +17,6 @@ export default function MyProfilePage() {
   const { t } = useTranslation('common');
   const [auth] = useAuth();
   console.log('🚀 ~ MyProfilePage ~ auth:', auth);
-  const [resetState] = useResetState();
-
-  const handleResetState = () => {
-    resetState();
-  };
-
-  useEffect(() => {
-    handleResetState();
-  }, []);
 
   return (
     <div className={twMerge('my-profile-page-container', cssClass.myProfilePage)}>

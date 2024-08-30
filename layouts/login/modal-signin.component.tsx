@@ -18,7 +18,7 @@ interface IFormInput {
   password: string;
 }
 
-export default function ModalCollateralComponent({}: ModalCollateralProps) {
+export default function ModalSigninComponent({}: ModalCollateralProps) {
   const { t } = useTranslation('common');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isVisiblePassword, setIsVisiblePassword] = useState(false);

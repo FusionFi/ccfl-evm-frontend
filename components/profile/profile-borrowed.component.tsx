@@ -1,6 +1,7 @@
 import { ComponentProps } from 'react';
 import { useTranslation } from 'next-i18next';
 import { InfoCircleOutlined } from '@ant-design/icons';
+import { Tooltip } from 'antd';
 
 export const ProfileBorrowed = ({ }: ComponentProps<any>) => {
   const { t } = useTranslation('common');
@@ -36,12 +37,15 @@ export const ProfileBorrowed = ({ }: ComponentProps<any>) => {
           <span className="my-profile-page-wrapper__borrowed__item__value__health--good">
             1.66B
           </span>
-          <InfoCircleOutlined
-            size={12}
-            style={{
-              color: '#1890FF',
-            }}
-          />
+          <Tooltip placement="top" title={'text here'}>
+            <InfoCircleOutlined
+              size={12}
+              style={{
+                color: '#1890FF',
+              }}
+            />
+          </Tooltip>
+
         </div>
       </div>
     </div>

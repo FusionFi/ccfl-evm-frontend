@@ -22,7 +22,7 @@ interface IFormInput {
   confirmPassword: string;
 }
 
-export default function ModalCollateralComponent({}: ModalCollateralProps) {
+export default function ModalChangePasswordComponent({}: ModalCollateralProps) {
   const { t } = useTranslation('common');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);

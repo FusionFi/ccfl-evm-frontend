@@ -7,14 +7,23 @@ import { Button } from 'antd';
 import { useTranslation } from 'next-i18next';
 import { twMerge } from 'tailwind-merge';
 import Image from 'next/image';
+import eventBus from '@/hooks/eventBus.hook';
 
 export const ProfileAccount = ({ }: ComponentProps<any>) => {
   const { t } = useTranslation('common');
   const [auth, updateAuth] = useAuth();
 
-  const handleUpdateAuth = () => {
-    updateAuth({ userName: 'JohnDoe', email: 'johndoe@example.com' });
+  const handleSignin = () => {
+    eventBus.emit('openSignInModal');
   };
+
+  const handleSignup = () => {
+    eventBus.emit('openSignUpModal');
+  };
+
+  const handlePasswordChange = () => {
+    eventBus.emit('openChangePasswordModal');
+  }
 
   if (auth && auth.email) {
     if (auth.kyc) {
@@ -140,7 +149,7 @@ export const ProfileAccount = ({ }: ComponentProps<any>) => {
               </span>
               <div className="my-profile-page-wrapper__account__content--has-account--no-verified__content__body__item__value">
                 ********{' '}
-                <Button icon={<EditOutlined />} type="text">
+                <Button onClick={handlePasswordChange} icon={<EditOutlined />} type="text">
                   {t('MY_PROFILE_ACCOUNT_PASSWORD_CHANGE')}
                 </Button>
               </div>
@@ -193,6 +202,7 @@ export const ProfileAccount = ({ }: ComponentProps<any>) => {
     <div className="my-profile-page-wrapper__account__content--no-account">
       <Button
         type="primary"
+        onClick={handleSignup}
         className={twMerge(
           'btn-primary-custom',
           'my-profile-page-wrapper__account__content--no-account__signup',
@@ -201,7 +211,7 @@ export const ProfileAccount = ({ }: ComponentProps<any>) => {
       </Button>
       <div className="my-profile-page-wrapper__account__content--no-account__signin">
         {t('MY_PROFILE_ACCOUNT_SIGNIN_MSG')}
-        <Button onClick={handleUpdateAuth} type="link">
+        <Button onClick={handleSignin} type="link">
           {t('MY_PROFILE_ACCOUNT_SIGNIN')}
         </Button>
       </div>

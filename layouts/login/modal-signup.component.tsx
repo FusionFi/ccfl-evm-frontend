@@ -20,7 +20,7 @@ interface IFormInput {
   confirmPassword: string;
 }
 
-export default function ModalCollateralComponent({}: ModalCollateralProps) {
+export default function ModalSignupComponent({}: ModalCollateralProps) {
   const { t } = useTranslation('common');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isVisiblePassword, setIsVisiblePassword] = useState(false);
@@ -58,11 +58,11 @@ export default function ModalCollateralComponent({}: ModalCollateralProps) {
   });
 
   const onSubmit: SubmitHandler<IFormInput> = data => {
-    updateAuth({
-      userName: data.userName,
-      email: data.email,
-      password: data.password,
-    });
+    // updateAuth({
+    //   userName: data.userName,
+    //   email: data.email,
+    //   password: data.password,
+    // });
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
