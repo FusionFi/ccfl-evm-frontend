@@ -1,15 +1,14 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useForm, SubmitHandler } from 'react-hook-form';
-import { Modal } from 'antd';
-import { Button } from 'antd';
-import { useTranslation } from 'next-i18next';
-import cssClass from './modal-signin.component.module.scss';
-import eventBus from '@/hooks/eventBus.hook';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import validator from 'validator';
-import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
 import { useAuth } from '@/hooks/auth.hook';
+import eventBus from '@/hooks/eventBus.hook';
+import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { Button, Modal } from 'antd';
+import { useTranslation } from 'next-i18next';
+import { useCallback, useEffect, useState } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import validator from 'validator';
+import * as yup from 'yup';
+import cssClass from './modal-signin.component.module.scss';
 
 interface ModalCollateralProps {}
 
@@ -54,7 +53,6 @@ export default function ModalSigninComponent({}: ModalCollateralProps) {
       updateAuth({
         userName: data.email.split('@')[0],
         email: data.email,
-        password: data.password,
       });
       reset();
       setIsVisiblePassword(false);
