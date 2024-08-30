@@ -3,7 +3,7 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { Modal } from 'antd';
 import { Button } from 'antd';
 import { useTranslation } from 'next-i18next';
-import cssClass from './modal-new-password.component.module.scss';
+import cssClass from './modal-change-password.component.module.scss';
 import eventBus from '@/hooks/eventBus.hook';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -17,6 +17,7 @@ import Image from 'next/image';
 interface ModalCollateralProps {}
 
 interface IFormInput {
+  oldPassword: string;
   password: string;
   confirmPassword: string;
 }
@@ -27,6 +28,7 @@ export default function ModalCollateralComponent({}: ModalCollateralProps) {
   const [isSuccess, setIsSuccess] = useState(false);
   const [isVisiblePassword, setIsVisiblePassword] = useState(false);
   const [isVisibleRePassword, setIsVisibleRePassword] = useState(false);
+  const [isVisibleOldPassword, setIsVisibleOldPassword] = useState(false);
 
   const {
     handleSubmit,
@@ -38,6 +40,10 @@ export default function ModalCollateralComponent({}: ModalCollateralProps) {
   } = useForm({
     resolver: yupResolver(
       yup.object({
+        oldPassword: yup
+          .string()
+          .required()
+          .notOneOf([yup.ref('password')], ''),
         password: yup.string().required(),
         confirmPassword: yup
           .string()
@@ -46,20 +52,20 @@ export default function ModalCollateralComponent({}: ModalCollateralProps) {
       }),
     ),
     defaultValues: {
+      oldPassword: '',
       password: '',
       confirmPassword: '',
     },
   });
 
   const onSubmit: SubmitHandler<IFormInput> = data => {
-    updateAuth({
-      password: data.password,
-    });
+    updateAuth({ password: data.password });
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
       setIsSuccess(true);
       reset();
+      setIsVisibleOldPassword(false);
       setIsVisiblePassword(false);
       setIsVisibleRePassword(false);
     }, 1000);
@@ -83,32 +89,27 @@ export default function ModalCollateralComponent({}: ModalCollateralProps) {
     setIsSuccess(false);
     setIsModalOpen(false);
   }, []);
-  const openSignInModal = () => {
-    setIsSuccess(false);
-    setIsModalOpen(false);
-    eventBus.emit('openSignInModal');
-  };
 
   /**
    * USE EFFECTS
    */
   useEffect(() => {
-    const openNewPasswordModal = () => {
+    const openChangePasswordModal = () => {
       setIsModalOpen(true);
     };
 
-    eventBus.on('openNewPasswordModal', openNewPasswordModal);
+    eventBus.on('openChangePasswordModal', openChangePasswordModal);
 
     // Cleanup listener on component unmount
     return () => {
-      eventBus.off('openNewPasswordModal', openNewPasswordModal);
+      eventBus.off('openChangePasswordModal', openChangePasswordModal);
     };
   }, []);
 
   return (
     <Modal
-      wrapClassName={cssClass[`new-password-wrapper`]}
-      title={isSuccess ? t('NEW_PASSWORD_SUCCESS') : t('NEW_PASSWORD_TITLE')}
+      wrapClassName={cssClass[`change-password-wrapper`]}
+      title={isSuccess ? t('NEW_PASSWORD_SUCCESS') : t('CHANGE_PASSWORD_TITLE')}
       open={isModalOpen}
       onOk={_handleOk}
       onCancel={_handleCancel}
@@ -119,6 +120,20 @@ export default function ModalCollateralComponent({}: ModalCollateralProps) {
         {!isSuccess ? (
           <div className="signup-inner">
             <div className="signup-body">
+              <div className="flex justify-between items-center">
+                <span>{t('CHANGE_PASSWORD_OLD')}:</span>
+                <div className="input-warpper">
+                  <input
+                    {...register('oldPassword')}
+                    placeholder={t('SIGNUP_PASSWORD_PLACEHOLDER')}
+                    type={isVisibleOldPassword ? 'text' : 'password'}
+                    name="oldPassword"
+                  />
+                  <div onClick={() => setIsVisibleOldPassword(!isVisibleOldPassword)}>
+                    {isVisibleOldPassword ? <EyeOutlined /> : <EyeInvisibleOutlined />}
+                  </div>
+                </div>
+              </div>
               <div className="flex justify-between items-center">
                 <span>{t('NEW_PASSWORD_CONTENT')}:</span>
                 <div className="input-warpper">
@@ -150,7 +165,7 @@ export default function ModalCollateralComponent({}: ModalCollateralProps) {
             </div>
             <div className="signup-footer">
               <Button htmlType="submit" disabled={!isValid} className="w-full" loading={loading}>
-                {t('NEW_PASSWORD_BUTTON')}
+                {t('CHANGE_PASSWORD_TITLE')}
               </Button>
             </div>
           </div>
@@ -171,13 +186,6 @@ export default function ModalCollateralComponent({}: ModalCollateralProps) {
                 className={twMerge('btn-default-custom')}
                 block>
                 {t('SIGNUP_SUCCESS_MODAL_BTN_OK')}
-              </Button>
-              <Button
-                onClick={openSignInModal}
-                type="primary"
-                className={twMerge('btn-outline-custom border-none')}
-                block>
-                {t('SIGNUP_SUCCESS_MODAL_BTN_SIGNIN')}
               </Button>
             </div>
           </div>

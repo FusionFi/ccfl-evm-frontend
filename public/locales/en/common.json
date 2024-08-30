@@ -258,9 +258,11 @@
   "FORGOT_PASSWORD_TITLE": "Recover email sent!",
   "FORGOT_PASSWORD_RECOVER": "A recovery email has been sent to the address of <span>{{email}}</span>. Please follow the instruction to set up new password",
   "NEW_PASSWORD_TITLE": "Setup new password",
-  "NEW_PASSWORD_CONTENT": "Enter new password:",
-  "NEW_PASSWORD_CONFIRM": "Confirm new password:",
+  "NEW_PASSWORD_CONTENT": "Enter new password",
+  "NEW_PASSWORD_CONFIRM": "Confirm new password",
   "NEW_PASSWORD_CONFIRM_PLACEHOLDER": "Re-enter password",
   "NEW_PASSWORD_BUTTON": "Create new password",
-  "NEW_PASSWORD_SUCCESS": "New password set!"
+  "NEW_PASSWORD_SUCCESS": "New password set!",
+  "CHANGE_PASSWORD_TITLE": "Change password",
+  "CHANGE_PASSWORD_OLD": "Enter old password"
 }

@@ -17,6 +17,7 @@ import ModalSignUpComponent from '@/layouts/login/modal-signup.component';
 import ModalSignInComponent from '@/layouts/login/modal-signin.component';
 import ModalForgotPasswordComponent from '@/layouts/login/modal-forgot-password.component';
 import ModalNewPasswordComponent from '@/layouts/login/modal-new-password.component';
+import ModalChangePasswordComponent from '@/layouts/login/modal-change-password.component';
 
 import layout from '@/styles/layout/layout.module.scss';
 import { twMerge } from 'tailwind-merge';
@@ -109,6 +110,7 @@ export const MainLayout = ({ children }: PropsWithChildren<{}>) => {
       <ModalSignInComponent />
       <ModalForgotPasswordComponent />
       <ModalNewPasswordComponent />
+      <ModalChangePasswordComponent />
     </ConfigProvider>
   );
 };

@@ -58,7 +58,11 @@ export default function ModalCollateralComponent({}: ModalCollateralProps) {
   });
 
   const onSubmit: SubmitHandler<IFormInput> = data => {
-    updateAuth(data);
+    updateAuth({
+      userName: data.userName,
+      email: data.email,
+      password: data.password,
+    });
     setLoading(true);
     setTimeout(() => {
       setLoading(false);

@@ -39,6 +39,10 @@ export default function MyProfilePage() {
   const openNewPasswordModal = () => {
     eventBus.emit('openNewPasswordModal', true);
   };
+  const openChangePasswordModal = () => {
+    eventBus.emit('openChangePasswordModal', true);
+  };
+
   return (
     <div className={twMerge('my-profile-page-container', cssClass.myProfilePage)}>
       My profile page here
@@ -77,6 +81,9 @@ export default function MyProfilePage() {
         </Button>
         <Button className="btn-primary-custom" onClick={() => openNewPasswordModal()}>
           Open new password modal
+        </Button>
+        <Button className="btn-primary-custom" onClick={() => openChangePasswordModal()}>
+          Open change password modal
         </Button>
       </div>
     </div>
