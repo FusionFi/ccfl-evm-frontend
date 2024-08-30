@@ -9,15 +9,23 @@ import { ProfileAccount } from '@/components/profile/profile-account.component'
 import { ProfileKycStatus } from '@/components/profile/profile-kyc-status.component'
 import { ProfileSupply } from '@/components/profile/profile-supply.component'
 import { ProfileBorrowed } from '@/components/profile/profile-borrowed.component'
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation'
 
 export default function MyProfilePage() {
   /**
    * HOOKS
    */
   const { t } = useTranslation('common');
+  const router = useRouter()
   const [auth] = useAuth();
   console.log('🚀 ~ MyProfilePage ~ auth:', auth);
 
+  useEffect(() => {
+    if (!auth?.email) {
+      router.push('/supply')
+    }
+  }, [auth?.email])
   return (
     <div className={twMerge('my-profile-page-container', cssClass.myProfilePage)}>
       <div className="my-profile-page-wrapper">

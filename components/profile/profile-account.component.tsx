@@ -54,7 +54,7 @@ export const ProfileAccount = ({ }: ComponentProps<any>) => {
                   {t('MY_PROFILE_ACCOUNT_USERNAME')}
                 </span>
                 <span className="my-profile-page-wrapper__account__content--has-account--verified__content__body__item__value">
-                  username01
+                  {auth.userName}
                 </span>
               </div>
               <div className="my-profile-page-wrapper__account__content--has-account--verified__content__body__item">
@@ -62,7 +62,7 @@ export const ProfileAccount = ({ }: ComponentProps<any>) => {
                   {t('MY_PROFILE_ACCOUNT_EMAIL')}
                 </span>
                 <span className="my-profile-page-wrapper__account__content--has-account--verified__content__body__item__value">
-                  mail@mail.com
+                  {auth?.email}
                 </span>
               </div>
               <div className="my-profile-page-wrapper__account__content--has-account--verified__content__body__item">
@@ -126,7 +126,7 @@ export const ProfileAccount = ({ }: ComponentProps<any>) => {
                   {t('MY_PROFILE_ACCOUNT_PERSONAL_EMAIL_ADDRESS')}
                 </span>
                 <span className="my-profile-page-wrapper__account__content--has-account--verified__content__body__item__value">
-                  mail@mail.com
+                  {auth?.email}
                 </span>
               </div>
             </div>
@@ -147,7 +147,7 @@ export const ProfileAccount = ({ }: ComponentProps<any>) => {
                 {t('MY_PROFILE_ACCOUNT_USERNAME')}
               </span>
               <span className="my-profile-page-wrapper__account__content--has-account--no-verified__content__body__item__value">
-                username01
+                {auth?.userName}
               </span>
             </div>
             <div className="my-profile-page-wrapper__account__content--has-account--no-verified__content__body__item">
@@ -155,7 +155,7 @@ export const ProfileAccount = ({ }: ComponentProps<any>) => {
                 {t('MY_PROFILE_ACCOUNT_EMAIL')}
               </span>
               <span className="my-profile-page-wrapper__account__content--has-account--no-verified__content__body__item__value">
-                mail@mail.com
+                {auth?.email}
               </span>
             </div>
             <div className="my-profile-page-wrapper__account__content--has-account--no-verified__content__body__item">
