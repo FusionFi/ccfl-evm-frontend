@@ -24,3 +24,9 @@ export const TRANSACTION_STATUS = {
   SUCCESS: 'SUCCESS',
   FAILED: 'FAILED',
 };
+export const ASSET_TYPE = {
+  USD: 'USD',
+  FIAT: 'FIAT',
+  USDT: 'USDT',
+  USDC: 'USDC',
+};

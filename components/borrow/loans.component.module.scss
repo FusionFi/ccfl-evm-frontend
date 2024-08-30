@@ -49,9 +49,9 @@
         td {
           border-bottom: 0;
           padding: 16px 16px 12px;
+          min-width: 100px;
           @media screen and (max-width: 767px) {
             padding: 12px 12px 6px;
-            min-width: 100px;
           }
           &:first-child {
             padding-left: 16px;
