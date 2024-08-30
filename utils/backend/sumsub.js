@@ -1,7 +1,7 @@
 import http from '@/utils/backend/http.js';
 import crypto from 'crypto'
 
-const SUMSUB_BASE_URL = process.env.NEXT_PUBLIC_SUMSUB_BASE_URL || 'https://api.sumsub.com';
+const SUMSUB_BASE_URL = process.env.NEXT_PUBLIC_SUMSUB_BASE_URL || 'https://try.readme.io/https://api.sumsub.com';
 const SUMSUB_APP_TOKEN = process.env.NEXT_PUBLIC_SUMSUB_APP_TOKEN || 'sbx:ZbuTIJ5iwlUhNlf5xmviu5Bq.9ihhJSSsGpkdav5hr2bQXMHJyErj4YoA';
 const SUMSUB_SECRET_KEY = process.env.NEXT_PUBLIC_SUMSUB_SECRET_KEY || 'NEKiYebzQwSwgDIbYDQQ4pKdBFzrsmRB';
 
