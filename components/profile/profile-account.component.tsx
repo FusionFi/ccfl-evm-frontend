@@ -8,6 +8,7 @@ import { useTranslation } from 'next-i18next';
 import { twMerge } from 'tailwind-merge';
 import Image from 'next/image';
 import eventBus from '@/hooks/eventBus.hook';
+import sumsub from '@/utils/backend/sumsub'
 
 export const ProfileAccount = ({ }: ComponentProps<any>) => {
   const { t } = useTranslation('common');
@@ -23,6 +24,20 @@ export const ProfileAccount = ({ }: ComponentProps<any>) => {
 
   const handlePasswordChange = () => {
     eventBus.emit('openChangePasswordModal');
+  }
+
+  const handleKycVerify = async () => {
+    try {
+      const { url }: any = await sumsub.generateExternalLink({
+        levelName: 'basic-kyc-level',
+        externalUserId: 1,
+      })
+
+      window?.open(url, '_blank')?.focus();
+      updateAuth({ kyc: true })
+    } catch (error) {
+      console.error('handle kyc verifying failed: ', error)
+    }
   }
 
   if (auth && auth.email) {
@@ -185,7 +200,7 @@ export const ProfileAccount = ({ }: ComponentProps<any>) => {
           <div className="my-profile-page-wrapper__account__content--has-account--no-verified__footer__right">
             <Button
               type="primary"
-              onClick={() => updateAuth({ kyc: true })}
+              onClick={handleKycVerify}
               className={twMerge('btn-primary-custom')}>
               {t('MY_PROFILE_ACCOUNT_CONTINUE')}
             </Button>
