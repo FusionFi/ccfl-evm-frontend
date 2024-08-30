@@ -7,6 +7,8 @@ import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
+import { useAuth } from '@/hooks/auth.hook';
+import { ASSET_TYPE } from '@/constants/common.constant';
 
 interface AssetProps {
   showModal: any;
@@ -23,6 +25,16 @@ export default function assetComponent({
 }: AssetProps) {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const { t } = useTranslation('common');
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const [auth] = useAuth();
+
+  const handleCheckLogin = (name: string) => {
+    if (!auth?.userName && name === ASSET_TYPE.FIAT) {
+      eventBus.emit('toggleKycWarningModal', true);
+    } else {
+      showModal(name);
+    }
+  };
 
   const tokenList = [
     {
@@ -89,7 +101,7 @@ export default function assetComponent({
                 </div>
                 <div className={` flex justify-end `}>
                   {isConnected && networkInfo ? (
-                    <Button onClick={() => showModal(item.name)}>
+                    <Button onClick={() => handleCheckLogin(item.name)}>
                       {t('BORROW_MODAL_BORROW_BORROW')}
                     </Button>
                   ) : (
@@ -114,7 +126,7 @@ export default function assetComponent({
                 </div>
               </div>
               <div className="flex items-start">
-                {item.name !== 'FIAT' && (
+                {item.name !== ASSET_TYPE.FIAT && (
                   <div className={`flex-col items-start justify-center`}>
                     <div className="asset-title">
                       {t('BORROW_MODAL_BORROW_BORROW_LOAN_AVAILABLE')}

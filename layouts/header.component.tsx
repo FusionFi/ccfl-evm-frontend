@@ -56,7 +56,7 @@ export const MainHeader = () => {
   useEffect(() => {
     const handleScroll = () => {
       const shouldChangeBackground = window.scrollY > 20;
-      console.log('🚀 ~ handleScroll ~ window.scrollY:', window.scrollY);
+      // console.log('🚀 ~ handleScroll ~ window.scrollY:', window.scrollY);
       setBackgroundChange(shouldChangeBackground);
     };
 
