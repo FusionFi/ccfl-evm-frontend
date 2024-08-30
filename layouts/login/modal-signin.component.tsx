@@ -48,11 +48,14 @@ export default function ModalSigninComponent({}: ModalCollateralProps) {
   });
 
   const onSubmit: SubmitHandler<IFormInput> = data => {
-    // updateUser(data);
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-      updateAuth({ userName: 'JohnDoe', email: 'johndoe@example.com', password: 'password' });
+      updateAuth({
+        userName: data.email.split('@')[0],
+        email: data.email,
+        password: data.password,
+      });
       reset();
       setIsVisiblePassword(false);
       setIsModalOpen(false);
