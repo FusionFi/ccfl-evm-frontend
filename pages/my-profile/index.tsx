@@ -13,6 +13,7 @@ import { KycVerifiedIcon } from '@/components/icons/kyc-verified.icon'
 import { KycNoVerifiedIcon } from '@/components/icons/kyc-no-verified.icon'
 
 import Image from 'next/image';
+import { useEffect } from 'react';
 
 const AccountContent = () => {
   const [auth, updateAuth] = useAuth();
@@ -235,37 +236,12 @@ export default function MyProfilePage() {
     eventBus.emit('toggleKycWarningModal', true);
   };
 
+  useEffect(() => {
+    handleResetState()
+  }, [])
+
   return (
     <div className={twMerge('my-profile-page-container', cssClass.myProfilePage)}>
-      <div className="flex items-center gap-8 flex-wrap">
-        <Button disabled={auth?.email} className="btn-primary-custom" onClick={handleUpdateAuth}>
-          Sign in
-        </Button>
-        <Button disabled={!auth?.email} className="btn-primary-custom" onClick={handleResetState}>
-          Sign out
-        </Button>
-        <Button
-          disabled={!auth?.email || auth?.kyc}
-          className="btn-primary-custom"
-          onClick={() => updateAuth({ kyc: true })}>
-          enable KYC
-        </Button>
-        <Button
-          disabled={!auth?.email || !auth?.kyc}
-          className="btn-primary-custom"
-          onClick={() => updateAuth({ kyc: false })}>
-          remove kyc
-        </Button>
-        <Button className="btn-primary-custom" onClick={() => openKycWarningModal()}>
-          Open kyc warning modal
-        </Button>
-        <Button className="btn-primary-custom" onClick={() => openSuccessModal()}>
-          Open activation success modal
-        </Button>
-        <Button className="btn-primary-custom" onClick={() => openSignUpSuccessModal()}>
-          Open signup success modal
-        </Button>
-      </div>
       <div className='my-profile-page-wrapper'>
         <div className='my-profile-page-wrapper__title'>My Profile</div>
         <div className='my-profile-page-wrapper__borrowed'>
