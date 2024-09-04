@@ -161,7 +161,7 @@
       margin-bottom: 0px;
 
       .ant-modal-title {
-        font-family: Segoe UI;
+        font-family: Inter;
         font-size: 16px;
         font-style: normal;
         font-weight: 700;
@@ -177,6 +177,12 @@
     .ant-modal-footer {
       padding: 16px 24px;
       margin-top: 0px;
+    }
+
+    &.non-close {
+      .ant-modal-header {
+        justify-content: center;
+      }
     }
 
     &.modal-common {

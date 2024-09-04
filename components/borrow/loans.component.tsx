@@ -9,6 +9,9 @@ import { LOAN_STATUS } from '@/constants/common.constant';
 import type { TableProps } from 'antd';
 import { toCurrency } from '@/utils/common';
 import { loanType } from '@/components/borrow/borrow';
+import { useAuth } from '@/hooks/auth.hook';
+import { ASSET_TYPE } from '@/constants/common.constant';
+import eventBus from '@/hooks/eventBus.hook';
 
 interface LoansProps {
   showModal: any;
@@ -20,6 +23,7 @@ interface LoansProps {
 
 export default function LoansComponent(props: LoansProps) {
   const { t } = useTranslation('common');
+  const [auth] = useAuth();
 
   const renderStatusClass = (status: string) => {
     switch (status) {
@@ -36,7 +40,36 @@ export default function LoansComponent(props: LoansProps) {
     }
   };
 
-  const handleDeleteLoan = () => {};
+  const handleDeleteLoan = () => {
+    console.log('handleDeleteLoan');
+  };
+
+  const ACTION_LOAN = {
+    COLLATERAL: 'COLLATERAL',
+    WITHDRAW_COLLATERAL: 'WITHDRAW_COLLATERAL',
+    BORROW: 'BORROW',
+    REPAY: 'REPAY',
+    DELETE: 'DELETE',
+  };
+
+  const handleCheckLogin = (type: string, record: loanType) => {
+    if (!auth?.userName && ASSET_TYPE.USD === record?.asset) {
+      eventBus.emit('toggleKycWarningModal', true);
+    } else {
+      switch (type) {
+        case ACTION_LOAN.COLLATERAL:
+          return props.showCollateralModal(record.collateral_asset);
+        case ACTION_LOAN.WITHDRAW_COLLATERAL:
+          return props.showWithdrawCollateralModal(record.collateral_asset);
+        case ACTION_LOAN.REPAY:
+          return props.showRepayModal(record.asset, record.repayment_currency);
+        case ACTION_LOAN.DELETE:
+          return handleDeleteLoan();
+        default:
+          return props.showModal(record.asset);
+      }
+    }
+  };
 
   const columns: TableProps<any>['columns'] = [
     {
@@ -88,7 +121,6 @@ export default function LoansComponent(props: LoansProps) {
       render: value => {
         let status: keyof typeof LOAN_STATUS = value;
         let final_status = LOAN_STATUS[status] ? LOAN_STATUS[status] : LOAN_STATUS.ACTIVE;
-        console.log('a', status, final_status, renderStatusClass(final_status));
         return (
           <div className="loans-status basis-1/7  flex items-center">
             <span className={`${renderStatusClass(final_status)}`}>
@@ -215,13 +247,13 @@ export default function LoansComponent(props: LoansProps) {
                       e => e === final_status,
                     )
                   }
-                  onClick={() => props.showCollateralModal('WETH')}>
+                  onClick={() => handleCheckLogin(ACTION_LOAN.COLLATERAL, record)}>
                   {t('BORROW_MODAL_BORROW_ADJUST_COLLATERAL')}
                 </Button>
               ) : (
                 <Button
                   disabled={record.collateral_amount == 0}
-                  onClick={() => props.showWithdrawCollateralModal('WETH')}>
+                  onClick={() => handleCheckLogin(ACTION_LOAN.WITHDRAW_COLLATERAL, record)}>
                   {t('BORROW_MODAL_WITHDRAW_COLLATERAL')}
                 </Button>
               )}
@@ -232,7 +264,7 @@ export default function LoansComponent(props: LoansProps) {
                   disabled={record.collateral_amount > 0}
                   type="primary"
                   className=""
-                  onClick={() => props.showModal(record.asset)}>
+                  onClick={() => handleCheckLogin(ACTION_LOAN.BORROW, record)}>
                   {t('BORROW_MODAL_BORROW_BORROW_AGAIN')}
                 </Button>
               )}
@@ -247,12 +279,15 @@ export default function LoansComponent(props: LoansProps) {
                   }
                   type="primary"
                   className=""
-                  onClick={() => props.showRepayModal(record.asset, record.repayment_currency)}>
+                  onClick={() => handleCheckLogin(ACTION_LOAN.REPAY, record)}>
                   {t('BORROW_MODAL_BORROW_REPAY')}
                 </Button>
               )}
               {final_status === LOAN_STATUS.UNPROCESSED && (
-                <Button type="primary" className="delete" onClick={handleDeleteLoan}>
+                <Button
+                  type="primary"
+                  className="delete"
+                  onClick={() => handleCheckLogin(ACTION_LOAN.DELETE, record)}>
                   {t('BORROW_MODAL_DELETE')}
                 </Button>
               )}

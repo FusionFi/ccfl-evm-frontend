@@ -1,53 +1,46 @@
-import { useAuth, useResetState } from '@/hooks/auth.hook';
+import { useAuth } from '@/hooks/auth.hook';
 import cssClass from '@/pages/my-profile/index.module.scss';
-import { Button } from 'antd';
+
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { twMerge } from 'tailwind-merge';
-import { useAccount } from 'wagmi';
+
+import { ProfileAccount } from '@/components/profile/profile-account.component'
+import { ProfileKycStatus } from '@/components/profile/profile-kyc-status.component'
+import { ProfileSupply } from '@/components/profile/profile-supply.component'
+import { ProfileBorrowed } from '@/components/profile/profile-borrowed.component'
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation'
 
 export default function MyProfilePage() {
   /**
    * HOOKS
    */
   const { t } = useTranslation('common');
-  const { isConnected, address } = useAccount();
-  const [auth, updateAuth] = useAuth();
+  const router = useRouter()
+  const [auth] = useAuth();
   console.log('🚀 ~ MyProfilePage ~ auth:', auth);
-  const [resetState] = useResetState();
 
-  /**
-   * FUNCTIONS
-   */
-  const handleUpdateAuth = () => {
-    updateAuth({ userName: 'JohnDoe', email: 'johndoe@example.com' });
-  };
-
-  const handleResetState = () => {
-    resetState();
-  };
+  useEffect(() => {
+    if (!auth?.email) {
+      router.push('/supply')
+    }
+  }, [auth?.email])
   return (
     <div className={twMerge('my-profile-page-container', cssClass.myProfilePage)}>
-      My profile page here
-      <div className="flex items-center gap-8">
-        <Button disabled={auth?.email} className="btn-primary-custom" onClick={handleUpdateAuth}>
-          Sign in
-        </Button>
-        <Button disabled={!auth?.email} className="btn-primary-custom" onClick={handleResetState}>
-          Sign out
-        </Button>
-        <Button
-          disabled={!auth?.email || auth?.kyc}
-          className="btn-primary-custom"
-          onClick={() => updateAuth({ kyc: true })}>
-          enable KYC
-        </Button>
-        <Button
-          disabled={!auth?.email || !auth?.kyc}
-          className="btn-primary-custom"
-          onClick={() => updateAuth({ kyc: false })}>
-          remove kyc
-        </Button>
+      <div className="my-profile-page-wrapper">
+        <div className="my-profile-page-wrapper__title">{t('MY_PROFILE_TITLE')}</div>
+        <ProfileBorrowed />
+        <ProfileSupply />
+      </div>
+      <div className="my-profile-page-wrapper__account">
+        <div className="my-profile-page-wrapper__account__title">
+          {t('MY_PROFILE_ACCOUNT_TITLE')}
+          <ProfileKycStatus />
+        </div>
+        <div className="my-profile-page-wrapper__account__content">
+          <ProfileAccount />
+        </div>
       </div>
     </div>
   );
