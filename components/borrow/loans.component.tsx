@@ -65,8 +65,10 @@ export default function LoansComponent(props: LoansProps) {
       render: (value, record) => {
         return (
           <div className="loans-size basis-1/4">
-            <h5>{toCurrency(toAmountShow(value, record.collateral_decimals), 2)}</h5>
-            <div className="usd">$ {toCurrency(value, 2)}</div>
+            <h5>{toCurrency(toAmountShow(value, record.decimals), 2)}</h5>
+            <div className="usd">
+              $ {toCurrency(toAmountShow(value * record.asset_price, record.decimals), 2)}
+            </div>
           </div>
         );
       },
@@ -76,7 +78,11 @@ export default function LoansComponent(props: LoansProps) {
       dataIndex: 'apr',
       key: 'apr',
       render: value => {
-        return <div className="loans-apr basis-1/4 justify-center flex items-center">{value}%</div>;
+        return (
+          <div className="loans-apr basis-1/4 justify-center flex items-center">
+            {toCurrency(value, 2)}%
+          </div>
+        );
       },
     },
     {
@@ -120,17 +126,33 @@ export default function LoansComponent(props: LoansProps) {
             <div className="">{t('BORROW_MODAL_BORROW_BORROW_DEBT_REMAIN')}:</div>
             <div className="flex flex-wrap flex-1">
               <div className="highlight ml-1">
-                {toCurrency(record.debt_remain, 2)} {record.asset}
+                {toCurrency(toAmountShow(record.debt_remain, record.decimals), 2)} {record.asset}
               </div>
-              <div className="ml-1">$ {toCurrency(record.debt_remain, 2)}</div>
+              <div className="ml-1">
+                ${' '}
+                {toCurrency(
+                  toAmountShow(record.debt_remain * record.asset_price, record.decimals),
+                  2,
+                )}
+              </div>
             </div>
           </div>
         </div>
         <div className="flex loans-collateral justify-between gap-1">
           <div className="flex">
             <span className="mr-1">{t('BORROW_OVERVIEW_COLLATERAL')}:</span>
-            {record.collateral_amount} {record.collateral_asset}
-            <span className="ml-1">${toCurrency('6540')}</span>
+            {toCurrency(toAmountShow(record.collateral_amount, record.collateral_decimals), 4)}{' '}
+            {record.collateral_asset}
+            <span className="ml-1">
+              $
+              {toCurrency(
+                toAmountShow(
+                  record.collateral_amount * record.collateral_price,
+                  record.collateral_decimals,
+                ),
+                2,
+              )}
+            </span>
           </div>
           {final_status !== LOAN_STATUS.REPAID_FULL ? (
             <Button

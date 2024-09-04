@@ -29,6 +29,6 @@ export const ASSET_LIST = {
   USDT: 'USDT',
 };
 export const DEFAULT_PARAMS = {
-  address: "0x17883e3728e7bb528b542b8aab354022ed20c149",
-  chainId: "11155111"
-}
+  address: '0x28765892272c3a49F0fb50EF32348538CE22a67C',
+  chainId: '11155111',
+};
