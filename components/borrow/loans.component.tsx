@@ -110,8 +110,16 @@ export default function LoansComponent(props: LoansProps) {
   ];
 
   const expandedRowRender = (record: any) => {
-    let status: keyof typeof LOAN_STATUS = record.status;
-    let final_status = LOAN_STATUS[status] ? LOAN_STATUS[status] : LOAN_STATUS.ACTIVE;
+    let final_status = LOAN_STATUS.ACTIVE;
+    if (record.is_closed) {
+      final_status = LOAN_STATUS.REPAID_FULL;
+    } else if (record.is_liquidated) {
+      final_status = LOAN_STATUS.LIQUIDATED;
+    } else if (!record.is_closed && record.health && record.health >= 1 && 2 >= record.health) {
+      final_status = LOAN_STATUS.LIQUIDATION_APPROACHING;
+    }
+    // let status: keyof typeof LOAN_STATUS = record.status;
+    // let final_status = LOAN_STATUS[status] ? LOAN_STATUS[status] : LOAN_STATUS.ACTIVE;
     return (
       <>
         <div className="flex justify-between loans-status gap-4">
