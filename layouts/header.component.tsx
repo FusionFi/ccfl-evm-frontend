@@ -8,7 +8,7 @@ import { twMerge } from 'tailwind-merge';
 import header from '@/styles/layout/header.module.scss';
 import { useNetwork } from 'wagmi';
 // imports components
-// import { UserIcon } from '@/components/icons/user.icon';
+import { UserIcon } from '@/components/icons/user.icon';
 import { WagmiButton } from '@/components/wagmi/wagmi.btn.component';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
@@ -110,7 +110,7 @@ export const MainHeader = () => {
             </div>
           )}
           <div className="right-content ml-auto flex items-center">
-            {/* {!isLandingPage && address && (
+            {!isLandingPage && address && (
               <div className="external-links flex items-center">
                 <Link
                   href="/my-profile"
@@ -120,7 +120,7 @@ export const MainHeader = () => {
                   <UserIcon className="mr-2" /> {t('LAYOUT_MAIN_HEADER_NAV_MY_PROFILE')}
                 </Link>
               </div>
-            )} */}
+            )}
             <div className={!address ? 'hidden' : 'visible'}>
               <UserInfoComponent />
             </div>
