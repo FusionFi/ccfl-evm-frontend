@@ -11,6 +11,7 @@ import { ProfileSupply } from '@/components/profile/profile-supply.component'
 import { ProfileBorrowed } from '@/components/profile/profile-borrowed.component'
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation'
+import { useAccount } from 'wagmi';
 
 export default function MyProfilePage() {
   /**
@@ -20,12 +21,13 @@ export default function MyProfilePage() {
   const router = useRouter()
   const [auth] = useAuth();
   console.log('🚀 ~ MyProfilePage ~ auth:', auth);
+  const { address } = useAccount();
 
   useEffect(() => {
-    if (!auth?.email) {
+    if (!address) {
       router.push('/supply')
     }
-  }, [auth?.email])
+  }, [address])
   return (
     <div className={twMerge('my-profile-page-container', cssClass.myProfilePage)}>
       <div className="my-profile-page-wrapper">
