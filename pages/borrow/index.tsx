@@ -303,7 +303,7 @@ export default function BorrowPage() {
               showModal={showModal}
               showRepayModal={showRepayModal}
               showCollateralModal={showCollateralModal}
-              dataLoan={dataLoan?.loans}
+              dataLoan={dataLoan?.loans?.data}
               loading={loading}
               showWithdrawCollateralModal={showWithdrawCollateralModal}
             />

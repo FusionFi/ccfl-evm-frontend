@@ -1,6 +1,6 @@
 export interface DataType {
   address: string;
-  loans: loanType[];
+  loans: LoanList;
   total_loan: string;
   total_collateral: string;
   net_apr: string;
@@ -19,4 +19,10 @@ export interface loanType {
   yield_generating: boolean;
   yield_earned: string;
   repayment_currency?: string;
+}
+export interface LoanList {
+  data: loanType[];
+  total: string;
+  offset: string;
+  limit: string;
 }
