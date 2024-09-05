@@ -1,4 +1,5 @@
 import { MainLayout } from '@/layouts/main.layout';
+import yoroiConnector from '@/libs/YoroiWalletConnector';
 import { wrapper } from '@/store/index.store';
 import '@/styles/antd.css';
 import '@/styles/globals-custom.scss';
@@ -10,19 +11,16 @@ import { createWeb3Modal } from '@web3modal/wagmi/react';
 import { defaultWagmiConfig } from '@web3modal/wagmi/react/config';
 import Aos from 'aos';
 import 'aos/dist/aos.css';
+import { appWithTranslation } from 'next-i18next';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
+import Image from 'next/image';
 import { useEffect } from 'react';
 import { Provider } from 'react-redux';
 import { persistStore } from 'redux-persist';
 import { PersistGate } from 'redux-persist/integration/react';
 import { WagmiProvider } from 'wagmi';
 import { mainnet, sepolia } from 'wagmi/chains';
-//import { alchemyProvider } from 'wagmi/providers/alchemy'
-
-//import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet'
-import { appWithTranslation } from 'next-i18next';
-import Image from 'next/image';
 //const CHAIN_ID_CONFIG = Number(process.env.NEXT_PUBLIC_CHAIN_ID);
 
 // 0. Setup queryClient
@@ -52,6 +50,7 @@ const config = defaultWagmiConfig({
     showWallets: false, // default to true
     walletFeatures: false, // default to true
   },
+  connectors: [yoroiConnector],
   ...wagmiOptions, // Optional - override createConfig parameters
 });
 
@@ -65,60 +64,6 @@ createWeb3Modal({
 // TODO: config chaings
 const supportedChains = process.env.NEXT_PUBLIC_IS_TESTNET ? [sepolia] : [mainnet];
 
-// // Configure chains & providers with the Alchemy provider.
-// const { chains, publicClient, webSocketPublicClient } = configureChains(
-//   // [mainnet, polygon, polygonMumbai],
-//   supportedChains as any,
-//   [
-//     infuraProvider({ apiKey: '87e1c45a4ffc42a2ad67fe5865a833c5' }),
-//     publicProvider(),
-//     jsonRpcProvider({
-//       rpc: () => ({
-//         http: 'QUICKNODE_HTTP_PROVIDER_URL', // 👈 Replace this with your HTTP URL from the previous step
-//       }),
-//     }),
-//   ],
-//);
-
-// Set up wagmi config
-// const config = createConfig({
-//   autoConnect: true,
-//   logger: {
-//     warn: message => console.log(message, 'message'),
-//   },
-//   connectors: [
-//     new MetaMaskConnector({
-//       chains,
-//     }),
-//     // new CoinbaseWalletConnector({
-//     //   chains,
-//     //   options: {
-//     //     appName: 'wagmi',
-//     //   },
-//     // }),
-//     new WalletConnectConnector({
-//       chains,
-//       options: {
-//         projectId: 'e44a1758d79ad2f0154ca0b27b46b9f0',
-//         metadata: {
-//           name: 'fusionfi',
-//           description: 'fusionfi',
-//           url: 'https://eadev.fusionfi.io', // TODO
-//           icons: ['https://eadev.fusionfi.io/favicon.ico'], // TODO
-//         },
-//       },
-//     }),
-//     // new InjectedConnector({
-//     //   chains,
-//     //   options: {
-//     //     name: 'Injected',
-//     //     shimDisconnect: true,
-//     //   },
-//     // }),
-//   ],
-//   publicClient,
-//   webSocketPublicClient,
-// });
 const inter = Inter({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],

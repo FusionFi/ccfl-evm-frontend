@@ -38,3 +38,7 @@ body.dark-theme {
     transform: translateY(0);
   }
 }
+[data-testid='wallet-selector-yoroiWalllet'] {
+  background-color: #f0f0f0;
+  color: red;
+}
