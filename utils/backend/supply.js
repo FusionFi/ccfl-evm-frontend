@@ -29,9 +29,18 @@ const fetchAssets = async (params) => {
   return res;
 };
 
+const fetchUserSupply = async (params) => {
+  const chainId = params?.chainId || DEFAULT_CHAIN_ID
+  const address = params.address
+  const res = await http.get(`${URL}/user/${address}/${chainId}/supply`);
+
+  return res;
+};
+
 const service = {
   fetchNetworks,
-  fetchAssets
+  fetchAssets,
+  fetchUserSupply
 };
 
 export default service;

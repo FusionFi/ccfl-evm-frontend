@@ -5,22 +5,24 @@ import { Select } from 'antd';
 import { CaretDownOutlined } from '@ant-design/icons';
 import { useTranslation } from 'next-i18next';
 import { CHAIN_LOGO_MAP, DEFAULT_CHAIN_ID } from '@/constants/chains.constant';
-import { useAccount, useNetwork, useSwitchNetwork } from 'wagmi';
-import { SUPPORTED_CHAINS, CHAIN_INFO } from '@/constants/chains.constant';
+import { useAccount, useNetwork } from 'wagmi';
 import type { SelectProps } from 'antd';
 import Image from 'next/image';
 import supplyBE from '@/utils/backend/supply';
-import { useNetworkManager } from '@/hooks/supply.hook';
+import { useNetworkManager, useUserManager } from '@/hooks/supply.hook';
+import BigNumber from 'bignumber.js';
+import { computeWithMinThreashold } from '@/utils/percent.util';
 
 type LabelRender = SelectProps['labelRender'];
 
-export default function SupplyOverviewComponent({ isModalOpen, handleCancel, message }: any) {
+export default function SupplyOverviewComponent() {
   const { t } = useTranslation('common');
 
   const { chain } = useNetwork();
   const { isConnected } = useAccount();
 
   const [network, updateNetworks, selectNetwork] = useNetworkManager();
+  const [user] = useUserManager();
 
   const _updateSelectedChainId = () => {
     try {
@@ -84,6 +86,18 @@ export default function SupplyOverviewComponent({ isModalOpen, handleCancel, mes
     selectNetwork(data)
   }, [])
 
+  const totalSupply = useMemo(() => {
+    return new BigNumber(user?.total_supply || 0).toFormat(2)
+  }, [
+    user?.total_supply
+  ])
+
+  const totalEarned = useMemo(() => {
+    return new BigNumber(user?.total_earned || 0).toFormat(2)
+  }, [
+    user?.total_earned
+  ])
+
   return (
     <div className={cssClass['supply-overview']}>
       <div className="flex">
@@ -139,7 +153,7 @@ export default function SupplyOverviewComponent({ isModalOpen, handleCancel, mes
                 style={{
                   color: '#F0F0F0',
                 }}>
-                4,567.87
+                {totalSupply}
               </span>
             </div>
           </div>
@@ -153,9 +167,8 @@ export default function SupplyOverviewComponent({ isModalOpen, handleCancel, mes
                 style={{
                   color: '#F0F0F0',
                 }}>
-                0.07
+                {computeWithMinThreashold(user?.net_apy)}
               </span>{' '}
-              %
             </div>
           </div>
           <div className="supply-overview__body__wrapper__item">
@@ -168,7 +181,7 @@ export default function SupplyOverviewComponent({ isModalOpen, handleCancel, mes
                 style={{
                   color: '#52C41A',
                 }}>
-                +$65.87
+                +${totalEarned}
               </span>
             </div>
           </div>

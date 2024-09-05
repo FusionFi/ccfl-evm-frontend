@@ -20,7 +20,9 @@ import { useCallback, useEffect, useState, useMemo } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { useAccount, useNetwork } from 'wagmi';
 import supplyBE from '@/utils/backend/supply';
-import { useAssetManager, useNetworkManager } from '@/hooks/supply.hook'
+import { useUserManager, useAssetManager, useNetworkManager } from '@/hooks/supply.hook'
+import BigNumber from 'bignumber.js';
+import { toFormat } from '@/utils/bignumber.util'
 
 interface DataType {
   key: string;
@@ -49,8 +51,9 @@ export default function SupplyPage() {
   const [networkInfo, setNetworkInfo] = useState<any | null>(null);
   const [asset, updateAssets] = useAssetManager();
   const [network] = useNetworkManager()
+  const [user, updateUser] = useUserManager();
 
-  const fetchInitiaData = async () => {
+  const fetchPublicData = async () => {
     try {
       const [assets] = await Promise.all([
         supplyBE.fetchAssets({
@@ -60,6 +63,26 @@ export default function SupplyPage() {
       updateAssets(assets)
     } catch (error) {
       console.error("fetch initial data on supply page failed: ", error)
+    }
+  }
+
+  const fetchUserData = async () => {
+    try {
+      if (!address) {
+        updateUser(null)
+        return;
+      }
+
+      const [user] = await Promise.all([
+        supplyBE.fetchUserSupply({
+          chainId: network.selected,
+          address: '0x4A230206fD8E97121C1FE2748C63643dbAaE214E' // TODO
+        })
+      ])
+
+      updateUser(user)
+    } catch (error) {
+      console.error("fetch user data on supply page failed: ", error)
     }
   }
 
@@ -160,14 +183,39 @@ export default function SupplyPage() {
   }
 
   const data: DataType[] = asset.list.map((item: any) => {
-    return {
+    const result = {
       key: `${item.chainId}_${item.symbol}`,
       asset: [item.symbol, item.name],
-      supply_balance: '3500', // TODO: please update
-      earned_reward: '350', // TODO: please update
-      apy: '0.009', //TODO: please update
-      wallet_balance: '1000', // TODO: please update
+      supply_balance: ['N/A', '0.00'],
+      earned_reward: ['0.00', '0.00'],
+      apy: 0,
+      wallet_balance: ['0.00', '0.00']
     }
+    if (isConnected) {
+      const supplied = user.supplyMap.get(item.symbol);
+      if (supplied) {
+        const supplyBalance = new BigNumber(supplied.supply_balance || 0).dividedBy(10 ** supplied.decimals);
+        if (supplyBalance.isGreaterThan(0)) {
+          result.supply_balance = [supplyBalance.toFormat(2), supplyBalance.times(supplied.asset_price).toFormat(2)];
+        }
+
+        const earned = new BigNumber(supplied.earned_reward || 0)
+        if (earned.isGreaterThan(0)) {
+          result.earned_reward = [earned.toFormat(2), earned.times(supplied.asset_price).toFormat(2)];
+        }
+
+        const apy = new BigNumber(supplied.apy || 0)
+        if (apy.isGreaterThan(0)) {
+          result.apy = apy.toString();
+        }
+
+        const walletBalance = new BigNumber(supplied.wallet_balance || 0).dividedBy(10 ** supplied.decimals)
+        if (walletBalance.isGreaterThan(0)) {
+          result.wallet_balance = [walletBalance.toFormat(2), walletBalance.times(supplied.asset_price).toFormat(2)]
+        }
+      }
+    }
+    return result
   })
 
   const initNetworkInfo = useCallback(() => {
@@ -183,7 +231,8 @@ export default function SupplyPage() {
       initNetworkInfo();
     }
 
-    fetchInitiaData();
+    fetchUserData();
+    fetchPublicData();
   }, [address, initNetworkInfo, network.selected]);
 
   const TableAction = ({ children }: any) => {

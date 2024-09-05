@@ -14,6 +14,22 @@ export function useResetState() {
   return [resetState];
 }
 
+export function useUserManager() {
+  const dispatch = useDispatch();
+  const user = useSelector(
+    (state: any) => state.supply.user,
+  );
+
+  const updateUser = useCallback((user: any) => {
+    dispatch(SupplyActions.updateUser({ user }));
+  }, [dispatch]);
+
+  return [{
+    ...user,
+    supplyMap: new Map(user.supplies.map((item: any) => [item.asset, item]))
+  }, updateUser];
+}
+
 export function useAssetManager() {
   const dispatch = useDispatch();
   const asset = useSelector(
