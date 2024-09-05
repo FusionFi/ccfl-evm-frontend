@@ -8,7 +8,6 @@ import { NETWORKS, STAKE_DEFAULT_NETWORK } from '@/constants/networks';
 import eventBus from '@/hooks/eventBus.hook';
 import { useNotification } from '@/hooks/notifications.hook';
 import cssClass from '@/pages/supply/index.module.scss';
-import { switchOrAddNetwork } from '@/utils/contract/web3';
 import { computeWithMinThreashold } from '@/utils/percent.util';
 import type { TableProps } from 'antd';
 import { Button, Table } from 'antd';
@@ -17,7 +16,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
-import { useAccount } from 'wagmi';
+import { useAccount, useSwitchChain } from 'wagmi';
 
 interface DataType {
   key: string;
@@ -37,6 +36,7 @@ enum ModalType {
 
 export default function SupplyPage() {
   const { t } = useTranslation('common');
+  const { switchChain } = useSwitchChain();
   const { isConnected, chainId } = useAccount();
   const { address } = useAccount();
 
@@ -46,8 +46,7 @@ export default function SupplyPage() {
 
   const switchNetwork = async () => {
     try {
-      const provider = { rpcUrl: STAKE_DEFAULT_NETWORK?.rpc };
-      await switchOrAddNetwork(STAKE_DEFAULT_NETWORK, provider);
+      const rs = await switchChain({ chainId: STAKE_DEFAULT_NETWORK?.chain_id_decimals });
     } catch (error) {
       console.log('🚀 ~ switchNetwork ~ error:', error);
       showError(error);

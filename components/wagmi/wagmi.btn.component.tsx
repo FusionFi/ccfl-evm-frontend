@@ -7,7 +7,6 @@ import { watchAccount } from '@wagmi/core';
 import { useWeb3Modal } from '@web3modal/wagmi/react';
 import { Button } from 'antd';
 import { useTranslation } from 'next-i18next';
-import Image from 'next/image';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { useAccount, useConfig, useConnect, useDisconnect } from 'wagmi';
@@ -137,95 +136,11 @@ export const WagmiButton = ({
   const openWeb3Modal = () => {
     open();
   };
-  const handleConnect = useCallback(
-    async (item: any) => {
-      try {
-        return;
-        console.log(item, 'item');
-        if (!item?.connector?.ready) {
-          let a = document.createElement('a');
-          document.body.appendChild(a);
-          a.href = 'https://metamask.io/';
-          a.target = '_blank';
-          a.click();
-          document.body.removeChild(a);
-          return;
-        }
-        setLoading(item.connector?.id);
-        const rs = await connectAsync(item);
-        await sleep(1000); // hack for walletConnect
-        console.log(rs, 'rs=>handleConnect');
-        const { chain: chainRs, account, connector: _connector } = rs;
-        // if (
-        //   chainRs &&
-        //   chainRs.id != CHAIN_ID_CONFIG &&
-        //   _connector?.id === 'metaMask'
-        // ) {
-        //   try {
-        //     const network = await switchNetwork({
-        //       chainId: CHAIN_ID_CONFIG,
-        //     });
-        //     if (address && isConnected) {
-        //       await connectAsync(item);
-        //     }
 
-        //   } catch (error) {
-        //     await addChain();
-        //     if (address && isConnected) {
-        //       await connectAsync(item);
-        //     }
-        //   }
-        // }
-
-        // if (_connector?.id !== 'metaMask') {
-        //   const provider = await _connector?.getProvider();
-        //   const web3 = new Web3(provider);
-        //   let _chain_check = await web3.eth.getChainId();
-        //   if (Number(CHAIN_ID_CONFIG) != Number(_chain_check)) {
-        //     const chainId = Number(CHAIN_ID_CONFIG);
-        //     const chain_info = CHAIN_INFO[chainId];
-        //     throw `Please change network: ${chain_info.name}`;
-        //   }
-        // }
-        console.log('2------_handelLogin');
-        await _handelLogin(_connector, account);
-        setLoading('');
-      } catch (error) {
-        handleError(error);
-        disconnect(); // disconnect wagmi
-        resetState();
-        setLoading('');
-      }
-    },
-    [_handelLogin, resetState, handleError, connectAsync, disconnect],
-  );
   /**
    * RENDERS
    */
   const getPopupContainer = (triggerNode: any) => triggerNode.parentNode;
-
-  const CustomTooltipContent = connectors.map(connector => (
-    <Button
-      style={{
-        minHeight: 24,
-      }}
-      disabled={isConnected}
-      loading={loading == connector.id}
-      key={connector.id}
-      onClick={() => handleConnect({ connector })}
-      className={twMerge('btn-outline-custom', connector.name)}>
-      <div className="flex items-center justify-center w-full">
-        <Image
-          alt="logo"
-          priority={true}
-          src={`/images/header/${connector.name}.png`}
-          width="32"
-          height="32"
-        />
-        {connector.name}
-      </div>
-    </Button>
-  ));
 
   return (
     <>

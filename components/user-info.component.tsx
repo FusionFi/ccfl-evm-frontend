@@ -9,13 +9,12 @@ import { NETWORKS, STAKE_DEFAULT_NETWORK } from '@/constants/networks';
 import { useResetState } from '@/hooks/auth.hook';
 import eventBus from '@/hooks/eventBus.hook';
 import { useNotification } from '@/hooks/notifications.hook';
-import { switchOrAddNetwork } from '@/utils/contract/web3';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 
 import { Button } from 'antd';
 import { useCallback, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
-import { useAccount, useDisconnect } from 'wagmi';
+import { useAccount, useDisconnect, useSwitchChain } from 'wagmi';
 export const UserInfoComponent = () => {
   /**
    * STATES
@@ -30,13 +29,14 @@ export const UserInfoComponent = () => {
   const { address, connector, chainId } = useAccount();
   const { getBalanceCoin } = useWeb3();
   const [showSuccess, showError, showWarning, contextHolder] = useNotification();
+  const { switchChain } = useSwitchChain();
   /**
    * FUNCTIONS
    */
   const switchNetwork = async () => {
     try {
       const provider = { rpcUrl: STAKE_DEFAULT_NETWORK?.rpc };
-      const rs = await switchOrAddNetwork(STAKE_DEFAULT_NETWORK, provider);
+      const rs = await switchChain({ chainId: STAKE_DEFAULT_NETWORK.chain_id_decimals });
     } catch (error) {
       console.log('🚀 ~ switchNetwork ~ error:', error);
       showError(error);

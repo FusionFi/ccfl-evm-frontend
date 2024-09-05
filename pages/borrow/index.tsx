@@ -13,13 +13,12 @@ import { CHAIN_INFO, SUPPORTED_CHAINS } from '@/constants/chains.constant';
 import { COLLATERAL_TOKEN, TYPE_COMMON } from '@/constants/common.constant';
 import { NETWORKS, STAKE_DEFAULT_NETWORK } from '@/constants/networks';
 import { useNotification } from '@/hooks/notifications.hook';
-import { switchOrAddNetwork } from '@/utils/contract/web3';
 import { CaretDownOutlined } from '@ant-design/icons';
 import type { SelectProps } from 'antd';
 import { Select } from 'antd';
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
-import { useAccount } from 'wagmi';
+import { useAccount, useSwitchChain } from 'wagmi';
 
 import ModalBorrowFiatSuccessComponent from '@/components/borrow/modal-borrow-fiat/modal-borrow-fiat-success.component';
 import ModalBorrowFiatComponent from '@/components/borrow/modal-borrow-fiat/modal-borrow-fiat.component';
@@ -35,6 +34,7 @@ enum BorrowModalType {
 
 export default function BorrowPage() {
   const { t } = useTranslation('common');
+  const { switchChain } = useSwitchChain();
   const [modal, setModal] = useState({} as any);
   const [isModalRepayOpen, setIsModalRepayOpen] = useState(false);
   const [isModalCollateralOpen, setIsModalCollateralOpen] = useState(false);
@@ -156,8 +156,7 @@ export default function BorrowPage() {
   //connect wallet
   const switchNetwork = async () => {
     try {
-      const provider = { rpcUrl: STAKE_DEFAULT_NETWORK?.rpc };
-      const rs = await switchOrAddNetwork(STAKE_DEFAULT_NETWORK, provider);
+      const rs = await switchChain({ chainId: STAKE_DEFAULT_NETWORK?.chain_id_decimals });
     } catch (error) {
       console.log('🚀 ~ switchNetwork ~ error:', error);
       showError(error);
