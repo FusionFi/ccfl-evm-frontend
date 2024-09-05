@@ -67,7 +67,7 @@ export default function LoansComponent(props: LoansProps) {
         case ACTION_LOAN.DELETE:
           return handleDeleteLoan();
         default:
-          return props.showModal(record.asset);
+          return props.showModal(record.asset, record.apr);
       }
     }
   };

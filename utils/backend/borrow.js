@@ -20,9 +20,15 @@ const getLoans = async (user_address, chainId, offset = 0, limit = 10) => {
   return res;
 };
 
+const getCollateralBalance = async (user_address, chainId, asset) => {
+  let res = await http.get(`${URL}/user/${user_address}/${chainId}/${asset}/balance`);
+  return res;
+};
+
 const service = {
   getPool,
   getPrice,
   getLoans,
+  getCollateralBalance,
 };
 export default service;

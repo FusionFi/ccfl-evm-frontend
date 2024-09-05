@@ -119,10 +119,11 @@ export default function BorrowPage() {
     handleLoans();
   }, []);
 
-  const showModal = (token: string) => {
+  const showModal = (token: string, apr: string) => {
     setModal({
       type: token == BorrowModalType.Fiat ? BorrowModalType.Fiat : BorrowModalType.Crypto,
       token,
+      apr,
     });
   };
   const showWithdrawCollateralModal = (token: string) => {
@@ -330,6 +331,7 @@ export default function BorrowPage() {
         setStep={setStep}
         token={token}
         setToken={setToken}
+        apr={modal.apr}
       />
       <ModalRepayComponent
         isModalOpen={isModalRepayOpen}

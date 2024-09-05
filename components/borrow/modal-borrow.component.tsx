@@ -14,8 +14,10 @@ import {
 } from '@ant-design/icons';
 import TransactionSuccessComponent from '@/components/borrow/transaction-success.component';
 import { useTranslation } from 'next-i18next';
-import { COLLATERAL_TOKEN } from '@/constants/common.constant';
+import { COLLATERAL_TOKEN, DEFAULT_PARAMS } from '@/constants/common.constant';
 import { TRANSACTION_STATUS } from '@/constants/common.constant';
+import { toCurrency, toAmountShow } from '@/utils/common';
+import service from '@/utils/backend/borrow';
 
 interface ModalBorrowProps {
   isModalOpen: boolean;
@@ -25,6 +27,7 @@ interface ModalBorrowProps {
   setStep: any;
   token: any;
   setToken: any;
+  apr: any;
 }
 
 interface IFormInput {
@@ -40,6 +43,7 @@ export default function ModalBorrowComponent({
   setStep,
   token,
   setToken,
+  apr,
 }: ModalBorrowProps) {
   const { control, handleSubmit, setValue } = useForm({
     defaultValues: {
@@ -63,6 +67,11 @@ export default function ModalBorrowComponent({
 
   const [loading, setLoading] = useState<boolean>(false);
   const [isYield, setYield] = useState(false);
+  const [loadingData, setLoadingData] = useState<boolean>(false);
+  const [collateralData, setCollateralData] = useState({
+    balance: 0,
+    balance_usd: 0,
+  }) as any;
 
   const handleChange = (value: any) => {
     setToken(value);
@@ -87,12 +96,38 @@ export default function ModalBorrowComponent({
     return `${t('BORROW_MODAL_BORROW_BORROW')} ${currentToken?.toUpperCase()}`;
   };
 
+  const handleCollateralBalance = async () => {
+    try {
+      let res_balance = (await service.getCollateralBalance(
+        DEFAULT_PARAMS.address,
+        DEFAULT_PARAMS.chainId,
+        token,
+      )) as any;
+      let res_price = (await service.getPrice(DEFAULT_PARAMS.chainId, token)) as any;
+      setCollateralData({
+        balance: res_balance ? toAmountShow(res_balance.balance, res_balance.decimals) : 0,
+        balance_usd:
+          res_balance && res_price?.price
+            ? toAmountShow(res_balance.balance * res_price.price, res_balance.decimals)
+            : 0,
+      });
+    } catch (error) {
+      console.log('error', error);
+    }
+  };
+
   useEffect(() => {
     if (isModalOpen) {
       setTokenValue(undefined);
       setCollateralValue(undefined);
     }
   }, [isModalOpen]);
+
+  useEffect(() => {
+    if (isModalOpen) {
+      handleCollateralBalance();
+    }
+  }, [token, isModalOpen]);
 
   return (
     <div>
@@ -157,7 +192,7 @@ export default function ModalBorrowComponent({
                     </sup>
                   </span>
                   <div className="modal-borrow-percent">
-                    <span>2.5</span>
+                    <span>{toCurrency(apr, 2)}</span>
                     <span>%</span>
                   </div>
                 </div>
@@ -195,9 +230,9 @@ export default function ModalBorrowComponent({
                     <WalletOutlined className="wallet-icon" /> {token} {t('BORROW_MODAL_BALANCE')}
                   </div>
                   <div className="modal-borrow-value">
-                    <span>0.00</span>
+                    <span>{collateralData.balance}</span>
                     <span className="ml-1 token">{token}</span>
-                    <div className="modal-borrow-value-usd">$0.00</div>
+                    <div className="modal-borrow-value-usd">${collateralData.balance_usd}</div>
                   </div>
                 </div>
                 <div className="flex justify-between items-start">

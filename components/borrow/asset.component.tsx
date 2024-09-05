@@ -35,11 +35,11 @@ export default function assetComponent({
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const [auth] = useAuth();
 
-  const handleCheckLogin = (name: string) => {
+  const handleCheckLogin = (name: string, apr: string) => {
     if (!auth?.userName && name === ASSET_TYPE.FIAT) {
       eventBus.emit('toggleKycWarningModal', true);
     } else {
-      showModal(name);
+      showModal(name, apr);
     }
   };
 
@@ -92,7 +92,7 @@ export default function assetComponent({
                         </div>
                         <div className={` flex justify-end `}>
                           {isConnected && networkInfo ? (
-                            <Button onClick={() => handleCheckLogin(item.asset)}>
+                            <Button onClick={() => handleCheckLogin(item.asset, item.apr)}>
                               {t('BORROW_MODAL_BORROW_BORROW')}
                             </Button>
                           ) : (
