@@ -14,7 +14,7 @@ import { Provider } from 'react-redux';
 import { persistStore } from 'redux-persist';
 import { PersistGate } from 'redux-persist/integration/react';
 import { WagmiConfig, configureChains, createConfig } from 'wagmi';
-import { oasys, sepolia, mainnet } from 'wagmi/chains';
+import { mainnet, sepolia } from 'wagmi/chains';
 
 //import { alchemyProvider } from 'wagmi/providers/alchemy'
 import { infuraProvider } from '@wagmi/core/providers/infura';
@@ -114,11 +114,17 @@ function App({ Component, ...rest }: AppProps) {
   return (
     <StyleProvider hashPriority="high">
       <Head>
-        <title>CCFL</title>
-        <meta name="description" content="CCFL on EVM" key="desc" />
+        <title>FUSIONFI</title>
+        <meta name="description" content="FUNSIONFI on EVM" key="desc" />
         <link rel="shortcut icon" href="/favicon.ico" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
       </Head>
 
       <Provider store={store}>

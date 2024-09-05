@@ -32,7 +32,7 @@
             padding: 4px 12px;
           }
           &:last-child {
-            text-align: right;
+            // text-align: right;
           }
           &::before {
             width: 0 !important;
@@ -49,6 +49,7 @@
         td {
           border-bottom: 0;
           padding: 16px 16px 12px;
+          min-width: 100px;
           @media screen and (max-width: 767px) {
             padding: 12px 12px 6px;
           }
@@ -87,6 +88,10 @@
       }
       .ant-table-cell {
         padding: 0;
+        &:last-child {
+          min-width: 144px;
+          box-sizing: border-box;
+        }
       }
       .ant-table-expanded-row-fixed {
         margin: 0;
@@ -164,14 +169,15 @@
         font-weight: 500;
         line-height: 22px; /* 157.143% */
         &.warning {
-          color: var(--Dust-Red-6, #f5222d);
+          // color: var(--Dust-Red-6, #f5222d);
         }
       }
       .loans-status {
-        border-top: 1px solid var(--Neutral-4, #262626);
-        border-bottom: 1px solid var(--Neutral-4, #262626);
+        min-width: 144px;
+        // border-top: 1px solid var(--Neutral-4, #262626);
+        // border-bottom: 1px solid var(--Neutral-4, #262626);
 
-        padding: 12px 0;
+        // padding: 12px 0;
         color: $sub-title-color;
 
         /* Body/regular */
@@ -239,8 +245,10 @@
         max-width: 60%;
       }
       .loans-collateral {
-        padding: 12px 0;
-        border-bottom: 1px solid var(--Neutral-4, #262626);
+        min-width: 144px;
+        // margin-right: 32px;
+        // padding: 12px 0;
+        // border-bottom: 1px solid var(--Neutral-4, #262626);
         color: $white-color;
 
         /* Body/medium */
@@ -261,16 +269,22 @@
         }
         .ant-btn-default {
           border-radius: 2px;
-          border: 1px solid $white-color;
-          height: 22px;
+          // border: 1px solid $white-color;
+          height: 24px;
           padding: 0 7px;
           background: transparent;
           display: flex;
           align-items: center;
+          width: 144px;
+
+          border: 1px solid var(--Neutral-5, #434343);
+          background: var(--Neutral-1, #141414);
+          /* drop-shadow/button-secondary */
+          box-shadow: 0px 2px 0px 0px rgba(0, 0, 0, 0.02);
 
           &:active,
           &:hover {
-            border-color: 1px solid $white-color;
+            border-color: 1px solid #434343;
             color: $white-color;
           }
           span {
@@ -284,7 +298,8 @@
             line-height: 22px; /* 157.143% */
           }
           &:disabled {
-            background: transparent !important;
+            border: 1px solid var(--Neutral-5, #434343) !important;
+            background: var(--Neutral-3, #1f1f1f) !important;
             span {
               color: var(--character-disabled-amp-placeholder-25, rgba(255, 255, 255, 0.3));
             }
@@ -292,6 +307,7 @@
         }
       }
       .loans-yield {
+        display: flex;
         &-wrapper {
           padding-top: 12px;
           border-top: 1px solid var(--Neutral-4, #262626);
@@ -321,6 +337,7 @@
         }
       }
       .loans-button {
+        margin-left: 32px;
         @media screen and (max-width: 767px) {
           gap: 8px;
           display: flex;
@@ -351,6 +368,8 @@
           &.ant-btn-primary {
             background: $primary-color;
             color: $white-color;
+            height: 24px;
+            width: 144px;
             &:hover,
             &:active {
               background: $primary-color;
@@ -371,23 +390,20 @@
             }
           }
           &.ant-btn-default {
-            background: var(--Neutral-1, #141414);
-            box-shadow: 0px 2px 0px 0px rgba(0, 0, 0, 0.02);
-            color: var(--character-title-85, rgba(255, 255, 255, 0.85));
+            background: var(--Primary-6, #1890ff);
+            box-shadow: 0px 2px 0px 0px rgba(0, 0, 0, 0.04);
+            color: var(--character-primary-inverse, #fff);
             border: 0;
             height: 30px;
 
             &:hover,
             &:active {
-              color: var(--character-title-85, rgba(255, 255, 255, 0.85));
+              color: var(--character-primary-inverse, #fff);
             }
             &:disabled {
-              background: transparent !important;
+              background: var(--Neutral-3, #1f1f1f) !important;
               // border: 1px solid var(--Neutral-5, #434343) !important;
-              color: var(
-                --character-disabled-amp-placeholder-25,
-                rgba(255, 255, 255, 0.3)
-              ) !important;
+              border: 1px solid var(--Neutral-5, #434343) !important;
             }
           }
         }

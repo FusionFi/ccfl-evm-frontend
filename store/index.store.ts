@@ -6,7 +6,8 @@ import thunkMiddleware from 'redux-thunk';
 import auth from '@/reducers/auth.reducer';
 import global from '@/reducers/global.reducer';
 import supply from '@/reducers/supply.reducer';
-import storage from 'redux-persist/lib/storage';
+import storage from '@/store/sync-storage.store';
+
 const rootReducer = combineReducers({
   global,
   auth,
@@ -22,32 +23,32 @@ const bindMiddleware = (middleware: any) => {
 };
 
 const makeStore = ({ isServer }: { isServer: boolean }) => {
+  console.log('🚀 ~ makeStore ~ isServer:', isServer);
   const enhancer = compose(bindMiddleware([thunkMiddleware]));
+
   if (isServer) {
+    // Server-side: Do not persist state
     return createStore(rootReducer, enhancer);
   } else {
     const { persistStore, persistReducer } = require('redux-persist');
 
     const persistConfig = getPersistConfig({
       timeout: 1000,
-      key: 'ccfl-evm-frontend',
+      key: 'fusionFi',
+      keyPrefix: '',
       whitelist: ['global', 'auth', 'supply'],
-      storage,
+      storage, // Use the correct storage based on environment
       rootReducer,
     });
 
-    const persistedReducer = persistReducer(persistConfig, rootReducer); // Create a new reducer with our existing reducer
+    const persistedReducer = persistReducer(persistConfig, rootReducer);
 
-    const store = createStore(persistedReducer, rootReducer(undefined, {}), enhancer); // Creating the store again
-
-    store.__persistor = persistStore(store); // This creates a persistor object & push that persisted object to .__persistor, so that we can avail the persistability feature
+    const store = createStore(persistedReducer, enhancer); // Use enhancer here
+    store.__persistor = persistStore(store); // This creates a persistor object
+    console.log('🚀 ~ makeStore ~ store:', store);
     return store;
   }
 };
-
-/**
- * @see https://redux-toolkit.js.org/usage/usage-with-typescript#getting-the-dispatch-type
- */
 
 export type AppStore = ReturnType<typeof makeStore>;
 export type AppState = ReturnType<AppStore['getState']>;
@@ -56,4 +57,3 @@ export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, AppState, unkn
 export const wrapper = createWrapper<AppStore>(makeStore);
 
 export const store = makeStore({ isServer: false });
-// export const store = makeStore;

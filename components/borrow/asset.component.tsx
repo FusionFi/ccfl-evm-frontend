@@ -11,6 +11,8 @@ import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
+import { useAuth } from '@/hooks/auth.hook';
+import { ASSET_TYPE } from '@/constants/common.constant';
 
 interface AssetProps {
   showModal: any;
@@ -25,6 +27,7 @@ export default function assetComponent({
   switchNetwork,
   networkInfo,
 }: AssetProps) {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const { t } = useTranslation('common');
   const [tokenList, setTokenList] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -63,13 +66,23 @@ export default function assetComponent({
   useEffect(() => {
     handlePrice();
   }, []);
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const [auth] = useAuth();
+
+  const handleCheckLogin = (name: string) => {
+    if (!auth?.userName && name === ASSET_TYPE.FIAT) {
+      eventBus.emit('toggleKycWarningModal', true);
+    } else {
+      showModal(name);
+    }
+  };
 
   return (
     <div className={twMerge(cssClass.assetComponent)}>
       <div className="asset-container">
         <div className="asset-header">{t('BORROW_MODAL_BORROW_ASSET_TO_BORROW')}</div>
-        <div className="">
-          <div className="xl:gap-6 asset-nav gap-1">
+        <div className="flex asset-wrapper">
+          {/* <div className="xl:gap-6 asset-nav gap-1">
             <div
               className={`${
                 isConnected && networkInfo ? 'xl:basis-1/4' : 'xl:basis-1/6'
@@ -96,74 +109,66 @@ export default function assetComponent({
           {loading ? (
             <div className="asset-empty">
               <Skeleton active />
-            </div>
-          ) : (
+          </div> */}
+          {tokenList && tokenList.length > 0 ? (
             <>
-              {tokenList && tokenList.length > 0 ? (
-                <>
-                  {tokenList?.map((item: any, index: any) => (
-                    <div className="xl:gap-6 asset-body gap-1" key={index}>
-                      <div
-                        className={`${
-                          isConnected && networkInfo ? 'xl:basis-1/4' : 'xl:basis-1/6'
-                        } basis-1/4`}>
-                        <Image
-                          className="mr-2"
-                          src={`/images/common/${item.asset}.png`}
-                          alt={item.asset}
-                          width={40}
-                          height={40}
-                        />
-                        {item.asset?.toUpperCase()}
-                      </div>
-                      <div
-                        className={`${
-                          isConnected && networkInfo ? 'xl:basis-1/4' : 'xl:basis-1/6'
-                        } flex-col items-start justify-center	basis-1/4`}>
-                        <div>{toCurrency(item.loan_available, 2)}</div>
-                        <div className="usd">$ {toCurrency(item.usd, 2)}</div>
-                      </div>
-                      <div
-                        className={`${
-                          isConnected && networkInfo ? 'xl:basis-1/4' : 'xl:basis-1/6'
-                        } basis-1/4`}>
-                        {toCurrency(item.apr, 2)}%
-                      </div>
-                      <div
-                        className={`${
-                          isConnected && networkInfo ? 'xl:basis-1/4' : 'xl:basis-3/6'
-                        } justify-end basis-1/4`}>
-                        {isConnected && networkInfo ? (
-                          <Button onClick={() => showModal(item.asset)}>
-                            {t('BORROW_MODAL_BORROW_BORROW')}
+              {tokenList?.map((item: any, index: any) => (
+                <div className="xl:gap-6 asset-body gap-1" key={index}>
+                  <div
+                    className={`${isConnected && networkInfo ? 'xl:basis-1/4' : 'xl:basis-1/6'
+                      } basis-1/4`}>
+                    <Image
+                      className="mr-2"
+                      src={`/images/common/${item.asset}.png`}
+                      alt={item.asset}
+                      width={40}
+                      height={40}
+                    />
+                    {item.asset?.toUpperCase()}
+                  </div>
+                  <div
+                    className={`${isConnected && networkInfo ? 'xl:basis-1/4' : 'xl:basis-1/6'
+                      } flex-col items-start justify-center	basis-1/4`}>
+                    <div>{toCurrency(item.loan_available, 2)}</div>
+                    <div className="usd">$ {toCurrency(item.usd, 2)}</div>
+                  </div>
+                  <div
+                    className={`${isConnected && networkInfo ? 'xl:basis-1/4' : 'xl:basis-1/6'
+                      } basis-1/4`}>
+                    {toCurrency(item.apr, 2)}%
+                  </div>
+                  <div
+                    className={`${isConnected && networkInfo ? 'xl:basis-1/4' : 'xl:basis-3/6'
+                      } justify-end basis-1/4`}>
+                    {isConnected && networkInfo ? (
+                      <Button onClick={() => showModal(item.asset)}>
+                        {t('BORROW_MODAL_BORROW_BORROW')}
+                      </Button>
+                    ) : (
+                      <React.Fragment>
+                        {isConnected ? (
+                          <Button onClick={() => switchNetwork()} className={'guest'}>
+                            <SafeHtmlComponent
+                              htmlContent={t('BORROW_CONNECT_WALLET_SWITCH', {
+                                networkName: STAKE_DEFAULT_NETWORK?.name,
+                              })}
+                            />
                           </Button>
                         ) : (
-                          <React.Fragment>
-                            {isConnected ? (
-                              <Button onClick={() => switchNetwork()} className={'guest'}>
-                                <SafeHtmlComponent
-                                  htmlContent={t('BORROW_CONNECT_WALLET_SWITCH', {
-                                    networkName: STAKE_DEFAULT_NETWORK?.name,
-                                  })}
-                                />
-                              </Button>
-                            ) : (
-                              <Button
-                                onClick={() => eventBus.emit('handleWalletConnect')}
-                                className={'guest'}>
-                                <SafeHtmlComponent htmlContent={t('BORROW_CONNECT_WALLET')} />
-                              </Button>
-                            )}
-                          </React.Fragment>
+                          <Button
+                            onClick={() => eventBus.emit('handleWalletConnect')}
+                            className={'guest'}>
+                            <SafeHtmlComponent htmlContent={t('BORROW_CONNECT_WALLET')} />
+                          </Button>
                         )}
-                      </div>
-                    </div>
-                  ))}
-                </>
-              ) : (
-                <div className="asset-empty">{t('BORROW_MODAL_ASSET_NO_DATA')}</div>
-              )}
+                      </React.Fragment>
+                    )}
+                  </div>
+                </div>
+              ))}
             </>
+          ) : (
+            <div className="asset-empty">{t('BORROW_MODAL_ASSET_NO_DATA')}</div>
           )}
         </div>
       </div>

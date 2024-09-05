@@ -1,11 +1,12 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import cssClass from './supply-overview.component.module.scss';
 
 import { Select } from 'antd';
 import { CaretDownOutlined } from '@ant-design/icons';
 import { useTranslation } from 'next-i18next';
-import { useNetwork } from 'wagmi';
 import { CHAIN_LOGO_MAP, DEFAULT_CHAIN_ID } from '@/constants/chains.constant';
+import { useAccount, useNetwork, useSwitchNetwork } from 'wagmi';
+import { SUPPORTED_CHAINS, CHAIN_INFO } from '@/constants/chains.constant';
 import type { SelectProps } from 'antd';
 import Image from 'next/image';
 import supplyBE from '@/utils/backend/supply';
@@ -16,11 +17,21 @@ type LabelRender = SelectProps['labelRender'];
 export default function SupplyOverviewComponent({ isModalOpen, handleCancel, message }: any) {
   const { t } = useTranslation('common');
 
-  const { chain, chains } = useNetwork();
+  const { chain } = useNetwork();
+  const { isConnected } = useAccount();
 
-  const [networks, updateNetworks] = useNetworkManager();
+  const [network, updateNetworks, selectNetwork] = useNetworkManager();
 
-  const CHAIN_MAP = new Map(networks.map((item: any) => [item.chainId, item]));
+  const _updateSelectedChainId = () => {
+    try {
+      const result: any = network.listMap.get(chain?.id) || {}
+      if (result && result.chainId) {
+        selectNetwork(result.chainId)
+      }
+    } catch (error) {
+      console.error("update selected chain on SupplyOverviewComponent failed: ", error)
+    }
+  }
 
   const fetchInitiaData = async () => {
     try {
@@ -29,6 +40,7 @@ export default function SupplyOverviewComponent({ isModalOpen, handleCancel, mes
       ])
       updateNetworks(_networks);
 
+
     } catch (error) {
       console.error("fetch initial data on SupplyOverviewComponent failed: ", error)
     }
@@ -36,23 +48,16 @@ export default function SupplyOverviewComponent({ isModalOpen, handleCancel, mes
 
   useEffect(() => {
     fetchInitiaData()
+    _updateSelectedChainId()
   }, [])
-
-  const selectedChain = useMemo(() => {
-    const result: any = CHAIN_MAP.get(chain?.id) || {}
-    if (result && result.chainId) {
-      return result;
-    }
-
-    return CHAIN_MAP.get(DEFAULT_CHAIN_ID)
-  }, [CHAIN_MAP, chain])
 
   const labelRender: LabelRender = (props: any) => {
     let { value } = props;
 
-    const _chain: any = CHAIN_MAP.get(value);
+    let _chain: any = network.listMap.get(value);
+
     if (!_chain) {
-      return null;
+      _chain = network.listMap.get(DEFAULT_CHAIN_ID);
     }
 
     const logo = CHAIN_LOGO_MAP.get(_chain?.chainId)
@@ -75,6 +80,9 @@ export default function SupplyOverviewComponent({ isModalOpen, handleCancel, mes
     );
   };
 
+  const handleNetworkChange = useCallback((data: any) => {
+    selectNetwork(data)
+  }, [])
 
   return (
     <div className={cssClass['supply-overview']}>
@@ -83,14 +91,18 @@ export default function SupplyOverviewComponent({ isModalOpen, handleCancel, mes
         <div className="select-wrapper ml-6">
           <Select
             labelRender={labelRender}
+            onChange={handleNetworkChange}
             defaultValue={{
-              value: selectedChain?.chainId,
+              value: network.selected
             }}
-            options={[...(CHAIN_MAP.values() as any)].map(item => ({
+            value={{
+              value: network.selected
+            }}
+            options={network.list.map((item: any) => ({
               value: item.chainId,
             }))}
             optionRender={(option: any) => {
-              const _chain: any = CHAIN_MAP.get(option.value);
+              const _chain: any = network.listMap.get(option.value);
               const _logo: any = CHAIN_LOGO_MAP.get(_chain.chainId)
 
               return (
@@ -114,7 +126,7 @@ export default function SupplyOverviewComponent({ isModalOpen, handleCancel, mes
           />
         </div>
       </div>
-      <div className="supply-overview__body">
+      {isConnected && <div className="supply-overview__body">
         <div className="supply-overview__body__wrapper">
           <div className="supply-overview__body__wrapper__item">
             <span className="supply-overview__body__wrapper__item__label">
@@ -162,6 +174,7 @@ export default function SupplyOverviewComponent({ isModalOpen, handleCancel, mes
           </div>
         </div>
       </div>
+      }
     </div>
   );
 }

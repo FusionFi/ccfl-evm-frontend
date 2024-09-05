@@ -16,28 +16,35 @@ export function useResetState() {
 
 export function useAssetManager() {
   const dispatch = useDispatch();
-  const assets = useSelector(
-    (state: any) => state.supply.assets,
+  const asset = useSelector(
+    (state: any) => state.supply.asset,
   );
 
   const updateAssets = useCallback((assets: any) => {
     dispatch(SupplyActions.updateAssets({ assets }));
   }, [dispatch]);
 
-  return [assets, updateAssets];
+  return [asset, updateAssets];
 }
 
 export function useNetworkManager() {
   const dispatch = useDispatch();
-  const networks = useSelector(
-    (state: any) => state.supply.networks,
+  const network = useSelector(
+    (state: any) => state.supply.network,
   );
 
   const updateNetworks = useCallback((networks: any) => {
     dispatch(SupplyActions.updateNetworks({ networks }));
   }, [dispatch]);
 
-  return [networks, updateNetworks];
+  const selectNetwork = useCallback((chainId: any) => {
+    dispatch(SupplyActions.selectNetwork({ chainId }));
+  }, [dispatch]);
+
+  return [{
+    ...network,
+    listMap: new Map(network.list.map((item: any) => [item.chainId, item]))
+  }, updateNetworks, selectNetwork];
 }
 
 

@@ -1,5 +1,6 @@
 import * as SupplyActions from '@/actions/supply.action';
 import { createReducer } from '@reduxjs/toolkit';
+import { DEFAULT_CHAIN_ID } from '@/constants/chains.constant'
 
 /**
  * CALL API ACTIONS
@@ -7,16 +8,22 @@ import { createReducer } from '@reduxjs/toolkit';
 // Define an async thunk for API call
 
 
-export interface AuthState {
-  networks: any;
-  assets: any;
+export interface SupplyState {
+  network: any;
+  asset: any;
   loading: boolean;
   error: any;
 }
 
-export const initialState: AuthState = {
-  networks: [],
-  assets: [],
+export const initialState: SupplyState = {
+  network: {
+    list: [],
+    selected: DEFAULT_CHAIN_ID
+  },
+  asset: {
+    list: [],
+    selected: ''
+  },
   loading: false,
   error: null,
 };
@@ -25,15 +32,15 @@ export default createReducer(initialState, (builder) =>
   builder
     .addCase(SupplyActions.resetState, (state) => {
       console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>resetState');
-      state.networks = Object.assign({}, initialState.networks);
-      state.loading = initialState.loading;
-      state.error = initialState.error;
+      state = { ...initialState }
     })
     .addCase(SupplyActions.updateNetworks, (state, { payload: { networks } }) => {
-      state.networks = [].concat(networks);
+      state.network.list = [].concat(networks);
     })
     .addCase(SupplyActions.updateAssets, (state, { payload: { assets } }) => {
-      state.assets = [].concat(assets);
+      state.asset.list = [].concat(assets);
     })
-  
+    .addCase(SupplyActions.selectNetwork, (state, { payload: { chainId } }) => {
+      state.network.selected = chainId
+    })
 );

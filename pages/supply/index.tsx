@@ -16,17 +16,17 @@ import { Button, Table } from 'antd';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import Image from 'next/image';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useMemo } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { useAccount, useNetwork } from 'wagmi';
 import supplyBE from '@/utils/backend/supply';
-import { useAssetManager } from '@/hooks/supply.hook'
+import { useAssetManager, useNetworkManager } from '@/hooks/supply.hook'
 
 interface DataType {
   key: string;
   asset: Array<any>;
-  supply_balance: string;
-  earned_reward: string;
+  supply_balance: any;
+  earned_reward: any;
   apy: string;
   wallet_balance: string;
 }
@@ -47,12 +47,15 @@ export default function SupplyPage() {
   const [_, showError] = useNotification();
 
   const [networkInfo, setNetworkInfo] = useState<any | null>(null);
-  const [assets, updateAssets] = useAssetManager();
+  const [asset, updateAssets] = useAssetManager();
+  const [network] = useNetworkManager()
 
   const fetchInitiaData = async () => {
     try {
       const [assets] = await Promise.all([
-        supplyBE.fetchAssets()
+        supplyBE.fetchAssets({
+          chainId: network.selected
+        })
       ])
       updateAssets(assets)
     } catch (error) {
@@ -65,12 +68,12 @@ export default function SupplyPage() {
       const provider = { rpcUrl: STAKE_DEFAULT_NETWORK?.rpc };
       await switchOrAddNetwork(STAKE_DEFAULT_NETWORK, provider);
     } catch (error) {
-      console.log('🚀 ~ switchNetwork ~ error:', error);
+      console.error('🚀 ~ switchNetwork ~ error:', error);
       showError(error);
     }
   };
 
-  const columns: TableProps<DataType>['columns'] = [
+  let columns: TableProps<DataType>['columns'] = [
     {
       title: t('SUPPLY_TABLE_HEADER_ASSET'),
       dataIndex: 'asset',
@@ -80,7 +83,7 @@ export default function SupplyPage() {
         return (
           <div className="flex items-center table-wrapper__asset">
             <Image
-              src={`/images/tokens/${symbol}.png`}
+              src={`/images/common/${symbol}.png`}
               style={{
                 marginRight: 8,
               }}
@@ -97,11 +100,12 @@ export default function SupplyPage() {
       title: t('SUPPLY_TABLE_HEADER_SUPPLY_BALANCE'),
       dataIndex: 'supply_balance',
       key: 'supply_balance',
-      render: value => {
+      render: values => {
+        const [value, valueWithPrice] = values
         return (
           <div className="table-wrapper__supply-balance">
-            {toCurrency(value)}
-            <span className="table-wrapper__supply-balance__price">$ {toCurrency(value, 2)}</span>
+            {value}
+            <span className="table-wrapper__supply-balance__price">$ {valueWithPrice}</span>
           </div>
         );
       },
@@ -110,11 +114,12 @@ export default function SupplyPage() {
       title: t('SUPPLY_TABLE_HEADER_EARNED_REWARD'),
       dataIndex: 'earned_reward',
       key: 'earned_reward',
-      render: value => {
+      render: values => {
+        const [value, valueWithPrice] = values
         return (
           <div className="table-wrapper__earned-reward">
-            {toCurrency(value)}
-            <span className="table-wrapper__supply-balance__price">$ {toCurrency(value, 2)}</span>
+            {value}
+            <span className="table-wrapper__supply-balance__price">$ {valueWithPrice}</span>
           </div>
         );
       },
@@ -127,7 +132,10 @@ export default function SupplyPage() {
         <span className="table-wrapper__apy">{computeWithMinThreashold(value)}</span>
       ),
     },
-    {
+  ];
+
+  if (isConnected) {
+    columns.push({
       title: () => {
         return (
           <div className="flex items-center">
@@ -139,18 +147,19 @@ export default function SupplyPage() {
 
       key: 'wallet_balance',
       dataIndex: 'wallet_balance',
-      render: value => {
+      render: values => {
+        const [value, valueWithPrice] = values
         return (
           <div className="table-wrapper__supply-balance">
-            {toCurrency(value)}
-            <span className="table-wrapper__supply-balance__price">$ {toCurrency(value, 2)}</span>
+            {value}
+            <span className="table-wrapper__supply-balance__price">$ {valueWithPrice}</span>
           </div>
         );
       },
-    },
-  ];
+    })
+  }
 
-  const data: DataType[] = assets.map((item: any) => {
+  const data: DataType[] = asset.list.map((item: any) => {
     return {
       key: `${item.chainId}_${item.symbol}`,
       asset: [item.symbol, item.name],
@@ -175,7 +184,7 @@ export default function SupplyPage() {
     }
 
     fetchInitiaData();
-  }, [address, initNetworkInfo]);
+  }, [address, initNetworkInfo, network.selected]);
 
   const TableAction = ({ children }: any) => {
     return <div className="table-wrapper__action">{children}</div>;
@@ -261,14 +270,21 @@ export default function SupplyPage() {
     });
   };
 
+  const title = () => {
+    if (!isConnected) {
+      return t('SUPPLY_GUEST_TABLE_TITLE')
+    }
+    return t('SUPPLY_TABLE_TITLE')
+  }
+
   return (
     <div className={twMerge('supply-page-container', cssClass.supplyPage)}>
       <SupplyOverview />
       <div className="content">
         <Table
-          title={() => t('SUPPLY_TABLE_TITLE')}
+          title={title}
           expandable={{
-            defaultExpandAllRows: true,
+            expandedRowKeys: data.map(item => item.key),
             expandedRowRender,
             rowExpandable: record => true,
             showExpandColumn: false,
