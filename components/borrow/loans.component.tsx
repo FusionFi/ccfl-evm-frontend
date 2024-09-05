@@ -19,6 +19,7 @@ interface LoansProps {
   dataLoan?: loanType[];
   showWithdrawCollateralModal: any;
   loading?: any;
+  totalLoan?: any;
 }
 
 export default function LoansComponent(props: LoansProps) {
@@ -110,20 +111,28 @@ export default function LoansComponent(props: LoansProps) {
       },
     },
     {
-      title: <h4 className="">{t('BORROW_MODAL_BORROW_ADJUST_APR_VARIABLE')}</h4>,
+      title: <h4 className="">{t('BORROW_FIAT_MODAL_TAB_COLLATERAL_APY')}</h4>,
       dataIndex: 'apr',
       key: 'apr',
       render: value => {
-        return <div className="loans-apr basis-1/7 flex items-center">{value}%</div>;
+        return <div className="loans-apr basis-1/7 flex items-center">{toCurrency(value, 2)}%</div>;
       },
     },
     {
       title: <h4 className="">{t('BORROW_MODAL_BORROW_ADJUST_STATUS')}</h4>,
       dataIndex: 'status',
       key: 'status',
-      render: value => {
-        let status: keyof typeof LOAN_STATUS = value;
-        let final_status = LOAN_STATUS[status] ? LOAN_STATUS[status] : LOAN_STATUS.ACTIVE;
+      render: (value, record) => {
+        let final_status = LOAN_STATUS.ACTIVE;
+        if (record.is_closed) {
+          final_status = LOAN_STATUS.REPAID_FULL;
+        } else if (record.is_liquidated) {
+          final_status = LOAN_STATUS.LIQUIDATED;
+        } else if (!record.is_closed && record.health && record.health >= 1 && 2 >= record.health) {
+          final_status = LOAN_STATUS.LIQUIDATION_APPROACHING;
+        }
+        // let status: keyof typeof LOAN_STATUS = value;
+        // let final_status = LOAN_STATUS[status] ? LOAN_STATUS[status] : LOAN_STATUS.ACTIVE;
         return (
           <div className="loans-status basis-1/7  flex items-center">
             <span className={`${renderStatusClass(final_status)}`}>
@@ -162,9 +171,19 @@ export default function LoansComponent(props: LoansProps) {
       render: (value, record) => {
         return (
           <div className="loans-collateral basis-1/7 justify-center items-center">
-            {record.collateral_amount} {record.collateral_asset}
-            <div className="">
-              <span className="">${toCurrency('6540')}</span>
+            {toCurrency(toAmountShow(record.collateral_amount, record.collateral_decimals), 4)}{' '}
+            {record.collateral_asset}
+            <div>
+              <span className="">
+                $
+                {toCurrency(
+                  toAmountShow(
+                    record.collateral_amount * record.collateral_price,
+                    record.collateral_decimals,
+                  ),
+                  2,
+                )}
+              </span>
             </div>
           </div>
         );
@@ -178,10 +197,16 @@ export default function LoansComponent(props: LoansProps) {
         return (
           <div className="loans-status basis-1/7 ">
             <div className="highlight ml-1">
-              {toCurrency(record.debt_remain, 2)}{' '}
+              {toCurrency(toAmountShow(record.debt_remain, record.decimals), 2)}{' '}
               {record.asset !== 'USD' ? record.asset : record.repayment_currency}
             </div>
-            <div className="ml-1">$ {toCurrency(record.debt_remain, 2)}</div>
+            <div className="ml-1">
+              ${' '}
+              {toCurrency(
+                toAmountShow(record.debt_remain * record.asset_price, record.decimals),
+                2,
+              )}
+            </div>
           </div>
         );
       },
@@ -444,7 +469,9 @@ export default function LoansComponent(props: LoansProps) {
           className="loans-container"
           bordered={false}
           rowHoverable={false}
-          pagination={false}
+          pagination={
+            props.totalLoan && props.totalLoan > 10 ? { position: ['bottomRight'] } : false
+          }
           columns={columns}
           dataSource={props.dataLoan}
           locale={locale}

@@ -45,19 +45,19 @@ export default function assetComponent({
 
   // const tokenList = [
   //   {
-  //     name: 'USDC',
+  //     asset: 'USDC',
   //     value: '10,000.00',
   //     usd: '4,000.00',
   //     percent: '0.07',
   //   },
   //   {
-  //     name: 'USDT',
+  //     asset: 'USDT',
   //     value: '10,000.00',
   //     usd: '4,000.00',
   //     percent: '0.07',
   //   },
   //   {
-  //     name: 'FIAT',
+  //     asset: 'FIAT',
   //     value: '10,000.00',
   //     usd: '4,000.00',
   //     percent: '0.07',
@@ -132,7 +132,7 @@ export default function assetComponent({
                         )}
                         <div className={``}>
                           <div className="asset-title">
-                            {t('BORROW_MODAL_BORROW_ADJUST_APR_VARIABLE')}
+                            {t('BORROW_FIAT_MODAL_TAB_COLLATERAL_APY')}
                           </div>
                           {toCurrency(item.apr, 2)}%
                         </div>

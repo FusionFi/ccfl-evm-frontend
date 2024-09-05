@@ -306,6 +306,7 @@ export default function BorrowPage() {
               dataLoan={dataLoan?.loans?.data}
               loading={loading}
               showWithdrawCollateralModal={showWithdrawCollateralModal}
+              totalLoan={dataLoan?.loans?.total}
             />
           </div>
         )}

@@ -13,8 +13,10 @@ const getPrice = async (chainId, symbol) => {
   return res;
 };
 
-const getLoans = async (user_address, chainId) => {
-  let res = await http.get(`${URL}/user/${user_address}/${chainId}/loan`);
+const getLoans = async (user_address, chainId, offset = 0, limit = 10) => {
+  let res = await http.get(
+    `${URL}/user/${user_address}/${chainId}/loan?offset=${offset}&limit=${limit}`,
+  );
   return res;
 };
 

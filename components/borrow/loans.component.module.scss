@@ -49,7 +49,7 @@
         td {
           border-bottom: 0;
           padding: 16px 16px 12px;
-          min-width: 100px;
+          min-width: 110px;
           @media screen and (max-width: 767px) {
             padding: 12px 12px 6px;
           }
@@ -288,7 +288,7 @@
             color: $white-color;
           }
           span {
-            color: $white-color;
+            color: var(--character-title-85, rgba(255, 255, 255, 0.85));
 
             /* Body/regular */
             font-family: Inter;
