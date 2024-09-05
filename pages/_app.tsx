@@ -28,7 +28,7 @@ import Image from 'next/image';
 import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
 //const CHAIN_ID_CONFIG = Number(process.env.NEXT_PUBLIC_CHAIN_ID);
 
-// TODO: config chaings
+// TODO: config supported chains using the BE side
 const supportedChains = process.env.NEXT_PUBLIC_IS_TESTNET ? [sepolia] : [mainnet]
 
 // Configure chains & providers with the Alchemy provider.

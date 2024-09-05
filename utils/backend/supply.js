@@ -1,4 +1,5 @@
 import http from '@/utils/backend/http.js';
+import { DEFAULT_CHAIN_ID } from '@/constants/chains.constant'
 
 const URL = process.env.NEXT_PUBLIC_API_URL;
 const isTestnet = Boolean(process.env.NEXT_PUBLIC_IS_TESTNET || false)
@@ -14,12 +15,14 @@ const fetchNetworks = async () => {
   return res;
 };
 
-const fetchAssets = async () => {
+const fetchAssets = async (params) => {
+  const chainId = params?.chainId || DEFAULT_CHAIN_ID
   const res = await http.get(
     `${URL}/asset`, {
     params: {
       category: 'supply',
-      isMainnet: !isTestnet
+      isMainnet: !isTestnet,
+      chainId
     }
   });
 

@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import cssClass from './supply-overview.component.module.scss';
 
 import { Select } from 'antd';
 import { CaretDownOutlined } from '@ant-design/icons';
 import { useTranslation } from 'next-i18next';
 import { useNetwork } from 'wagmi';
-import { CHAIN_LOGO_MAP, CHAIN_INFO } from '@/constants/chains.constant';
+import { CHAIN_LOGO_MAP, DEFAULT_CHAIN_ID } from '@/constants/chains.constant';
 import type { SelectProps } from 'antd';
 import Image from 'next/image';
 import supplyBE from '@/utils/backend/supply';
@@ -38,7 +38,14 @@ export default function SupplyOverviewComponent({ isModalOpen, handleCancel, mes
     fetchInitiaData()
   }, [])
 
-  const selectedChain = CHAIN_INFO.get(chain?.id) || {};
+  const selectedChain = useMemo(() => {
+    const result: any = CHAIN_MAP.get(chain?.id) || {}
+    if (result && result.chainId) {
+      return result;
+    }
+
+    return CHAIN_MAP.get(DEFAULT_CHAIN_ID)
+  }, [CHAIN_MAP, chain])
 
   const labelRender: LabelRender = (props: any) => {
     let { value } = props;
@@ -77,7 +84,7 @@ export default function SupplyOverviewComponent({ isModalOpen, handleCancel, mes
           <Select
             labelRender={labelRender}
             defaultValue={{
-              value: selectedChain?.id,
+              value: selectedChain?.chainId,
             }}
             options={[...(CHAIN_MAP.values() as any)].map(item => ({
               value: item.chainId,
