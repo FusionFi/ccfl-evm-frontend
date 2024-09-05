@@ -11,7 +11,7 @@ import eventBus from '@/hooks/eventBus.hook';
 import { useNotification } from '@/hooks/notifications.hook';
 import { switchOrAddNetwork } from '@/utils/contract/web3';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
-import { getNetwork } from '@wagmi/core';
+
 import { Button } from 'antd';
 import { useCallback, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -26,9 +26,8 @@ export const UserInfoComponent = () => {
    * HOOKS
    */
   const { disconnect } = useDisconnect();
-  const { chain, chains } = getNetwork();
   const [resetState] = useResetState();
-  const { address, connector } = useAccount();
+  const { address, connector, chainId } = useAccount();
   const { getBalanceCoin } = useWeb3();
   const [showSuccess, showError, showWarning, contextHolder] = useNotification();
   /**
@@ -44,11 +43,11 @@ export const UserInfoComponent = () => {
     }
   };
   const initNetworkInfo = useCallback(() => {
-    if (chain) {
-      const networkCurrent = NETWORKS.find(item => item.chain_id_decimals === chain?.id);
+    if (chainId) {
+      const networkCurrent = NETWORKS.find(item => item.chain_id_decimals === chainId);
       setNetworkInfo(networkCurrent || null);
     }
-  }, [chain]);
+  }, [chainId]);
   const handleDisconnect = useCallback(() => {
     disconnect();
     resetState();

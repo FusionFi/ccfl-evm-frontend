@@ -19,8 +19,8 @@ import type { SelectProps } from 'antd';
 import { Select } from 'antd';
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
-import { useAccount, useNetwork } from 'wagmi';
-// import { getNetwork } from '@wagmi/core';
+import { useAccount } from 'wagmi';
+
 import ModalBorrowFiatSuccessComponent from '@/components/borrow/modal-borrow-fiat/modal-borrow-fiat-success.component';
 import ModalBorrowFiatComponent from '@/components/borrow/modal-borrow-fiat/modal-borrow-fiat.component';
 import ModalCollateralComponent from '@/components/borrow/modal-collateral.component';
@@ -35,8 +35,6 @@ enum BorrowModalType {
 
 export default function BorrowPage() {
   const { t } = useTranslation('common');
-  const { chain, chains } = useNetwork();
-
   const [modal, setModal] = useState({} as any);
   const [isModalRepayOpen, setIsModalRepayOpen] = useState(false);
   const [isModalCollateralOpen, setIsModalCollateralOpen] = useState(false);
@@ -47,13 +45,12 @@ export default function BorrowPage() {
   const [collateralToken, setCollateralToken] = useState(COLLATERAL_TOKEN[0].name);
   const [step, setStep] = useState(0);
   const [token, setToken] = useState(COLLATERAL_TOKEN[0].name);
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, chainId } = useAccount();
   const [isFiat, setIsFiat] = useState(false);
 
   //connect wallet
   const [showSuccess, showError, showWarning, contextHolder] = useNotification();
   const [networkInfo, setNetworkInfo] = useState<any | null>(null);
-  // const { chain, chains } = getNetwork();
 
   const showModal = (token: string) => {
     setModal({
@@ -154,7 +151,7 @@ export default function BorrowPage() {
       </div>
     );
   };
-  const selectedChain = CHAIN_INFO.get(chain?.id) || {};
+  const selectedChain = CHAIN_INFO.get(chainId) || {};
 
   //connect wallet
   const switchNetwork = async () => {
@@ -168,11 +165,11 @@ export default function BorrowPage() {
   };
 
   const initNetworkInfo = useCallback(() => {
-    if (chain) {
-      const networkCurrent = NETWORKS.find(item => item.chain_id_decimals === chain?.id);
+    if (chainId) {
+      const networkCurrent = NETWORKS.find(item => item.chain_id_decimals === chainId);
       setNetworkInfo(networkCurrent || null);
     }
-  }, [chain]);
+  }, [chainId]);
 
   useEffect(() => {
     if (address) {

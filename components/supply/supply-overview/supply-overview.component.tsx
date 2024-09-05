@@ -1,24 +1,20 @@
-import React from 'react';
 import cssClass from './supply-overview.component.module.scss';
 
-import { Select } from 'antd';
+import { CHAIN_INFO, SUPPORTED_CHAINS } from '@/constants/chains.constant';
 import { CaretDownOutlined } from '@ant-design/icons';
-import { useTranslation } from 'next-i18next';
-import { useAccount, useNetwork } from 'wagmi';
-import { SUPPORTED_CHAINS, CHAIN_INFO } from '@/constants/chains.constant';
 import type { SelectProps } from 'antd';
+import { Select } from 'antd';
+import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
+import { useAccount } from 'wagmi';
 
 type LabelRender = SelectProps['labelRender'];
 
 export default function SupplyOverviewComponent({ isModalOpen, handleCancel, message }: any) {
   const { t } = useTranslation('common');
 
-  const { chain, chains } = useNetwork();
-
-  const selectedChain = CHAIN_INFO.get(chain?.id) || {};
-  const { isConnected } = useAccount();
-
+  const { isConnected, chainId } = useAccount();
+  const selectedChain = CHAIN_INFO.get(chainId) || {};
   const labelRender: LabelRender = (props: any) => {
     let { value } = props;
 
@@ -83,55 +79,56 @@ export default function SupplyOverviewComponent({ isModalOpen, handleCancel, mes
           />
         </div>
       </div>
-      {isConnected && <div className="supply-overview__body">
-        <div className="supply-overview__body__wrapper">
-          <div className="supply-overview__body__wrapper__item">
-            <span className="supply-overview__body__wrapper__item__label">
-              {t('SUPPLY_OVERVIEW_TOTAL_SUPPLY')}
-            </span>
-            <div className="supply-overview__body__wrapper__item__value">
-              ${' '}
-              <span
-                className="font-bold"
-                style={{
-                  color: '#F0F0F0',
-                }}>
-                4,567.87
+      {isConnected && (
+        <div className="supply-overview__body">
+          <div className="supply-overview__body__wrapper">
+            <div className="supply-overview__body__wrapper__item">
+              <span className="supply-overview__body__wrapper__item__label">
+                {t('SUPPLY_OVERVIEW_TOTAL_SUPPLY')}
               </span>
+              <div className="supply-overview__body__wrapper__item__value">
+                ${' '}
+                <span
+                  className="font-bold"
+                  style={{
+                    color: '#F0F0F0',
+                  }}>
+                  4,567.87
+                </span>
+              </div>
             </div>
-          </div>
-          <div className="supply-overview__body__wrapper__item">
-            <span className="supply-overview__body__wrapper__item__label">
-              {t('SUPPLY_OVERVIEW_NET_APY')}
-            </span>
-            <div className="supply-overview__body__wrapper__item__value">
-              <span
-                className="font-bold"
-                style={{
-                  color: '#F0F0F0',
-                }}>
-                0.07
-              </span>{' '}
-              %
-            </div>
-          </div>
-          <div className="supply-overview__body__wrapper__item">
-            <span className="supply-overview__body__wrapper__item__label">
-              {t('SUPPLY_OVERVIEW_TOTAL_EARNED')}
-            </span>
-            <div className="supply-overview__body__wrapper__item__value">
-              <span
-                className="font-bold"
-                style={{
-                  color: '#52C41A',
-                }}>
-                +$65.87
+            <div className="supply-overview__body__wrapper__item">
+              <span className="supply-overview__body__wrapper__item__label">
+                {t('SUPPLY_OVERVIEW_NET_APY')}
               </span>
+              <div className="supply-overview__body__wrapper__item__value">
+                <span
+                  className="font-bold"
+                  style={{
+                    color: '#F0F0F0',
+                  }}>
+                  0.07
+                </span>{' '}
+                %
+              </div>
+            </div>
+            <div className="supply-overview__body__wrapper__item">
+              <span className="supply-overview__body__wrapper__item__label">
+                {t('SUPPLY_OVERVIEW_TOTAL_EARNED')}
+              </span>
+              <div className="supply-overview__body__wrapper__item__value">
+                <span
+                  className="font-bold"
+                  style={{
+                    color: '#52C41A',
+                  }}>
+                  +$65.87
+                </span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      }
+      )}
     </div>
   );
 }

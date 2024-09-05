@@ -6,7 +6,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 // import css
 import header from '@/styles/layout/header.module.scss';
-import { useNetwork } from 'wagmi';
 // imports components
 import { UserIcon } from '@/components/icons/user.icon';
 import { WagmiButton } from '@/components/wagmi/wagmi.btn.component';
@@ -24,7 +23,6 @@ export const MainHeader = () => {
    */
   const router = useRouter();
   const { address, connector } = useAccount();
-  const { chain } = useNetwork();
   const [messageApi, contextHolder] = message.useMessage();
   const { t } = useTranslation('common');
 

@@ -8,7 +8,6 @@ import { NETWORKS, STAKE_DEFAULT_NETWORK } from '@/constants/networks';
 import eventBus from '@/hooks/eventBus.hook';
 import { useNotification } from '@/hooks/notifications.hook';
 import cssClass from '@/pages/supply/index.module.scss';
-import { toCurrency } from '@/utils/common';
 import { switchOrAddNetwork } from '@/utils/contract/web3';
 import { computeWithMinThreashold } from '@/utils/percent.util';
 import type { TableProps } from 'antd';
@@ -18,7 +17,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
-import { useAccount, useNetwork } from 'wagmi';
+import { useAccount } from 'wagmi';
 
 interface DataType {
   key: string;
@@ -38,9 +37,8 @@ enum ModalType {
 
 export default function SupplyPage() {
   const { t } = useTranslation('common');
-  const { isConnected } = useAccount();
+  const { isConnected, chainId } = useAccount();
   const { address } = useAccount();
-  const { chain } = useNetwork();
 
   const [_, showError] = useNotification();
 
@@ -84,7 +82,7 @@ export default function SupplyPage() {
       dataIndex: 'supply_balance',
       key: 'supply_balance',
       render: values => {
-        const [value, valueWithPrice] = values
+        const [value, valueWithPrice] = values;
         return (
           <div className="table-wrapper__supply-balance">
             {value}
@@ -98,7 +96,7 @@ export default function SupplyPage() {
       dataIndex: 'earned_reward',
       key: 'earned_reward',
       render: values => {
-        const [value, valueWithPrice] = values
+        const [value, valueWithPrice] = values;
         return (
           <div className="table-wrapper__earned-reward">
             {value}
@@ -131,7 +129,7 @@ export default function SupplyPage() {
       key: 'wallet_balance',
       dataIndex: 'wallet_balance',
       render: values => {
-        const [value, valueWithPrice] = values
+        const [value, valueWithPrice] = values;
         return (
           <div className="table-wrapper__supply-balance">
             {value}
@@ -139,8 +137,7 @@ export default function SupplyPage() {
           </div>
         );
       },
-    })
-
+    });
   }
 
   const data: DataType[] = [
@@ -151,26 +148,27 @@ export default function SupplyPage() {
     {
       key: '2',
       asset: ['USDT', 'USDT'],
-    }].map((item: any) => {
-      item.apy = '0.009'
-      if (isConnected) {
-        item.supply_balance = ['3,500.00', '3,500.00'];
-        item.earned_reward = ['350.00', '350.00'];
-        item.wallet_balance = ['1,000.00', '1,000.00']
-      } else {
-        item.supply_balance = ['0.00', '0'];
-        item.earned_reward = ['0.00', '0'];
-      }
+    },
+  ].map((item: any) => {
+    item.apy = '0.009';
+    if (isConnected) {
+      item.supply_balance = ['3,500.00', '3,500.00'];
+      item.earned_reward = ['350.00', '350.00'];
+      item.wallet_balance = ['1,000.00', '1,000.00'];
+    } else {
+      item.supply_balance = ['0.00', '0'];
+      item.earned_reward = ['0.00', '0'];
+    }
 
-      return item;
-    });
+    return item;
+  });
 
   const initNetworkInfo = useCallback(() => {
-    if (chain) {
-      const networkCurrent = NETWORKS.find(item => item.chain_id_decimals === chain?.id);
+    if (chainId) {
+      const networkCurrent = NETWORKS.find(item => item.chain_id_decimals === chainId);
       setNetworkInfo(networkCurrent || null);
     }
-  }, [chain]);
+  }, [chainId]);
 
   useEffect(() => {
     if (address) {
@@ -265,10 +263,10 @@ export default function SupplyPage() {
 
   const title = () => {
     if (!isConnected) {
-      return t('SUPPLY_GUEST_TABLE_TITLE')
+      return t('SUPPLY_GUEST_TABLE_TITLE');
     }
-    return t('SUPPLY_TABLE_TITLE')
-  }
+    return t('SUPPLY_TABLE_TITLE');
+  };
 
   return (
     <div className={twMerge('supply-page-container', cssClass.supplyPage)}>

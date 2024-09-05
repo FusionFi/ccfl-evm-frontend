@@ -4,12 +4,13 @@ import cssClass from '@/components/wagmi/wagmi.btn.module.scss';
 import { useAuth, useResetState } from '@/hooks/auth.hook';
 import eventBus from '@/hooks/eventBus.hook';
 import { watchAccount } from '@wagmi/core';
-import { Button, Tooltip } from 'antd';
+import { useWeb3Modal } from '@web3modal/wagmi/react';
+import { Button } from 'antd';
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
-import { useAccount, useConnect, useDisconnect, useNetwork } from 'wagmi';
+import { useAccount, useConfig, useConnect, useDisconnect } from 'wagmi';
 declare global {
   interface Window {
     ethereum?: any;
@@ -40,12 +41,12 @@ export const WagmiButton = ({
   const [loading, setLoading] = useState('');
   const { address, isConnected, connector } = useAccount();
   const { t } = useTranslation('common');
-  const { chain: chainCurrent } = useNetwork();
   const buttonRef = useRef<HTMLButtonElement>(null);
-
+  const config = useConfig();
   // hook from store auth module
   const [auth, updateAuth] = useAuth();
   const [resetState] = useResetState();
+  const { open } = useWeb3Modal();
 
   // Check if the screen width is below a certain threshold (e.g., 768px) to determine if it's a mobile device
   const handleWindowSizeChange = () => {
@@ -104,36 +105,42 @@ export const WagmiButton = ({
     };
   }, []);
 
-  useLayoutEffect(() => {
-    const unwatch = watchAccount(async account => {
-      try {
-        console.log('-----------------account', account);
+  useEffect(() => {
+    const unwatch = watchAccount(config, {
+      async onChange(account) {
+        try {
+          console.log('-----------------account', account);
 
-        // console.log(account, provider.address, 'account=>watch');
-        if (
-          account.isConnected === true &&
-          account?.address &&
-          auth.wallet_address &&
-          account?.address !== auth.wallet_address
-        ) {
-          await _handelLogin(account?.connector, account?.address);
+          // console.log(account, provider.address, 'account=>watch');
+          if (
+            account.isConnected === true &&
+            account?.address &&
+            auth.wallet_address &&
+            account?.address !== auth.wallet_address
+          ) {
+            await _handelLogin(account?.connector, account?.address);
+          }
+        } catch (error) {
+          handleError(error);
         }
-      } catch (error) {
-        handleError(error);
-      }
+      },
     });
 
     // Cleanup by calling unwatch to unsubscribe from the account change event
     return () => unwatch();
-  }, [connector, _handelLogin, auth.wallet_address, handleError]);
+  }, [connector, _handelLogin, auth.wallet_address, handleError, config]);
 
   /***
    * FUNCTIONS
    */
   const sleep = (delay: any) => new Promise(resolve => setTimeout(resolve, delay));
+  const openWeb3Modal = () => {
+    open();
+  };
   const handleConnect = useCallback(
     async (item: any) => {
       try {
+        return;
         console.log(item, 'item');
         if (!item?.connector?.ready) {
           let a = document.createElement('a');
@@ -223,16 +230,13 @@ export const WagmiButton = ({
   return (
     <>
       <div className={twMerge('flex justify-end', cssClass.btnActions)}>
-        <Tooltip
-          title={CustomTooltipContent}
-          overlayClassName="wallet-connect-tooltip"
-          getPopupContainer={getPopupContainer}
-          trigger={isMobile ? 'click' : 'click'}>
-          <Button ref={buttonRef} className={twMerge('btn-primary-custom', className)}>
-            <WalletIcon className="mr-2" />
-            {t(btnLabel)}
-          </Button>
-        </Tooltip>
+        <Button
+          ref={buttonRef}
+          className={twMerge('btn-primary-custom', className)}
+          onClick={openWeb3Modal}>
+          <WalletIcon className="mr-2" />
+          {t(btnLabel)}
+        </Button>
       </div>
     </>
   );
