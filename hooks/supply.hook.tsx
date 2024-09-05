@@ -26,7 +26,7 @@ export function useUserManager() {
 
   return [{
     ...user,
-    supplyMap: new Map(user.supplies.map((item: any) => [item.asset, item]))
+    supplyMap: new Map(user?.supplies?.map((item: any) => [item.asset, item]))
   }, updateUser];
 }
 
@@ -59,7 +59,7 @@ export function useNetworkManager() {
 
   return [{
     ...network,
-    listMap: new Map(network.list.map((item: any) => [item.chainId, item]))
+    listMap: new Map(network?.list?.map((item: any) => [item.chainId, item]))
   }, updateNetworks, selectNetwork];
 }
 
