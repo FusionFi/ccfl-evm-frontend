@@ -32,3 +32,9 @@ export const DEFAULT_PARAMS = {
   address: '0x28765892272c3a49F0fb50EF32348538CE22a67C',
   chainId: '11155111',
 };
+export const ASSET_TYPE = {
+  USD: 'USD',
+  FIAT: 'FIAT',
+  USDT: 'USDT',
+  USDC: 'USDC',
+};

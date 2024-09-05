@@ -23,8 +23,8 @@ import { useAccount, useNetwork } from 'wagmi';
 interface DataType {
   key: string;
   asset: Array<any>;
-  supply_balance: string;
-  earned_reward: string;
+  supply_balance: any;
+  earned_reward: any;
   apy: string;
   wallet_balance: string;
 }
@@ -56,7 +56,7 @@ export default function SupplyPage() {
     }
   };
 
-  const columns: TableProps<DataType>['columns'] = [
+  let columns: TableProps<DataType>['columns'] = [
     {
       title: t('SUPPLY_TABLE_HEADER_ASSET'),
       dataIndex: 'asset',
@@ -66,7 +66,7 @@ export default function SupplyPage() {
         return (
           <div className="flex items-center table-wrapper__asset">
             <Image
-              src={`/images/tokens/${symbol}.png`}
+              src={`/images/common/${symbol}.png`}
               style={{
                 marginRight: 8,
               }}
@@ -83,11 +83,12 @@ export default function SupplyPage() {
       title: t('SUPPLY_TABLE_HEADER_SUPPLY_BALANCE'),
       dataIndex: 'supply_balance',
       key: 'supply_balance',
-      render: value => {
+      render: values => {
+        const [value, valueWithPrice] = values
         return (
           <div className="table-wrapper__supply-balance">
-            {toCurrency(value)}
-            <span className="table-wrapper__supply-balance__price">$ {toCurrency(value, 2)}</span>
+            {value}
+            <span className="table-wrapper__supply-balance__price">$ {valueWithPrice}</span>
           </div>
         );
       },
@@ -96,11 +97,12 @@ export default function SupplyPage() {
       title: t('SUPPLY_TABLE_HEADER_EARNED_REWARD'),
       dataIndex: 'earned_reward',
       key: 'earned_reward',
-      render: value => {
+      render: values => {
+        const [value, valueWithPrice] = values
         return (
           <div className="table-wrapper__earned-reward">
-            {toCurrency(value)}
-            <span className="table-wrapper__supply-balance__price">$ {toCurrency(value, 2)}</span>
+            {value}
+            <span className="table-wrapper__supply-balance__price">$ {valueWithPrice}</span>
           </div>
         );
       },
@@ -113,7 +115,10 @@ export default function SupplyPage() {
         <span className="table-wrapper__apy">{computeWithMinThreashold(value)}</span>
       ),
     },
-    {
+  ];
+
+  if (isConnected) {
+    columns.push({
       title: () => {
         return (
           <div className="flex items-center">
@@ -125,35 +130,40 @@ export default function SupplyPage() {
 
       key: 'wallet_balance',
       dataIndex: 'wallet_balance',
-      render: value => {
+      render: values => {
+        const [value, valueWithPrice] = values
         return (
           <div className="table-wrapper__supply-balance">
-            {toCurrency(value)}
-            <span className="table-wrapper__supply-balance__price">$ {toCurrency(value, 2)}</span>
+            {value}
+            <span className="table-wrapper__supply-balance__price">$ {valueWithPrice}</span>
           </div>
         );
       },
-    },
-  ];
+    })
+
+  }
 
   const data: DataType[] = [
     {
       key: '1',
       asset: ['USDC', 'USDC'],
-      supply_balance: '3500',
-      earned_reward: '350',
-      apy: '0.009',
-      wallet_balance: '1000',
     },
     {
       key: '2',
       asset: ['USDT', 'USDT'],
-      supply_balance: '3500',
-      earned_reward: '350',
-      apy: '0.009',
-      wallet_balance: '1000',
-    },
-  ];
+    }].map((item: any) => {
+      item.apy = '0.009'
+      if (isConnected) {
+        item.supply_balance = ['3,500.00', '3,500.00'];
+        item.earned_reward = ['350.00', '350.00'];
+        item.wallet_balance = ['1,000.00', '1,000.00']
+      } else {
+        item.supply_balance = ['0.00', '0'];
+        item.earned_reward = ['0.00', '0'];
+      }
+
+      return item;
+    });
 
   const initNetworkInfo = useCallback(() => {
     if (chain) {
@@ -253,12 +263,19 @@ export default function SupplyPage() {
     });
   };
 
+  const title = () => {
+    if (!isConnected) {
+      return t('SUPPLY_GUEST_TABLE_TITLE')
+    }
+    return t('SUPPLY_TABLE_TITLE')
+  }
+
   return (
     <div className={twMerge('supply-page-container', cssClass.supplyPage)}>
       <SupplyOverview />
       <div className="content">
         <Table
-          title={() => t('SUPPLY_TABLE_TITLE')}
+          title={title}
           expandable={{
             defaultExpandAllRows: true,
             expandedRowRender,

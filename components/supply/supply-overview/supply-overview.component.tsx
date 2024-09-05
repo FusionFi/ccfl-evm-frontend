@@ -4,7 +4,7 @@ import cssClass from './supply-overview.component.module.scss';
 import { Select } from 'antd';
 import { CaretDownOutlined } from '@ant-design/icons';
 import { useTranslation } from 'next-i18next';
-import { useNetwork } from 'wagmi';
+import { useAccount, useNetwork } from 'wagmi';
 import { SUPPORTED_CHAINS, CHAIN_INFO } from '@/constants/chains.constant';
 import type { SelectProps } from 'antd';
 import Image from 'next/image';
@@ -17,6 +17,7 @@ export default function SupplyOverviewComponent({ isModalOpen, handleCancel, mes
   const { chain, chains } = useNetwork();
 
   const selectedChain = CHAIN_INFO.get(chain?.id) || {};
+  const { isConnected } = useAccount();
 
   const labelRender: LabelRender = (props: any) => {
     let { value } = props;
@@ -82,7 +83,7 @@ export default function SupplyOverviewComponent({ isModalOpen, handleCancel, mes
           />
         </div>
       </div>
-      <div className="supply-overview__body">
+      {isConnected && <div className="supply-overview__body">
         <div className="supply-overview__body__wrapper">
           <div className="supply-overview__body__wrapper__item">
             <span className="supply-overview__body__wrapper__item__label">
@@ -130,6 +131,7 @@ export default function SupplyOverviewComponent({ isModalOpen, handleCancel, mes
           </div>
         </div>
       </div>
+      }
     </div>
   );
 }
