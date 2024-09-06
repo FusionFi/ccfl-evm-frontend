@@ -10,7 +10,12 @@ import ModalRepayComponent from '@/components/borrow/modal-repay.component';
 import OverviewComponent from '@/components/common/overview.component';
 import TitleComponent from '@/components/common/title.component';
 import { CHAIN_INFO, SUPPORTED_CHAINS } from '@/constants/chains.constant';
-import { COLLATERAL_TOKEN, TYPE_COMMON } from '@/constants/common.constant';
+import {
+  COLLATERAL_TOKEN,
+  TYPE_COMMON,
+  DEFAULT_PARAMS,
+  ASSET_LIST,
+} from '@/constants/common.constant';
 import { NETWORKS, STAKE_DEFAULT_NETWORK } from '@/constants/networks';
 import { useNotification } from '@/hooks/notifications.hook';
 import { CaretDownOutlined } from '@ant-design/icons';
@@ -59,10 +64,44 @@ export default function BorrowPage() {
   const [showSuccess, showError, showWarning, contextHolder] = useNotification();
   const [networkInfo, setNetworkInfo] = useState<any | null>(null);
 
+  const [tokenList, setTokenList] = useState<any[]>([]);
+  const [loadingAsset, setLoadingAsset] = useState(false);
+  const [price, setPrice] = useState<any>();
+
+  const handlePrice = async () => {
+    try {
+      setLoadingAsset(true);
+      let data = (await service.getPool(DEFAULT_PARAMS.chainId)) as any;
+      let price = {
+        USDT: null,
+        USDC: null,
+      };
+
+      let priceUSDC = (await service.getPrice(DEFAULT_PARAMS.chainId, ASSET_LIST.USDC)) as any;
+      let priceUSDT = (await service.getPrice(DEFAULT_PARAMS.chainId, ASSET_LIST.USDT)) as any;
+      price.USDC = priceUSDC?.price;
+      price.USDT = priceUSDT?.price;
+      setPrice(price);
+
+      if (data && data[0] && priceUSDC) {
+        data[0].usd = data[0].loan_available * priceUSDC.price;
+      }
+      if (data && data[1] && priceUSDT) {
+        data[1].usd = data[1].loan_available * priceUSDT.price;
+      }
+
+      setTokenList(data);
+    } catch (error) {
+      console.log('error', error);
+    } finally {
+      setLoadingAsset(false);
+    }
+  };
+
   const handleLoans = async () => {
     try {
       setLoading(true);
-      let data = (await service.getLoans(1)) as any;
+      let data = (await service.getLoans(DEFAULT_PARAMS.address, DEFAULT_PARAMS.chainId)) as any;
       if (data) {
         setDataLoan(data);
       }
@@ -74,13 +113,15 @@ export default function BorrowPage() {
   };
 
   useEffect(() => {
+    handlePrice();
     handleLoans();
   }, []);
 
-  const showModal = (token: string) => {
+  const showModal = (token: string, apr: string) => {
     setModal({
       type: token == BorrowModalType.Fiat ? BorrowModalType.Fiat : BorrowModalType.Crypto,
       token,
+      apr,
     });
   };
   const showWithdrawCollateralModal = (token: string) => {
@@ -260,9 +301,10 @@ export default function BorrowPage() {
               showModal={showModal}
               showRepayModal={showRepayModal}
               showCollateralModal={showCollateralModal}
-              dataLoan={dataLoan?.loans}
+              dataLoan={dataLoan?.loans?.data}
               loading={loading}
               showWithdrawCollateralModal={showWithdrawCollateralModal}
+              totalLoan={dataLoan?.loans?.total}
             />
           </div>
         )}
@@ -273,6 +315,8 @@ export default function BorrowPage() {
             isConnected={isConnected}
             switchNetwork={switchNetwork}
             networkInfo={networkInfo}
+            tokenList={tokenList}
+            loadingAsset={loadingAsset}
           />
         </div>
       </div>
@@ -284,6 +328,7 @@ export default function BorrowPage() {
         setStep={setStep}
         token={token}
         setToken={setToken}
+        apr={modal.apr}
       />
       <ModalRepayComponent
         isModalOpen={isModalRepayOpen}

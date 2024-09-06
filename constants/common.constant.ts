@@ -27,7 +27,11 @@ export const TRANSACTION_STATUS = {
 export const ASSET_LIST = {
   USDC: 'USDC',
   USDT: 'USDT',
-}
+};
+export const DEFAULT_PARAMS = {
+  address: '0x28765892272c3a49F0fb50EF32348538CE22a67C',
+  chainId: '11155111',
+};
 
 export const ASSET_TYPE = {
   USD: 'USD',

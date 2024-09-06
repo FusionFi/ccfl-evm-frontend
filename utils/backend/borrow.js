@@ -9,12 +9,19 @@ const getPool = async chainId => {
 };
 
 const getPrice = async (chainId, symbol) => {
-  let res = await http.get(`${URL}/asset?chainId=${chainId}&symbol=${symbol}`);
+  let res = await http.get(`${URL}/price/${chainId}/${symbol}`);
   return res;
 };
 
-const getLoans = async user_address => {
-  let res = await http.get(`${URL}/user/${user_address}/loan`);
+const getLoans = async (user_address, chainId, offset = 0, limit = 10) => {
+  let res = await http.get(
+    `${URL}/user/${user_address}/${chainId}/loan?offset=${offset}&limit=${limit}`,
+  );
+  return res;
+};
+
+const getCollateralBalance = async (user_address, chainId, asset) => {
+  let res = await http.get(`${URL}/user/${user_address}/${chainId}/${asset}/balance`);
   return res;
 };
 
@@ -22,5 +29,6 @@ const service = {
   getPool,
   getPrice,
   getLoans,
+  getCollateralBalance,
 };
 export default service;
