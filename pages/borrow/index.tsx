@@ -19,11 +19,14 @@ import { Select } from 'antd';
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
 import { useAccount, useSwitchChain } from 'wagmi';
-
+// import { getNetwork } from '@wagmi/core';
+import { DataType } from '@/components/borrow/borrow';
 import ModalBorrowFiatSuccessComponent from '@/components/borrow/modal-borrow-fiat/modal-borrow-fiat-success.component';
 import ModalBorrowFiatComponent from '@/components/borrow/modal-borrow-fiat/modal-borrow-fiat.component';
 import ModalCollateralComponent from '@/components/borrow/modal-collateral.component';
 import ModalWithdrawCollateralComponent from '@/components/borrow/modal-withdraw-collateral.component';
+import service from '@/utils/backend/borrow';
+import { toCurrency } from '@/utils/common';
 
 type LabelRender = SelectProps['labelRender'];
 enum BorrowModalType {
@@ -45,12 +48,34 @@ export default function BorrowPage() {
   const [collateralToken, setCollateralToken] = useState(COLLATERAL_TOKEN[0].name);
   const [step, setStep] = useState(0);
   const [token, setToken] = useState(COLLATERAL_TOKEN[0].name);
+
+  const [dataLoan, setDataLoan] = useState<DataType>();
+  const [loading, setLoading] = useState(false);
+
   const { address, isConnected, chainId } = useAccount();
   const [isFiat, setIsFiat] = useState(false);
 
   //connect wallet
   const [showSuccess, showError, showWarning, contextHolder] = useNotification();
   const [networkInfo, setNetworkInfo] = useState<any | null>(null);
+
+  const handleLoans = async () => {
+    try {
+      setLoading(true);
+      let data = (await service.getLoans(1)) as any;
+      if (data) {
+        setDataLoan(data);
+      }
+    } catch (error) {
+      console.log('error', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    handleLoans();
+  }, []);
 
   const showModal = (token: string) => {
     setModal({
@@ -103,25 +128,25 @@ export default function BorrowPage() {
   const itemLeft = [
     {
       text: t('BORROW_OVERVIEW_BALANCE'),
-      content: ' 1,875.00',
+      content: toCurrency(dataLoan?.total_loan, 2),
       type: TYPE_COMMON.USD,
     },
     {
       text: t('BORROW_OVERVIEW_COLLATERAL'),
-      content: ' 1,875.00',
+      content: toCurrency(dataLoan?.total_collateral, 2),
       type: TYPE_COMMON.USD,
     },
   ];
 
   const itemRight = [
     {
-      text: t('BORROW_APY'),
-      content: '0.07',
+      text: t('BORROW_OVERVIEW_APR'),
+      content: dataLoan?.net_apr ?? '',
       type: TYPE_COMMON.PERCENT,
     },
     {
       text: t('BORROW_OVERVIEW_FINANCE_HEALTH'),
-      content: '1.66',
+      content: dataLoan?.finance_health ?? '',
       type: TYPE_COMMON.FINANCE_HEALTH,
     },
   ];
@@ -133,6 +158,8 @@ export default function BorrowPage() {
       name = 'Avalanche';
       logo = '/images/tokens/avax.png';
     }
+
+    console.log('dataLoan', dataLoan);
 
     return (
       <div className="flex items-center">
@@ -221,7 +248,7 @@ export default function BorrowPage() {
           </div>
         </TitleComponent>
       </div>
-      {isConnected && networkInfo && (
+      {isConnected && networkInfo && !loading && (
         <div className="mb-4">
           <OverviewComponent itemLeft={itemLeft} itemRight={itemRight} />
         </div>
@@ -233,6 +260,8 @@ export default function BorrowPage() {
               showModal={showModal}
               showRepayModal={showRepayModal}
               showCollateralModal={showCollateralModal}
+              dataLoan={dataLoan?.loans}
+              loading={loading}
               showWithdrawCollateralModal={showWithdrawCollateralModal}
             />
           </div>

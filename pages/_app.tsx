@@ -61,7 +61,7 @@ createWeb3Modal({
   enableAnalytics: true, // Optional - defaults to your Cloud configuration
   enableOnramp: false, // Optional - false as default
 });
-// TODO: config chaings
+// TODO: config supported chains using the BE side
 const supportedChains = process.env.NEXT_PUBLIC_IS_TESTNET ? [sepolia] : [mainnet];
 
 const inter = Inter({

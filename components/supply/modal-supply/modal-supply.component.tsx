@@ -17,9 +17,12 @@ type FieldType = {
 export default function ModalSupplyComponent({
   isModalOpen,
   handleCancel,
-  handleOk
+  handleOk,
+  asset
 }: any) {
   const { t } = useTranslation('common');
+
+  console.log('asset: ', asset)
 
   const [_isApproved, _setIsApproved] = useState(false);
   const [_isPending, _setIsPending] = useState(false);

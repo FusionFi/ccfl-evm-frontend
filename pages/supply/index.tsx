@@ -7,10 +7,13 @@ import SupplyOverview from '@/components/supply/supply-overview/supply-overview.
 import { NETWORKS, STAKE_DEFAULT_NETWORK } from '@/constants/networks';
 import eventBus from '@/hooks/eventBus.hook';
 import { useNotification } from '@/hooks/notifications.hook';
+import { useAssetManager, useNetworkManager, useUserManager } from '@/hooks/supply.hook';
 import cssClass from '@/pages/supply/index.module.scss';
+import supplyBE from '@/utils/backend/supply';
 import { computeWithMinThreashold } from '@/utils/percent.util';
 import type { TableProps } from 'antd';
 import { Button, Table } from 'antd';
+import BigNumber from 'bignumber.js';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import Image from 'next/image';
@@ -43,12 +46,48 @@ export default function SupplyPage() {
   const [_, showError] = useNotification();
 
   const [networkInfo, setNetworkInfo] = useState<any | null>(null);
+  const [asset, updateAssets] = useAssetManager();
+  const [network] = useNetworkManager();
+  const [user, updateUser] = useUserManager();
+
+  const fetchPublicData = async () => {
+    try {
+      const [assets] = await Promise.all([
+        supplyBE.fetchAssets({
+          chainId: network.selected,
+        }),
+      ]);
+      updateAssets(assets);
+    } catch (error) {
+      console.error('fetch initial data on supply page failed: ', error);
+    }
+  };
+
+  const fetchUserData = async () => {
+    try {
+      if (!address) {
+        updateUser(null);
+        return;
+      }
+
+      const [user] = await Promise.all([
+        supplyBE.fetchUserSupply({
+          chainId: network.selected,
+          address: '0x4A230206fD8E97121C1FE2748C63643dbAaE214E', // TODO
+        }),
+      ]);
+
+      updateUser(user);
+    } catch (error) {
+      console.error('fetch user data on supply page failed: ', error);
+    }
+  };
 
   const switchNetwork = async () => {
     try {
       const rs = await switchChain({ chainId: STAKE_DEFAULT_NETWORK?.chain_id_decimals });
     } catch (error) {
-      console.log('🚀 ~ switchNetwork ~ error:', error);
+      console.error('🚀 ~ switchNetwork ~ error:', error);
       showError(error);
     }
   };
@@ -139,27 +178,53 @@ export default function SupplyPage() {
     });
   }
 
-  const data: DataType[] = [
-    {
-      key: '1',
-      asset: ['USDC', 'USDC'],
-    },
-    {
-      key: '2',
-      asset: ['USDT', 'USDT'],
-    },
-  ].map((item: any) => {
-    item.apy = '0.009';
+  const data: DataType[] = asset.list.map((item: any) => {
+    const result = {
+      key: `${item.chainId}_${item.symbol}`,
+      asset: [item.symbol, item.name],
+      supply_balance: ['N/A', '0.00'],
+      earned_reward: ['0.00', '0.00'],
+      apy: '0',
+      wallet_balance: ['0.00', '0.00'],
+    };
     if (isConnected) {
-      item.supply_balance = ['3,500.00', '3,500.00'];
-      item.earned_reward = ['350.00', '350.00'];
-      item.wallet_balance = ['1,000.00', '1,000.00'];
-    } else {
-      item.supply_balance = ['0.00', '0'];
-      item.earned_reward = ['0.00', '0'];
-    }
+      const supplied = user.supplyMap.get(item.symbol);
+      if (supplied) {
+        const supplyBalance = new BigNumber(supplied.supply_balance || 0).dividedBy(
+          10 ** supplied.decimals,
+        );
+        if (supplyBalance.isGreaterThan(0)) {
+          result.supply_balance = [
+            supplyBalance.toFormat(2),
+            supplyBalance.times(supplied.asset_price).toFormat(2),
+          ];
+        }
 
-    return item;
+        const earned = new BigNumber(supplied.earned_reward || 0);
+        if (earned.isGreaterThan(0)) {
+          result.earned_reward = [
+            earned.toFormat(2),
+            earned.times(supplied.asset_price).toFormat(2),
+          ];
+        }
+
+        const apy = new BigNumber(supplied.apy || 0);
+        if (apy.isGreaterThan(0)) {
+          result.apy = apy.toString();
+        }
+
+        const walletBalance = new BigNumber(supplied.wallet_balance || 0).dividedBy(
+          10 ** supplied.decimals,
+        );
+        if (walletBalance.isGreaterThan(0)) {
+          result.wallet_balance = [
+            walletBalance.toFormat(2),
+            walletBalance.times(supplied.asset_price).toFormat(2),
+          ];
+        }
+      }
+    }
+    return result;
   });
 
   const initNetworkInfo = useCallback(() => {
@@ -174,7 +239,10 @@ export default function SupplyPage() {
       // getBalance();
       initNetworkInfo();
     }
-  }, [address, initNetworkInfo]);
+
+    fetchUserData();
+    fetchPublicData();
+  }, [address, initNetworkInfo, network.selected]);
 
   const TableAction = ({ children }: any) => {
     return <div className="table-wrapper__action">{children}</div>;
@@ -209,6 +277,19 @@ export default function SupplyPage() {
       );
     }
 
+    const handleModalOpen = (type: any) => {
+      setModal({
+        type,
+        asset: {
+          name: record.asset[0],
+          symbol: record.asset[1],
+          wallet_balance: record.wallet_balance[0],
+          wallet_balance_price: record.wallet_balance[1],
+          apy: record.apy,
+        },
+      });
+    };
+
     return (
       <TableAction>
         <Button
@@ -217,11 +298,7 @@ export default function SupplyPage() {
             width: 200,
             marginRight: 8,
           }}
-          onClick={() =>
-            setModal({
-              type: ModalType.Supply,
-            })
-          }>
+          onClick={() => handleModalOpen(ModalType.Supply)}>
           {t('SUPPLY_TABLE_ACTION_SUPPLY_MORE')}
         </Button>
         <Button
@@ -229,11 +306,7 @@ export default function SupplyPage() {
           style={{
             width: 200,
           }}
-          onClick={() =>
-            setModal({
-              type: ModalType.Withdraw,
-            })
-          }>
+          onClick={() => handleModalOpen(ModalType.Withdraw)}>
           {t('SUPPLY_TABLE_ACTION_WITHDRAW')}
         </Button>
       </TableAction>
@@ -274,7 +347,7 @@ export default function SupplyPage() {
         <Table
           title={title}
           expandable={{
-            defaultExpandAllRows: true,
+            expandedRowKeys: data.map(item => item.key),
             expandedRowRender,
             rowExpandable: record => true,
             showExpandColumn: false,
