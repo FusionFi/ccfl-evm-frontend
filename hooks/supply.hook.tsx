@@ -40,7 +40,10 @@ export function useAssetManager() {
     dispatch(SupplyActions.updateAssets({ assets }));
   }, [dispatch]);
 
-  return [asset, updateAssets];
+  return [{
+    ...asset,
+    listMap: new Map(asset?.list.map((item: any) => [item.symbol, item]))
+  }, updateAssets];
 }
 
 export function useNetworkManager() {

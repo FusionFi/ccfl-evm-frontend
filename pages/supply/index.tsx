@@ -22,7 +22,6 @@ import { useAccount, useNetwork } from 'wagmi';
 import supplyBE from '@/utils/backend/supply';
 import { useUserManager, useAssetManager, useNetworkManager } from '@/hooks/supply.hook'
 import BigNumber from 'bignumber.js';
-import { toFormat } from '@/utils/bignumber.util'
 
 interface DataType {
   key: string;
@@ -188,7 +187,7 @@ export default function SupplyPage() {
       asset: [item.symbol, item.name],
       supply_balance: ['N/A', '0.00'],
       earned_reward: ['0.00', '0.00'],
-      apy: 0,
+      apy: '0',
       wallet_balance: ['0.00', '0.00']
     }
     if (isConnected) {
@@ -268,6 +267,19 @@ export default function SupplyPage() {
       );
     }
 
+    const handleModalOpen = (type: any) => {
+      setModal({
+        type,
+        asset: {
+          name: record.asset[0],
+          symbol: record.asset[1],
+          wallet_balance: record.wallet_balance[0],
+          wallet_balance_price: record.wallet_balance[1],
+          apy: record.apy
+        }
+      })
+    }
+
     return (
       <TableAction>
         <Button
@@ -276,11 +288,7 @@ export default function SupplyPage() {
             width: 200,
             marginRight: 8,
           }}
-          onClick={() =>
-            setModal({
-              type: ModalType.Supply,
-            })
-          }>
+          onClick={() => handleModalOpen(ModalType.Supply)}>
           {t('SUPPLY_TABLE_ACTION_SUPPLY_MORE')}
         </Button>
         <Button
@@ -288,11 +296,7 @@ export default function SupplyPage() {
           style={{
             width: 200,
           }}
-          onClick={() =>
-            setModal({
-              type: ModalType.Withdraw,
-            })
-          }>
+          onClick={() => handleModalOpen(ModalType.Withdraw)}>
           {t('SUPPLY_TABLE_ACTION_WITHDRAW')}
         </Button>
       </TableAction>
