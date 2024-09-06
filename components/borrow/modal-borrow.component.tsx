@@ -18,6 +18,8 @@ import { COLLATERAL_TOKEN, DEFAULT_PARAMS } from '@/constants/common.constant';
 import { TRANSACTION_STATUS } from '@/constants/common.constant';
 import { toCurrency, toAmountShow } from '@/utils/common';
 import service from '@/utils/backend/borrow';
+import service_ccfl_borrow from '@/utils/contract/ccflBorrow.service';
+import { useAccount, useDisconnect, useSwitchChain } from 'wagmi';
 
 interface ModalBorrowProps {
   isModalOpen: boolean;
@@ -52,6 +54,7 @@ export default function ModalBorrowComponent({
     },
   });
   const { t } = useTranslation('common');
+  const { address, connector, chainId } = useAccount();
 
   const onSubmit: SubmitHandler<IFormInput> = data => {
     setLoading(true);
@@ -111,6 +114,14 @@ export default function ModalBorrowComponent({
             ? toAmountShow(res_balance.balance * res_price.price, res_balance.decimals)
             : 0,
       });
+      const provider = await connector?.getProvider();
+      console.log('provider', provider);
+      //       "
+      // 0xC5095DEaAb52F0f788158790244BEBCa5b590368"
+      let res_a = (await service_ccfl_borrow.getCollateralInfo(
+        provider,
+        '0xC5095DEaAb52F0f788158790244BEBCa5b590368',
+      )) as any;
     } catch (error) {
       console.log('error', error);
     }
