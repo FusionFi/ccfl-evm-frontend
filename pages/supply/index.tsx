@@ -54,12 +54,23 @@ export default function SupplyPage() {
 
   const fetchPublicData = async () => {
     try {
-      const [assets] = await Promise.all([
+      const [assets, pools]: any = await Promise.all([
         supplyBE.fetchAssets({
+          chainId: network.selected
+        }),
+        supplyBE.fetchPools({
           chainId: network.selected
         })
       ])
-      updateAssets(assets)
+
+      const poolMap = new Map((pools).map((item: any) => [item.asset, item]))
+      updateAssets(assets.map((item: any) => {
+        const x: any = poolMap.get(item.symbol)
+        return {
+          ...x,
+          ...item,
+        }
+      }))
     } catch (error) {
       console.error("fetch initial data on supply page failed: ", error)
     }
@@ -184,33 +195,28 @@ export default function SupplyPage() {
   const data: DataType[] = asset.list.map((item: any) => {
     const result = {
       key: `${item.chainId}_${item.symbol}`,
-      asset: [item.symbol, item.name],
-      supply_balance: ['N/A', '0.00'],
-      earned_reward: ['0.00', '0.00'],
-      apy: '0',
-      wallet_balance: ['0.00', '0.00']
+      asset: [item.symbol, item.name, item],
+      supply_balance: ['N/A', '0.00', 0],
+      earned_reward: ['0.00', '0.00', 0],
+      apy: item?.apy || '0',
+      wallet_balance: ['0.00', '0.00', 0]
     }
     if (isConnected) {
       const supplied = user.supplyMap.get(item.symbol);
       if (supplied) {
         const supplyBalance = new BigNumber(supplied.supply_balance || 0).dividedBy(10 ** supplied.decimals);
         if (supplyBalance.isGreaterThan(0)) {
-          result.supply_balance = [supplyBalance.toFormat(2), supplyBalance.times(supplied.asset_price).toFormat(2)];
+          result.supply_balance = [supplyBalance.toFormat(2), supplyBalance.times(supplied.asset_price).toFormat(2), supplied.supply_balance];
         }
 
         const earned = new BigNumber(supplied.earned_reward || 0)
         if (earned.isGreaterThan(0)) {
-          result.earned_reward = [earned.toFormat(2), earned.times(supplied.asset_price).toFormat(2)];
-        }
-
-        const apy = new BigNumber(supplied.apy || 0)
-        if (apy.isGreaterThan(0)) {
-          result.apy = apy.toString();
+          result.earned_reward = [earned.toFormat(2), earned.times(supplied.asset_price).toFormat(2), earned.toString()];
         }
 
         const walletBalance = new BigNumber(supplied.wallet_balance || 0).dividedBy(10 ** supplied.decimals)
         if (walletBalance.isGreaterThan(0)) {
-          result.wallet_balance = [walletBalance.toFormat(2), walletBalance.times(supplied.asset_price).toFormat(2)]
+          result.wallet_balance = [walletBalance.toFormat(2), walletBalance.times(supplied.asset_price).toFormat(2), supplied.wallet_balance]
         }
       }
     }
@@ -271,10 +277,9 @@ export default function SupplyPage() {
       setModal({
         type,
         asset: {
-          name: record.asset[0],
-          symbol: record.asset[1],
+          ...record.asset[2],
           wallet_balance: record.wallet_balance[0],
-          wallet_balance_price: record.wallet_balance[1],
+          wallet_balance_in_wei: record.wallet_balance[2],
           apy: record.apy
         }
       })
