@@ -14,22 +14,24 @@ import {
 } from '@ant-design/icons';
 import TransactionSuccessComponent from '@/components/borrow/transaction-success.component';
 import { useTranslation } from 'next-i18next';
-import { COLLATERAL_TOKEN, DEFAULT_PARAMS } from '@/constants/common.constant';
-import { TRANSACTION_STATUS } from '@/constants/common.constant';
-import { toCurrency, toAmountShow } from '@/utils/common';
+import { COLLATERAL_TOKEN, DEFAULT_PARAMS, DEFAULT_ADDRESS } from '@/constants/common.constant';
+import { TRANSACTION_STATUS, CONTRACT_ADDRESS } from '@/constants/common.constant';
+import { toCurrency, toAmountShow, toUnitWithDecimal } from '@/utils/common';
 import service from '@/utils/backend/borrow';
 import service_ccfl_borrow from '@/utils/contract/ccflBorrow.service';
 import { useAccount, useDisconnect, useSwitchChain } from 'wagmi';
+import BigNumber from 'bignumber.js';
 
 interface ModalBorrowProps {
   isModalOpen: boolean;
   handleCancel: any;
-  currentToken: string;
+  currentToken: any;
   step: any;
   setStep: any;
   token: any;
   setToken: any;
   apr: any;
+  decimalStableCoin: any;
 }
 
 interface IFormInput {
@@ -46,6 +48,7 @@ export default function ModalBorrowComponent({
   token,
   setToken,
   apr,
+  decimalStableCoin,
 }: ModalBorrowProps) {
   const { control, handleSubmit, setValue } = useForm({
     defaultValues: {
@@ -55,16 +58,35 @@ export default function ModalBorrowComponent({
   });
   const { t } = useTranslation('common');
   const { address, connector, chainId } = useAccount();
+  const account = useAccount();
 
-  const onSubmit: SubmitHandler<IFormInput> = data => {
+  const onSubmit: SubmitHandler<IFormInput> = async data => {
+    const provider = await connector?.getProvider();
+    let tokenDraft: keyof typeof DEFAULT_ADDRESS = currentToken.toUpperCase();
+
     setLoading(true);
-    setTimeout(() => {
+    setTimeout(async () => {
       setLoading(false);
-      if (step == 1) {
-        setTokenValue(undefined);
-        setCollateralValue(undefined);
+      if (step === 0) {
+        let hash = await service_ccfl_borrow.approveBorrow(
+          provider,
+          CONTRACT_ADDRESS,
+          toUnitWithDecimal(collateralValue ? collateralValue : 0, 18),
+        );
+        console.log('finnisedApprove', hash);
+        if (hash !== '') {
+          setStep(step + 1);
+        }
       }
-      setStep(step + 1);
+      if (step == 1) {
+        let tx = await service_ccfl_borrow.createLoan(
+          CONTRACT_ADDRESS,
+          toUnitWithDecimal(tokenValue ? tokenValue : 0, 18),
+          toUnitWithDecimal(collateralValue ? collateralValue : 0, 18),
+        );
+        // setTokenValue(undefined);
+        // setCollateralValue(undefined);
+      }
     }, 1000);
   };
 
@@ -74,6 +96,8 @@ export default function ModalBorrowComponent({
   const [collateralData, setCollateralData] = useState({
     balance: 0,
     balance_usd: 0,
+    decimals: 0,
+    minimum: 0,
   }) as any;
 
   const handleChange = (value: any) => {
@@ -86,7 +110,6 @@ export default function ModalBorrowComponent({
 
   const [tokenValue, setTokenValue] = useState();
   const [collateralValue, setCollateralValue] = useState();
-  const minimumAmount = 2;
 
   const status = 'SUCCESS';
   const renderTitle = () => {
@@ -106,26 +129,56 @@ export default function ModalBorrowComponent({
         DEFAULT_PARAMS.chainId,
         token,
       )) as any;
-      let res_price = (await service.getPrice(DEFAULT_PARAMS.chainId, token)) as any;
+      let res_collateral = (await service.getCollateralInfo(DEFAULT_PARAMS.chainId, token)) as any;
+
       setCollateralData({
+        ...collateralData,
         balance: res_balance ? toAmountShow(res_balance.balance, res_balance.decimals) : 0,
         balance_usd:
-          res_balance && res_price?.price
-            ? toAmountShow(res_balance.balance * res_price.price, res_balance.decimals)
+          res_balance && res_collateral?.price
+            ? toAmountShow(res_balance.balance * res_collateral.price, res_balance.decimals)
             : 0,
+        decimals: res_collateral?.decimals,
       });
-      const provider = await connector?.getProvider();
-      console.log('provider', provider);
-      //       "
-      // 0xC5095DEaAb52F0f788158790244BEBCa5b590368"
-      let res_a = (await service_ccfl_borrow.getCollateralInfo(
-        provider,
-        '0xC5095DEaAb52F0f788158790244BEBCa5b590368',
-      )) as any;
     } catch (error) {
       console.log('error', error);
     }
   };
+
+  const handleGetMinimumCollateral = async () => {
+    try {
+      let tokenDraft: keyof typeof DEFAULT_ADDRESS = currentToken.toUpperCase();
+      let collateralTokenDraft: keyof typeof DEFAULT_ADDRESS = token.toUpperCase();
+      console.log('token', token, currentToken);
+
+      let addressStableCoin = DEFAULT_ADDRESS[tokenDraft];
+      let addressCollateral = DEFAULT_ADDRESS[collateralTokenDraft];
+
+      const provider = await connector?.getProvider();
+      let res_collateral = (await service_ccfl_borrow.getCollateralInfo(
+        provider,
+        CONTRACT_ADDRESS,
+        toUnitWithDecimal(tokenValue ? tokenValue : 0, decimalStableCoin),
+        addressStableCoin,
+        addressCollateral,
+      )) as any;
+
+      setCollateralData({
+        ...collateralData,
+        minimum: res_collateral.minimalCollateral
+          ? toAmountShow(res_collateral.minimalCollateral, collateralData.decimals)
+          : 0,
+      });
+    } catch (error) {
+      console.log('error', error);
+    }
+  };
+
+  useEffect(() => {
+    if (isModalOpen) {
+      handleGetMinimumCollateral();
+    }
+  }, [tokenValue, token]);
 
   useEffect(() => {
     if (isModalOpen) {
@@ -270,7 +323,7 @@ export default function ModalBorrowComponent({
                   </div>
                 </div>
                 <div className="modal-borrow-minimum">
-                  <span className="mr-1">Minimum amount: </span> {minimumAmount} {token}
+                  <span className="mr-1">Minimum amount: </span> {collateralData.minimum} {token}
                 </div>
                 <div className="flex justify-between items-center modal-borrow-health c-white">
                   <div className="modal-borrow-sub-content">{t('BORROW_MODAL_BORROW_HEALTH')}</div>
@@ -311,7 +364,9 @@ export default function ModalBorrowComponent({
                     <Button
                       htmlType="submit"
                       type="primary"
-                      disabled={!tokenValue || !collateralValue || collateralValue < minimumAmount}
+                      disabled={
+                        !tokenValue || !collateralValue || collateralValue < collateralData.minimum
+                      }
                       className="w-full"
                       loading={loading}>
                       {t('BORROW_MODAL_BORROW_APPROVE', { currentToken: token })}
@@ -328,7 +383,9 @@ export default function ModalBorrowComponent({
                         htmlType="submit"
                         type="primary"
                         disabled={
-                          !tokenValue || !collateralValue || collateralValue < minimumAmount
+                          !tokenValue ||
+                          !collateralValue ||
+                          collateralValue < collateralData.minimum
                         }
                         className="w-full"
                         loading={loading}>

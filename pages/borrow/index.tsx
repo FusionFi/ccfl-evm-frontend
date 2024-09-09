@@ -117,11 +117,12 @@ export default function BorrowPage() {
     handleLoans();
   }, []);
 
-  const showModal = (token: string, apr: string) => {
+  const showModal = (token: string, apr: string, decimals: string) => {
     setModal({
       type: token == BorrowModalType.Fiat ? BorrowModalType.Fiat : BorrowModalType.Crypto,
       token,
       apr,
+      decimals,
     });
   };
   const showWithdrawCollateralModal = (token: string) => {
@@ -146,6 +147,9 @@ export default function BorrowPage() {
   const handleCancel = () => {
     setModal({
       type: '',
+      token: '',
+      apr: '',
+      decimals: '',
     });
     setStep(0);
     setToken(COLLATERAL_TOKEN[0].name);
@@ -329,6 +333,7 @@ export default function BorrowPage() {
         token={token}
         setToken={setToken}
         apr={modal.apr}
+        decimalStableCoin={modal.decimals}
       />
       <ModalRepayComponent
         isModalOpen={isModalRepayOpen}
