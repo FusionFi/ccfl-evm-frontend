@@ -48,3 +48,4 @@ export const DEFAULT_ADDRESS = {
 };
 
 export const CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CCFL_CONTRACT_ADDRESS;
+export const TX_LINK = 'https://sepolia.etherscan.io/tx/';

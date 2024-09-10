@@ -6,6 +6,7 @@ import {
   switchOrAddNetwork,
   coverDecimals,
   _getMetaMaskProvider,
+  estimateGas,
 } from '@/utils/contract/web3';
 import BigNumber from 'bignumber.js';
 import { toAmountShow } from '@/utils/common';
@@ -53,26 +54,29 @@ const BORROWER_PRIVATE_KEY =
 const USDC_ERC20_CONTRACT = '0x94a9d9ac8a22534e3faca9f4e7f2e2cf85d5e4c8' || '';
 const WBTC_ERC20_CONTRACT = '0x29f2D40B0605204364af54EC677bD022dA425d03' || '';
 const CCFL = '0xC5095DEaAb52F0f788158790244BEBCa5b590368' || '';
-const IsYieldGenerating = true;
-const IsFiat = false;
+// const IsYieldGenerating = true;
+// const IsFiat = false;
 
 const provider = new ethers.JsonRpcProvider(providerURL);
 const wallet = new ethers.Wallet(BORROWER_PRIVATE_KEY, provider);
 const contractERC20 = new ethers.Contract(CCFL, abi_erc20, wallet);
 const contract = new ethers.Contract(CCFL, abi, wallet);
+const tokenContract = new ethers.Contract(WBTC_ERC20_CONTRACT, abi_erc20, wallet);
 
-const approveBorrow = async (provider, contract_address, amount) => {
+const approveBorrow = async (provider1, contract_address, amount) => {
   try {
-    // const tx = await contractERC20.approve(contract_address, amount);
-    const contract1 = _initContractERC20(provider, contract_address);
-    const calls = [contract1.methods.approve(contract_address, amount).call()];
-    let [tx] = await Promise.allSettled(calls);
-    console.log('tx', tx);
+    // const provider1 = _getMetaMaskProvider();
+    console.log('approveBorrow', contract_address, amount, provider);
+    const tx = await tokenContract.approve(contract_address, amount);
 
+    // const contract1 = _initContractERC20(provider1, WBTC_ERC20_CONTRACT);
+    // const calls = [contract1.methods.approve(WBTC_ERC20_CONTRACT, amount).call()];
+    // let [tx] = await Promise.allSettled(calls);
+    console.log('tx', tx);
     console.log('Transaction hash:', tx.hash);
 
     const receipt = await tx.wait();
-    console.log('Transaction was mined in block:', receipt.blockNumber);
+    console.log('Transaction was mined in block:', receipt, receipt.blockNumber);
     if (tx.hash) {
       return tx.hash;
     } else {
@@ -84,13 +88,30 @@ const approveBorrow = async (provider, contract_address, amount) => {
   }
 };
 
-const createLoan = async (contract_address, amountLoan, amountCollateral) => {
+const createLoan = async (
+  amountLoan,
+  amountCollateral,
+  stableCoinContract,
+  collateralContract,
+  IsYieldGenerating,
+  IsFiat,
+) => {
   try {
+    console.log(
+      'createLoan',
+      amountLoan,
+      stableCoinContract,
+      amountCollateral,
+      collateralContract,
+      IsYieldGenerating,
+      IsFiat,
+    );
+
     const txResponse = await contract.createLoan(
       amountLoan,
-      USDC_ERC20_CONTRACT,
+      stableCoinContract,
       amountCollateral,
-      WBTC_ERC20_CONTRACT,
+      collateralContract,
       IsYieldGenerating,
       IsFiat,
     );
@@ -103,9 +124,18 @@ const createLoan = async (contract_address, amountLoan, amountCollateral) => {
   }
 };
 
+const handleGasPrice = async () => {
+  console.log('getGasPrice1');
+  const getGasPrice1 = estimateGas();
+  console.log('getGasPrice', getGasPrice1);
+  try {
+  } catch (error) {}
+};
+
 const service_ccfl_borrow = {
   getCollateralInfo,
   approveBorrow,
   createLoan,
+  handleGasPrice,
 };
 export default service_ccfl_borrow;

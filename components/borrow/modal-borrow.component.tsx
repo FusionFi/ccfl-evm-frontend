@@ -60,36 +60,6 @@ export default function ModalBorrowComponent({
   const { address, connector, chainId } = useAccount();
   const account = useAccount();
 
-  const onSubmit: SubmitHandler<IFormInput> = async data => {
-    const provider = await connector?.getProvider();
-    let tokenDraft: keyof typeof DEFAULT_ADDRESS = currentToken.toUpperCase();
-
-    setLoading(true);
-    setTimeout(async () => {
-      setLoading(false);
-      if (step === 0) {
-        let hash = await service_ccfl_borrow.approveBorrow(
-          provider,
-          CONTRACT_ADDRESS,
-          toUnitWithDecimal(collateralValue ? collateralValue : 0, 18),
-        );
-        console.log('finnisedApprove', hash);
-        if (hash !== '') {
-          setStep(step + 1);
-        }
-      }
-      if (step == 1) {
-        let tx = await service_ccfl_borrow.createLoan(
-          CONTRACT_ADDRESS,
-          toUnitWithDecimal(tokenValue ? tokenValue : 0, 18),
-          toUnitWithDecimal(collateralValue ? collateralValue : 0, 18),
-        );
-        // setTokenValue(undefined);
-        // setCollateralValue(undefined);
-      }
-    }, 1000);
-  };
-
   const [loading, setLoading] = useState<boolean>(false);
   const [isYield, setYield] = useState(false);
   const [loadingBalanceCollateral, setLoadingBalanceCollateral] = useState<boolean>(false);
@@ -101,6 +71,46 @@ export default function ModalBorrowComponent({
   }) as any;
   const [minimalCollateral, setMinimalCollateral] = useState(0);
 
+  const onSubmit: SubmitHandler<IFormInput> = async data => {
+    const provider = await connector?.getProvider();
+    let tokenAmount: keyof typeof DEFAULT_ADDRESS = currentToken.toUpperCase();
+    let tokenCollateral: keyof typeof DEFAULT_ADDRESS = token.toUpperCase();
+    console.log(tokenAmount, tokenCollateral);
+    try {
+      setLoading(true);
+      if (step === 0) {
+        let hash = await service_ccfl_borrow.approveBorrow(
+          provider,
+          CONTRACT_ADDRESS,
+          toUnitWithDecimal(collateralValue ? collateralValue : 0, collateralData.decimals),
+        );
+        console.log('finnisedApprove', hash);
+        if (hash !== '') {
+          setLoading(false);
+          setStep(step + 1);
+        }
+      }
+      if (step == 1) {
+        let tx = await service_ccfl_borrow.createLoan(
+          toUnitWithDecimal(tokenValue ? tokenValue : 0, decimalStableCoin),
+          toUnitWithDecimal(collateralValue ? collateralValue : 0, collateralData.decimals),
+          DEFAULT_ADDRESS[tokenAmount],
+          DEFAULT_ADDRESS[tokenCollateral],
+          isYield,
+          false,
+        );
+        if (tx?.hash) {
+          setStep(step + 1);
+          setLoading(false);
+          setTxHash(tx.hash);
+        }
+      }
+    } catch (error) {
+      setLoading(false);
+      console.log('error', error);
+    }
+  };
+
   const handleChange = (value: any) => {
     setToken(value);
   };
@@ -111,6 +121,7 @@ export default function ModalBorrowComponent({
 
   const [tokenValue, setTokenValue] = useState();
   const [collateralValue, setCollateralValue] = useState();
+  const [txHash, setTxHash] = useState();
 
   const status = 'SUCCESS';
   const renderTitle = () => {
@@ -142,7 +153,7 @@ export default function ModalBorrowComponent({
             res_price?.price && res_balance.balance
               ? toAmountShow(res_balance.balance * res_price?.price, res_balance.decimals)
               : 0,
-          decimals: res_balance.decimals ? res_balance.decimals : 0,
+          decimals: res_balance.decimals ? res_balance.decimals : 8,
         });
       }
       setLoadingBalanceCollateral(false);
@@ -192,6 +203,12 @@ export default function ModalBorrowComponent({
     }
   };
 
+  const handleGetFee = async () => {
+    try {
+      let res = await service_ccfl_borrow.handleGasPrice();
+    } catch (error) {}
+  };
+
   useEffect(() => {
     if (isModalOpen) {
       handleCollateralBalance();
@@ -209,6 +226,7 @@ export default function ModalBorrowComponent({
       handleCollateralBalance();
       setTokenValue(undefined);
       setCollateralValue(undefined);
+      handleGetFee();
     }
   }, [isModalOpen]);
 
@@ -388,7 +406,8 @@ export default function ModalBorrowComponent({
                         !collateralValue ||
                         collateralValue < minimalCollateral ||
                         loadingBalanceCollateral ||
-                        loadingMinimumCollateral
+                        loadingMinimumCollateral ||
+                        collateralData.balance === 0
                       }
                       className="w-full"
                       loading={loading}>
@@ -410,7 +429,8 @@ export default function ModalBorrowComponent({
                           !collateralValue ||
                           collateralValue < minimalCollateral ||
                           loadingBalanceCollateral ||
-                          loadingMinimumCollateral
+                          loadingMinimumCollateral ||
+                          collateralData.balance === 0
                         }
                         className="w-full"
                         loading={loading}>
@@ -432,6 +452,9 @@ export default function ModalBorrowComponent({
               token={token}
               isBorrow={true}
               status={status}
+              stableCoinAmount={tokenValue}
+              collateralAmount={collateralValue}
+              hash={txHash}
             />
           </div>
         )}

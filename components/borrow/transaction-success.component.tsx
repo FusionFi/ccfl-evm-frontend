@@ -3,7 +3,7 @@ import { ExportOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import Link from 'next/link';
 import { useTranslation } from 'next-i18next';
-import { TRANSACTION_STATUS } from '@/constants/common.constant';
+import { TRANSACTION_STATUS, TX_LINK } from '@/constants/common.constant';
 import React from 'react';
 
 interface TransactionSuccessProps {
@@ -16,6 +16,9 @@ interface TransactionSuccessProps {
   isCollateral?: boolean;
   status?: string;
   isWithdrawCollateral?: boolean;
+  stableCoinAmount?: any;
+  collateralAmount?: any;
+  hash?: any;
 }
 
 export default function TransactionSuccessComponent({
@@ -28,6 +31,9 @@ export default function TransactionSuccessComponent({
   isBorrow = false,
   status = TRANSACTION_STATUS.FAILED,
   isWithdrawCollateral = false,
+  stableCoinAmount,
+  collateralAmount,
+  hash,
 }: TransactionSuccessProps) {
   const { t } = useTranslation('common');
 
@@ -64,7 +70,8 @@ export default function TransactionSuccessComponent({
               )}
               {isBorrow && (
                 <span>
-                  {t('BORROW_MODAL_SUCCESS_BORROW_TOKEN')} 4,000 {currentToken?.toUpperCase()}
+                  {t('BORROW_MODAL_SUCCESS_BORROW_TOKEN')} {stableCoinAmount}{' '}
+                  {currentToken?.toUpperCase()}
                 </span>
               )}
               {isCollateral && (
@@ -93,7 +100,7 @@ export default function TransactionSuccessComponent({
               height={24}
             />
             <span className="content">
-              {t('BORROW_MODAL_SUCCESS_BORROW_DEPOSIT')} 0.22 {token?.toUpperCase()}
+              {t('BORROW_MODAL_SUCCESS_BORROW_DEPOSIT')} {collateralAmount} {token?.toUpperCase()}
             </span>
           </div>
         )}
@@ -106,7 +113,7 @@ export default function TransactionSuccessComponent({
             </div>
           </div>
         )}
-        <Link href="/" className="tx" target="_blank">
+        <Link href={`${TX_LINK}${hash}`} className="tx" target="_blank">
           <ExportOutlined />
           {t('BORROW_MODAL_SUCCESS_BORROW_REVIEW')}
         </Link>
