@@ -92,13 +92,14 @@ export default function ModalBorrowComponent({
 
   const [loading, setLoading] = useState<boolean>(false);
   const [isYield, setYield] = useState(false);
-  const [loadingData, setLoadingData] = useState<boolean>(false);
+  const [loadingBalanceCollateral, setLoadingBalanceCollateral] = useState<boolean>(false);
+  const [loadingMinimumCollateral, setLoadingMinimumCollateral] = useState<boolean>(false);
   const [collateralData, setCollateralData] = useState({
     balance: 0,
     balance_usd: 0,
-    decimals: 0,
-    minimum: 0,
+    decimals: 8,
   }) as any;
+  const [minimalCollateral, setMinimalCollateral] = useState(0);
 
   const handleChange = (value: any) => {
     setToken(value);
@@ -124,55 +125,78 @@ export default function ModalBorrowComponent({
 
   const handleCollateralBalance = async () => {
     try {
+      setLoadingBalanceCollateral(true);
       let res_balance = (await service.getCollateralBalance(
         DEFAULT_PARAMS.address,
         DEFAULT_PARAMS.chainId,
         token,
       )) as any;
-      let res_collateral = (await service.getCollateralInfo(DEFAULT_PARAMS.chainId, token)) as any;
-
-      setCollateralData({
-        ...collateralData,
-        balance: res_balance ? toAmountShow(res_balance.balance, res_balance.decimals) : 0,
-        balance_usd:
-          res_balance && res_collateral?.price
-            ? toAmountShow(res_balance.balance * res_collateral.price, res_balance.decimals)
+      let res_price = (await service.getPrice(DEFAULT_PARAMS.chainId, token)) as any;
+      console.log('handleCollateralBalance', res_balance, res_price);
+      if (res_balance) {
+        setCollateralData({
+          balance: res_balance.balance
+            ? toAmountShow(res_balance.balance, res_balance.decimals)
             : 0,
-        decimals: res_collateral?.decimals,
-      });
+          balance_usd:
+            res_price?.price && res_balance.balance
+              ? toAmountShow(res_balance.balance * res_price?.price, res_balance.decimals)
+              : 0,
+          decimals: res_balance.decimals ? res_balance.decimals : 0,
+        });
+      }
+      setLoadingBalanceCollateral(false);
     } catch (error) {
       console.log('error', error);
+      setLoadingBalanceCollateral(false);
     }
   };
 
   const handleGetMinimumCollateral = async () => {
     try {
+      setLoadingMinimumCollateral(true);
+      let res_collateral = (await service.getCollateralInfo(token, DEFAULT_PARAMS.chainId)) as any;
+
       let tokenDraft: keyof typeof DEFAULT_ADDRESS = currentToken.toUpperCase();
       let collateralTokenDraft: keyof typeof DEFAULT_ADDRESS = token.toUpperCase();
-      console.log('token', token, currentToken);
 
       let addressStableCoin = DEFAULT_ADDRESS[tokenDraft];
       let addressCollateral = DEFAULT_ADDRESS[collateralTokenDraft];
 
       const provider = await connector?.getProvider();
-      let res_collateral = (await service_ccfl_borrow.getCollateralInfo(
+      let res = (await service_ccfl_borrow.getCollateralInfo(
         provider,
         CONTRACT_ADDRESS,
         toUnitWithDecimal(tokenValue ? tokenValue : 0, decimalStableCoin),
         addressStableCoin,
         addressCollateral,
       )) as any;
+      console.log(
+        'handleGetMinimumCollateral',
+        tokenDraft,
+        collateralTokenDraft,
+        res,
+        res_collateral,
+      );
+      if (res && res.minimalCollateral && res_collateral && res_collateral[0]?.decimals) {
+        let minimum = toAmountShow(res.minimalCollateral, res_collateral[0].decimals) as any;
+        setMinimalCollateral(minimum);
+      } else {
+        setMinimalCollateral(0);
+      }
 
-      setCollateralData({
-        ...collateralData,
-        minimum: res_collateral.minimalCollateral
-          ? toAmountShow(res_collateral.minimalCollateral, collateralData.decimals)
-          : 0,
-      });
+      setLoadingMinimumCollateral(false);
     } catch (error) {
       console.log('error', error);
+      setLoadingMinimumCollateral(false);
     }
   };
+
+  useEffect(() => {
+    if (isModalOpen) {
+      handleCollateralBalance();
+    }
+  }, [token]);
 
   useEffect(() => {
     if (isModalOpen) {
@@ -182,16 +206,11 @@ export default function ModalBorrowComponent({
 
   useEffect(() => {
     if (isModalOpen) {
+      handleCollateralBalance();
       setTokenValue(undefined);
       setCollateralValue(undefined);
     }
   }, [isModalOpen]);
-
-  useEffect(() => {
-    if (isModalOpen) {
-      handleCollateralBalance();
-    }
-  }, [token, isModalOpen]);
 
   return (
     <div>
@@ -323,7 +342,7 @@ export default function ModalBorrowComponent({
                   </div>
                 </div>
                 <div className="modal-borrow-minimum">
-                  <span className="mr-1">Minimum amount: </span> {collateralData.minimum} {token}
+                  <span className="mr-1">Minimum amount: </span> {minimalCollateral} {token}
                 </div>
                 <div className="flex justify-between items-center modal-borrow-health c-white">
                   <div className="modal-borrow-sub-content">{t('BORROW_MODAL_BORROW_HEALTH')}</div>
@@ -365,7 +384,11 @@ export default function ModalBorrowComponent({
                       htmlType="submit"
                       type="primary"
                       disabled={
-                        !tokenValue || !collateralValue || collateralValue < collateralData.minimum
+                        !tokenValue ||
+                        !collateralValue ||
+                        collateralValue < minimalCollateral ||
+                        loadingBalanceCollateral ||
+                        loadingMinimumCollateral
                       }
                       className="w-full"
                       loading={loading}>
@@ -385,7 +408,9 @@ export default function ModalBorrowComponent({
                         disabled={
                           !tokenValue ||
                           !collateralValue ||
-                          collateralValue < collateralData.minimum
+                          collateralValue < minimalCollateral ||
+                          loadingBalanceCollateral ||
+                          loadingMinimumCollateral
                         }
                         className="w-full"
                         loading={loading}>

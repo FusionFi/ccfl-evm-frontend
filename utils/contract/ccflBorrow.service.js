@@ -5,6 +5,7 @@ import {
   sendRawTx,
   switchOrAddNetwork,
   coverDecimals,
+  _getMetaMaskProvider,
 } from '@/utils/contract/web3';
 import BigNumber from 'bignumber.js';
 import { toAmountShow } from '@/utils/common';
@@ -51,17 +52,23 @@ const BORROWER_PRIVATE_KEY =
   '6e7889948e6b548c95088cf8c02badb705897e71210aea60bf5778155cad8226' || '';
 const USDC_ERC20_CONTRACT = '0x94a9d9ac8a22534e3faca9f4e7f2e2cf85d5e4c8' || '';
 const WBTC_ERC20_CONTRACT = '0x29f2D40B0605204364af54EC677bD022dA425d03' || '';
-const CCFL = process.env.NEXT_PUBLIC_CCFL_CONTRACT_ADDRESS || '';
+const CCFL = '0xC5095DEaAb52F0f788158790244BEBCa5b590368' || '';
 const IsYieldGenerating = true;
 const IsFiat = false;
 
 const provider = new ethers.JsonRpcProvider(providerURL);
 const wallet = new ethers.Wallet(BORROWER_PRIVATE_KEY, provider);
-const contract = new ethers.Contract(CCFL, abi_erc20, wallet);
+const contractERC20 = new ethers.Contract(CCFL, abi_erc20, wallet);
+const contract = new ethers.Contract(CCFL, abi, wallet);
 
-const approveBorrow = async (provider1, contract_address, amount) => {
+const approveBorrow = async (provider, contract_address, amount) => {
   try {
-    const tx = await contract.approve(contract_address, amount);
+    // const tx = await contractERC20.approve(contract_address, amount);
+    const contract1 = _initContractERC20(provider, contract_address);
+    const calls = [contract1.methods.approve(contract_address, amount).call()];
+    let [tx] = await Promise.allSettled(calls);
+    console.log('tx', tx);
+
     console.log('Transaction hash:', tx.hash);
 
     const receipt = await tx.wait();
