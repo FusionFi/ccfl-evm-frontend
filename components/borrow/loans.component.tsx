@@ -131,8 +131,7 @@ export default function LoansComponent(props: LoansProps) {
         } else if (!record.is_closed && record.health && record.health >= 1 && 2 >= record.health) {
           final_status = LOAN_STATUS.LIQUIDATION_APPROACHING;
         }
-        // let status: keyof typeof LOAN_STATUS = value;
-        // let final_status = LOAN_STATUS[status] ? LOAN_STATUS[status] : LOAN_STATUS.ACTIVE;
+
         return (
           <div className="loans-status basis-1/7  flex items-center">
             <span className={`${renderStatusClass(final_status)}`}>
@@ -222,58 +221,9 @@ export default function LoansComponent(props: LoansProps) {
     } else if (!record.is_closed && record.health && record.health >= 1 && 2 >= record.health) {
       final_status = LOAN_STATUS.LIQUIDATION_APPROACHING;
     }
-    // let status: keyof typeof LOAN_STATUS = record.status;
-    // let final_status = LOAN_STATUS[status] ? LOAN_STATUS[status] : LOAN_STATUS.ACTIVE;
+
     return (
       <>
-        {/* <div className="flex justify-between loans-status gap-4">
-          <div className="">{t('BORROW_MODAL_BORROW_ADJUST_STATUS')}:</div>
-          <div className="flex justify-end loans-remain">
-            <div className="">{t('BORROW_MODAL_BORROW_BORROW_DEBT_REMAIN')}:</div>
-            <div className="flex flex-wrap flex-1">
-              <div className="highlight ml-1">
-                {toCurrency(toAmountShow(record.debt_remain, record.decimals), 2)} {record.asset}
-              </div>
-              <div className="ml-1">
-                ${' '}
-                {toCurrency(
-                  toAmountShow(record.debt_remain * record.asset_price, record.decimals),
-                  2,
-                )}
-              </div>
-            </div>
-          </div>
-        </div> */}
-        {/* <div className="flex loans-collateral justify-between gap-1">
-          <div className="flex">
-            <span className="mr-1">{t('BORROW_OVERVIEW_COLLATERAL')}:</span>
-            {toCurrency(toAmountShow(record.collateral_amount, record.collateral_decimals), 4)}{' '}
-            {record.collateral_asset}
-            <span className="ml-1">
-              $
-              {toCurrency(
-                toAmountShow(
-                  record.collateral_amount * record.collateral_price,
-                  record.collateral_decimals,
-                ),
-                2,
-              )}
-            </span>
-          </div>
-          {final_status !== LOAN_STATUS.REPAID_FULL ? (
-            <Button
-              disabled={final_status === LOAN_STATUS.LIQUIDATED}
-              onClick={() => props.showCollateralModal('WETH')}>
-              {t('BORROW_MODAL_BORROW_ADJUST_COLLATERAL')}
-            </Button>
-          ) : (
-            <Button
-              disabled={record.collateral_amount == 0}
-              onClick={() => props.showWithdrawCollateralModal('WETH')}>
-              {t('BORROW_MODAL_WITHDRAW_COLLATERAL')}
-            </Button>
-          )}
-        </div> */}
         <div className="flex justify-between items-end gap-1 loans-yield-wrapper">
           {record.yield_generating ? (
             <div className="loans-yield">
