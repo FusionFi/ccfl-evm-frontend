@@ -19,6 +19,7 @@ interface TransactionSuccessProps {
   stableCoinAmount?: any;
   collateralAmount?: any;
   hash?: any;
+  errorTx?: any;
 }
 
 export default function TransactionSuccessComponent({
@@ -34,6 +35,7 @@ export default function TransactionSuccessComponent({
   stableCoinAmount,
   collateralAmount,
   hash,
+  errorTx,
 }: TransactionSuccessProps) {
   const { t } = useTranslation('common');
 
@@ -58,8 +60,10 @@ export default function TransactionSuccessComponent({
         <div className={`divider-bot content px-4 py-4 ${isRepay ? 'repay' : ''}`}>
           {status === TRANSACTION_STATUS.FAILED ? (
             <div>
-              <div>{t('BORROW_MODAL_ERROR_CODE')}: 503</div>
-              <div>Error message</div>
+              <div>
+                {t('BORROW_MODAL_ERROR_CODE')}: {errorTx?.code}
+              </div>
+              <div>{errorTx?.message}</div>
             </div>
           ) : (
             <React.Fragment>

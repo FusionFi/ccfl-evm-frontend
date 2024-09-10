@@ -70,15 +70,20 @@ export default function ModalBorrowComponent({
     decimals: 8,
   }) as any;
   const [minimalCollateral, setMinimalCollateral] = useState(0);
+  const [tokenValue, setTokenValue] = useState();
+  const [collateralValue, setCollateralValue] = useState();
+  const [txHash, setTxHash] = useState();
+  const [errorTx, setErrorTx] = useState();
 
   const onSubmit: SubmitHandler<IFormInput> = async data => {
     const provider = await connector?.getProvider();
     let tokenAmount: keyof typeof DEFAULT_ADDRESS = currentToken.toUpperCase();
     let tokenCollateral: keyof typeof DEFAULT_ADDRESS = token.toUpperCase();
     console.log(tokenAmount, tokenCollateral);
-    try {
-      setLoading(true);
-      if (step === 0) {
+
+    if (step === 0) {
+      try {
+        setLoading(true);
         let hash = await service_ccfl_borrow.approveBorrow(
           provider,
           CONTRACT_ADDRESS,
@@ -89,8 +94,14 @@ export default function ModalBorrowComponent({
           setLoading(false);
           setStep(step + 1);
         }
+      } catch (error) {
+        setLoading(false);
+        console.log('error', error);
       }
-      if (step == 1) {
+    }
+    if (step == 1) {
+      try {
+        setLoading(true);
         let tx = await service_ccfl_borrow.createLoan(
           toUnitWithDecimal(tokenValue ? tokenValue : 0, decimalStableCoin),
           toUnitWithDecimal(collateralValue ? collateralValue : 0, collateralData.decimals),
@@ -104,10 +115,11 @@ export default function ModalBorrowComponent({
           setLoading(false);
           setTxHash(tx.hash);
         }
+      } catch (error) {
+        setLoading(false);
+        console.log('error', error);
+        setErrorTx(error as any);
       }
-    } catch (error) {
-      setLoading(false);
-      console.log('error', error);
     }
   };
 
@@ -118,10 +130,6 @@ export default function ModalBorrowComponent({
   const handleYield = (e: any) => {
     setYield(e.target.checked);
   };
-
-  const [tokenValue, setTokenValue] = useState();
-  const [collateralValue, setCollateralValue] = useState();
-  const [txHash, setTxHash] = useState();
 
   const status = 'SUCCESS';
   const renderTitle = () => {
@@ -455,6 +463,7 @@ export default function ModalBorrowComponent({
               stableCoinAmount={tokenValue}
               collateralAmount={collateralValue}
               hash={txHash}
+              errorTx={errorTx}
             />
           </div>
         )}
