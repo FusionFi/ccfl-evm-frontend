@@ -50,7 +50,6 @@
     "react-hook-form": "^7.52.2",
     "react-i18next": "^15.0.0",
     "react-jazzicon": "^1.0.4",
-    "react-pdf": "^7.6.0",
     "react-redux": "^8.1.2",
     "redux": "^4.2.1",
     "redux-deep-persist": "^1.0.7",
