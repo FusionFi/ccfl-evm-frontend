@@ -1,5 +1,6 @@
 //import css class module
 import { WalletIcon } from '@/components/icons/wallet.icon';
+import ModalWeb3Component from '@/components/wagmi/modal-web3.component';
 import cssClass from '@/components/wagmi/wagmi.btn.module.scss';
 import { useAuth, useResetState } from '@/hooks/auth.hook';
 import eventBus from '@/hooks/eventBus.hook';
@@ -220,14 +221,17 @@ export const WagmiButton = ({
     }
   };
   const openWeb3Modal = async () => {
-    await open();
-    setTimeout(() => {
-      // Initialize the observer
-      setupObserver();
+    eventBus.emit('openWeb3Modal', true);
 
-      // Run the function once initially to handle existing elements
-      changeYoroi();
-    });
+    // USE web3modal lib old code
+    // await open();
+    // setTimeout(() => {
+    //   // Initialize the observer
+    //   setupObserver();
+
+    //   // Run the function once initially to handle existing elements
+    //   changeYoroi();
+    // });
   };
   const setupObserver = () => {
     const shadowHost = document.querySelector('w3m-modal');
@@ -251,6 +255,7 @@ export const WagmiButton = ({
           {t(btnLabel)}
         </Button>
       </div>
+      <ModalWeb3Component />
     </>
   );
 };
