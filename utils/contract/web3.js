@@ -2,6 +2,7 @@ import { hexToDec } from '@/utils/common.js';
 import BigNumber from 'bignumber.js';
 import Web3 from 'web3';
 const rpcDefault = 'https://rpc.mainnet.oasys.games';
+
 const _getMetaMaskProvider = () => {
   let provider = null;
   if (typeof window.ethereum !== 'undefined') {
@@ -118,7 +119,16 @@ const sendRawTx = async (
 ) => {
   const myWeb3 = getWeb3(provider);
   const myContract = new myWeb3.eth.Contract(abi, addressContract);
-
+  console.log(
+    'sendRawTx',
+    provider,
+    abi,
+    addressContract,
+    action,
+    params,
+    overwrite,
+    isEstimateGas,
+  );
   const gas = await estimateGas(myContract, action, params, overwrite, provider);
   console.log('--->gas: ', gas);
   overwrite.gasLimit = gas;

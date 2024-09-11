@@ -63,6 +63,20 @@ export const approve = async (provider, account, tokenAddress, sender) => {
   return res;
 };
 
+export const approveStableCoin = async (provider, account, tokenAddress, sender, amount) => {
+  let overwrite = { from: account };
+  console.log('=======>tokenAddress', tokenAddress, sender, account);
+  const res = await sendRawTx(
+    provider,
+    erc20,
+    tokenAddress,
+    'approve',
+    [sender, amount],
+    overwrite,
+  );
+  return res;
+};
+
 export const getAllowance = async (provider, tokenAddress, userAddress, spender) => {
   try {
     const myWeb3 = getWeb3(provider);
