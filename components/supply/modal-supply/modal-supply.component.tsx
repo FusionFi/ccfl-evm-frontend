@@ -9,6 +9,7 @@ import { Modal, Form } from 'antd';
 import type { FormProps } from 'antd';
 import { InfoCircleIcon } from '@/components/icons/info-circle.icon';
 import { QuestionCircleIcon } from '@/components/icons/question-circle.icon';
+import BigNumber from 'bignumber.js';
 
 type FieldType = {
   amount?: any;
@@ -58,7 +59,7 @@ export default function ModalSupplyComponent({
     <Modal
       wrapClassName={cssClass['supply-modal-wrapper']}
       title={t('SUPPLY_MODAL_TITLE', {
-        token: 'USDT',
+        token: asset?.name,
       })}
       open={isModalOpen}
       onOk={_handleOk}
@@ -68,7 +69,7 @@ export default function ModalSupplyComponent({
         {(_, formInstance) => {
           const isNotValidForm = formInstance.getFieldsError().some(item => item.errors.length > 0)
           const amount = formInstance.getFieldValue('amount')
-          console.log('amount: ', amount)
+
           return (
             <div className="supply-modal-container">
               <div className="supply-modal-container__input">
@@ -89,7 +90,7 @@ export default function ModalSupplyComponent({
                       addonAfter={
                         <div className="supply-modal-container__input__control__amount__token">
                           <Image
-                            src={`/images/tokens/usdt.png`}
+                            src={`/images/common/${asset?.symbol}.png`}
                             alt="USDT"
                             width={24}
                             height={24}
@@ -97,7 +98,7 @@ export default function ModalSupplyComponent({
                               height: 24,
                             }}
                           />
-                          USDT
+                          {asset?.symbol}
                         </div>
                       }
                     />
@@ -114,7 +115,7 @@ export default function ModalSupplyComponent({
                 </div>
                 <div className='flex justify-between w-full'>
                   <div className="supply-modal-container__input__balance">
-                    {t('SUPPLY_MODAL_WALLET_BALANCE')}: 50,000.00 USDT
+                    {t('SUPPLY_MODAL_WALLET_BALANCE')}: {asset?.wallet_balance} {asset?.symbol}
                   </div>
                   <span className="supply-modal-container__input__error">{formInstance.getFieldError('amount')[0]}</span>
                 </div>

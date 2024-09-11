@@ -37,10 +37,18 @@ const fetchUserSupply = async (params) => {
   return res;
 };
 
+const fetchPools = async (params) => {
+  const chainId = params?.chainId || DEFAULT_CHAIN_ID
+  const res = await http.get(`${URL}/pool/all/${chainId}`);
+
+  return res || [];
+};
+
 const service = {
   fetchNetworks,
   fetchAssets,
-  fetchUserSupply
+  fetchUserSupply,
+  fetchPools
 };
 
 export default service;
