@@ -49,3 +49,38 @@ export const DEFAULT_ADDRESS = {
 
 export const CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CCFL_CONTRACT_ADDRESS;
 export const TX_LINK = 'https://sepolia.etherscan.io/tx/';
+export const EVM_WALLETS = [
+  {
+    id: 'metamask',
+    name: 'WEB3_MODAL_COMPONENT_METAMASK',
+    iconUrl: '/images/wallet/metamask.png',
+  },
+  {
+    id: 'walletConnect',
+    name: 'WEB3_MODAL_COMPONENT_WALLET_CONNECT',
+    iconUrl: '/images/wallet/walletconnect.png',
+  },
+  {
+    id: 'coinbase',
+    name: 'WEB3_MODAL_COMPONENT_COINBASE',
+    iconUrl: '/images/wallet/coinbase.png',
+  },
+];
+
+export const CARDANO_WALLETS = [
+  {
+    id: 'yoroi',
+    name: 'WEB3_MODAL_COMPONENT_YOROI',
+    iconUrl: '/images/wallet/yoroi.png',
+  },
+  {
+    id: 'nami',
+    name: 'WEB3_MODAL_COMPONENT_NAMI',
+    iconUrl: '/images/wallet/nami.png',
+  },
+  {
+    id: 'eternl',
+    name: 'WEB3_MODAL_COMPONENT_ETERNL',
+    iconUrl: '/images/wallet/eternl.png',
+  },
+];

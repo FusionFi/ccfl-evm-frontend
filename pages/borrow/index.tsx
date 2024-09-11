@@ -11,10 +11,10 @@ import OverviewComponent from '@/components/common/overview.component';
 import TitleComponent from '@/components/common/title.component';
 import { CHAIN_INFO, SUPPORTED_CHAINS } from '@/constants/chains.constant';
 import {
-  COLLATERAL_TOKEN,
-  TYPE_COMMON,
-  DEFAULT_PARAMS,
   ASSET_LIST,
+  COLLATERAL_TOKEN,
+  DEFAULT_PARAMS,
+  TYPE_COMMON,
 } from '@/constants/common.constant';
 import { NETWORKS, STAKE_DEFAULT_NETWORK } from '@/constants/networks';
 import { useNotification } from '@/hooks/notifications.hook';
@@ -32,7 +32,6 @@ import ModalCollateralComponent from '@/components/borrow/modal-collateral.compo
 import ModalWithdrawCollateralComponent from '@/components/borrow/modal-withdraw-collateral.component';
 import service from '@/utils/backend/borrow';
 import { toCurrency } from '@/utils/common';
-import { current } from '@reduxjs/toolkit';
 
 type LabelRender = SelectProps['labelRender'];
 enum BorrowModalType {
@@ -217,21 +216,20 @@ export default function BorrowPage() {
     },
   ];
   const labelRender: LabelRender = (props: any) => {
-    let { name, logo } = props;
+    let { value } = props;
 
-    // TODO: please remove before release it to PRD
-    if (!name) {
-      name = 'Avalanche';
-      logo = '/images/tokens/avax.png';
-    }
+    const _chain: any = CHAIN_MAP.get(value) || {
+      name: 'Avalanche',
+      logo: '/images/tokens/avax.png',
+    };
 
     console.log('dataLoan', dataLoan);
 
     return (
       <div className="flex items-center">
         <Image
-          src={logo}
-          alt={name}
+          src={_chain?.logo}
+          alt={_chain?.name}
           width={24}
           height={24}
           style={{
@@ -240,7 +238,7 @@ export default function BorrowPage() {
           }}
           className="mr-2"
         />
-        {name}
+        {_chain?.name}
       </div>
     );
   };
@@ -276,6 +274,7 @@ export default function BorrowPage() {
       paymentMethod,
     });
   };
+  const CHAIN_MAP = new Map(SUPPORTED_CHAINS.map(item => [item.id, item]));
   return (
     <div className={twMerge('borrow-page-container', cssClass.borrowPage)}>
       <div className="borrow-header">
@@ -285,17 +284,17 @@ export default function BorrowPage() {
               labelRender={labelRender}
               defaultValue={{
                 value: selectedChain?.id,
-                label: selectedChain?.name,
-                logo: selectedChain?.logo,
               }}
-              options={SUPPORTED_CHAINS.map((item: any) => ({
+              options={[...(CHAIN_MAP.values() as any)].map(item => ({
                 value: item.id,
-                name: item.name,
-                label: (
+              }))}
+              optionRender={(option: any) => {
+                const _chain: any = CHAIN_MAP.get(option.value);
+                return (
                   <div className="chain-dropdown-item-wrapper">
                     <Image
-                      src={item.logo}
-                      alt={item.name}
+                      src={_chain?.logo}
+                      alt={_chain?.name}
                       width={12}
                       height={12}
                       style={{
@@ -304,11 +303,10 @@ export default function BorrowPage() {
                       }}
                       className="mr-2"
                     />
-                    {item.name}
+                    {_chain?.name}
                   </div>
-                ),
-                logo: item?.logo,
-              }))}
+                );
+              }}
               suffixIcon={<CaretDownOutlined />}
             />
           </div>

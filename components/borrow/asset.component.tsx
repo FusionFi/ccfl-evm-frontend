@@ -44,7 +44,7 @@ export default function assetComponent({
 
   // const tokenList = [
   //   {
-  //     asset: 'USDC',
+  //     asset: 'USDA',
   //     value: '10,000.00',
   //     usd: '4,000.00',
   //     percent: '0.07',

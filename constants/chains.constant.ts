@@ -1,6 +1,41 @@
-import { sepolia, mainnet, avalancheFuji, polygonMumbai } from 'wagmi/chains';
-
 // TODO: will be removed because will use data from the be side
+import { avalancheFuji, mainnet, polygonMumbai, sepolia } from 'wagmi/chains';
+
+const adaChain = {
+  id: 'ADA',
+  name: 'Cardano',
+  nativeCurrency: {
+    name: 'ADA',
+    symbol: 'ADA',
+    decimals: 18,
+  },
+  rpcUrls: {
+    default: {
+      http: ['https://rpc.sepolia.org'],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: 'Etherscan',
+      url: 'https://sepolia.etherscan.io',
+      apiUrl: 'https://api-sepolia.etherscan.io/api',
+    },
+  },
+  contracts: {
+    multicall3: {
+      address: '', //TODO
+      blockCreated: null,
+    },
+    ensRegistry: {
+      address: '', //TODO
+    },
+    ensUniversalResolver: {
+      address: '', //TODO
+      blockCreated: null, //TODO
+    },
+  },
+  testnet: false,
+};
 export const TESTNET_CHAINS = [
   {
     ...sepolia,
@@ -14,6 +49,10 @@ export const TESTNET_CHAINS = [
     ...polygonMumbai,
     logo: '/images/tokens/matic.png',
   },
+  {
+    ...adaChain,
+    logo: '/images/tokens/ada.png',
+  },
 ];
 
 // TODO: will be removed because will use data from the be side
@@ -22,7 +61,7 @@ export const MAINNET_CHAINS = [mainnet];
 // TODO: will be removed because will use data from the be side
 export const CHAIN_INFO: any = new Map(
   [...TESTNET_CHAINS, MAINNET_CHAINS].map((chain: any) => {
-    return [chain?.id, chain]
+    return [chain?.id, chain];
   }),
 );
 
