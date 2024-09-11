@@ -142,7 +142,7 @@ export default function SupplyPage() {
   const data: DataType[] = [
     {
       key: '1',
-      asset: ['USDC', 'USDC'],
+      asset: ['USDA', 'USDA'],
     },
     {
       key: '2',

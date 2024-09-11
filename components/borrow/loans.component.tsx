@@ -1,17 +1,15 @@
-import cssClass from '@/components/borrow/loans.component.module.scss';
-import { twMerge } from 'tailwind-merge';
-import { InfoCircleOutlined, CheckOutlined } from '@ant-design/icons';
-import React from 'react';
-import { Button, Table, Skeleton, Tooltip } from 'antd';
-import Image from 'next/image';
-import { useTranslation } from 'next-i18next';
-import { LOAN_STATUS } from '@/constants/common.constant';
-import type { TableProps } from 'antd';
-import { toCurrency } from '@/utils/common';
 import { loanType } from '@/components/borrow/borrow';
+import cssClass from '@/components/borrow/loans.component.module.scss';
+import { ASSET_TYPE, LOAN_STATUS } from '@/constants/common.constant';
 import { useAuth } from '@/hooks/auth.hook';
-import { ASSET_TYPE } from '@/constants/common.constant';
 import eventBus from '@/hooks/eventBus.hook';
+import { toCurrency } from '@/utils/common';
+import { CheckOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import type { TableProps } from 'antd';
+import { Button, Skeleton, Table, Tooltip } from 'antd';
+import { useTranslation } from 'next-i18next';
+import Image from 'next/image';
+import { twMerge } from 'tailwind-merge';
 
 interface LoansProps {
   showModal: any;
@@ -82,7 +80,7 @@ export default function LoansComponent(props: LoansProps) {
             <Image
               className="mr-2"
               src={`/images/common/${asset}.png`}
-              alt="USDC"
+              alt={asset}
               width={40}
               height={40}
             />
@@ -300,7 +298,7 @@ export default function LoansComponent(props: LoansProps) {
 
   const dataLoan: loanType[] = [
     {
-      asset: 'USD',
+      asset: 'USDA',
       loan_size: '3000',
       apr: '1.82',
       health: '12.76',
@@ -310,9 +308,6 @@ export default function LoansComponent(props: LoansProps) {
       collateral_asset: 'WETH',
       yield_generating: true,
       yield_earned: '0.281',
-      repayment_currency: 'USDT',
-      currency: 'EUR',
-      sub_name: 'FIAT',
     },
     {
       asset: 'USD',

@@ -1,14 +1,14 @@
 import cssClass from '@/components/borrow/asset.component.module.scss';
 import SafeHtmlComponent from '@/components/common/safe-html.component';
+import { ASSET_TYPE } from '@/constants/common.constant';
 import { STAKE_DEFAULT_NETWORK } from '@/constants/networks';
+import { useAuth } from '@/hooks/auth.hook';
 import eventBus from '@/hooks/eventBus.hook';
 import { Button } from 'antd';
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
-import { useAuth } from '@/hooks/auth.hook';
-import { ASSET_TYPE } from '@/constants/common.constant';
 
 interface AssetProps {
   showModal: any;
@@ -38,7 +38,7 @@ export default function assetComponent({
 
   const tokenList = [
     {
-      name: 'USDC',
+      name: 'USDA',
       value: '10,000.00',
       usd: '4,000.00',
       percent: '0.07',

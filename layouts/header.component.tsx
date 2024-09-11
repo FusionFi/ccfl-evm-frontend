@@ -11,7 +11,8 @@ import { UserIcon } from '@/components/icons/user.icon';
 import { WagmiButton } from '@/components/wagmi/wagmi.btn.component';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
-import { useAccount } from 'wagmi';
+import { useAccount, useConnect } from 'wagmi';
+import { metaMask, walletConnect } from 'wagmi/connectors';
 export const MainHeader = () => {
   /**
    * STATES
@@ -25,6 +26,7 @@ export const MainHeader = () => {
   const { address, connector } = useAccount();
   const [messageApi, contextHolder] = message.useMessage();
   const { t } = useTranslation('common');
+  const { connect } = useConnect();
 
   /**
    * FUNCTIONS
@@ -40,7 +42,16 @@ export const MainHeader = () => {
     },
     [messageApi],
   );
-
+  const connectMetamask = () => {
+    connect({ connector: metaMask() });
+  };
+  const connectWalletConnect = () => {
+    connect({
+      connector: walletConnect({
+        projectId: 'e44a1758d79ad2f0154ca0b27b46b9f0',
+      }),
+    });
+  };
   /**
    * USE EFFECTS
    */
@@ -105,6 +116,8 @@ export const MainHeader = () => {
                 </a>
               </li> */}
               </ul>
+              <button onClick={() => connectMetamask()}>Connect MetaMask</button>
+              <button onClick={() => connectWalletConnect()}>Connect WalletConnect</button>
             </div>
           )}
           <div className="right-content ml-auto flex items-center">
