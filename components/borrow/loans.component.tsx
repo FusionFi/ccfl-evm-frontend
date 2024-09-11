@@ -3,8 +3,8 @@ import cssClass from '@/components/borrow/loans.component.module.scss';
 import { LOAN_STATUS } from '@/constants/common.constant';
 import { toCurrency, toAmountShow } from '@/utils/common';
 import { CheckOutlined, InfoCircleOutlined } from '@ant-design/icons';
-import type { TableProps } from 'antd';
-import { Button, Skeleton, Table, Tooltip } from 'antd';
+import type { TableProps, PaginationProps } from 'antd';
+import { Button, Skeleton, Table, Tooltip, Pagination } from 'antd';
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
@@ -20,6 +20,8 @@ interface LoansProps {
   showWithdrawCollateralModal: any;
   loading?: any;
   totalLoan?: any;
+  onChangePagination?: any;
+  pagination?: any;
 }
 
 export default function LoansComponent(props: LoansProps) {
@@ -43,6 +45,10 @@ export default function LoansComponent(props: LoansProps) {
 
   const handleDeleteLoan = () => {
     console.log('handleDeleteLoan');
+  };
+
+  const onShowSizeChange: PaginationProps['onShowSizeChange'] = (current, pageSize) => {
+    console.log('onShowSizeChange', current, pageSize);
   };
 
   const ACTION_LOAN = {
@@ -407,26 +413,38 @@ export default function LoansComponent(props: LoansProps) {
           <Skeleton active />
         </div>
       ) : (
-        <Table
-          title={() => t('BORROW_MODAL_BORROW_BORROW_MY_LOANS')}
-          expandable={{
-            defaultExpandAllRows: true,
-            expandedRowRender,
-            rowExpandable: record => true,
-            showExpandColumn: false,
-          }}
-          virtual
-          className="loans-container"
-          bordered={false}
-          rowHoverable={false}
-          pagination={
-            props.totalLoan && props.totalLoan > 10 ? { position: ['bottomRight'] } : false
-          }
-          columns={columns}
-          dataSource={props.dataLoan}
-          locale={locale}
-          rowKey={(record, index) => `${index}-${record.asset}`}
-        />
+        <>
+          <Table
+            title={() => t('BORROW_MODAL_BORROW_BORROW_MY_LOANS')}
+            expandable={{
+              defaultExpandAllRows: true,
+              expandedRowRender,
+              rowExpandable: record => true,
+              showExpandColumn: false,
+            }}
+            virtual
+            className="loans-container"
+            bordered={false}
+            rowHoverable={false}
+            pagination={false}
+            // pagination={
+            //   props.totalLoan && props.totalLoan > 10 ? { position: ['bottomRight'] } : false
+            // }
+            columns={columns}
+            dataSource={props.dataLoan}
+            locale={locale}
+            rowKey={(record, index) => `${index}-${record.asset}`}
+          />
+          <Pagination
+            showSizeChanger
+            onShowSizeChange={onShowSizeChange}
+            defaultCurrent={1}
+            total={props.totalLoan}
+            onChange={props.onChangePagination}
+            current={props.pagination.current}
+            pageSize={props.pagination.pageSize}
+          />
+        </>
       )}
     </div>
   );

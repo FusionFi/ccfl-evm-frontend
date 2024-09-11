@@ -445,5 +445,43 @@
         }
       }
     }
+    .ant-pagination {
+      margin-top: 16px !important;
+      // justify-content: center;
+      .anticon {
+        color: white;
+      }
+      .ant-pagination-item {
+        border: none;
+        width: 32px;
+        height: 30px;
+        background-color: white;
+        color: black;
+        &:hover,
+        &:active {
+          background-color: white;
+          color: black;
+        }
+      }
+      .ant-pagination-item-active {
+        background-color: $primary-color;
+        &:hover,
+        &:active {
+          background-color: $primary-color;
+          a {
+            color: white;
+          }
+        }
+        a {
+          color: white;
+        }
+      }
+      .ant-select {
+        height: 30px;
+      }
+      .ant-select-item-option-selected {
+        color: white;
+      }
+    }
   }
 }

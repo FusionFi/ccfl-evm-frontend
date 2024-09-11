@@ -32,6 +32,7 @@ import ModalCollateralComponent from '@/components/borrow/modal-collateral.compo
 import ModalWithdrawCollateralComponent from '@/components/borrow/modal-withdraw-collateral.component';
 import service from '@/utils/backend/borrow';
 import { toCurrency } from '@/utils/common';
+import { current } from '@reduxjs/toolkit';
 
 type LabelRender = SelectProps['labelRender'];
 enum BorrowModalType {
@@ -67,6 +68,11 @@ export default function BorrowPage() {
   const [tokenList, setTokenList] = useState<any[]>([]);
   const [loadingAsset, setLoadingAsset] = useState(false);
   const [price, setPrice] = useState<any>();
+  const [pagination, setPagination] = useState<any>({
+    current: 1,
+    offset: 0,
+    pageSize: 10,
+  });
 
   const handlePrice = async () => {
     try {
@@ -98,10 +104,15 @@ export default function BorrowPage() {
     }
   };
 
-  const handleLoans = async () => {
+  const handleLoans = async (offset = 0, limit = 10) => {
     try {
       setLoading(true);
-      let data = (await service.getLoans(DEFAULT_PARAMS.address, DEFAULT_PARAMS.chainId)) as any;
+      let data = (await service.getLoans(
+        DEFAULT_PARAMS.address,
+        DEFAULT_PARAMS.chainId,
+        offset,
+        limit,
+      )) as any;
       if (data) {
         setDataLoan(data);
       }
@@ -110,6 +121,16 @@ export default function BorrowPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const onChangePagination = (page: any, pageSize: any) => {
+    console.log('onShowSizeChange', page, pageSize);
+    setPagination({
+      current: page,
+      offset: (page - 1) * pageSize,
+      pageSize: pageSize,
+    });
+    handleLoans((page - 1) * pageSize, pageSize);
   };
 
   useEffect(() => {
@@ -309,6 +330,8 @@ export default function BorrowPage() {
               loading={loading}
               showWithdrawCollateralModal={showWithdrawCollateralModal}
               totalLoan={dataLoan?.loans?.total}
+              onChangePagination={onChangePagination}
+              pagination={pagination}
             />
           </div>
         )}

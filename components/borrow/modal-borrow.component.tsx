@@ -217,6 +217,14 @@ export default function ModalBorrowComponent({
     } catch (error) {}
   };
 
+  const resetState = () => {
+    setLoading(false);
+    setLoadingBalanceCollateral(false);
+    setLoadingMinimumCollateral(false);
+    setTokenValue(undefined);
+    setCollateralValue(undefined);
+  };
+
   useEffect(() => {
     if (isModalOpen) {
       handleCollateralBalance();
@@ -232,8 +240,7 @@ export default function ModalBorrowComponent({
   useEffect(() => {
     if (isModalOpen) {
       handleCollateralBalance();
-      setTokenValue(undefined);
-      setCollateralValue(undefined);
+      resetState();
       handleGetFee();
     }
   }, [isModalOpen]);
