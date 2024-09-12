@@ -36,6 +36,9 @@ export default function ModalWeb3Component({}: ModalCollateralProps) {
   /**
    * FUNCTIONS
    */
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
   const detectMetaMask = () => {
     const userAgent = navigator.userAgent.toLowerCase();
     const isMobile = /mobile|android|iphone|ipad|ipod/.test(userAgent);
@@ -141,6 +144,7 @@ export default function ModalWeb3Component({}: ModalCollateralProps) {
       wrapClassName={cssClass['web3-modal-wrapper']}
       title={t('WEB3_MODAL_COMPONENT_TITLE')}
       open={isModalOpen}
+      onCancel={handleCancel}
       footer={null}>
       <div className="web3-modal-container">
         <Tabs defaultActiveKey="1" items={items} onChange={onChangeTab} />
