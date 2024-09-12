@@ -348,7 +348,7 @@ export default function BorrowPage() {
       <ModalBorrowComponent
         isModalOpen={BorrowModalType.Crypto == modal.type}
         handleCancel={handleCancel}
-        currentToken={modal.token}
+        stableCoin={modal.token}
         step={step}
         setStep={setStep}
         token={token}
