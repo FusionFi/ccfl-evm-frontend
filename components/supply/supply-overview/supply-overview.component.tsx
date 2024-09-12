@@ -147,16 +147,6 @@ export default function SupplyOverviewComponent() {
                   }}>
                   {totalSupply}
                 </span>
-                <div className="supply-overview__body__wrapper__item__value">
-                  ${' '}
-                  <span
-                    className="font-bold"
-                    style={{
-                      color: '#F0F0F0',
-                    }}>
-                    4,567.87
-                  </span>
-                </div>
               </div>
             </div>
             <div className="supply-overview__body__wrapper__item">
@@ -185,30 +175,6 @@ export default function SupplyOverviewComponent() {
                   }}>
                   +${totalEarned}
                 </span>
-                <div className="supply-overview__body__wrapper__item__value">
-                  <span
-                    className="font-bold"
-                    style={{
-                      color: '#F0F0F0',
-                    }}>
-                    0.07
-                  </span>{' '}
-                  %
-                </div>
-              </div>
-              <div className="supply-overview__body__wrapper__item">
-                <span className="supply-overview__body__wrapper__item__label">
-                  {t('SUPPLY_OVERVIEW_TOTAL_EARNED')}
-                </span>
-                <div className="supply-overview__body__wrapper__item__value">
-                  <span
-                    className="font-bold"
-                    style={{
-                      color: '#52C41A',
-                    }}>
-                    +$65.87
-                  </span>
-                </div>
               </div>
             </div>
           </div>

@@ -9,6 +9,7 @@ import { Modal, Form } from 'antd';
 import type { FormProps } from 'antd';
 import { InfoCircleIcon } from '@/components/icons/info-circle.icon';
 import { QuestionCircleIcon } from '@/components/icons/question-circle.icon';
+import { computeWithMinThreashold } from '@/utils/percent.util';
 import BigNumber from 'bignumber.js';
 
 type FieldType = {
@@ -22,8 +23,6 @@ export default function ModalSupplyComponent({
   asset
 }: any) {
   const { t } = useTranslation('common');
-
-  console.log('asset: ', asset)
 
   const [_isApproved, _setIsApproved] = useState(false);
   const [_isPending, _setIsPending] = useState(false);
@@ -69,6 +68,21 @@ export default function ModalSupplyComponent({
         {(_, formInstance) => {
           const isNotValidForm = formInstance.getFieldsError().some(item => item.errors.length > 0)
           const amount = formInstance.getFieldValue('amount')
+          const max = new BigNumber(asset?.wallet_balance_in_wei).dividedBy(10 ** asset?.decimals).toNumber()
+          const handleMaxInput = () => {
+            formInstance.setFields([
+              {
+                name: "amount",
+                value: max,
+                errors: []
+              },
+            ]);
+
+            formInstance
+              .validateFields()
+              .then((e) => { })
+              .catch((e) => { })
+          }
 
           return (
             <div className="supply-modal-container">
@@ -79,10 +93,13 @@ export default function ModalSupplyComponent({
                 <div className="supply-modal-container__input__control">
                   <Form.Item name="amount" help="" style={{
                     width: '100%'
-                  }} rules={[{ max: 10, type: 'number', message: t('SUPPLY_MODAL_VALIDATE_INSUFFICIENT_BALANCE') }, {
-                    required: true,
-                    message: t('SUPPLY_MODAL_VALIDATE_REQUIRE_AMOUNT')
-                  }]}>
+                  }}
+                    validateFirst
+                    rules={[{ max: max, type: 'number', message: t('SUPPLY_MODAL_VALIDATE_INSUFFICIENT_BALANCE') }, {
+                      required: true,
+                      message: t('SUPPLY_MODAL_VALIDATE_REQUIRE_AMOUNT')
+                    }]}
+                  >
                     <InputNumber
                       placeholder={t('SUPPLY_MODAL_INPUT_PLACEHOLDER')}
                       className="supply-modal-container__input__control__amount"
@@ -105,13 +122,11 @@ export default function ModalSupplyComponent({
                   </Form.Item>
 
                   <div className="supply-modal-container__input__control__price">
-                    ≈ $4,000.00
-                    <Button type="link" className="supply-modal-container__input__control__price__max">
+                    ≈ ${new BigNumber(asset?.price || 0).times(amount || 0).toFormat(2)}
+                    <Button type="link" className="supply-modal-container__input__control__price__max" onClick={handleMaxInput}>
                       {t('SUPPLY_MODAL_MAX')}
                     </Button>
-
                   </div>
-
                 </div>
                 <div className='flex justify-between w-full'>
                   <div className="supply-modal-container__input__balance">
@@ -135,8 +150,7 @@ export default function ModalSupplyComponent({
                     </Tooltip>
                   </div>
                   <span className="supply-modal-container__overview__apy__value">
-                    &#60;
-                    <span className="text-white font-bold">0.01</span>%
+                    <span className="text-white font-bold">{computeWithMinThreashold(asset?.apy, '')}</span>%
                   </span>
                 </div>
               </div>
