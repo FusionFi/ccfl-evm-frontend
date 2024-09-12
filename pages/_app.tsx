@@ -21,38 +21,11 @@ import { persistStore } from 'redux-persist';
 import { PersistGate } from 'redux-persist/integration/react';
 import { WagmiProvider } from 'wagmi';
 import { mainnet, sepolia } from 'wagmi/chains';
+import { config, projectId } from '@/libs/wagmi.lib'
 //const CHAIN_ID_CONFIG = Number(process.env.NEXT_PUBLIC_CHAIN_ID);
 
 // 0. Setup queryClient
 const queryClient = new QueryClient();
-
-// 1. Your WalletConnect Cloud project ID
-const projectId = 'e44a1758d79ad2f0154ca0b27b46b9f0';
-
-// 2. Create wagmiConfig
-const metadata = {
-  name: 'fusionfi',
-  description: 'fusionfi',
-  url: 'https://eadev.fusionfi.io', // TODO
-  icons: ['https://eadev.fusionfi.io/favicon.ico'], // TODO
-};
-
-const chains = [sepolia, mainnet] as const;
-const wagmiOptions = {}; // Optional - for overriding default options if necessary
-
-const config = defaultWagmiConfig({
-  chains,
-  projectId,
-  metadata,
-  auth: {
-    email: false, // default to true
-    socials: [],
-    showWallets: false, // default to true
-    walletFeatures: false, // default to true
-  },
-  connectors: [yoroiConnector],
-  ...wagmiOptions, // Optional - override createConfig parameters
-});
 
 // 3. Create Web3Modal
 createWeb3Modal({

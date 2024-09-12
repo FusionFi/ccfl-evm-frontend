@@ -1,4 +1,4 @@
-import http from '@/utils/backend/http.js';
+import http from '@/utils/backend/http';
 import { DEFAULT_CHAIN_ID } from '@/constants/chains.constant'
 
 const URL = process.env.NEXT_PUBLIC_API_URL;
@@ -15,7 +15,7 @@ const fetchNetworks = async () => {
   return res;
 };
 
-const fetchAssets = async (params) => {
+const fetchAssets = async (params: any) => {
   const chainId = params?.chainId || DEFAULT_CHAIN_ID
   const res = await http.get(
     `${URL}/asset`, {
@@ -29,7 +29,7 @@ const fetchAssets = async (params) => {
   return res;
 };
 
-const fetchUserSupply = async (params) => {
+const fetchUserSupply = async (params: any) => {
   const chainId = params?.chainId || DEFAULT_CHAIN_ID
   const address = params.address
   const res = await http.get(`${URL}/user/${address}/${chainId}/supply`);
@@ -37,7 +37,7 @@ const fetchUserSupply = async (params) => {
   return res;
 };
 
-const fetchPools = async (params) => {
+const fetchPools = async (params: any) => {
   const chainId = params?.chainId || DEFAULT_CHAIN_ID
   const res = await http.get(`${URL}/pool/all/${chainId}`);
 

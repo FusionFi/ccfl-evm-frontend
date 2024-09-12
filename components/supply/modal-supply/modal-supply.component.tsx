@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import cssClass from './modal-supply.component.module.scss';
 import { Button, InputNumber, Tooltip } from 'antd';
@@ -11,6 +11,11 @@ import { InfoCircleIcon } from '@/components/icons/info-circle.icon';
 import { QuestionCircleIcon } from '@/components/icons/question-circle.icon';
 import { computeWithMinThreashold } from '@/utils/percent.util';
 import BigNumber from 'bignumber.js';
+import { getGasPrice } from '@wagmi/core'
+import { createPublicClient, http } from 'viem'
+import { estimateGas } from '@wagmi/core'
+import { parseEther } from 'viem'
+import { config as ConfigWagmi } from '@/libs/wagmi.lib';
 
 type FieldType = {
   amount?: any;
@@ -26,6 +31,7 @@ export default function ModalSupplyComponent({
 
   const [_isApproved, _setIsApproved] = useState(false);
   const [_isPending, _setIsPending] = useState(false);
+  const [gas, setGas] = useState(0);
 
   const handleApprove = useCallback(() => {
     _setIsApproved(true);
@@ -53,6 +59,36 @@ export default function ModalSupplyComponent({
       _setIsPending(false)
     }, 1000);
   };
+
+  const fetchGasToEstimate = async () => {
+    try {
+      const gasLimit = await estimateGas(ConfigWagmi, {
+        to: '0xd2135CfB216b74109775236E36d4b433F1DF507B',
+        value: parseEther('0.01'),
+      })
+      console.log(gasLimit, 'gasLimit')
+
+      const gasPrice = await getGasPrice(ConfigWagmi)
+      console.log('gasPrice: ', gasPrice)
+
+      const result = new BigNumber(gasPrice.toString()).times(gasLimit.toString()).dividedBy(10 ** 18).toString();
+      console.log('gas: ', result)
+
+    } catch (error) {
+      console.error('fetch gas to estimate failed: ', error)
+    }
+  }
+
+  useEffect(() => {
+    fetchGasToEstimate();
+    const interval_ = setInterval(() => {
+      fetchGasToEstimate();
+    }, 30000);
+
+    return (() => {
+      clearInterval(interval_)
+    })
+  }, [])
 
   return (
     <Modal
