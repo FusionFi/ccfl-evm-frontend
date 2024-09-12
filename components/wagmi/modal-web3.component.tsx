@@ -1,13 +1,14 @@
 import SafeHtmlComponent from '@/components/common/safe-html.component';
 import { ArrowRightIcon } from '@/components/wagmi/icons/arrow-right';
 import { CARDANO_WALLETS, EVM_WALLETS } from '@/constants/common.constant';
+import { useCardanoConnected } from '@/hooks/auth.hook';
 import eventBus from '@/hooks/eventBus.hook';
 import type { TabsProps } from 'antd';
 import { Modal, Tabs } from 'antd';
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import { useConnect } from 'wagmi';
+import { useConnect, useDisconnect } from 'wagmi';
 import { coinbaseWallet, metaMask, walletConnect } from 'wagmi/connectors';
 import cssClass from './modal-web3.component.module.scss';
 interface ModalCollateralProps {}
@@ -33,6 +34,8 @@ export default function ModalWeb3Component({}: ModalCollateralProps) {
    */
 
   const { connect } = useConnect();
+  const { disconnect } = useDisconnect();
+  const [isCardanoConnected, updateCardanoConnected] = useCardanoConnected();
   /**
    * FUNCTIONS
    */
@@ -61,9 +64,11 @@ export default function ModalWeb3Component({}: ModalCollateralProps) {
   };
 
   const connectMetamask = () => {
+    updateCardanoConnected(false);
     connect({ connector: metaMask() });
   };
   const connectWalletConnect = () => {
+    updateCardanoConnected(false);
     connect({
       connector: walletConnect({
         projectId: 'e44a1758d79ad2f0154ca0b27b46b9f0',
@@ -71,17 +76,24 @@ export default function ModalWeb3Component({}: ModalCollateralProps) {
     });
   };
   const connectCoinbase = () => {
+    updateCardanoConnected(false);
     connect({
       connector: coinbaseWallet(),
     });
   };
   const connectYoroi = () => {
+    updateCardanoConnected(true);
+    disconnect();
     alert('Coming soon...');
   };
   const connectNami = () => {
+    updateCardanoConnected(true);
+    disconnect();
     alert('Coming soon...');
   };
   const connectEternl = () => {
+    updateCardanoConnected(true);
+    disconnect();
     alert('Coming soon...');
   };
   const onConnect = (wallet: any) => {

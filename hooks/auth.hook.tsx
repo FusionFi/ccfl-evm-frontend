@@ -23,3 +23,17 @@ export function useAuth() {
 
   return [auth, updateAuth];
 }
+
+//TODO for mock only
+export function useCardanoConnected() {
+  const dispatch = useDispatch();
+  const isCardanoConnected = useSelector((state: any) => state.auth.isCardanoConnected);
+  const updateCardanoConnected = useCallback(
+    (isCardanoConnected: boolean) => {
+      dispatch(AuthActions.updateCardanoConnected({ isCardanoConnected }));
+    },
+    [dispatch],
+  );
+
+  return [isCardanoConnected, updateCardanoConnected];
+}

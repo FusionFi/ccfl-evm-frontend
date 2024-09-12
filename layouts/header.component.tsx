@@ -9,6 +9,7 @@ import header from '@/styles/layout/header.module.scss';
 // imports components
 import { UserIcon } from '@/components/icons/user.icon';
 import { WagmiButton } from '@/components/wagmi/wagmi.btn.component';
+import { useCardanoConnected } from '@/hooks/auth.hook';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { useAccount, useConnect } from 'wagmi';
@@ -26,6 +27,7 @@ export const MainHeader = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const { t } = useTranslation('common');
   const { connect } = useConnect();
+  const [isCardanoConnected, updateCardanoConnected] = useCardanoConnected();
 
   /**
    * FUNCTIONS
@@ -124,7 +126,7 @@ export const MainHeader = () => {
               <UserInfoComponent />
             </div>
 
-            <div className={address ? 'hidden' : 'visible'}>
+            <div className={address && isCardanoConnected ? 'hidden' : 'visible'}>
               <WagmiButton
                 handleError={handleError}
                 btnLabel={'LAYOUT_MAIN_HEADER_NAV_BTN_TITLE_CONNECT_WALLET'}
