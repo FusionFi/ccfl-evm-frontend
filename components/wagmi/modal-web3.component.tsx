@@ -1,3 +1,4 @@
+import SafeHtmlComponent from '@/components/common/safe-html.component';
 import { ArrowRightIcon } from '@/components/wagmi/icons/arrow-right';
 import { CARDANO_WALLETS, EVM_WALLETS } from '@/constants/common.constant';
 import eventBus from '@/hooks/eventBus.hook';
@@ -169,6 +170,9 @@ export default function ModalWeb3Component({}: ModalCollateralProps) {
               </div>
             </div>
           ))}
+          <div className="term">
+            <SafeHtmlComponent htmlContent={t('WEB3_MODAL_COMPONENT_TERM_CONDITION')} />
+          </div>
         </div>
       </div>
     </Modal>

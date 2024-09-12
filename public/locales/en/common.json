@@ -307,5 +307,5 @@
   "WEB3_MODAL_COMPONENT_NAMI": "NAMI",
   "WEB3_MODAL_COMPONENT_ETERNL": "Eternl",
   "WEB3_MODAL_COMPONENT_WALLET_STATUS_DETECTED": "Detected",
-  "WEB3_MODAL_COMPONENT_TERM_CONDITION": ""
+  "WEB3_MODAL_COMPONENT_TERM_CONDITION": "  By connecting a wallet, you agree to FusionFi’\n            <a href=\"#\" target=\"_blank\">\n              Terms of Service\n            </a>\n            and consent to its\n            <a href=\"#\" target=\"_blank\">\n              Privacy Policy.\n            </a>"
 }
