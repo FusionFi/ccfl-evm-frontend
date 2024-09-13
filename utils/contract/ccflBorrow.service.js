@@ -108,8 +108,6 @@ const getHealthFactor = async (
 const approveBorrow = async (provider, contract_address, amount, adresss, tokenContract) => {
   try {
     console.log('PARAMS approveBorrow', provider, contract_address, amount, adresss, tokenContract);
-    const balanceCoin = await getBalanceCoin(provider, adresss);
-    console.log('balanceCoin', balanceCoin);
     // addTokenToMetamask({ address: WBTC_ERC20_CONTRACT, symbol: 'WBTC', decimals: 8 });
 
     const tx = await approveStableCoin(provider, adresss, tokenContract, contract_address, amount);
@@ -182,9 +180,19 @@ const checkAllowance = async (provider, tokenAddress, account, contract_address)
   } catch (error) {}
 };
 
-const getGasFeeApprove = async (provider, account, amount, tokenAddress, contract_address) => {
+const getGasFeeApprove = async (
+  provider,
+  account,
+  amount,
+  tokenAddress,
+  contract_address,
+  adresss,
+) => {
   let overwrite = { from: account };
   try {
+    const balanceCoin = await getBalanceCoin(provider, account);
+    console.log('balanceCoin', balanceCoin);
+
     const res = await sendRawTx(
       provider,
       abi_erc20,
@@ -194,11 +202,18 @@ const getGasFeeApprove = async (provider, account, amount, tokenAddress, contrac
       overwrite,
       true,
     );
-    return res && res.gasPrice
-      ? BigNumber(res.gasPrice)
+    if (res && res.gasPrice) {
+      return {
+        gasPrice: BigNumber(res.gasPrice)
           .div(10 ** 18)
-          .toFixed()
-      : 0;
+          .toFixed(),
+        nonEnoughMoney: balanceCoin > res.gasPrice ? true : false,
+      };
+    }
+    return {
+      gasPrice: 0,
+      nonEnoughMoney: true,
+    };
   } catch (error) {}
 };
 
@@ -228,6 +243,9 @@ const getGasFeeCreateLoan = async (
 
   let overwrite = { from: account };
   try {
+    const balanceCoin = await getBalanceCoin(provider, account);
+    console.log('balanceCoin', balanceCoin);
+
     const res = await sendRawTx(
       provider,
       abi,
@@ -239,11 +257,18 @@ const getGasFeeCreateLoan = async (
     );
     console.log('getGasFeeCreateLoan res', res);
 
-    return res && res.gasPrice
-      ? BigNumber(res.gasPrice)
+    if (res && res.gasPrice) {
+      return {
+        gasPrice: BigNumber(res.gasPrice)
           .div(10 ** 18)
-          .toFixed()
-      : 0;
+          .toFixed(),
+        nonEnoughMoney: balanceCoin > res.gasPrice ? true : false,
+      };
+    }
+    return {
+      gasPrice: 0,
+      nonEnoughMoney: true,
+    };
   } catch (error) {}
 };
 

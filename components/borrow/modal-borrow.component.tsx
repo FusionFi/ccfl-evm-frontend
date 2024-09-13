@@ -89,6 +89,7 @@ export default function ModalBorrowComponent({
   const [status, setStatus] = useState(TRANSACTION_STATUS.SUCCESS);
   const [healthFactor, setHealthFactor] = useState();
   const [loadingHealthFactor, setLoadingHealthFactor] = useState<boolean>(false);
+  const [nonEnoughMoney, setNonEnoughMoney] = useState<boolean>(false);
 
   const onSubmit: SubmitHandler<IFormInput> = async data => {
     const provider = await connector?.getProvider();
@@ -264,9 +265,10 @@ export default function ModalBorrowComponent({
         CONTRACT_ADDRESS,
       )) as any;
       let res_price = (await service.getPrice(chainId, 'ETH')) as any;
-      if (res && res_price && res_price.price) {
-        let gasFee = res * res_price.price;
+      if (res && res.gasPrice && res_price && res_price.price) {
+        let gasFee = res.gasPrice * res_price.price;
         setGasFee(gasFee);
+        setNonEnoughMoney(res.nonEnoughMoney);
         console.log('handleGetFee', res, gasFee);
       }
     } catch (error) {
@@ -291,9 +293,10 @@ export default function ModalBorrowComponent({
         false,
       )) as any;
       let res_price = (await service.getPrice(chainId, 'ETH')) as any;
-      if (res && res_price && res_price.price) {
-        let gasFee = res * res_price.price;
+      if (res && res.gasPrice && res_price && res_price.price) {
+        let gasFee = res.gasPrice * res_price.price;
         setGasFee(gasFee);
+        setNonEnoughMoney(res.nonEnoughMoney);
         console.log('handleGetFee', res, gasFee);
       }
     } catch (error) {
