@@ -108,7 +108,7 @@ export default function TransactionSuccessComponent({
             </span>
           </div>
         )}
-        {isBorrow && (
+        {/* {isBorrow && (
           <div className="tokens">
             <div className="mb-2">{t('BORROW_MODAL_SUCCESS_BORROW_RECEIVED')}</div>
             <div className="flex justify-between">
@@ -116,7 +116,7 @@ export default function TransactionSuccessComponent({
               <span className="metamask">{t('BORROW_MODAL_SUCCESS_BORROW_METAMASK')}</span>
             </div>
           </div>
-        )}
+        )} */}
         <Link href={`${TX_LINK}${hash}`} className="tx" target="_blank">
           <ExportOutlined />
           {t('BORROW_MODAL_SUCCESS_BORROW_REVIEW')}

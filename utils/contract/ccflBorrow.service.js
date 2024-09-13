@@ -11,7 +11,21 @@ const _initContract = (provider, contract_address) => {
   return new myWeb3.eth.Contract(abi, contract_address);
 };
 
-const getCollateralInfo = async (
+const getCollateralMinimum = async (provider, contract_address, amount, stableCoin, collateral) => {
+  try {
+    const contract = _initContract(provider, contract_address);
+    console.log('getCollateralMinimum', amount, stableCoin, collateral, contract_address);
+    const resMinimalCollateral = await contract.methods
+      .checkMinimalCollateralForLoan(amount, stableCoin, collateral)
+      .call();
+    console.log('resMinimalCollateral', resMinimalCollateral);
+    return resMinimalCollateral ? resMinimalCollateral : 0;
+  } catch (error) {
+    console.log('🚀 ~ minimalCollateral ~ error:', error);
+  }
+};
+
+const getHealthFactor = async (
   provider,
   contract_address,
   amount,
@@ -21,33 +35,21 @@ const getCollateralInfo = async (
 ) => {
   try {
     const contract = _initContract(provider, contract_address);
-
     console.log(
-      'getCollateralInfo',
+      'getHealthFactor',
       amount,
       stableCoin,
       collateral,
       contract_address,
       amountCollateral,
     );
-    const calls = [
-      contract.methods.checkMinimalCollateralForLoan(amount, stableCoin, collateral).call(),
-      contract.methods
-        .estimateHealthFactor(stableCoin, amount, collateral, amountCollateral)
-        .call(),
-    ];
-    let [resMinimalCollateral, resHealthFactor] = await Promise.allSettled(calls);
-    console.log('resMinimalCollateral', resMinimalCollateral, healthFactor);
-    return {
-      minimalCollateral:
-        resMinimalCollateral.status === 'fulfilled' ? resMinimalCollateral.value : 0,
-      healthFactor: resHealthFactor.status === 'fulfilled' ? healthFactor.value / 100 : 0,
-    };
+    const resHealthFactor = await contract.methods
+      .estimateHealthFactor(stableCoin, amount, collateral, amountCollateral)
+      .call();
+    console.log('getHealthFactor', resHealthFactor);
+    return resHealthFactor ? resHealthFactor / 100 : undefined;
   } catch (error) {
-    console.log('🚀 ~ minimalCollateral ~ error:', error);
-    return {
-      minimalCollateral: 0,
-    };
+    console.log('🚀 ~ healthFactor ~ error:', error);
   }
 };
 
@@ -151,7 +153,7 @@ const createLoan = async (
       account,
       contract_address,
     );
-    const txResponse = await sendRawTx(
+    const tx = await sendRawTx(
       provider,
       abi,
       contract_address,
@@ -246,11 +248,12 @@ const getGasFeeCreateLoan = async (
 };
 
 const service_ccfl_borrow = {
-  getCollateralInfo,
+  getCollateralMinimum,
   approveBorrow,
   createLoan,
   getGasFeeApprove,
   checkAllowance,
   getGasFeeCreateLoan,
+  getHealthFactor,
 };
 export default service_ccfl_borrow;

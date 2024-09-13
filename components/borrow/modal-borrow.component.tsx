@@ -11,15 +11,20 @@ import {
   CloseOutlined,
   WalletOutlined,
   ArrowRightOutlined,
+  LoadingOutlined,
 } from '@ant-design/icons';
 import TransactionSuccessComponent from '@/components/borrow/transaction-success.component';
 import { useTranslation } from 'next-i18next';
-import { COLLATERAL_TOKEN, DEFAULT_PARAMS, DEFAULT_ADDRESS } from '@/constants/common.constant';
-import { TRANSACTION_STATUS, CONTRACT_ADDRESS } from '@/constants/common.constant';
+import {
+  COLLATERAL_TOKEN,
+  TRANSACTION_STATUS,
+  CONTRACT_ADDRESS,
+  DEFAULT_ADDRESS,
+} from '@/constants/common.constant';
 import { toCurrency, toAmountShow, toUnitWithDecimal } from '@/utils/common';
 import service from '@/utils/backend/borrow';
 import service_ccfl_borrow from '@/utils/contract/ccflBorrow.service';
-import { useAccount, useDisconnect, useSwitchChain } from 'wagmi';
+import { useAccount, useConfig } from 'wagmi';
 import { debounce } from 'lodash';
 
 interface ModalBorrowProps {
@@ -32,6 +37,7 @@ interface ModalBorrowProps {
   setToken: any;
   apr: any;
   decimalStableCoin: any;
+  priceStableCoin: any;
 }
 
 interface IFormInput {
@@ -49,6 +55,7 @@ export default function ModalBorrowComponent({
   setToken,
   apr,
   decimalStableCoin,
+  priceStableCoin,
 }: ModalBorrowProps) {
   const { control, handleSubmit, setValue } = useForm({
     defaultValues: {
@@ -58,7 +65,12 @@ export default function ModalBorrowComponent({
   });
   const { t } = useTranslation('common');
   const { address, connector, chainId } = useAccount();
-
+  // const config = useConfig();
+  // const result = useToken({
+  //   address: address,
+  //   config,
+  // });
+  // console.log('result', result);
   const [loading, setLoading] = useState<boolean>(false);
   const [isYield, setYield] = useState(false);
   const [loadingBalanceCollateral, setLoadingBalanceCollateral] = useState<boolean>(false);
@@ -76,6 +88,7 @@ export default function ModalBorrowComponent({
   const [gasFee, setGasFee] = useState(0);
   const [status, setStatus] = useState(TRANSACTION_STATUS.SUCCESS);
   const [healthFactor, setHealthFactor] = useState();
+  const [loadingHealthFactor, setLoadingHealthFactor] = useState<boolean>(false);
 
   const onSubmit: SubmitHandler<IFormInput> = async data => {
     const provider = await connector?.getProvider();
@@ -95,9 +108,9 @@ export default function ModalBorrowComponent({
         );
         console.log('Finnised Approve', hash);
         if (hash) {
-          setLoading(false);
           setStep(1);
         }
+        setLoading(false);
       } catch (error) {
         setStatus(TRANSACTION_STATUS.FAILED);
         setLoading(false);
@@ -123,9 +136,9 @@ export default function ModalBorrowComponent({
 
         if (hash) {
           setStep(2);
-          setLoading(false);
           setTxHash(hash);
         }
+        setLoading(false);
       } catch (error) {
         setStatus(TRANSACTION_STATUS.FAILED);
         setLoading(false);
@@ -156,11 +169,7 @@ export default function ModalBorrowComponent({
   const handleCollateralBalance = async () => {
     try {
       setLoadingBalanceCollateral(true);
-      let res_balance = (await service.getCollateralBalance(
-        DEFAULT_PARAMS.address,
-        chainId,
-        token,
-      )) as any;
+      let res_balance = (await service.getCollateralBalance(address, chainId, token)) as any;
       let res_price = (await service.getPrice(chainId, token)) as any;
       console.log('handleCollateralBalance', res_balance, res_price);
       if (res_balance) {
@@ -182,44 +191,64 @@ export default function ModalBorrowComponent({
     }
   };
 
-  const handleGetMinimumCollateral = async () => {
+  const handleGetCollateralContract = async (isMinimum = false, isHealthFactor = false) => {
     try {
-      setLoadingMinimumCollateral(true);
       let res_collateral = (await service.getCollateralInfo(token, chainId)) as any;
-
       let tokenDraft: keyof typeof DEFAULT_ADDRESS = stableCoin.toUpperCase();
       let collateralTokenDraft: keyof typeof DEFAULT_ADDRESS = token.toUpperCase();
-
       let addressStableCoin = DEFAULT_ADDRESS[tokenDraft];
       let addressCollateral = DEFAULT_ADDRESS[collateralTokenDraft];
-
       const provider = await connector?.getProvider();
-      let res = (await service_ccfl_borrow.getCollateralInfo(
-        provider,
-        CONTRACT_ADDRESS,
-        toUnitWithDecimal(stableCoinValue ? stableCoinValue : 0, decimalStableCoin),
-        addressStableCoin,
-        addressCollateral,
-        toUnitWithDecimal(collateralValue ? collateralValue : 0, collateralData.decimals),
-      )) as any;
-      console.log(
-        'handleGetMinimumCollateral',
-        tokenDraft,
-        collateralTokenDraft,
-        res,
-        res_collateral,
-      );
-      if (res && res.minimalCollateral && res_collateral && res_collateral[0]?.decimals) {
-        let minimum = toAmountShow(res.minimalCollateral, res_collateral[0].decimals) as any;
-        setMinimalCollateral(minimum);
-      } else {
-        setMinimalCollateral(0);
+
+      if (isMinimum) {
+        try {
+          setLoadingMinimumCollateral(true);
+          let minimalCollateral = (await service_ccfl_borrow.getCollateralMinimum(
+            provider,
+            CONTRACT_ADDRESS,
+            toUnitWithDecimal(stableCoinValue ? stableCoinValue : 0, decimalStableCoin),
+            addressStableCoin,
+            addressCollateral,
+          )) as any;
+          console.log('minimum', minimalCollateral);
+
+          if (minimalCollateral && res_collateral && res_collateral[0]?.decimals) {
+            let minimum = toAmountShow(minimalCollateral, res_collateral[0].decimals) as any;
+            setMinimalCollateral(minimum);
+          } else {
+            setMinimalCollateral(0);
+          }
+          setLoadingMinimumCollateral(false);
+        } catch (error) {
+          setMinimalCollateral(0);
+          setLoadingMinimumCollateral(false);
+        }
       }
 
-      setLoadingMinimumCollateral(false);
+      if (isHealthFactor) {
+        try {
+          setLoadingHealthFactor(true);
+          let healthFactor = (await service_ccfl_borrow.getHealthFactor(
+            provider,
+            CONTRACT_ADDRESS,
+            toUnitWithDecimal(stableCoinValue ? stableCoinValue : 0, decimalStableCoin),
+            addressStableCoin,
+            addressCollateral,
+            toUnitWithDecimal(collateralValue ? collateralValue : 0, collateralData.decimals),
+          )) as any;
+          if (healthFactor) {
+            setHealthFactor(healthFactor);
+          } else {
+            setHealthFactor(undefined);
+          }
+          setLoadingHealthFactor(false);
+        } catch (error) {
+          setHealthFactor(undefined);
+          setLoadingHealthFactor(false);
+        }
+      }
     } catch (error) {
-      console.log('error', error);
-      setLoadingMinimumCollateral(false);
+      console.log('handleGetCollateralContract error', error);
     }
   };
 
@@ -294,10 +323,17 @@ export default function ModalBorrowComponent({
 
   const resetState = () => {
     setLoading(false);
-    setLoadingBalanceCollateral(false);
-    setLoadingMinimumCollateral(false);
+    // setLoadingBalanceCollateral(false);
+    // setLoadingHealthFactor(false);
+    // setLoadingMinimumCollateral(false);
     setStableCoinValue(undefined);
     setCollateralValue(undefined);
+    setHealthFactor(undefined);
+    setStatus(TRANSACTION_STATUS.SUCCESS);
+    setGasFee(0);
+    setErrorTx(undefined);
+    setTxHash(undefined);
+    setMinimalCollateral(0);
   };
 
   useEffect(() => {
@@ -307,8 +343,20 @@ export default function ModalBorrowComponent({
   }, [token]);
 
   useEffect(() => {
-    if (isModalOpen) {
-      handleGetMinimumCollateral();
+    if (isModalOpen && stableCoinValue && stableCoinValue > 0) {
+      handleGetCollateralContract(true, false);
+    }
+  }, [stableCoinValue, token]);
+
+  useEffect(() => {
+    if (
+      isModalOpen &&
+      stableCoinValue &&
+      stableCoinValue > 0 &&
+      collateralValue &&
+      collateralValue > 0
+    ) {
+      handleGetCollateralContract(false, true);
     }
   }, [stableCoinValue, token, collateralValue]);
 
@@ -383,6 +431,7 @@ export default function ModalBorrowComponent({
                           onChange={(value: any) => {
                             setStableCoinValue(value);
                           }}
+                          disabled={loading}
                         />
                       )}
                     />
@@ -397,7 +446,12 @@ export default function ModalBorrowComponent({
                     </div>
                   </div>
                   <div className="flex justify-between">
-                    <span className="modal-borrow-usd">≈ $0.00</span>
+                    <span className="modal-borrow-usd">
+                      ≈ $
+                      {stableCoinValue && priceStableCoin[stableCoin]
+                        ? toCurrency(stableCoinValue * priceStableCoin[stableCoin], 2)
+                        : 0}
+                    </span>
                     {/* <Button disabled={loading} className="modal-borrow-max">
                       {t('BORROW_MODAL_BORROW_MAX')}
                     </Button> */}
@@ -449,6 +503,7 @@ export default function ModalBorrowComponent({
                     suffixIcon={<DownOutlined />}
                     popupClassName="modal-borrow-select"
                     value={token}
+                    disabled={loading}
                   />
                 </div>
                 <div className="flex justify-between items-center mb-2">
@@ -478,6 +533,7 @@ export default function ModalBorrowComponent({
                           onChange={(value: any) => {
                             setCollateralValue(value);
                           }}
+                          disabled={loading}
                         />
                       )}
                     />
@@ -485,17 +541,34 @@ export default function ModalBorrowComponent({
                   </div>
                 </div>
                 <div className="modal-borrow-minimum">
-                  <span className="mr-1">Minimum amount: </span> {minimalCollateral} {token}
+                  <span className="mr-1">Minimum amount: </span>{' '}
+                  {loadingMinimumCollateral ? (
+                    <LoadingOutlined className="mr-1" />
+                  ) : (
+                    minimalCollateral
+                  )}{' '}
+                  {token}
                 </div>
                 <div className="flex justify-between items-center modal-borrow-health c-white">
                   <div className="modal-borrow-sub-content">{t('BORROW_MODAL_BORROW_HEALTH')}</div>
                   <div className="flex">
-                    <span className="c-white">3.31B</span>
-                    {collateralValue && collateralValue > 0 && (
+                    <span className="c-white">∞</span>
+                    {stableCoinValue &&
+                    stableCoinValue > 0 &&
+                    collateralValue &&
+                    collateralValue > 0 ? (
                       <div className="flex">
-                        <ArrowRightOutlined className="mx-1" />
-                        <span className="">3.33B</span>
+                        {(loadingHealthFactor || healthFactor) && (
+                          <ArrowRightOutlined className="mx-1" />
+                        )}
+                        {loadingHealthFactor ? (
+                          <LoadingOutlined className="mr-1" />
+                        ) : (
+                          <span className="">{healthFactor}</span>
+                        )}
                       </div>
+                    ) : (
+                      <></>
                     )}
                   </div>
                 </div>
@@ -532,11 +605,12 @@ export default function ModalBorrowComponent({
                         collateralValue < minimalCollateral ||
                         loadingBalanceCollateral ||
                         loadingMinimumCollateral ||
+                        loadingHealthFactor ||
                         collateralData.balance === 0
                       }
                       className="w-full"
                       loading={loading}>
-                      {t('BORROW_MODAL_BORROW_APPROVE', { stableCoin: token })}
+                      {t('BORROW_MODAL_BORROW_APPROVE', { currentToken: token })}
                     </Button>
                   </div>
                 )}
@@ -555,6 +629,7 @@ export default function ModalBorrowComponent({
                           collateralValue < minimalCollateral ||
                           loadingBalanceCollateral ||
                           loadingMinimumCollateral ||
+                          loadingHealthFactor ||
                           collateralData.balance === 0
                         }
                         className="w-full"
@@ -572,7 +647,7 @@ export default function ModalBorrowComponent({
           <div>
             <TransactionSuccessComponent
               handleCancel={handleCancel}
-              stableCoin={stableCoin}
+              currentToken={stableCoin}
               setStep={setStep}
               token={token}
               isBorrow={true}

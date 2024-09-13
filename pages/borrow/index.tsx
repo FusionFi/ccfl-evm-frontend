@@ -10,12 +10,7 @@ import ModalRepayComponent from '@/components/borrow/modal-repay.component';
 import OverviewComponent from '@/components/common/overview.component';
 import TitleComponent from '@/components/common/title.component';
 import { CHAIN_INFO, SUPPORTED_CHAINS } from '@/constants/chains.constant';
-import {
-  ASSET_LIST,
-  COLLATERAL_TOKEN,
-  DEFAULT_PARAMS,
-  TYPE_COMMON,
-} from '@/constants/common.constant';
+import { ASSET_LIST, COLLATERAL_TOKEN, TYPE_COMMON } from '@/constants/common.constant';
 import { NETWORKS, STAKE_DEFAULT_NETWORK } from '@/constants/networks';
 import { useNotification } from '@/hooks/notifications.hook';
 import { CaretDownOutlined } from '@ant-design/icons';
@@ -76,14 +71,14 @@ export default function BorrowPage() {
   const handlePrice = async () => {
     try {
       setLoadingAsset(true);
-      let data = (await service.getPool(DEFAULT_PARAMS.chainId)) as any;
+      let data = (await service.getPool(chainId)) as any;
       let price = {
         USDT: null,
         USDC: null,
       };
 
-      let priceUSDC = (await service.getPrice(DEFAULT_PARAMS.chainId, ASSET_LIST.USDC)) as any;
-      let priceUSDT = (await service.getPrice(DEFAULT_PARAMS.chainId, ASSET_LIST.USDT)) as any;
+      let priceUSDC = (await service.getPrice(chainId, ASSET_LIST.USDC)) as any;
+      let priceUSDT = (await service.getPrice(chainId, ASSET_LIST.USDT)) as any;
       price.USDC = priceUSDC?.price;
       price.USDT = priceUSDT?.price;
       setPrice(price);
@@ -106,12 +101,7 @@ export default function BorrowPage() {
   const handleLoans = async (offset = 0, limit = 10) => {
     try {
       setLoading(true);
-      let data = (await service.getLoans(
-        DEFAULT_PARAMS.address,
-        DEFAULT_PARAMS.chainId,
-        offset,
-        limit,
-      )) as any;
+      let data = (await service.getLoans(address, chainId, offset, limit)) as any;
       if (data) {
         setDataLoan(data);
       }
@@ -355,6 +345,7 @@ export default function BorrowPage() {
         setToken={setToken}
         apr={modal.apr}
         decimalStableCoin={modal.decimals}
+        priceStableCoin={price}
       />
       <ModalRepayComponent
         isModalOpen={isModalRepayOpen}
