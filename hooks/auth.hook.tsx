@@ -29,8 +29,8 @@ export function useCardanoConnected() {
   const dispatch = useDispatch();
   const isCardanoConnected = useSelector((state: any) => state.auth.isCardanoConnected);
   const updateCardanoConnected = useCallback(
-    (isCardanoConnected: boolean) => {
-      dispatch(AuthActions.updateCardanoConnected({ isCardanoConnected }));
+    (isCardanoConnected_: boolean) => {
+      dispatch(AuthActions.updateCardanoConnected({ isCardanoConnected: isCardanoConnected_ }));
     },
     [dispatch],
   );

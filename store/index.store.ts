@@ -5,11 +5,14 @@ import thunkMiddleware from 'redux-thunk';
 
 import auth from '@/reducers/auth.reducer';
 import global from '@/reducers/global.reducer';
+import cardanoWallet from '@/reducers/cardano-wallet.reducer';
 import storage from '@/store/sync-storage.store';
+
 
 const rootReducer = combineReducers({
   global,
   auth,
+  cardanoWallet
 });
 
 const bindMiddleware = (middleware: any) => {
@@ -34,7 +37,7 @@ const makeStore = ({ isServer }: { isServer: boolean }) => {
       timeout: 1000,
       key: 'fusionFi',
       keyPrefix: '',
-      whitelist: ['global', 'auth'],
+      whitelist: ['global', 'auth', 'cardanoWallet'],
       storage, // Use the correct storage based on environment
       rootReducer,
     });

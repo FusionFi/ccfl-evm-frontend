@@ -2,7 +2,7 @@ import { UserInfoComponent } from '@/components/user-info.component';
 import { message } from 'antd';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 // import css
 import header from '@/styles/layout/header.module.scss';
@@ -13,6 +13,8 @@ import { useCardanoConnected } from '@/hooks/auth.hook';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { useAccount, useConnect } from 'wagmi';
+import { useCardanoWalletConnected } from '@/hooks/cardano-wallet.hook'
+
 export const MainHeader = () => {
   /**
    * STATES
@@ -28,7 +30,16 @@ export const MainHeader = () => {
   const { t } = useTranslation('common');
   const { connect } = useConnect();
   const [isCardanoConnected, updateCardanoConnected] = useCardanoConnected();
+  const [cardanoWalletConnected] = useCardanoWalletConnected();
+  const address_ = useMemo(() => {
+    if (isCardanoConnected) {
+      return cardanoWalletConnected?.address;
+    }
 
+    return address;
+  }, [address, cardanoWalletConnected?.address])
+
+  
   /**
    * FUNCTIONS
    */
@@ -111,22 +122,21 @@ export const MainHeader = () => {
             </div>
           )}
           <div className="right-content ml-auto flex items-center">
-            {!isLandingPage && address && (
+            {!isLandingPage && address_ && (
               <div className="external-links flex items-center">
                 <Link
                   href="/my-profile"
-                  className={`btn-outline-custom mr-4 ${
-                    router?.pathname === '/my-profile' ? 'active' : ''
-                  }`}>
+                  className={`btn-outline-custom mr-4 ${router?.pathname === '/my-profile' ? 'active' : ''
+                    }`}>
                   <UserIcon className="mr-2" /> {t('LAYOUT_MAIN_HEADER_NAV_MY_PROFILE')}
                 </Link>
               </div>
             )}
-            <div className={!address ? 'hidden' : 'visible'}>
+            <div className={!address_ ? 'hidden' : 'visible'}>
               <UserInfoComponent />
             </div>
 
-            <div className={address && isCardanoConnected ? 'hidden' : 'visible'}>
+            <div className={address_ ? 'hidden' : 'visible'}>
               <WagmiButton
                 handleError={handleError}
                 btnLabel={'LAYOUT_MAIN_HEADER_NAV_BTN_TITLE_CONNECT_WALLET'}

@@ -12,9 +12,12 @@ import { useNotification } from '@/hooks/notifications.hook';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 
 import { Button } from 'antd';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useMemo } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { useAccount, useDisconnect, useSwitchChain } from 'wagmi';
+import { useCardanoConnected } from '@/hooks/auth.hook';
+import { useCardanoWalletConnected, useCardanoWalletDisconnect } from '@/hooks/cardano-wallet.hook'
+
 export const UserInfoComponent = () => {
   /**
    * STATES
@@ -30,6 +33,19 @@ export const UserInfoComponent = () => {
   const { getBalanceCoin } = useWeb3();
   const [showSuccess, showError, showWarning, contextHolder] = useNotification();
   const { switchChain } = useSwitchChain();
+
+  const [isCardanoConnected, updateCardanoConnected] = useCardanoConnected();
+  const [cardanoWalletConnected] = useCardanoWalletConnected();
+  const [disconnectCardanoWallet] = useCardanoWalletDisconnect();
+
+  const address_ = useMemo(() => {
+    if (isCardanoConnected) {
+      return cardanoWalletConnected?.address;
+    }
+
+    return address;
+  }, [address, cardanoWalletConnected?.address])
+
   /**
    * FUNCTIONS
    */
@@ -48,10 +64,17 @@ export const UserInfoComponent = () => {
       setNetworkInfo(networkCurrent || null);
     }
   }, [chainId]);
+
   const handleDisconnect = useCallback(() => {
-    disconnect();
+    if (isCardanoConnected) {
+      disconnectCardanoWallet()
+    } else {
+      disconnect();
+    }
+
     resetState();
-  }, [disconnect, resetState]);
+  }, [disconnect, resetState, disconnectCardanoWallet, isCardanoConnected]);
+
   const getBalance = useCallback(async () => {
     try {
       if (!address) {
@@ -77,6 +100,7 @@ export const UserInfoComponent = () => {
       initNetworkInfo();
     }
   }, [address, getBalance, initNetworkInfo]);
+
   useEffect(() => {
     const reloadBalance = () => {
       getBalance();
@@ -94,6 +118,10 @@ export const UserInfoComponent = () => {
    */
 
   const UserBalance = () => {
+    if (isCardanoConnected) {
+      return null; // TODO: need to update here
+    }
+
     if (!networkInfo) {
       return (
         <div className="flex items-center">
@@ -131,15 +159,13 @@ export const UserInfoComponent = () => {
       {contextHolder}
       <div className="user-info-content flex items-center">
         <UserBalance />
-        {networkInfo && (
-          <div className="rounded-full user-icon">
-            <div className="btn-actions">
-              <Button size="small" onClick={() => handleDisconnect()}>
-                <UserAvatar size={24} /> {truncate(address)} <LogoutIcon />
-              </Button>
-            </div>
+        {(networkInfo || isCardanoConnected) && <div className="rounded-full user-icon">
+          <div className="btn-actions">
+            <Button size="small" onClick={() => handleDisconnect()}>
+              <UserAvatar address={address_} size={24} /> {truncate(address_)} <LogoutIcon />
+            </Button>
           </div>
-        )}
+        </div>}
       </div>
     </div>
   );

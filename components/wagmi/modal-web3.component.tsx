@@ -11,9 +11,11 @@ import { useEffect, useState } from 'react';
 import { useConnect, useDisconnect } from 'wagmi';
 import { coinbaseWallet, metaMask, walletConnect } from 'wagmi/connectors';
 import cssClass from './modal-web3.component.module.scss';
-interface ModalCollateralProps {}
+import { useCardanoWalletConnect, useCardanoWalletDisconnect } from '@/hooks/cardano-wallet.hook';
 
-export default function ModalWeb3Component({}: ModalCollateralProps) {
+interface ModalCollateralProps { }
+
+export default function ModalWeb3Component({ }: ModalCollateralProps) {
   const { t } = useTranslation('common');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const items: TabsProps['items'] = [
@@ -36,6 +38,9 @@ export default function ModalWeb3Component({}: ModalCollateralProps) {
   const { connect } = useConnect();
   const { disconnect } = useDisconnect();
   const [isCardanoConnected, updateCardanoConnected] = useCardanoConnected();
+  const [connectCardanoWallet] = useCardanoWalletConnect();
+  const [disconnectCardanoWallet] = useCardanoWalletDisconnect()
+
   /**
    * FUNCTIONS
    */
@@ -65,10 +70,12 @@ export default function ModalWeb3Component({}: ModalCollateralProps) {
 
   const connectMetamask = () => {
     updateCardanoConnected(false);
+    disconnectCardanoWallet()
     connect({ connector: metaMask() });
   };
   const connectWalletConnect = () => {
     updateCardanoConnected(false);
+    disconnectCardanoWallet()
     connect({
       connector: walletConnect({
         projectId: 'e44a1758d79ad2f0154ca0b27b46b9f0',
@@ -77,28 +84,24 @@ export default function ModalWeb3Component({}: ModalCollateralProps) {
   };
   const connectCoinbase = () => {
     updateCardanoConnected(false);
+    disconnectCardanoWallet()
     connect({
       connector: coinbaseWallet(),
     });
-  };
-  const connectYoroi = () => {
-    updateCardanoConnected(true);
-    disconnect();
-    alert('Coming soon...');
-  };
-  const connectNami = () => {
-    updateCardanoConnected(true);
-    disconnect();
-    alert('Coming soon...');
   };
   const connectEternl = () => {
     updateCardanoConnected(true);
     disconnect();
     alert('Coming soon...');
   };
+
+  const handleCardanoWalletConnect = (wallet: any) => {
+    updateCardanoConnected(true);
+    connectCardanoWallet(wallet)
+  }
+
   const onConnect = (wallet: any) => {
     console.log('🚀 ~ onConnect ~ wallet:', wallet);
-    setIsModalOpen(false);
     switch (wallet.id) {
       case 'metamask':
         connectMetamask();
@@ -110,10 +113,10 @@ export default function ModalWeb3Component({}: ModalCollateralProps) {
         connectCoinbase();
         break;
       case 'yoroi':
-        connectYoroi();
+        // connectYoroi();
         break;
       case 'nami':
-        connectNami();
+        handleCardanoWalletConnect(wallet);
         break;
       case 'eternl':
         connectEternl();
@@ -122,6 +125,7 @@ export default function ModalWeb3Component({}: ModalCollateralProps) {
         connectMetamask();
         break;
     }
+    setIsModalOpen(false);
   };
   /**
    * USE EFFECTS
