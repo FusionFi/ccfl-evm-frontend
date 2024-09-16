@@ -146,7 +146,13 @@ export default function ModalWeb3Component({ }: ModalCollateralProps) {
     if (activeTab === 'evm') {
       setWallets(EVM_WALLETS);
     } else {
-      setWallets(CARDANO_WALLETS);
+      setWallets(CARDANO_WALLETS.map(item => {
+        const isDetected = !!window?.cardano[item.id];
+        return {
+          ...item,
+          isDetected
+        }
+      }));
     }
   }, [activeTab]);
   useEffect(() => {
@@ -178,7 +184,7 @@ export default function ModalWeb3Component({ }: ModalCollateralProps) {
                       {t('WEB3_MODAL_COMPONENT_WALLET_STATUS_DETECTED')}
                     </span>
                   )}
-                  {wallet.id === 'yoroi' && (
+                  {wallet.isDetected && (
                     <span className="detected-badge">
                       {t('WEB3_MODAL_COMPONENT_WALLET_STATUS_DETECTED')}
                     </span>
