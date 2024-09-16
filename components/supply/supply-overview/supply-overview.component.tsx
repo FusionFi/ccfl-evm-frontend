@@ -9,27 +9,46 @@ import Image from 'next/image';
 import { useAccount } from 'wagmi';
 import { useCardanoWalletConnected } from '@/hooks/cardano-wallet.hook'
 import { useMemo } from 'react';
+import { useCardanoConnected } from '@/hooks/auth.hook';
 
 type LabelRender = SelectProps['labelRender'];
 
 export default function SupplyOverviewComponent({ isModalOpen, handleCancel, message }: any) {
   const { t } = useTranslation('common');
 
-  const { isConnected, chainId } = useAccount();
+  const { isConnected, address, chainId } = useAccount();
   const [cardanoWalletConnected] = useCardanoWalletConnected();
+  const [isCardanoConnected] = useCardanoConnected();
 
   const isConnected_ = useMemo(() => {
     return isConnected || !!cardanoWalletConnected?.address;
   }, [isConnected, cardanoWalletConnected?.address])
 
-  const selectedChain = CHAIN_INFO.get(chainId) || {};
+  const selectedChain = useMemo(() => {
+    let _chain = CHAIN_INFO.get(chainId);
+    if (!_chain) {
+      if (isCardanoConnected) {
+        _chain = CHAIN_MAP.get('ADA')
+      } else {
+        _chain = CHAIN_MAP.get(11155111)
+
+      }
+    }
+  }, [chainId, isCardanoConnected]);
+  
   const labelRender: LabelRender = (props: any) => {
     let { value } = props;
 
-    const _chain: any = CHAIN_MAP.get(value) || {
-      name: 'Avalanche',
-      logo: '/images/tokens/avax.png',
-    };
+    let _chain: any = CHAIN_MAP.get(value);
+
+    if (!_chain) {
+      if (isCardanoConnected) {
+        _chain = CHAIN_MAP.get('ADA')
+      } else {
+        _chain = CHAIN_MAP.get(11155111)
+
+      }
+    }
 
     return (
       <div className="flex items-center">

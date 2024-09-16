@@ -24,9 +24,7 @@ export default createReducer(initialState, builder =>
   builder
     .addCase(AuthActions.resetState, state => {
       console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>resetState');
-      state.auth = Object.assign({}, initialState.auth);
-      state.loading = initialState.loading;
-      state.error = initialState.error;
+      state.auth = {...initialState}
     })
     .addCase(AuthActions.updateAuth, (state, { payload: { auth } }) => {
       console.log('🚀 ~ .addCase ~ auth:', auth);
