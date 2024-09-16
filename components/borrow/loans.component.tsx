@@ -105,11 +105,11 @@ export default function LoansComponent(props: LoansProps) {
         return (
           <div className="loans-size basis-1/7">
             <h5>
-              {toCurrency(toAmountShow(value, record.decimals), 2)}{' '}
+              {toAmountShow(value, record.decimals, 2)}{' '}
               {record.asset !== 'USD' ? record.asset : record.currency}
             </h5>
             <div className="usd">
-              $ {toCurrency(toAmountShow(value * record.asset_price, record.decimals), 2)}
+              $ {toAmountShow(value * record.asset_price, record.decimals, 2)}
             </div>
           </div>
         );
@@ -175,16 +175,14 @@ export default function LoansComponent(props: LoansProps) {
       render: (value, record) => {
         return (
           <div className="loans-collateral basis-1/7 justify-center items-center">
-            {toCurrency(toAmountShow(record.collateral_amount, record.collateral_decimals), 4)}{' '}
+            {toAmountShow(record.collateral_amount, record.collateral_decimals, 4)}{' '}
             {record.collateral_asset}
             <div>
               <span className="">
                 $
-                {toCurrency(
-                  toAmountShow(
-                    record.collateral_amount * record.collateral_price,
-                    record.collateral_decimals,
-                  ),
+                {toAmountShow(
+                  record.collateral_amount * record.collateral_price,
+                  record.collateral_decimals,
                   2,
                 )}
               </span>
@@ -201,15 +199,11 @@ export default function LoansComponent(props: LoansProps) {
         return (
           <div className="loans-status basis-1/7 ">
             <div className="highlight ml-1">
-              {toCurrency(toAmountShow(record.debt_remain, record.decimals), 2)}{' '}
+              {toAmountShow(record.debt_remain, record.decimals, 2)}{' '}
               {record.asset !== 'USD' ? record.asset : record.repayment_currency}
             </div>
             <div className="ml-1">
-              ${' '}
-              {toCurrency(
-                toAmountShow(record.debt_remain * record.asset_price, record.decimals),
-                2,
-              )}
+              $ {toAmountShow(record.debt_remain * record.asset_price, record.decimals, 2)}
             </div>
           </div>
         );

@@ -122,12 +122,8 @@ export default function assetComponent({
                             <div className="asset-title">
                               {t('BORROW_MODAL_BORROW_BORROW_LOAN_AVAILABLE')}
                             </div>
-                            <div>
-                              {toCurrency(toAmountShow(item.loan_available, item.decimals), 2)}
-                            </div>
-                            <div className="usd">
-                              $ {toCurrency(toAmountShow(item.usd, item.decimals), 2)}
-                            </div>
+                            <div>{toAmountShow(item.loan_available, item.decimals, 2)}</div>
+                            <div className="usd">$ {toAmountShow(item.usd, item.decimals, 2)}</div>
                           </div>
                         )}
                         <div className={``}>

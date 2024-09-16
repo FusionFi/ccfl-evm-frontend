@@ -84,12 +84,16 @@ export default function ModalBorrowComponent({
   const [stableCoinValue, setStableCoinValue] = useState();
   const [collateralValue, setCollateralValue] = useState();
   const [txHash, setTxHash] = useState();
-  const [errorTx, setErrorTx] = useState();
+  const [errorTx, setErrorTx] = useState() as any;
   const [gasFee, setGasFee] = useState(0);
   const [status, setStatus] = useState(TRANSACTION_STATUS.SUCCESS);
   const [healthFactor, setHealthFactor] = useState();
   const [loadingHealthFactor, setLoadingHealthFactor] = useState<boolean>(false);
-  const [nonEnoughMoney, setNonEnoughMoney] = useState<boolean>(false);
+  const [errorEstimate, setErrorEstimate] = useState({
+    nonEnoughBalanceWallet: false,
+    exceedsAllowance: false,
+    nonEnoughBalanceCollateral: false,
+  }) as any;
 
   const onSubmit: SubmitHandler<IFormInput> = async data => {
     const provider = await connector?.getProvider();
@@ -268,12 +272,22 @@ export default function ModalBorrowComponent({
       if (res && res.gasPrice && res_price && res_price.price) {
         let gasFee = res.gasPrice * res_price.price;
         setGasFee(gasFee);
-        setNonEnoughMoney(res.nonEnoughMoney);
         console.log('handleGetFee', res, gasFee);
       }
-    } catch (error) {
-      console.log('error', error);
-    }
+      if (res) {
+        let a = {
+          ...errorEstimate,
+          nonEnoughBalanceWallet: res.nonEnoughMoney,
+          exceedsAllowance: res.exceedsAllowance,
+        };
+        console.log('abc', a);
+        setErrorEstimate({
+          ...errorEstimate,
+          nonEnoughBalanceWallet: res.nonEnoughMoney,
+          exceedsAllowance: res.exceedsAllowance,
+        });
+      }
+    } catch (error) {}
   };
 
   const handleGetFeeCreateLoan = async () => {
@@ -293,15 +307,21 @@ export default function ModalBorrowComponent({
         false,
       )) as any;
       let res_price = (await service.getPrice(chainId, 'ETH')) as any;
+      console.log('handleGetFeeCreateLoan res', res);
+
       if (res && res.gasPrice && res_price && res_price.price) {
         let gasFee = res.gasPrice * res_price.price;
         setGasFee(gasFee);
-        setNonEnoughMoney(res.nonEnoughMoney);
-        console.log('handleGetFee', res, gasFee);
       }
-    } catch (error) {
-      console.log('error', error);
-    }
+
+      if (res) {
+        setErrorEstimate({
+          ...errorEstimate,
+          nonEnoughBalanceWallet: res.nonEnoughMoney,
+          exceedsAllowance: res.exceedsAllowance,
+        });
+      }
+    } catch (error: any) {}
   };
 
   const handleCheckAllowance = async () => {
@@ -375,7 +395,7 @@ export default function ModalBorrowComponent({
         handleGetFeeApprove();
       }, 500);
     }
-  }, [collateralValue, token]);
+  }, [collateralValue, token, stableCoinValue]);
 
   useEffect(() => {
     if (
@@ -484,6 +504,17 @@ export default function ModalBorrowComponent({
                 <div className="modal-borrow-sub-title">
                   {t('BORROW_MODAL_BORROW_COLLATERAL_SETUP')}
                 </div>
+                {(errorEstimate.nonEnoughBalanceWallet ||
+                  errorEstimate.nonEnoughBalanceCollateral) && (
+                  <div className="modal-borrow-error">
+                    {t('BORROW_MODAL_BORROW_COLLATERAL_NON_ENOUGH')}
+                  </div>
+                )}
+                {errorEstimate.exceedsAllowance && (
+                  <div className="modal-borrow-error">
+                    {t('BORROW_MODAL_BORROW_COLLATERAL_EXCEEDS_ALLOWANCE')}
+                  </div>
+                )}
                 <div className="flex justify-between items-center  mb-2">
                   <span className="modal-borrow-sub-content">
                     {t('BORROW_MODAL_BORROW_COLLATERAL_TOKEN')}
@@ -534,6 +565,18 @@ export default function ModalBorrowComponent({
                           controls={false}
                           value={collateralValue}
                           onChange={(value: any) => {
+                            if (collateralData.balance > 0 && value > collateralData.balance) {
+                              setErrorEstimate({
+                                ...errorEstimate,
+                                nonEnoughBalanceCollateral: true,
+                              });
+                            } else {
+                              setErrorEstimate({
+                                ...errorEstimate,
+                                nonEnoughBalanceCollateral: false,
+                              });
+                            }
+
                             setCollateralValue(value);
                           }}
                           disabled={loading}
@@ -609,7 +652,10 @@ export default function ModalBorrowComponent({
                         loadingBalanceCollateral ||
                         loadingMinimumCollateral ||
                         loadingHealthFactor ||
-                        collateralData.balance === 0
+                        collateralData.balance === 0 ||
+                        errorEstimate.nonEnoughBalanceWallet ||
+                        errorEstimate.exceedsAllowance ||
+                        errorEstimate.nonEnoughBalanceCollateral
                       }
                       className="w-full"
                       loading={loading}>
@@ -633,7 +679,10 @@ export default function ModalBorrowComponent({
                           loadingBalanceCollateral ||
                           loadingMinimumCollateral ||
                           loadingHealthFactor ||
-                          collateralData.balance === 0
+                          collateralData.balance === 0 ||
+                          errorEstimate.nonEnoughBalanceWallet ||
+                          errorEstimate.exceedsAllowance ||
+                          errorEstimate.nonEnoughBalanceCollateral
                         }
                         className="w-full"
                         loading={loading}>

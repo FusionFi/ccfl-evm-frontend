@@ -5,6 +5,7 @@ import { addTokenToMetamask, approveStableCoin } from '@/utils/contract/erc20';
 import { getAllowance } from '@/utils/contract/erc20';
 import { ethers } from 'ethers';
 import abi_erc20 from '@/utils/contract/abi/erc20.json';
+import { isError } from 'lodash';
 
 const _initContract = (provider, contract_address) => {
   const myWeb3 = getWeb3(provider);
@@ -214,7 +215,14 @@ const getGasFeeApprove = async (
       gasPrice: 0,
       nonEnoughMoney: true,
     };
-  } catch (error) {}
+  } catch (error) {
+    console.log('getGasFeeApprove error', error);
+    return {
+      gasPrice: 0,
+      nonEnoughMoney: false,
+      exceedsAllowance: true,
+    };
+  }
 };
 
 const getGasFeeCreateLoan = async (
@@ -255,8 +263,6 @@ const getGasFeeCreateLoan = async (
       overwrite,
       true,
     );
-    console.log('getGasFeeCreateLoan res', res);
-
     if (res && res.gasPrice) {
       return {
         gasPrice: BigNumber(res.gasPrice)
@@ -269,7 +275,14 @@ const getGasFeeCreateLoan = async (
       gasPrice: 0,
       nonEnoughMoney: true,
     };
-  } catch (error) {}
+  } catch (error) {
+    console.log('getGasFeeCreateLoan error', error);
+    return {
+      gasPrice: 0,
+      nonEnoughMoney: false,
+      exceedsAllowance: true,
+    };
+  }
 };
 
 const service_ccfl_borrow = {
