@@ -41,6 +41,7 @@ class NamiWallet extends BaseWallet {
       },
     });
     events.forEach((event: any) => {
+      console.log('api.experimental: ', api.experimental)
       api.experimental.on(event.name, event.callback);
     });
   }

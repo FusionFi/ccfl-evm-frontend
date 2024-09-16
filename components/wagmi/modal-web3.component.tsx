@@ -113,13 +113,13 @@ export default function ModalWeb3Component({ }: ModalCollateralProps) {
         connectCoinbase();
         break;
       case 'yoroi':
-        // connectYoroi();
+        handleCardanoWalletConnect(wallet);
         break;
       case 'nami':
         handleCardanoWalletConnect(wallet);
         break;
       case 'eternl':
-        connectEternl();
+        handleCardanoWalletConnect(wallet);
         break;
       default:
         connectMetamask();
