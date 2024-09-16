@@ -14,9 +14,10 @@ import { Button, Table } from 'antd';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import Image from 'next/image';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useMemo } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { useAccount, useSwitchChain } from 'wagmi';
+import { useCardanoWalletConnected } from '@/hooks/cardano-wallet.hook'
 
 interface DataType {
   key: string;
@@ -41,8 +42,13 @@ export default function SupplyPage() {
   const { address } = useAccount();
 
   const [_, showError] = useNotification();
+  const [cardanoWalletConnected] = useCardanoWalletConnected();
 
   const [networkInfo, setNetworkInfo] = useState<any | null>(null);
+
+  const isConnected_ = useMemo(() => {
+    return isConnected || !!cardanoWalletConnected?.address;
+  }, [isConnected, cardanoWalletConnected?.address])
 
   const switchNetwork = async () => {
     try {
@@ -114,7 +120,7 @@ export default function SupplyPage() {
     },
   ];
 
-  if (isConnected) {
+  if (isConnected_) {
     columns.push({
       title: () => {
         return (
@@ -150,7 +156,7 @@ export default function SupplyPage() {
     },
   ].map((item: any) => {
     item.apy = '0.009';
-    if (isConnected) {
+    if (isConnected_) {
       item.supply_balance = ['3,500.00', '3,500.00'];
       item.earned_reward = ['350.00', '350.00'];
       item.wallet_balance = ['1,000.00', '1,000.00'];
@@ -183,7 +189,7 @@ export default function SupplyPage() {
   const [modal, setModal] = useState({} as any);
 
   const expandedRowRender = (record: any) => {
-    if (!isConnected) {
+    if (!isConnected_) {
       return (
         <TableAction>
           <Button
@@ -195,7 +201,7 @@ export default function SupplyPage() {
       );
     }
 
-    if (!networkInfo) {
+    if (!networkInfo && !cardanoWalletConnected?.address) {
       return (
         <TableAction>
           <Button
@@ -261,7 +267,7 @@ export default function SupplyPage() {
   };
 
   const title = () => {
-    if (!isConnected) {
+    if (!isConnected_) {
       return t('SUPPLY_GUEST_TABLE_TITLE');
     }
     return t('SUPPLY_TABLE_TITLE');

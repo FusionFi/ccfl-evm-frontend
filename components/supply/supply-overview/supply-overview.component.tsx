@@ -7,6 +7,8 @@ import { Select } from 'antd';
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
 import { useAccount } from 'wagmi';
+import { useCardanoWalletConnected } from '@/hooks/cardano-wallet.hook'
+import { useMemo } from 'react';
 
 type LabelRender = SelectProps['labelRender'];
 
@@ -14,6 +16,12 @@ export default function SupplyOverviewComponent({ isModalOpen, handleCancel, mes
   const { t } = useTranslation('common');
 
   const { isConnected, chainId } = useAccount();
+  const [cardanoWalletConnected] = useCardanoWalletConnected();
+
+  const isConnected_ = useMemo(() => {
+    return isConnected || !!cardanoWalletConnected?.address;
+  }, [isConnected, cardanoWalletConnected?.address])
+
   const selectedChain = CHAIN_INFO.get(chainId) || {};
   const labelRender: LabelRender = (props: any) => {
     let { value } = props;
@@ -79,7 +87,7 @@ export default function SupplyOverviewComponent({ isModalOpen, handleCancel, mes
           />
         </div>
       </div>
-      {isConnected && (
+      {isConnected_ && (
         <div className="supply-overview__body">
           <div className="supply-overview__body__wrapper">
             <div className="supply-overview__body__wrapper__item">
