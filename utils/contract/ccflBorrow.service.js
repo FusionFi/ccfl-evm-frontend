@@ -116,13 +116,17 @@ const approveBorrow = async (provider, contract_address, amount, adresss, tokenC
     // const receipt = await tx.wait();
     console.log('Transaction was mined in block:', tx.blockNumber);
     if (tx.transactionHash || tx.hash) {
-      return tx.hash || tx.transactionHash;
+      return {
+        link: tx.hash || tx.transactionHash,
+      };
     } else {
       return;
     }
   } catch (error) {
     console.error('Error during approval:', error);
-    return;
+    return {
+      error: error,
+    };
   }
 };
 
@@ -164,13 +168,17 @@ const createLoan = async (
     // const txReceipt = await txResponse.wait();
     console.log('Transaction successful:', tx);
     if (tx.transactionHash || tx.hash) {
-      return tx.hash || tx.transactionHash;
+      return {
+        link: tx.hash || tx.transactionHash,
+      };
     } else {
       return;
     }
   } catch (error) {
     console.error('Error calling create loan method:', error);
-    return;
+    return {
+      error: error,
+    };
   }
 };
 
@@ -181,14 +189,7 @@ const checkAllowance = async (provider, tokenAddress, account, contract_address)
   } catch (error) {}
 };
 
-const getGasFeeApprove = async (
-  provider,
-  account,
-  amount,
-  tokenAddress,
-  contract_address,
-  adresss,
-) => {
+const getGasFeeApprove = async (provider, account, amount, tokenAddress, contract_address) => {
   let overwrite = { from: account };
   try {
     const balanceCoin = await getBalanceCoin(provider, account);

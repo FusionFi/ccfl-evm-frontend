@@ -217,7 +217,6 @@ export function convertExponentialToDecimal(exponentialNumber) {
   }
 }
 export function toCurrency(value, decimalPlaces = 6) {
-  console.log('value: ', value, decimalPlaces);
   if (!value) return 0;
   // Convert the value to a string
   const valueStr = value.toString();

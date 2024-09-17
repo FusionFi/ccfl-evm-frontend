@@ -18,7 +18,7 @@ interface TransactionSuccessProps {
   isWithdrawCollateral?: boolean;
   stableCoinAmount?: any;
   collateralAmount?: any;
-  hash?: any;
+  txLink?: any;
   errorTx?: any;
 }
 
@@ -34,7 +34,7 @@ export default function TransactionSuccessComponent({
   isWithdrawCollateral = false,
   stableCoinAmount,
   collateralAmount,
-  hash,
+  txLink,
   errorTx,
 }: TransactionSuccessProps) {
   const { t } = useTranslation('common');
@@ -94,7 +94,7 @@ export default function TransactionSuccessComponent({
             </React.Fragment>
           )}
         </div>
-        {isBorrow && (
+        {isBorrow && status === TRANSACTION_STATUS.SUCCESS && (
           <div className="coin">
             <Image
               className="mr-2"
@@ -117,10 +117,12 @@ export default function TransactionSuccessComponent({
             </div>
           </div>
         )} */}
-        <Link href={`${TX_LINK}${hash}`} className="tx" target="_blank">
-          <ExportOutlined />
-          {t('BORROW_MODAL_SUCCESS_BORROW_REVIEW')}
-        </Link>
+        {txLink && (
+          <Link href={`${TX_LINK}${txLink}`} className="tx" target="_blank">
+            <ExportOutlined />
+            {t('BORROW_MODAL_SUCCESS_BORROW_REVIEW')}
+          </Link>
+        )}
         <div className="px-6 py-4">
           <Button className="w-full" onClick={handleFinish}>
             {t('BORROW_MODAL_SUCCESS_BORROW_OK')}
