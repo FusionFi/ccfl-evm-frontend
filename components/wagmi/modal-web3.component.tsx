@@ -1,7 +1,7 @@
 import SafeHtmlComponent from '@/components/common/safe-html.component';
 import { ArrowRightIcon } from '@/components/wagmi/icons/arrow-right';
 import { CARDANO_WALLETS, EVM_WALLETS } from '@/constants/common.constant';
-import { useCardanoConnected } from '@/hooks/auth.hook';
+import { useCardanoConnected, useNetworkManager } from '@/hooks/auth.hook';
 import eventBus from '@/hooks/eventBus.hook';
 import type { TabsProps } from 'antd';
 import { Modal, Tabs } from 'antd';
@@ -18,6 +18,8 @@ interface ModalCollateralProps { }
 export default function ModalWeb3Component({ }: ModalCollateralProps) {
   const { t } = useTranslation('common');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [_, updateNetwork] = useNetworkManager();
+
   const items: TabsProps['items'] = [
     {
       key: 'evm',
@@ -35,12 +37,12 @@ export default function ModalWeb3Component({ }: ModalCollateralProps) {
    * HOOKS
    */
 
-  const { connect } = useConnect();
+  const { connect, connectAsync } = useConnect();
   const { disconnect } = useDisconnect();
   const [isCardanoConnected, updateCardanoConnected] = useCardanoConnected();
   const [connectCardanoWallet] = useCardanoWalletConnect();
   const [disconnectCardanoWallet] = useCardanoWalletDisconnect()
-
+  const [chainId, setChainId] = useState(null)
   /**
    * FUNCTIONS
    */
@@ -68,19 +70,27 @@ export default function ModalWeb3Component({ }: ModalCollateralProps) {
     setActiveTab(key);
   };
 
-  const connectMetamask = () => {
-    updateCardanoConnected(false);
-    disconnectCardanoWallet()
-    connect({ connector: metaMask() });
+  const connectMetamask = async () => {
+    try {
+      connect({ connector: metaMask() });
+      updateCardanoConnected(false);
+      disconnectCardanoWallet()
+      updateNetwork(chainId || 11155111)
+      setChainId(null);
+    } catch (error) {
+      console.error('connect metamask failed: ', error)
+    }
   };
+
   const connectWalletConnect = () => {
-    updateCardanoConnected(false);
-    disconnectCardanoWallet()
     connect({
       connector: walletConnect({
         projectId: 'e44a1758d79ad2f0154ca0b27b46b9f0',
       }),
     });
+    updateCardanoConnected(false);
+    disconnectCardanoWallet()
+
   };
   const connectCoinbase = () => {
     updateCardanoConnected(false);
@@ -89,15 +99,15 @@ export default function ModalWeb3Component({ }: ModalCollateralProps) {
       connector: coinbaseWallet(),
     });
   };
-  const connectEternl = () => {
-    updateCardanoConnected(true);
-    disconnect();
-    alert('Coming soon...');
-  };
 
-  const handleCardanoWalletConnect = (wallet: any) => {
-    updateCardanoConnected(true);
-    connectCardanoWallet(wallet)
+  const handleCardanoWalletConnect = async (wallet: any) => {
+    try {
+      await connectCardanoWallet(wallet)
+      disconnect()
+      updateCardanoConnected(true);
+    } catch (error) {
+      console.error('handle cardano wallet connect failed: ', error)
+    }
   }
 
   const onConnect = (wallet: any) => {
@@ -131,8 +141,11 @@ export default function ModalWeb3Component({ }: ModalCollateralProps) {
    * USE EFFECTS
    */
   useEffect(() => {
-    const openWeb3Modal = () => {
+    const openWeb3Modal = (params: any) => {
+      const tab = params?.tab || 'evm'
+      setActiveTab(tab);
       setIsModalOpen(true);
+      setChainId(params?.chainId)
     };
 
     eventBus.on('openWeb3Modal', openWeb3Modal);
@@ -169,7 +182,7 @@ export default function ModalWeb3Component({ }: ModalCollateralProps) {
       onCancel={handleCancel}
       footer={null}>
       <div className="web3-modal-container">
-        <Tabs defaultActiveKey="1" items={items} onChange={onChangeTab} />
+        <Tabs defaultActiveKey="1" activeKey={activeTab} items={items} onChange={onChangeTab} />
         <div className="tab-content-container">
           {wallets.map(wallet => (
             <div className="wallet-item" key={wallet.name} onClick={() => onConnect(wallet)}>

@@ -4,6 +4,7 @@ import { useCallback } from "react";
 import { Wallets } from "@/wallets/index.wallet";
 import Networks from '@/constants/cardano-network.constant'
 import * as Actions from "@/actions/cardano-wallet.action";
+import * as AuthActions from "@/actions/auth.action";
 
 const CARDANO_NETWORK_ID: any = process.env.NEXT_PUBLIC_CARDANO_NETWORK_ID
 
@@ -44,6 +45,12 @@ export function useCardanoWalletConnect(): [(wallet: Object) => void] {
             metadata: item,
             networkId: networkId,
           },
+        })
+      );
+
+      dispatch(
+        AuthActions.updateNetwork({
+          chainId: 'ADA',
         })
       );
     } catch (error) {

@@ -6,3 +6,6 @@ export const updateAuth = createAction<{ auth: Object }>('auth/updateAuth');
 export const updateCardanoConnected = createAction<{ isCardanoConnected: Boolean }>( // TODO for mock only
   'auth/updateCardanoConnected',
 );
+export const updateNetwork = createAction<{ chainId: any }>( // TODO for mock only
+  'auth/updateNetwork',
+);

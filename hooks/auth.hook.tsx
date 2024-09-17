@@ -37,3 +37,17 @@ export function useCardanoConnected() {
 
   return [isCardanoConnected, updateCardanoConnected];
 }
+
+
+export function useNetworkManager() {
+  const dispatch = useDispatch();
+  const chainId = useSelector((state: any) => state.auth.chainId);
+  const updateNetwork = useCallback(
+    (chainId: any) => {
+      dispatch(AuthActions.updateNetwork({ chainId }));
+    },
+    [dispatch],
+  );
+
+  return [chainId, updateNetwork];
+}

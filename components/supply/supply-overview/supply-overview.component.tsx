@@ -8,18 +8,19 @@ import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
 import { useAccount } from 'wagmi';
 import { useCardanoWalletConnected } from '@/hooks/cardano-wallet.hook'
-import { useMemo } from 'react';
-import { useCardanoConnected } from '@/hooks/auth.hook';
+import { useMemo, useState } from 'react';
+import { useCardanoConnected, useNetworkManager } from '@/hooks/auth.hook';
+import eventBus from '@/hooks/eventBus.hook';
 
 type LabelRender = SelectProps['labelRender'];
 
 export default function SupplyOverviewComponent({ isModalOpen, handleCancel, message }: any) {
   const { t } = useTranslation('common');
 
-  const { isConnected, address, chainId } = useAccount();
+  const { isConnected, address } = useAccount();
   const [cardanoWalletConnected] = useCardanoWalletConnected();
   const [isCardanoConnected] = useCardanoConnected();
-
+  const [chainId, updateNetwork] = useNetworkManager();
   const isConnected_ = useMemo(() => {
     return isConnected || !!cardanoWalletConnected?.address;
   }, [isConnected, cardanoWalletConnected?.address])
@@ -34,8 +35,10 @@ export default function SupplyOverviewComponent({ isModalOpen, handleCancel, mes
 
       }
     }
+    return _chain;
   }, [chainId, isCardanoConnected]);
-  
+
+  console.log('selectedChain: ', selectedChain)
   const labelRender: LabelRender = (props: any) => {
     let { value } = props;
 
@@ -70,6 +73,24 @@ export default function SupplyOverviewComponent({ isModalOpen, handleCancel, mes
 
   const CHAIN_MAP = new Map(SUPPORTED_CHAINS.map(item => [item.id, item]));
 
+  const handleNetworkChange = (item: any) => {
+    try {
+      console.log(item, 'item')
+      console.log(chainId, 'chainId')
+      const currentTab = chainId == 'ADA' ? 'cardano' : 'evm';
+      const changedTab = item == 'ADA' ? 'cardano' : 'evm';
+      if (currentTab != changedTab) {
+        eventBus.emit('openWeb3Modal', {
+          tab: item == 'ADA' ? 'cardano' : 'evm',
+          chainId: item
+        })
+      } else {
+        updateNetwork(item)
+      }
+    } catch (error) {
+      console.error('handle network changing failed: ', error)
+    }
+  }
   return (
     <div className={cssClass['supply-overview']}>
       <div className="flex">
@@ -80,6 +101,10 @@ export default function SupplyOverviewComponent({ isModalOpen, handleCancel, mes
             defaultValue={{
               value: selectedChain?.id,
             }}
+            value={{
+              value: selectedChain?.id,
+            }}
+            onChange={handleNetworkChange}
             options={[...(CHAIN_MAP.values() as any)].map(item => ({
               value: item.id,
             }))}

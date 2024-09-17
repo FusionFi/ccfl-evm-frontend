@@ -7,6 +7,7 @@ import { twMerge } from 'tailwind-merge';
 // import css
 import header from '@/styles/layout/header.module.scss';
 // imports components
+import { Button } from 'antd';
 import { UserIcon } from '@/components/icons/user.icon';
 import { WagmiButton } from '@/components/wagmi/wagmi.btn.component';
 import { useCardanoConnected } from '@/hooks/auth.hook';
@@ -14,6 +15,7 @@ import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { useAccount, useConnect } from 'wagmi';
 import { useCardanoWalletConnected } from '@/hooks/cardano-wallet.hook'
+import eventBus from '@/hooks/eventBus.hook';
 
 export const MainHeader = () => {
   /**
@@ -39,7 +41,7 @@ export const MainHeader = () => {
     return address;
   }, [address, cardanoWalletConnected?.address])
 
-  
+
   /**
    * FUNCTIONS
    */
@@ -80,6 +82,12 @@ export const MainHeader = () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+
+  const handleNetworkSwitch = () => {
+
+  }
+
+
   /**
    * RENDERS
    */
@@ -106,18 +114,6 @@ export const MainHeader = () => {
                     {t('LAYOUT_MAIN_HEADER_NAV_TEXT_BORROW')}
                   </Link>
                 </li>
-                {/* <li className="text-white mr-4 hover:opacity-80">
-                <Link
-                  href="/stake"
-                  className={`link ${router?.pathname === '/stake' ? 'active' : ''}`}>
-                  Stake
-                </Link>
-              </li>
-              <li className="text-white mr-4 hover:opacity-80">
-                <a href="https://app.v2.tealswap.com/bridge/cbridge/" target="_blank">
-                  Bridge
-                </a>
-              </li> */}
               </ul>
             </div>
           )}
@@ -133,7 +129,22 @@ export const MainHeader = () => {
               </div>
             )}
             <div className={!address_ ? 'hidden' : 'visible'}>
-              <UserInfoComponent />
+              <div className='flex'>
+                <UserInfoComponent />
+                <Button
+                  className={twMerge('btn-default-custom', 'ml-2')}
+                  onClick={() => eventBus.emit('openWeb3Modal', {
+                    tab: isCardanoConnected ? 'evm' : 'cardano',
+                  })}
+                  style={{
+                    flex: '0 1 0'
+                  }}
+                >
+                  {t('LAYOUT_MAIN_HEADER_NAV_BTN_TITLE_CONNECT_WALLET_WITH_CHAIN', {
+                    chain: isCardanoConnected ? 'EVM' : 'Cardano'
+                  })}
+                </Button>
+              </div>
             </div>
 
             <div className={address_ ? 'hidden' : 'visible'}>
@@ -143,7 +154,7 @@ export const MainHeader = () => {
               />
             </div>
           </div>
-        </div>
+        </div >
       );
     }
   };
