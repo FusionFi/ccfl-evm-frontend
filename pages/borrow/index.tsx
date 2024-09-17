@@ -20,7 +20,8 @@ import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
 import { useAccount, useSwitchChain } from 'wagmi';
 import { useCardanoWalletConnected } from '@/hooks/cardano-wallet.hook'
-import { useCardanoConnected } from '@/hooks/auth.hook';
+import { useCardanoConnected, useNetworkManager } from '@/hooks/auth.hook';
+import eventBus from '@/hooks/eventBus.hook';
 
 import ModalBorrowFiatSuccessComponent from '@/components/borrow/modal-borrow-fiat/modal-borrow-fiat-success.component';
 import ModalBorrowFiatComponent from '@/components/borrow/modal-borrow-fiat/modal-borrow-fiat.component';
@@ -47,11 +48,13 @@ export default function BorrowPage() {
   const [collateralToken, setCollateralToken] = useState(COLLATERAL_TOKEN[0].name);
   const [step, setStep] = useState(0);
   const [token, setToken] = useState(COLLATERAL_TOKEN[0].name);
-  const { address, isConnected, chainId } = useAccount();
+  const { address, isConnected } = useAccount();
   const [isFiat, setIsFiat] = useState(false);
   const [cardanoWalletConnected] = useCardanoWalletConnected();
   const [networkInfo, setNetworkInfo] = useState<any | null>(null);
   const [isCardanoConnected] = useCardanoConnected();
+
+  const [chainId, updateNetwork] = useNetworkManager();
 
   const isConnected_ = useMemo(() => {
     if (!!cardanoWalletConnected?.address) {
@@ -67,6 +70,37 @@ export default function BorrowPage() {
   //connect wallet
   const [showSuccess, showError, showWarning, contextHolder] = useNotification();
 
+  const handleNetworkChange = (item: any) => {
+    try {
+      console.log(item, 'item')
+      console.log(chainId, 'chainId')
+      const currentTab = chainId == 'ADA' ? 'cardano' : 'evm';
+      const changedTab = item == 'ADA' ? 'cardano' : 'evm';
+      if (currentTab != changedTab) {
+        eventBus.emit('openWeb3Modal', {
+          tab: item == 'ADA' ? 'cardano' : 'evm',
+          chainId: item
+        })
+      } else {
+        updateNetwork(item)
+      }
+    } catch (error) {
+      console.error('handle network changing failed: ', error)
+    }
+  }
+
+  const selectedChain = useMemo(() => {
+    let _chain = CHAIN_INFO.get(chainId);
+    if (!_chain) {
+      if (isCardanoConnected) {
+        _chain = CHAIN_MAP.get('ADA')
+      } else {
+        _chain = CHAIN_MAP.get(11155111)
+
+      }
+    }
+    return _chain;
+  }, [chainId, isCardanoConnected]);
 
   const showModal = (token: string) => {
     setModal({
@@ -172,18 +206,7 @@ export default function BorrowPage() {
       </div>
     );
   };
-  const selectedChain = useMemo(() => {
-    let _chain = CHAIN_INFO.get(chainId);
-    if (!_chain) {
-      if (isCardanoConnected) {
-        _chain = CHAIN_MAP.get('ADA')
-      } else {
-        _chain = CHAIN_MAP.get(11155111)
 
-      }
-    }
-  }, [chainId, isCardanoConnected]);
-  
   //connect wallet
   const switchNetwork = async () => {
     try {
@@ -225,6 +248,10 @@ export default function BorrowPage() {
               defaultValue={{
                 value: selectedChain?.id,
               }}
+              value={{
+                value: selectedChain?.id,
+              }}
+              onChange={handleNetworkChange}
               options={[...(CHAIN_MAP.values() as any)].map(item => ({
                 value: item.id,
               }))}
