@@ -21,7 +21,7 @@ import {
   CONTRACT_ADDRESS,
   DEFAULT_ADDRESS,
 } from '@/constants/common.constant';
-import { toCurrency, toAmountShow, toUnitWithDecimal } from '@/utils/common';
+import { toAmountShow, toUnitWithDecimal } from '@/utils/common';
 import service from '@/utils/backend/borrow';
 import service_ccfl_borrow from '@/utils/contract/ccflBorrow.service';
 import { useAccount, useConfig } from 'wagmi';
@@ -178,11 +178,11 @@ export default function ModalBorrowComponent({
       if (res_balance) {
         setCollateralData({
           balance: res_balance.balance
-            ? toAmountShow(res_balance.balance, res_balance.decimals)
+            ? toAmountShow(res_balance.balance, res_balance.decimals, 5)
             : 0,
           balance_usd:
             res_token && res_token[0] && res_token[0].price && res_balance.balance
-              ? toAmountShow(res_balance.balance * res_token[0].price, res_balance.decimals)
+              ? toAmountShow(res_balance.balance * res_token[0].price, res_balance.decimals, 5)
               : 0,
           decimals: res_balance.decimals ? res_balance.decimals : 8,
           address: res_token && res_token[0] && res_token[0].address,
@@ -240,7 +240,7 @@ export default function ModalBorrowComponent({
         console.log('minimum', minimalCollateral);
 
         if (minimalCollateral && res_collateral && res_collateral[0]?.decimals) {
-          let minimum = toAmountShow(minimalCollateral, res_collateral[0].decimals) as any;
+          let minimum = toAmountShow(minimalCollateral, res_collateral[0].decimals, 7) as any;
           setMinimalCollateral(minimum);
         } else {
           setMinimalCollateral(0);
@@ -518,7 +518,7 @@ export default function ModalBorrowComponent({
                     <span className="modal-borrow-usd">
                       ≈ $
                       {stableCoinValue && priceStableCoin[stableCoin]
-                        ? toCurrency(stableCoinValue * priceStableCoin[stableCoin], 2)
+                        ? (stableCoinValue * priceStableCoin[stableCoin]).toFixed(2)
                         : 0}
                     </span>
                     {/* <Button disabled={loading} className="modal-borrow-max">
@@ -541,7 +541,7 @@ export default function ModalBorrowComponent({
                     </sup>
                   </span>
                   <div className="modal-borrow-percent">
-                    <span>{toCurrency(apr, 2)}</span>
+                    <span>{parseFloat(apr).toFixed(2)}</span>
                     <span>%</span>
                   </div>
                 </div>
@@ -683,7 +683,7 @@ export default function ModalBorrowComponent({
                   {loadingGasFee ? (
                     <LoadingOutlined className="mr-1" />
                   ) : (
-                    <span className="ml-1">{gasFee}</span>
+                    <span className="ml-1">{gasFee.toFixed(2)}</span>
                   )}
                 </div>
               </div>

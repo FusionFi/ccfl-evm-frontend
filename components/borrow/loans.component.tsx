@@ -3,7 +3,7 @@ import cssClass from '@/components/borrow/loans.component.module.scss';
 import { ASSET_TYPE, LOAN_STATUS } from '@/constants/common.constant';
 import { useAuth } from '@/hooks/auth.hook';
 import eventBus from '@/hooks/eventBus.hook';
-import { toAmountShow, toCurrency } from '@/utils/common';
+import { toAmountShow } from '@/utils/common';
 import { CheckOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import type { PaginationProps, TableProps } from 'antd';
 import { Button, Pagination, Skeleton, Table, Tooltip } from 'antd';
@@ -120,7 +120,11 @@ export default function LoansComponent(props: LoansProps) {
       dataIndex: 'apr',
       key: 'apr',
       render: value => {
-        return <div className="loans-apr basis-1/7 flex items-center">{toCurrency(value, 2)}%</div>;
+        return (
+          <div className="loans-apr basis-1/7 flex items-center">
+            {parseFloat(value).toFixed(2)}%
+          </div>
+        );
       },
     },
     {

@@ -26,7 +26,6 @@ import ModalBorrowFiatComponent from '@/components/borrow/modal-borrow-fiat/moda
 import ModalCollateralComponent from '@/components/borrow/modal-collateral.component';
 import ModalWithdrawCollateralComponent from '@/components/borrow/modal-withdraw-collateral.component';
 import service from '@/utils/backend/borrow';
-import { toCurrency } from '@/utils/common';
 
 type LabelRender = SelectProps['labelRender'];
 enum BorrowModalType {
@@ -183,12 +182,12 @@ export default function BorrowPage() {
   const itemLeft = [
     {
       text: t('BORROW_OVERVIEW_BALANCE'),
-      content: toCurrency(dataLoan?.total_loan, 2),
+      content: dataLoan?.total_loan ? parseFloat(dataLoan?.total_loan).toFixed(2) : 0,
       type: TYPE_COMMON.USD,
     },
     {
       text: t('BORROW_OVERVIEW_COLLATERAL'),
-      content: toCurrency(dataLoan?.total_collateral, 2),
+      content: dataLoan?.total_collateral ? parseFloat(dataLoan?.total_collateral).toFixed(2) : 0,
       type: TYPE_COMMON.USD,
     },
   ];

@@ -204,12 +204,14 @@ const getGasFeeApprove = async (provider, account, amount, tokenAddress, contrac
       overwrite,
       true,
     );
-    if (res && res.gasPrice) {
+    if (res && res.gasPrice && res.gasLimit) {
+      let gasFee = new BigNumber(res.gasPrice.toString())
+        .times(res.gasLimit.toString())
+        .dividedBy(10 ** 18)
+        .toString();
       return {
-        gasPrice: BigNumber(res.gasPrice)
-          .div(10 ** 18)
-          .toFixed(),
-        nonEnoughMoney: balanceCoin > res.gasPrice ? true : false,
+        gasPrice: gasFee,
+        nonEnoughMoney: gasFee > balanceCoin ? true : false,
       };
     }
     return {
@@ -264,12 +266,14 @@ const getGasFeeCreateLoan = async (
       overwrite,
       true,
     );
-    if (res && res.gasPrice) {
+    if (res && res.gasPrice && res.gasLimit) {
+      let gasFee = new BigNumber(res.gasPrice.toString())
+        .times(res.gasLimit.toString())
+        .dividedBy(10 ** 18)
+        .toString();
       return {
-        gasPrice: BigNumber(res.gasPrice)
-          .div(10 ** 18)
-          .toFixed(),
-        nonEnoughMoney: balanceCoin > res.gasPrice ? true : false,
+        gasPrice: gasFee,
+        nonEnoughMoney: gasFee > balanceCoin ? true : false,
       };
     }
     return {
