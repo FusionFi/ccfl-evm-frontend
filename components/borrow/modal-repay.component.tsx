@@ -10,10 +10,16 @@ import {
   DownOutlined,
   CloseOutlined,
   ArrowRightOutlined,
+  LoadingOutlined,
 } from '@ant-design/icons';
 import TransactionSuccessComponent from '@/components/borrow/transaction-success.component';
 import { useTranslation } from 'next-i18next';
-import { TRANSACTION_STATUS } from '@/constants/common.constant';
+import { TRANSACTION_STATUS, CONTRACT_ADDRESS } from '@/constants/common.constant';
+import { getTokenBalance } from '@/utils/contract/erc20';
+import service from '@/utils/backend/borrow';
+import service_ccfl_repay from '@/utils/contract/ccflRepay.service';
+import { useAccount } from 'wagmi';
+import { toAmountShow, toUnitWithDecimal } from '@/utils/common';
 
 interface ModalBorrowProps {
   isModalOpen: boolean;
@@ -22,6 +28,8 @@ interface ModalBorrowProps {
   step: any;
   setStep: any;
   isFiat?: boolean;
+  priceToken: any;
+  loanItem: any;
 }
 
 interface IFormInput {
@@ -35,14 +43,15 @@ export default function ModalBorrowComponent({
   step,
   setStep,
   isFiat,
+  priceToken,
+  loanItem,
 }: ModalBorrowProps) {
   const { t } = useTranslation('common');
+  const { address, connector, chainId } = useAccount();
 
   const {
     control,
     handleSubmit,
-    setValue,
-    getValues,
     formState: { errors },
   } = useForm<IFormInput>({
     defaultValues: {
@@ -51,6 +60,19 @@ export default function ModalBorrowComponent({
   });
 
   const [tokenValue, setTokenValue] = useState();
+  const [status, setStatus] = useState(TRANSACTION_STATUS.SUCCESS);
+  const [balance, setBalance] = useState(0) as any;
+  const deptRemain =
+    loanItem &&
+    loanItem.debt_remain &&
+    loanItem.decimals &&
+    (toAmountShow(loanItem.debt_remain, loanItem.decimals, 2) as any);
+  const [healthFactor, setHealthFactor] = useState(0) as any;
+  const [loading, setLoading] = useState<boolean>(false);
+  const [loadingBalance, setLoadingBalance] = useState<boolean>(false);
+  const [loadingHealthFactor, setLoadingHealthFactor] = useState<boolean>(false);
+
+  console.log('loanItem', loanItem);
 
   const onSubmit: SubmitHandler<IFormInput> = data => {
     setLoading(true);
@@ -63,9 +85,6 @@ export default function ModalBorrowComponent({
     }, 1000);
   };
 
-  const [loading, setLoading] = useState<boolean>(false);
-
-  const status = 'SUCCESS';
   const renderTitle = () => {
     if (step === 2) {
       if (status === TRANSACTION_STATUS.FAILED) {
@@ -76,9 +95,62 @@ export default function ModalBorrowComponent({
     return `${t('BORROW_MODAL_BORROW_REPAY')} ${currentToken?.toUpperCase()}`;
   };
 
+  const getTokenBalance = async () => {
+    try {
+      setLoadingBalance(true);
+      let res_balance = (await service.getCollateralBalance(address, chainId, currentToken)) as any;
+      console.log('res_balance', res_balance);
+      if (res_balance) {
+        setBalance(
+          res_balance.balance ? toAmountShow(res_balance.balance, res_balance.decimals, 2) : 0,
+        );
+      }
+      setLoadingBalance(false);
+    } catch (error) {
+      setLoadingBalance(false);
+      console.log('getTokenBalance error', error);
+    }
+  };
+
+  const inputMaxAmount = () => {
+    setTokenValue(deptRemain);
+  };
+
+  const getHealthFactor = async () => {
+    if (tokenValue && tokenValue > 0 && loanItem.decimals) {
+      const provider = await connector?.getProvider();
+
+      try {
+        setLoadingHealthFactor(true);
+        let healthFactor = (await service_ccfl_repay.getHealthFactor(
+          provider,
+          CONTRACT_ADDRESS,
+          toUnitWithDecimal(tokenValue, loanItem.decimals),
+          loanItem.loan_id,
+        )) as any;
+        if (healthFactor) {
+          setHealthFactor(healthFactor);
+        } else {
+          setHealthFactor(undefined);
+        }
+        setLoadingHealthFactor(false);
+      } catch (error) {
+        setLoadingHealthFactor(false);
+        console.log('getHealthFactor error', error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (isModalOpen) {
+      getHealthFactor();
+    }
+  }, [tokenValue]);
+
   useEffect(() => {
     if (isModalOpen) {
       setTokenValue(undefined);
+      getTokenBalance();
     }
   }, [isModalOpen]);
 
@@ -122,8 +194,16 @@ export default function ModalBorrowComponent({
                     </div>
                   </div>
                   <div className="flex justify-between">
-                    <span className="modal-borrow-usd">≈ $0.00</span>
-                    <Button disabled={loading} className="modal-borrow-max">
+                    <span className="modal-borrow-usd">
+                      ≈ $
+                      {tokenValue && priceToken[currentToken]
+                        ? (tokenValue * priceToken[currentToken]).toFixed(2)
+                        : 0}
+                    </span>
+                    <Button
+                      disabled={loading}
+                      className="modal-borrow-max"
+                      onClick={inputMaxAmount}>
                       {t('BORROW_MODAL_BORROW_MAX')}
                     </Button>
                     {errors.numberfield && <div>{errors.numberfield.message}</div>}
@@ -131,29 +211,18 @@ export default function ModalBorrowComponent({
                 </div>
                 <div className="modal-borrow-balance">
                   <span>
-                    {t('BORROW_MODAL_BORROW_WALLET_BALANCE')}: 50,000.00{' '}
+                    {t('BORROW_MODAL_BORROW_WALLET_BALANCE')}:{' '}
+                    {loadingBalance ? <LoadingOutlined className="mr-1" /> : balance}{' '}
                     {currentToken?.toUpperCase()}
                   </span>
-                  {/* <span className="insufficient">{t('BORROW_MODAL_INSUFFICIENT_BALANCE')}</span> */}
+                  {tokenValue && !(balance - tokenValue >= 0) && (
+                    <span className="insufficient">
+                      {balance - tokenValue}
+                      {t('BORROW_MODAL_INSUFFICIENT_BALANCE')}
+                    </span>
+                  )}
                 </div>
               </div>
-              {/* <div className="modal-borrow-overview">
-                <div className="modal-borrow-sub-title">Loan overview</div>
-                <div className="flex justify-between items-center">
-                  <span className="modal-borrow-sub-content">
-                    Variable APR
-                    <sup>
-                      <Tooltip placement="top" title={'a'} className="ml-1">
-                        <InfoCircleOutlined />
-                      </Tooltip>
-                    </sup>
-                  </span>
-                  <div className="modal-borrow-percent">
-                    <span>2.5</span>
-                    <span>%</span>
-                  </div>
-                </div>
-              </div> */}
               <div className="modal-borrow-overview">
                 <div className="modal-borrow-sub-title">{t('BORROW_MODAL_REPAY_OVERVIEW')}</div>
                 <div className="flex justify-between items-center mb-2">
@@ -162,13 +231,13 @@ export default function ModalBorrowComponent({
                   </div>
                   <div className="flex">
                     <div className="modal-borrow-repay">
-                      <span>5,000.00</span>
+                      <span>{deptRemain}</span>
                       <span className="ml-1">{isFiat ? 'USD' : currentToken?.toUpperCase()}</span>
                     </div>
-                    {tokenValue > 0 && (
+                    {tokenValue && tokenValue > 0 && (
                       <div className="modal-borrow-repay remain">
                         <ArrowRightOutlined className="mx-1" />
-                        <span>4,999.00</span>
+                        <span>{(deptRemain - tokenValue).toFixed(2)}</span>
                         <span className="ml-1">{isFiat ? 'USD' : currentToken?.toUpperCase()}</span>
                       </div>
                     )}
@@ -177,11 +246,11 @@ export default function ModalBorrowComponent({
                 <div className="flex justify-between items-center modal-borrow-health">
                   <div className="modal-borrow-sub-content">{t('BORROW_MODAL_BORROW_HEALTH')}</div>
                   <div className="flex">
-                    <span>3.31B</span>
-                    {tokenValue > 0 && (
+                    <span>{loanItem?.health}</span>
+                    {tokenValue && tokenValue > 0 && (
                       <div className="flex">
                         <ArrowRightOutlined className="mx-1" />
-                        <span className="">3.33B</span>
+                        <span className="">{healthFactor}</span>
                       </div>
                     )}
                   </div>

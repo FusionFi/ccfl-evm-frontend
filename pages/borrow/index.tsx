@@ -66,6 +66,7 @@ export default function BorrowPage() {
     offset: 0,
     pageSize: 10,
   });
+  const [loanItem, setLoanItem] = useState<any>(undefined);
 
   const handlePrice = async () => {
     try {
@@ -138,7 +139,7 @@ export default function BorrowPage() {
     setCollateralToken(token);
     setIsModalWithdrawCollateral(true);
   };
-  const showRepayModal = (token: string, repaymentCurrency: string) => {
+  const showRepayModal = (token: string, repaymentCurrency: string, record: any) => {
     if (repaymentCurrency) {
       setIsFiat(true);
       setCurrentToken(repaymentCurrency);
@@ -146,6 +147,7 @@ export default function BorrowPage() {
       setIsFiat(false);
       setCurrentToken(token);
     }
+    setLoanItem(record);
     setIsModalRepayOpen(true);
   };
   const showCollateralModal = (token: string) => {
@@ -354,6 +356,8 @@ export default function BorrowPage() {
         step={step}
         setStep={setStep}
         isFiat={isFiat}
+        priceToken={price}
+        loanItem={loanItem}
       />
       <ModalCollateralComponent
         isModalOpen={isModalCollateralOpen}

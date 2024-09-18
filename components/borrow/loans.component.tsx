@@ -68,7 +68,7 @@ export default function LoansComponent(props: LoansProps) {
         case ACTION_LOAN.WITHDRAW_COLLATERAL:
           return props.showWithdrawCollateralModal(record.collateral_asset);
         case ACTION_LOAN.REPAY:
-          return props.showRepayModal(record.asset, record.repayment_currency);
+          return props.showRepayModal(record.asset, record.repayment_currency, record);
         case ACTION_LOAN.DELETE:
           return handleDeleteLoan();
         default:
