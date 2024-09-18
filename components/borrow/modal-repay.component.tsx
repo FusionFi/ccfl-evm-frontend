@@ -130,8 +130,6 @@ export default function ModalBorrowComponent({
         )) as any;
         if (healthFactor) {
           setHealthFactor(healthFactor);
-        } else {
-          setHealthFactor(undefined);
         }
         setLoadingHealthFactor(false);
       } catch (error) {
@@ -247,11 +245,19 @@ export default function ModalBorrowComponent({
                   <div className="modal-borrow-sub-content">{t('BORROW_MODAL_BORROW_HEALTH')}</div>
                   <div className="flex">
                     <span>{loanItem?.health}</span>
-                    {tokenValue && tokenValue > 0 && (
+                    {tokenValue && tokenValue > 0 ? (
                       <div className="flex">
-                        <ArrowRightOutlined className="mx-1" />
-                        <span className="">{healthFactor}</span>
+                        {(healthFactor || loadingHealthFactor) && (
+                          <ArrowRightOutlined className="mx-1" />
+                        )}
+                        {loadingHealthFactor ? (
+                          <LoadingOutlined className="mr-1" />
+                        ) : (
+                          <span className="">{healthFactor}</span>
+                        )}
                       </div>
+                    ) : (
+                      <></>
                     )}
                   </div>
                 </div>
