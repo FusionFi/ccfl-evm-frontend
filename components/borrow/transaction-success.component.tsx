@@ -20,6 +20,7 @@ interface TransactionSuccessProps {
   collateralAmount?: any;
   txLink?: any;
   errorTx?: any;
+  handleLoans?: any;
 }
 
 export default function TransactionSuccessComponent({
@@ -36,12 +37,16 @@ export default function TransactionSuccessComponent({
   collateralAmount,
   txLink,
   errorTx,
+  handleLoans,
 }: TransactionSuccessProps) {
   const { t } = useTranslation('common');
 
   const handleFinish = () => {
     setStep(0);
     handleCancel();
+    if (status === TRANSACTION_STATUS.SUCCESS) {
+      handleLoans();
+    }
   };
 
   return (

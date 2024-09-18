@@ -345,6 +345,7 @@ export default function BorrowPage() {
         apr={modal.apr}
         decimalStableCoin={modal.decimals}
         priceStableCoin={price}
+        handleLoans={handleLoans}
       />
       <ModalRepayComponent
         isModalOpen={isModalRepayOpen}

@@ -38,6 +38,7 @@ interface ModalBorrowProps {
   apr: any;
   decimalStableCoin: any;
   priceStableCoin: any;
+  handleLoans?: any;
 }
 
 interface IFormInput {
@@ -56,6 +57,7 @@ export default function ModalBorrowComponent({
   apr,
   decimalStableCoin,
   priceStableCoin,
+  handleLoans,
 }: ModalBorrowProps) {
   const { control, handleSubmit, setValue } = useForm({
     defaultValues: {
@@ -764,6 +766,7 @@ export default function ModalBorrowComponent({
               collateralAmount={collateralValue}
               txLink={txHash}
               errorTx={errorTx}
+              handleLoans={handleLoans}
             />
           </div>
         )}
