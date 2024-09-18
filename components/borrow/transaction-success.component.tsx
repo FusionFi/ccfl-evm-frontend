@@ -44,7 +44,7 @@ export default function TransactionSuccessComponent({
   const handleFinish = () => {
     setStep(0);
     handleCancel();
-    if (status === TRANSACTION_STATUS.SUCCESS) {
+    if (status === TRANSACTION_STATUS.SUCCESS && handleLoans) {
       handleLoans();
     }
   };

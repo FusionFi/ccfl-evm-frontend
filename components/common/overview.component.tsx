@@ -5,9 +5,9 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 import { TYPE_COMMON } from '@/constants/common.constant';
 
 interface ItemProps {
-  text: string;
-  content: string;
-  type: string;
+  text: any;
+  content: any;
+  type: any;
 }
 
 interface ItemsProps extends Array<ItemProps> {}

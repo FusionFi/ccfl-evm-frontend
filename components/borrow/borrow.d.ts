@@ -21,6 +21,8 @@ export interface loanType {
   repayment_currency?: string;
   currency?: string;
   sub_name?: string;
+  decimals: any;
+  loan_id: any;
 }
 export interface LoanList {
   data: loanType[];
