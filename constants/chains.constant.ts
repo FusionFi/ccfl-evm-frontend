@@ -1,5 +1,5 @@
 import { avalancheFuji, mainnet, polygonMumbai, sepolia } from 'wagmi/chains';
-console.log('🚀 ~ sepolia:', sepolia);
+
 const adaChain = {
   id: 'ADA',
   name: 'Cardano',
