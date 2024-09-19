@@ -12,10 +12,12 @@ import { QuestionCircleIcon } from '@/components/icons/question-circle.icon';
 import { computeWithMinThreashold } from '@/utils/percent.util';
 import BigNumber from 'bignumber.js';
 import { getGasPrice } from '@wagmi/core'
-import { createPublicClient, http } from 'viem'
-import { estimateGas } from '@wagmi/core'
-import { parseEther } from 'viem'
-import { config as ConfigWagmi } from '@/libs/wagmi.lib';
+import { createConfigWithCustomTransports } from '@/libs/wagmi.lib';
+import supplyBE from '@/utils/backend/supply';
+import { useAccount } from 'wagmi';
+import { useApproval, useAllowance } from '@/hooks/erc20.hook'
+import { parseUnits } from 'ethers';
+import { useNetworkManager } from '@/hooks/supply.hook';
 
 type FieldType = {
   amount?: any;
@@ -31,11 +33,36 @@ export default function ModalSupplyComponent({
 
   const [_isApproved, _setIsApproved] = useState(false);
   const [_isPending, _setIsPending] = useState(false);
-  const [gas, setGas] = useState(0);
+  const [gas, setGas] = useState<any>(0);
+  const [ethPrice, setEthPrice] = useState<any>(0)
+  const { isConnected, chainId, address, chain } = useAccount();
+  const [, approve] = useApproval({
+    contractAddress: asset?.address
+  })
+  const [network] = useNetworkManager()
+  const selectedChain = useMemo(() => {
+    return network?.listMap?.get(network.selected) || {}
+  }, [network])
 
-  const handleApprove = useCallback(() => {
-    _setIsApproved(true);
-  }, []);
+  const WagmiConfig = useMemo(() => {
+    console.log()
+    return createConfigWithCustomTransports({ chain, rpc: selectedChain?.rpcUrl })
+  }, [selectedChain, chain])
+
+  const [allowance] = useAllowance({
+    contractAddress: asset?.address,
+    owner: address,
+    spender: asset?.pool_address,
+    config: WagmiConfig,
+  })
+
+  const handleApprove = useCallback(async (value: any) => {
+    await approve({
+      spender: asset.pool_address,
+      value: value
+    })
+    _setIsApproved(true)
+  }, [approve, asset]);
 
   const _handleOk = useCallback(() => {
     _setIsApproved(false)
@@ -50,30 +77,38 @@ export default function ModalSupplyComponent({
 
   const onFinish: FormProps<FieldType>['onFinish'] = (data) => {
     _setIsPending(true);
-    setTimeout(() => {
-      if (_isApproved) {
-        _handleOk();
-      } else {
-        handleApprove();
+    setTimeout(async () => {
+      try {
+        const _amount = parseUnits(data.amount.toString(), asset.decimals)
+        if (_isApproved) {
+          _handleOk();
+        } else {
+          await handleApprove(_amount.toString());
+        }
+      } catch (error) {
+        console.error('submit form failed: ', error)
+      } finally {
+        _setIsPending(false)
       }
-      _setIsPending(false)
     }, 1000);
   };
 
+  const fetchEthPrice = async () => {
+    try {
+      const result: any = await supplyBE.fetchPrice({
+        chainId
+      });
+      setEthPrice(result?.price || 0)
+    } catch (error) {
+      console.error('fetch gas to estimate failed: ', error)
+    }
+  }
+
   const fetchGasToEstimate = async () => {
     try {
-      const gasLimit = await estimateGas(ConfigWagmi, {
-        to: '0xd2135CfB216b74109775236E36d4b433F1DF507B',
-        value: parseEther('0.01'),
-      })
-      console.log(gasLimit, 'gasLimit')
-
-      const gasPrice = await getGasPrice(ConfigWagmi)
-      console.log('gasPrice: ', gasPrice)
-
-      const result = new BigNumber(gasPrice.toString()).times(gasLimit.toString()).dividedBy(10 ** 18).toString();
-      console.log('gas: ', result)
-
+      const gasPrice = await getGasPrice(WagmiConfig)
+      const result = new BigNumber(gasPrice.toString()).times(21000).dividedBy(10 ** 18).toString();
+      setGas(result.toString())
     } catch (error) {
       console.error('fetch gas to estimate failed: ', error)
     }
@@ -81,14 +116,20 @@ export default function ModalSupplyComponent({
 
   useEffect(() => {
     fetchGasToEstimate();
+    fetchEthPrice();
     const interval_ = setInterval(() => {
       fetchGasToEstimate();
-    }, 30000);
+    }, 15000);
 
     return (() => {
       clearInterval(interval_)
     })
   }, [])
+
+
+  const gasWithPrice = useMemo(() => {
+    return new BigNumber(gas).multipliedBy(ethPrice).toFormat(2)
+  }, [gas, ethPrice])
 
   return (
     <Modal
@@ -105,6 +146,7 @@ export default function ModalSupplyComponent({
           const isNotValidForm = formInstance.getFieldsError().some(item => item.errors.length > 0)
           const amount = formInstance.getFieldValue('amount')
           const max = new BigNumber(asset?.wallet_balance_in_wei).dividedBy(10 ** asset?.decimals).toNumber()
+          const isNotNeedToApprove = new BigNumber(allowance).isGreaterThanOrEqualTo(parseUnits(String(amount || 0), asset?.decimals).toString())
           const handleMaxInput = () => {
             formInstance.setFields([
               {
@@ -200,13 +242,17 @@ export default function ModalSupplyComponent({
                       </span>
                     </Tooltip>
                   </div>
-                  <span className="supply-modal-container__overview__apy__value text-sm">
-                    $<span className="text-white">0.02</span>
-                  </span>
+                  {gas != 0 && amount > 0 ? <span className="supply-modal-container__overview__apy__value text-sm">
+                    $<span className="text-white">{gasWithPrice}</span>
+                  </span> :
+                    <span className="supply-modal-container__overview__apy__value text-sm">
+                      --
+                    </span>
+                  }
                 </div>
               </div>
               <div className="supply-modal-container__action">
-                {_isApproved ? (
+                {_isApproved || isNotNeedToApprove ? (
                   <Button
                     type="primary"
                     loading={_isPending}

@@ -49,24 +49,33 @@ export default function SupplyPage() {
   const [asset, updateAssets] = useAssetManager();
   const [network] = useNetworkManager();
   const [user, updateUser] = useUserManager();
-
+  
   const fetchPublicData = async () => {
     try {
-      const [assets, pools]: any = await Promise.all([
+      const [assets, pools, contracts]: any = await Promise.all([
         supplyBE.fetchAssets({
           chainId: network.selected,
         }),
         supplyBE.fetchPools({
           chainId: network.selected,
         }),
+        supplyBE.fetchContracts({
+          chainId: network.selected,
+        }),
       ]);
 
       const poolMap = new Map(pools.map((item: any) => [item.asset, item]));
+      const contractMap = new Map(contracts.map((item: any) => [item.asset, {
+        pool_address: item.address
+      }]));
+
       updateAssets(
         assets.map((item: any) => {
           const x: any = poolMap.get(item.symbol);
+          const y: any = contractMap.get(item.symbol);
           return {
             ...x,
+            ...y,
             ...item,
           };
         }),

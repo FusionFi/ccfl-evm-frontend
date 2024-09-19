@@ -44,11 +44,29 @@ const fetchPools = async (params: any) => {
   return res || [];
 };
 
+const fetchPrice = async (params: any) => {
+  const chainId = params?.chainId || DEFAULT_CHAIN_ID
+  const asset = params?.asset || 'ETH'
+  const res = await http.get(`${URL}/price/${chainId}/${asset}`);
+
+  return res || [];
+};
+
+const fetchContracts = async (params: any) => {
+  const res = await http.get(`${URL}/contract`, {
+    params
+  });
+
+  return res || [];
+};
+
 const service = {
   fetchNetworks,
   fetchAssets,
   fetchUserSupply,
-  fetchPools
+  fetchPools,
+  fetchPrice,
+  fetchContracts
 };
 
 export default service;
