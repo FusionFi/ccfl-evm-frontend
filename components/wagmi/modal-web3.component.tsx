@@ -160,7 +160,7 @@ export default function ModalWeb3Component({ }: ModalCollateralProps) {
       setWallets(EVM_WALLETS);
     } else {
       setWallets(CARDANO_WALLETS.map(item => {
-        const isDetected = !!window?.cardano[item.id];
+        const isDetected = !!window?.cardano?.[item.id];
         return {
           ...item,
           isDetected

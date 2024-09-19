@@ -15,6 +15,9 @@ class BaseWallet {
   }
 
   async isEnabled() {
+    if(!this.provider) {
+      return false
+    }
     return await this.provider.isEnabled();
   }
 
