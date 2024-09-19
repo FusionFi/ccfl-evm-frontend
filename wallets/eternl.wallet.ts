@@ -7,7 +7,7 @@ let events: any = [];
 class EternlWallet extends BaseWallet {
   constructor() {
     super({
-      provider: window.cardano?.eternl,
+      provider: window?.cardano?.eternl,
       name: "Eternl",
       extensionLink:
         "https://chrome.google.com/webstore/detail/eternl/kmhcihpebfmpgmihbkipmjlmmioameka?hl=en",

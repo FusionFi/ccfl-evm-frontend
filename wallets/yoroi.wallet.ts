@@ -10,7 +10,7 @@ class YoroiWallet extends BaseWallet {
     }
 
     super({
-      provider: window.cardano?.yoroi,
+      provider: window?.cardano?.yoroi,
       name: "Yoroi",
       extensionLink: extensionLinkMap[CARDANO_NETWORK_ID] || extensionLinkMap[0]
     });
