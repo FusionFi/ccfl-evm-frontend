@@ -184,12 +184,12 @@ export default function BorrowPage() {
   const itemLeft = [
     {
       text: t('BORROW_OVERVIEW_BALANCE'),
-      content: dataLoan?.total_loan ? parseFloat(dataLoan?.total_loan).toFixed(2) : 0,
+      content: dataLoan?.total_loan ? dataLoan?.total_loan : 0,
       type: TYPE_COMMON.USD,
     },
     {
       text: t('BORROW_OVERVIEW_COLLATERAL'),
-      content: dataLoan?.total_collateral ? parseFloat(dataLoan?.total_collateral).toFixed(2) : 0,
+      content: dataLoan?.total_collateral ? dataLoan?.total_collateral : 0,
       type: TYPE_COMMON.USD,
     },
   ];
@@ -358,6 +358,7 @@ export default function BorrowPage() {
         isFiat={isFiat}
         priceToken={price}
         loanItem={loanItem}
+        handleLoans={handleLoans}
       />
       <ModalCollateralComponent
         isModalOpen={isModalCollateralOpen}

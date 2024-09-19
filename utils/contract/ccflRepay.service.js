@@ -76,7 +76,7 @@ const getHealthFactor = async (provider, contract_address, amount, loanId) => {
 // };
 //end debug - keep to check contract
 
-const approveBorrow = async (provider, contract_address, amount, adresss, tokenContract) => {
+const approveRepay = async (provider, contract_address, amount, adresss, tokenContract) => {
   try {
     console.log('PARAMS approveBorrow', provider, contract_address, amount, adresss, tokenContract);
     // addTokenToMetamask({ address: WBTC_ERC20_CONTRACT, symbol: 'WBTC', decimals: 8 });
@@ -100,38 +100,17 @@ const approveBorrow = async (provider, contract_address, amount, adresss, tokenC
   }
 };
 
-const createLoan = async (
-  amount,
-  amountCollateral,
-  stableCoin,
-  collateral,
-  IsYieldGenerating,
-  IsFiat,
-  provider,
-  account,
-  contract_address,
-) => {
+const repayLoan = async (amount, stableCoin, provider, account, contract_address, loanId) => {
   let overwrite = { from: account };
 
   try {
-    console.log(
-      'createLoan',
-      amount,
-      amountCollateral,
-      stableCoin,
-      collateral,
-      IsYieldGenerating,
-      IsFiat,
-      provider,
-      account,
-      contract_address,
-    );
+    console.log('repayLoan', amount, stableCoin, provider, account, contract_address, loanId);
     const tx = await sendRawTx(
       provider,
       abi,
       contract_address,
-      'createLoan',
-      [amount, stableCoin, amountCollateral, collateral, IsYieldGenerating, IsFiat],
+      'repayLoan',
+      [loanId, amount, stableCoin],
       overwrite,
     );
 
@@ -145,7 +124,7 @@ const createLoan = async (
       return;
     }
   } catch (error) {
-    console.error('Error calling create loan method:', error);
+    console.error('Error calling repay loan method:', error);
     return {
       error: error,
     };
@@ -198,28 +177,22 @@ const getGasFeeApprove = async (provider, account, amount, tokenAddress, contrac
   }
 };
 
-const getGasFeeCreateLoan = async (
+const getGasFeeRepayLoan = async (
   provider,
   account,
   contract_address,
   amount,
   stableCoin,
-  amountCollateral,
-  collateral,
-  IsYieldGenerating,
-  isFiat,
+  loanId,
 ) => {
   console.log(
-    'getGasFeeCreateLoan',
+    'getGasFeeRepayLoan',
     provider,
     account,
     contract_address,
     amount,
     stableCoin,
-    amountCollateral,
-    collateral,
-    IsYieldGenerating,
-    isFiat,
+    loanId,
   );
 
   let overwrite = { from: account };
@@ -231,8 +204,8 @@ const getGasFeeCreateLoan = async (
       provider,
       abi,
       contract_address,
-      'createLoan',
-      [amount, stableCoin, amountCollateral, collateral, IsYieldGenerating, isFiat],
+      'repayLoan',
+      [loanId, amount, stableCoin],
       overwrite,
       true,
     );
@@ -251,7 +224,7 @@ const getGasFeeCreateLoan = async (
       nonEnoughMoney: true,
     };
   } catch (error) {
-    console.log('getGasFeeCreateLoan error', error);
+    console.log('getGasFeeRepayLoan error', error);
     return {
       gasPrice: 0,
       nonEnoughMoney: false,
@@ -261,11 +234,11 @@ const getGasFeeCreateLoan = async (
 };
 
 const service_ccfl_borrow = {
-  approveBorrow,
-  createLoan,
+  approveRepay,
+  repayLoan,
   getGasFeeApprove,
   checkAllowance,
-  getGasFeeCreateLoan,
+  getGasFeeRepayLoan,
   getHealthFactor,
 };
 export default service_ccfl_borrow;

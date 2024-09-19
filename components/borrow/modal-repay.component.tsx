@@ -15,11 +15,10 @@ import {
 import TransactionSuccessComponent from '@/components/borrow/transaction-success.component';
 import { useTranslation } from 'next-i18next';
 import { TRANSACTION_STATUS, CONTRACT_ADDRESS } from '@/constants/common.constant';
-import { getTokenBalance } from '@/utils/contract/erc20';
 import service from '@/utils/backend/borrow';
 import service_ccfl_repay from '@/utils/contract/ccflRepay.service';
 import { useAccount } from 'wagmi';
-import { toAmountShow, toUnitWithDecimal } from '@/utils/common';
+import { toAmountShow, toLessPart, toUnitWithDecimal } from '@/utils/common';
 
 interface ModalBorrowProps {
   isModalOpen: boolean;
@@ -30,6 +29,7 @@ interface ModalBorrowProps {
   isFiat?: boolean;
   priceToken: any;
   loanItem: any;
+  handleLoans?: any;
 }
 
 interface IFormInput {
@@ -45,6 +45,7 @@ export default function ModalBorrowComponent({
   isFiat,
   priceToken,
   loanItem,
+  handleLoans,
 }: ModalBorrowProps) {
   const { t } = useTranslation('common');
   const { address, connector, chainId } = useAccount();
@@ -61,28 +62,81 @@ export default function ModalBorrowComponent({
 
   const [tokenValue, setTokenValue] = useState();
   const [status, setStatus] = useState(TRANSACTION_STATUS.SUCCESS);
-  const [balance, setBalance] = useState(0) as any;
+  const [stableCoinData, setStableCoinData] = useState({
+    balance: 0,
+    address: undefined,
+  }) as any;
   const deptRemain =
     loanItem &&
     loanItem.debt_remain &&
     loanItem.decimals &&
-    (toAmountShow(loanItem.debt_remain, loanItem.decimals, 2) as any);
+    (toLessPart(toAmountShow(loanItem.debt_remain, loanItem.decimals), 2) as any);
   const [healthFactor, setHealthFactor] = useState(0) as any;
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingBalance, setLoadingBalance] = useState<boolean>(false);
   const [loadingHealthFactor, setLoadingHealthFactor] = useState<boolean>(false);
+  const [loadingGasFee, setLoadingGasFee] = useState<boolean>(false);
+  const [gasFee, setGasFee] = useState(0);
+  const [errorEstimate, setErrorEstimate] = useState({
+    nonEnoughBalanceWallet: false,
+    exceedsAllowance: false,
+  }) as any;
+  const [errorTx, setErrorTx] = useState() as any;
+  const [txHash, setTxHash] = useState();
 
   console.log('loanItem', loanItem);
 
-  const onSubmit: SubmitHandler<IFormInput> = data => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      if (step == 1) {
-        setTokenValue(0);
+  const onSubmit: SubmitHandler<IFormInput> = async data => {
+    const provider = await connector?.getProvider();
+    if (step === 0) {
+      try {
+        setLoading(true);
+        let tx = await service_ccfl_repay.approveRepay(
+          provider,
+          CONTRACT_ADDRESS,
+          toUnitWithDecimal(tokenValue, loanItem.decimals),
+          address,
+          stableCoinData.address,
+        );
+        if (tx?.link) {
+          setStep(1);
+        }
+        if (tx?.error) {
+          setStatus(TRANSACTION_STATUS.FAILED);
+          setErrorTx(tx.error as any);
+        }
+        setLoading(false);
+      } catch (error) {
+        setStatus(TRANSACTION_STATUS.FAILED);
+        setLoading(false);
       }
-      setStep(step + 1);
-    }, 1000);
+    }
+    if (step == 1) {
+      try {
+        setLoading(true);
+        let IsFiat = false;
+        let tx = await service_ccfl_repay.repayLoan(
+          toUnitWithDecimal(tokenValue, loanItem.decimals),
+          stableCoinData.address,
+          provider,
+          address,
+          CONTRACT_ADDRESS,
+          loanItem.loan_id,
+        );
+        if (tx?.link) {
+          setStep(2);
+          setTxHash(tx.link);
+        }
+        if (tx?.error) {
+          setStatus(TRANSACTION_STATUS.FAILED);
+          setErrorTx(tx.error as any);
+        }
+        setLoading(false);
+      } catch (error) {
+        setStatus(TRANSACTION_STATUS.FAILED);
+        setLoading(false);
+      }
+    }
   };
 
   const renderTitle = () => {
@@ -95,20 +149,27 @@ export default function ModalBorrowComponent({
     return `${t('BORROW_MODAL_BORROW_REPAY')} ${currentToken?.toUpperCase()}`;
   };
 
-  const getTokenBalance = async () => {
+  const getTokenInfo = async () => {
     try {
       setLoadingBalance(true);
+      let res_info = (await service.getTokenInfo(currentToken, chainId)) as any;
       let res_balance = (await service.getCollateralBalance(address, chainId, currentToken)) as any;
-      console.log('res_balance', res_balance);
+
+      console.log('res_info', res_info, res_balance);
+      let token = stableCoinData;
       if (res_balance) {
-        setBalance(
-          res_balance.balance ? toAmountShow(res_balance.balance, res_balance.decimals, 2) : 0,
-        );
+        token.balance = res_balance.balance
+          ? toLessPart(toAmountShow(res_balance.balance, res_balance.decimals), 2)
+          : 0;
       }
+      if (res_info && res_info[0]) {
+        token.address = res_info[0].address;
+      }
+      setStableCoinData(token);
       setLoadingBalance(false);
     } catch (error) {
       setLoadingBalance(false);
-      console.log('getTokenBalance error', error);
+      console.log('getTokenInfo error', error);
     }
   };
 
@@ -136,19 +197,131 @@ export default function ModalBorrowComponent({
         setLoadingHealthFactor(false);
         console.log('getHealthFactor error', error);
       }
+    } else {
+      setHealthFactor(undefined);
     }
+  };
+
+  const getGasFeeApprove = async () => {
+    console.log('getGasFeeApprove', step, loanItem, tokenValue);
+
+    if (step === 0) {
+      if (
+        tokenValue &&
+        tokenValue > 0 &&
+        loanItem.decimals &&
+        loanItem.loan_id &&
+        stableCoinData.address
+      ) {
+        const provider = await connector?.getProvider();
+        try {
+          setLoadingGasFee(true);
+          let res = (await service_ccfl_repay.getGasFeeApprove(
+            provider,
+            address,
+            toUnitWithDecimal(tokenValue, loanItem.decimals),
+            stableCoinData.address,
+            CONTRACT_ADDRESS,
+          )) as any;
+          let res_price = (await service.getPrice(chainId, 'ETH')) as any;
+
+          console.log('gasFee approve', res, res_price);
+          if (res && res.gasPrice && res_price && res_price.price) {
+            let gasFee = res.gasPrice * res_price.price;
+            setGasFee(gasFee);
+          }
+          if (res && (res.nonEnoughMoney || res.exceedsAllowance)) {
+            setGasFee(0);
+            setErrorEstimate({
+              nonEnoughBalanceWallet: res.nonEnoughMoney,
+              exceedsAllowance: res.exceedsAllowance,
+            });
+          }
+          setLoadingGasFee(false);
+        } catch (error) {
+          setLoadingGasFee(false);
+          console.log('getGasFeeApprove error', error);
+        }
+      } else {
+        setGasFee(0);
+      }
+    }
+  };
+
+  const getGasFeeRepay = async () => {
+    if (step === 1) {
+      if (
+        tokenValue &&
+        tokenValue > 0 &&
+        stableCoinData.address &&
+        loanItem.decimals &&
+        loanItem.loan_id
+      ) {
+        const provider = await connector?.getProvider();
+        try {
+          setLoadingGasFee(true);
+          let res = (await service_ccfl_repay.getGasFeeRepayLoan(
+            provider,
+            address,
+            CONTRACT_ADDRESS,
+            toUnitWithDecimal(tokenValue, loanItem.decimals),
+            stableCoinData.address,
+            loanItem.loan_id,
+          )) as any;
+          let res_price = (await service.getPrice(chainId, 'ETH')) as any;
+          console.log('handleGetFeeCreateLoan res', res);
+          if (res && res.gasPrice && res_price && res_price.price) {
+            let gasFee = res.gasPrice * res_price.price;
+            setGasFee(gasFee);
+          }
+
+          if (res && (res.nonEnoughMoney || res.exceedsAllowance)) {
+            setGasFee(0);
+            setErrorEstimate({
+              nonEnoughBalanceWallet: res.nonEnoughMoney,
+              exceedsAllowance: res.exceedsAllowance,
+            });
+          }
+          setLoadingGasFee(false);
+        } catch (error: any) {
+          setLoadingGasFee(false);
+        }
+      } else {
+        setGasFee(0);
+      }
+    }
+  };
+
+  const resetState = () => {
+    setLoading(false);
+
+    // setStableCoinValue(undefined);
+    // setCollateralValue(undefined);
+    setHealthFactor(undefined);
+    setStatus(TRANSACTION_STATUS.SUCCESS);
+    setGasFee(0);
+    setErrorTx(undefined);
+    // setTxHash(undefined);
+    // setMinimalCollateral(0);
+    setErrorEstimate({
+      nonEnoughBalanceWallet: false,
+      exceedsAllowance: false,
+    });
+    setTokenValue(undefined);
   };
 
   useEffect(() => {
     if (isModalOpen) {
       getHealthFactor();
+      getGasFeeApprove();
+      getGasFeeRepay();
     }
   }, [tokenValue]);
 
   useEffect(() => {
     if (isModalOpen) {
-      setTokenValue(undefined);
-      getTokenBalance();
+      resetState();
+      getTokenInfo();
     }
   }, [isModalOpen]);
 
@@ -195,7 +368,7 @@ export default function ModalBorrowComponent({
                     <span className="modal-borrow-usd">
                       ≈ $
                       {tokenValue && priceToken[currentToken]
-                        ? (tokenValue * priceToken[currentToken]).toFixed(2)
+                        ? toLessPart(tokenValue * priceToken[currentToken], 2)
                         : 0}
                     </span>
                     <Button
@@ -210,17 +383,27 @@ export default function ModalBorrowComponent({
                 <div className="modal-borrow-balance">
                   <span>
                     {t('BORROW_MODAL_BORROW_WALLET_BALANCE')}:{' '}
-                    {loadingBalance ? <LoadingOutlined className="mr-1" /> : balance}{' '}
+                    {loadingBalance ? <LoadingOutlined className="mr-1" /> : stableCoinData.balance}{' '}
                     {currentToken?.toUpperCase()}
                   </span>
-                  {tokenValue && !(balance - tokenValue >= 0) && (
+                  {tokenValue && !(stableCoinData.balance - tokenValue >= 0) && (
                     <span className="insufficient">
-                      {balance - tokenValue}
+                      {stableCoinData.balance - tokenValue}
                       {t('BORROW_MODAL_INSUFFICIENT_BALANCE')}
                     </span>
                   )}
                 </div>
               </div>
+              {errorEstimate.nonEnoughBalanceWallet && (
+                <div className="modal-borrow-error">
+                  {t('BORROW_MODAL_BORROW_COLLATERAL_NON_ENOUGH')}
+                </div>
+              )}
+              {errorEstimate.exceedsAllowance && (
+                <div className="modal-borrow-error">
+                  {t('BORROW_MODAL_BORROW_COLLATERAL_EXCEEDS_ALLOWANCE')}
+                </div>
+              )}
               <div className="modal-borrow-overview">
                 <div className="modal-borrow-sub-title">{t('BORROW_MODAL_REPAY_OVERVIEW')}</div>
                 <div className="flex justify-between items-center mb-2">
@@ -235,7 +418,7 @@ export default function ModalBorrowComponent({
                     {tokenValue && tokenValue > 0 && (
                       <div className="modal-borrow-repay remain">
                         <ArrowRightOutlined className="mx-1" />
-                        <span>{(deptRemain - tokenValue).toFixed(2)}</span>
+                        <span>{toLessPart(deptRemain - tokenValue, 2)}</span>
                         <span className="ml-1">{isFiat ? 'USD' : currentToken?.toUpperCase()}</span>
                       </div>
                     )}
@@ -272,8 +455,12 @@ export default function ModalBorrowComponent({
                   </sup>
                 </div>
                 <div className="modal-borrow-gas-value">
-                  <span>$</span>
-                  <span className="ml-1">0.00</span>
+                  <span>$</span>{' '}
+                  {loadingGasFee ? (
+                    <LoadingOutlined className="mr-1" />
+                  ) : (
+                    <span className="ml-1">{toLessPart(gasFee, 2)}</span>
+                  )}
                 </div>
               </div>
               <div className="modal-borrow-footer">
@@ -288,7 +475,20 @@ export default function ModalBorrowComponent({
                     <Button
                       htmlType="submit"
                       type="primary"
-                      disabled={!tokenValue}
+                      disabled={
+                        !tokenValue ||
+                        loadingBalance ||
+                        loadingHealthFactor ||
+                        loading ||
+                        loadingGasFee ||
+                        errorEstimate.nonEnoughBalanceWallet ||
+                        errorEstimate.exceedsAllowance ||
+                        healthFactor === 0 ||
+                        gasFee === 0 ||
+                        !loanItem ||
+                        !stableCoinData.address ||
+                        stableCoinData.balance === 0
+                      }
                       className="w-full"
                       loading={loading}>
                       {t('BORROW_MODAL_BORROW_APPROVE', {
@@ -325,6 +525,8 @@ export default function ModalBorrowComponent({
               setStep={setStep}
               isRepay={true}
               status={status}
+              errorTx={errorTx}
+              handleLoans={handleLoans}
             />
           </div>
         )}
