@@ -16,8 +16,9 @@ import { createConfigWithCustomTransports } from '@/libs/wagmi.lib';
 import supplyBE from '@/utils/backend/supply';
 import { useAccount } from 'wagmi';
 import { useApproval, useAllowance } from '@/hooks/erc20.hook'
-import { parseUnits } from 'ethers';
+import { formatUnits, parseUnits } from 'ethers';
 import { useNetworkManager } from '@/hooks/supply.hook';
+import { useSupply } from '@/hooks/pool.hook'
 
 type FieldType = {
   amount?: any;
@@ -31,47 +32,59 @@ export default function ModalSupplyComponent({
 }: any) {
   const { t } = useTranslation('common');
 
-  const [_isApproved, _setIsApproved] = useState(false);
+  const [form] = Form.useForm();
   const [_isPending, _setIsPending] = useState(false);
   const [gas, setGas] = useState<any>(0);
   const [ethPrice, setEthPrice] = useState<any>(0)
   const { isConnected, chainId, address, chain } = useAccount();
-  const [, approve] = useApproval({
-    contractAddress: asset?.address
-  })
   const [network] = useNetworkManager()
   const selectedChain = useMemo(() => {
     return network?.listMap?.get(network.selected) || {}
   }, [network])
 
   const WagmiConfig = useMemo(() => {
-    console.log()
     return createConfigWithCustomTransports({ chain, rpc: selectedChain?.rpcUrl })
   }, [selectedChain, chain])
 
-  const [allowance] = useAllowance({
+  const [, approve] = useApproval({
+    contractAddress: asset?.address,
+    config: WagmiConfig
+  })
+
+  const [allowance, refetchAllowance] = useAllowance({
     contractAddress: asset?.address,
     owner: address,
     spender: asset?.pool_address,
     config: WagmiConfig,
+    query: {
+
+    }
+  })
+
+  const [supply] = useSupply({
+    contractAddress: asset?.pool_address,
   })
 
   const handleApprove = useCallback(async (value: any) => {
     await approve({
       spender: asset.pool_address,
       value: value
-    })
-    _setIsApproved(true)
-  }, [approve, asset]);
+    });
+    await refetchAllowance()
+  }, [approve, asset, refetchAllowance]);
 
-  const _handleOk = useCallback(() => {
-    _setIsApproved(false)
-    handleOk();
-  }, [])
+  const _handleOk = useCallback(async (amount: any) => {
+    const result = await supply({ amount })
+    handleOk({
+      amount: formatUnits(amount, asset?.decimals),
+      txUrl: `${selectedChain?.txUrl}tx/${result}`,
+      token: asset?.symbol
+    });
+  }, [asset, selectedChain])
 
   const _handleCancel = useCallback(() => {
-    _setIsApproved(false)
     _setIsPending(false)
+    form.resetFields();
     handleCancel();
   }, [])
 
@@ -80,8 +93,10 @@ export default function ModalSupplyComponent({
     setTimeout(async () => {
       try {
         const _amount = parseUnits(data.amount.toString(), asset.decimals)
-        if (_isApproved) {
-          _handleOk();
+        const isNotNeedToApprove = new BigNumber(allowance).isGreaterThanOrEqualTo(_amount.toString())
+
+        if (isNotNeedToApprove) {
+          await _handleOk(_amount);
         } else {
           await handleApprove(_amount.toString());
         }
@@ -141,12 +156,12 @@ export default function ModalSupplyComponent({
       onOk={_handleOk}
       onCancel={_handleCancel}
       footer={null}>
-      <Form onFinish={onFinish}>
+      <Form onFinish={onFinish} form={form}>
         {(_, formInstance) => {
           const isNotValidForm = formInstance.getFieldsError().some(item => item.errors.length > 0)
           const amount = formInstance.getFieldValue('amount')
           const max = new BigNumber(asset?.wallet_balance_in_wei).dividedBy(10 ** asset?.decimals).toNumber()
-          const isNotNeedToApprove = new BigNumber(allowance).isGreaterThanOrEqualTo(parseUnits(String(amount || 0), asset?.decimals).toString())
+          const isNotNeedToApprove = amount ? new BigNumber(allowance).isGreaterThanOrEqualTo(parseUnits(String(amount), asset?.decimals).toString()) : false;
           const handleMaxInput = () => {
             formInstance.setFields([
               {
@@ -252,7 +267,7 @@ export default function ModalSupplyComponent({
                 </div>
               </div>
               <div className="supply-modal-container__action">
-                {_isApproved || isNotNeedToApprove ? (
+                {isNotNeedToApprove ? (
                   <Button
                     type="primary"
                     loading={_isPending}

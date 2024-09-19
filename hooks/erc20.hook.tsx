@@ -1,22 +1,30 @@
 import { useCallback } from 'react';
 import { useWriteContract, useReadContract } from 'wagmi'
 import AbiERC20 from '@/utils/contract/abi/erc20.json'
+import { waitForTransactionReceipt } from '@wagmi/core'
+import { readContract } from '@wagmi/core'
 
-export function useApproval({ contractAddress, abi }: any) {
+export function useApproval({ contractAddress, abi, config }: any) {
     const { data: hash, writeContractAsync } = useWriteContract()
 
     if (!abi) {
         abi = AbiERC20;
     }
     const approve = useCallback(async ({ spender, value }: any) => {
-        return await writeContractAsync({
+        const result = await writeContractAsync({
             address: contractAddress,
             abi,
             functionName: 'approve',
             args: [spender, value],
         })
-    }, [writeContractAsync, contractAddress, abi]) as any
 
+        const tx = await waitForTransactionReceipt(config, {
+            confirmations: 1,
+            hash: result
+        })
+
+        return tx;
+    }, [writeContractAsync, contractAddress, abi, config]) as any
 
     return [hash, approve];
 }
@@ -26,7 +34,7 @@ export function useAllowance({ contractAddress, abi, owner, spender, config }: a
         abi = AbiERC20;
     }
 
-    const result = useReadContract({
+    const { data, refetch } = useReadContract({
         abi,
         address: contractAddress,
         functionName: 'allowance',
@@ -34,7 +42,7 @@ export function useAllowance({ contractAddress, abi, owner, spender, config }: a
         config
     })
 
-    const allowance: any = result?.data || 0
-    return [allowance];
+    const allowance: any = data || 0
+    return [allowance, refetch];
 }
 

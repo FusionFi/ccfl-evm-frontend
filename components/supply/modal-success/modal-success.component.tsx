@@ -11,7 +11,8 @@ import { LinkIcon } from '@/components/icons/link.icon';
 export default function ModalSuccessComponent({
   isModalOpen,
   handleCancel,
-  message
+  message,
+  txUrl
 }: any) {
   const { t } = useTranslation('common');
 
@@ -43,7 +44,7 @@ export default function ModalSuccessComponent({
             <LinkIcon />
             <Link
               className="modal-success-container__action__helper__link"
-              href={'https://psychcentral.com/blog/what-drives-our-need-for-approval'}
+              href={txUrl}
               target="_blank">
               {t('SUCCESS_MODAL_REVIEW')}
             </Link>

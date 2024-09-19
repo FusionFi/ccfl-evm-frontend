@@ -49,7 +49,7 @@ export default function SupplyPage() {
   const [asset, updateAssets] = useAssetManager();
   const [network] = useNetworkManager();
   const [user, updateUser] = useUserManager();
-  
+
   const fetchPublicData = async () => {
     try {
       const [assets, pools, contracts]: any = await Promise.all([
@@ -332,13 +332,13 @@ export default function SupplyPage() {
     );
   };
 
-  const handleModalSupplyOk = () => {
+  const handleModalSupplyOk = ({ amount, txUrl, token }: any) => {
     setModal({
       type: ModalType.Success,
-      txhash: 'input here',
+      txUrl,
       message: t('SUPPLY_SUCCESS_MODAL_MESSAGE', {
-        token: 'USDT',
-        amount: 4000,
+        token,
+        amount,
       }),
     });
   };
