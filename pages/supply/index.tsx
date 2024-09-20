@@ -54,21 +54,30 @@ export default function SupplyPage() {
 
   const fetchPublicData = async () => {
     try {
-      const [assets, pools]: any = await Promise.all([
+      const [assets, pools, contracts]: any = await Promise.all([
         supplyBE.fetchAssets({
           chainId: network.selected,
         }),
         supplyBE.fetchPools({
           chainId: network.selected,
         }),
+        supplyBE.fetchContracts({
+          chainId: network.selected,
+        }),
       ]);
 
       const poolMap = new Map(pools.map((item: any) => [item.asset, item]));
+      const contractMap = new Map(contracts.map((item: any) => [item.asset, {
+        pool_address: item.address
+      }]));
+
       updateAssets(
         assets.map((item: any) => {
           const x: any = poolMap.get(item.symbol);
+          const y: any = contractMap.get(item.symbol);
           return {
             ...x,
+            ...y,
             ...item,
           };
         }),
@@ -329,13 +338,13 @@ export default function SupplyPage() {
     );
   };
 
-  const handleModalSupplyOk = () => {
+  const handleModalSupplyOk = ({ amount, txUrl, token }: any) => {
     setModal({
       type: ModalType.Success,
-      txhash: 'input here',
+      txUrl,
       message: t('SUPPLY_SUCCESS_MODAL_MESSAGE', {
-        token: 'USDT',
-        amount: 4000,
+        token,
+        amount,
       }),
     });
   };

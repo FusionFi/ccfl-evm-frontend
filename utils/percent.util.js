@@ -1,10 +1,10 @@
-export function computeWithMinThreashold(value) {
+export function computeWithMinThreashold(value, suffix = '%') {
   if (!value) {
-    return `0%`;
+    return `0${suffix}`;
   }
 
   if (value < 0.01) {
-    return `<0.01%`
+    return `<0.01${suffix}`
   }
 
   const valueStr = value.toString();
@@ -19,9 +19,9 @@ export function computeWithMinThreashold(value) {
     const decimalPart = parts[1].substring(0, 2);
     const trimmedDecimalPart = decimalPart.replace(/0+$/, '');
 
-    return `${integerPart}.${trimmedDecimalPart} %`;
+    return `${integerPart}.${trimmedDecimalPart}${suffix}`;
   }
 
-  return integerPart + '%';
+  return integerPart + suffix;
 
 }
