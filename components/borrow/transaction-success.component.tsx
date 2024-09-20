@@ -74,7 +74,8 @@ export default function TransactionSuccessComponent({
             <React.Fragment>
               {isRepay && (
                 <span>
-                  {t('BORROW_MODAL_SUCCESS_REPAY_TOKEN')} 575 {currentToken?.toUpperCase()}
+                  {t('BORROW_MODAL_SUCCESS_REPAY_TOKEN')} {stableCoinAmount}{' '}
+                  {currentToken?.toUpperCase()}
                 </span>
               )}
               {isBorrow && (

@@ -295,15 +295,11 @@ export default function ModalBorrowComponent({
 
   const resetState = () => {
     setLoading(false);
-
-    // setStableCoinValue(undefined);
-    // setCollateralValue(undefined);
     setHealthFactor(undefined);
     setStatus(TRANSACTION_STATUS.SUCCESS);
     setGasFee(0);
     setErrorTx(undefined);
-    // setTxHash(undefined);
-    // setMinimalCollateral(0);
+    setTxHash(undefined);
     setErrorEstimate({
       nonEnoughBalanceWallet: false,
       exceedsAllowance: false,
@@ -321,8 +317,8 @@ export default function ModalBorrowComponent({
 
   useEffect(() => {
     if (isModalOpen) {
-      resetState();
       getTokenInfo();
+      resetState();
     }
   }, [isModalOpen]);
 
@@ -541,6 +537,8 @@ export default function ModalBorrowComponent({
               status={status}
               errorTx={errorTx}
               handleLoans={handleLoans}
+              txLink={txHash}
+              stableCoinAmount={tokenValue}
             />
           </div>
         )}
