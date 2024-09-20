@@ -32,6 +32,10 @@ export const config = defaultWagmiConfig({
 });
 
 export const createConfigWithCustomTransports = ({ chain, rpc }: any) => {
+  if(!chain) {
+    return config;
+  }
+  
   return createConfig({
     chains: [chain],
     transports: {

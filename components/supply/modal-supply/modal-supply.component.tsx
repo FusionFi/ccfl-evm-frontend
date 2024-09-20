@@ -63,6 +63,7 @@ export default function ModalSupplyComponent({
 
   const [supply] = useSupply({
     contractAddress: asset?.pool_address,
+    config: WagmiConfig,
   })
 
   const handleApprove = useCallback(async (value: any) => {

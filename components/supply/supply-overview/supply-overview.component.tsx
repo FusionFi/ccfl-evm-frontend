@@ -2,7 +2,7 @@ import { CHAIN_INFO, SUPPORTED_CHAINS } from '@/constants/chains.constant';
 import { useCardanoConnected, useNetworkManager } from '@/hooks/auth.hook';
 import { useCardanoWalletConnected } from '@/hooks/cardano-wallet.hook';
 import eventBus from '@/hooks/eventBus.hook';
-import { useUserManager } from '@/hooks/supply.hook';
+import { useUserManager, useNetworkManager as useSupplyNetworkManager } from '@/hooks/supply.hook';
 import supplyBE from '@/utils/backend/supply';
 import { computeWithMinThreashold } from '@/utils/percent.util';
 import { CaretDownOutlined } from '@ant-design/icons';
@@ -24,6 +24,7 @@ export default function SupplyOverviewComponent() {
   const [cardanoWalletConnected] = useCardanoWalletConnected();
   const [isCardanoConnected] = useCardanoConnected();
   const [chainId, updateNetwork] = useNetworkManager();
+  const [, updateNetworks] = useSupplyNetworkManager()
 
   const [user] = useUserManager();
   const isConnected_ = useMemo(() => {
@@ -43,7 +44,6 @@ export default function SupplyOverviewComponent() {
     return _chain;
   }, [chainId, isCardanoConnected]);
 
-  console.log('selectedChain: ', selectedChain);
   const labelRender: LabelRender = (props: any) => {
     let { value } = props;
 
@@ -101,21 +101,12 @@ export default function SupplyOverviewComponent() {
       console.error('handle network changing failed: ', error);
     }
   };
-  // const _updateSelectedChainId = () => {
-  //   try {
-  //     const result: any = network.listMap.get(chainId) || {};
-  //     if (result && result.chainId) {
-  //       selectNetwork(result.chainId);
-  //     }
-  //   } catch (error) {
-  //     console.error('update selected chain on SupplyOverviewComponent failed: ', error);
-  //   }
-  // };
+  
 
   const fetchInitiaData = async () => {
     try {
       const [_networks] = await Promise.all([supplyBE.fetchNetworks()]);
-      //updateNetworks(_networks);
+      updateNetworks(_networks);
     } catch (error) {
       console.error('fetch initial data on SupplyOverviewComponent failed: ', error);
     }
@@ -123,7 +114,6 @@ export default function SupplyOverviewComponent() {
 
   useEffect(() => {
     fetchInitiaData();
-    //_updateSelectedChainId();
   }, []);
 
   return (

@@ -97,7 +97,7 @@ export default function SupplyPage() {
       const [user] = await Promise.all([
         supplyBE.fetchUserSupply({
           chainId: network.selected,
-          address: '0x4A230206fD8E97121C1FE2748C63643dbAaE214E', // TODO
+          address: address,
         }),
       ]);
 
@@ -347,6 +347,8 @@ export default function SupplyPage() {
         amount,
       }),
     });
+
+    fetchUserData();
   };
 
   const handleModalWithdrawOk = () => {

@@ -2,7 +2,6 @@ import { useCallback } from 'react';
 import { useWriteContract, useReadContract } from 'wagmi'
 import AbiERC20 from '@/utils/contract/abi/erc20.json'
 import { waitForTransactionReceipt } from '@wagmi/core'
-import { readContract } from '@wagmi/core'
 
 export function useApproval({ contractAddress, abi, config }: any) {
     const { data: hash, writeContractAsync } = useWriteContract()
