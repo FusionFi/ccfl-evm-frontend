@@ -232,11 +232,12 @@ export default function ModalBorrowComponent({
           }
           if (res && (res.nonEnoughMoney || res.exceedsAllowance)) {
             setGasFee(0);
-            setErrorEstimate({
-              nonEnoughBalanceWallet: res.nonEnoughMoney,
-              exceedsAllowance: res.exceedsAllowance,
-            });
           }
+
+          setErrorEstimate({
+            nonEnoughBalanceWallet: res?.nonEnoughMoney,
+            exceedsAllowance: res?.exceedsAllowance,
+          });
           setLoadingGasFee(false);
         } catch (error) {
           setLoadingGasFee(false);
@@ -277,11 +278,11 @@ export default function ModalBorrowComponent({
 
           if (res && (res.nonEnoughMoney || res.exceedsAllowance)) {
             setGasFee(0);
-            setErrorEstimate({
-              nonEnoughBalanceWallet: res.nonEnoughMoney,
-              exceedsAllowance: res.exceedsAllowance,
-            });
           }
+          setErrorEstimate({
+            nonEnoughBalanceWallet: res?.nonEnoughMoney,
+            exceedsAllowance: res?.exceedsAllowance,
+          });
           setLoadingGasFee(false);
         } catch (error: any) {
           setLoadingGasFee(false);
@@ -294,15 +295,11 @@ export default function ModalBorrowComponent({
 
   const resetState = () => {
     setLoading(false);
-
-    // setStableCoinValue(undefined);
-    // setCollateralValue(undefined);
     setHealthFactor(undefined);
     setStatus(TRANSACTION_STATUS.SUCCESS);
     setGasFee(0);
     setErrorTx(undefined);
-    // setTxHash(undefined);
-    // setMinimalCollateral(0);
+    setTxHash(undefined);
     setErrorEstimate({
       nonEnoughBalanceWallet: false,
       exceedsAllowance: false,
@@ -320,8 +317,8 @@ export default function ModalBorrowComponent({
 
   useEffect(() => {
     if (isModalOpen) {
-      resetState();
       getTokenInfo();
+      resetState();
     }
   }, [isModalOpen]);
 
@@ -503,7 +500,20 @@ export default function ModalBorrowComponent({
                       <Button
                         htmlType="submit"
                         type="primary"
-                        disabled={!tokenValue}
+                        disabled={
+                          !tokenValue ||
+                          loadingBalance ||
+                          loadingHealthFactor ||
+                          loading ||
+                          loadingGasFee ||
+                          errorEstimate.nonEnoughBalanceWallet ||
+                          errorEstimate.exceedsAllowance ||
+                          healthFactor === 0 ||
+                          gasFee === 0 ||
+                          !loanItem ||
+                          !stableCoinData.address ||
+                          stableCoinData.balance === 0
+                        }
                         className="w-full"
                         loading={loading}>
                         {t('BORROW_MODAL_BORROW_PAY', {
@@ -527,6 +537,8 @@ export default function ModalBorrowComponent({
               status={status}
               errorTx={errorTx}
               handleLoans={handleLoans}
+              txLink={txHash}
+              stableCoinAmount={tokenValue}
             />
           </div>
         )}
