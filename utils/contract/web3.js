@@ -94,9 +94,12 @@ const getGasPrice = async (provider = null) => {
 
 const estimateGas = async (myContract, action, params, overwrite, provider) => {
   try {
+    console.log('1', myContract, action, params, overwrite);
     const gas = await myContract.methods[action](...params).estimateGas(overwrite);
     return new BigNumber(gas).times(1.2).toFixed(0);
   } catch (error) {
+    console.log('2', error);
+
     let _error = error;
     try {
       let tmp = error.toString().replace('Error: Internal JSON-RPC error.', '');
@@ -104,6 +107,7 @@ const estimateGas = async (myContract, action, params, overwrite, provider) => {
     } catch (e) {
       _error = error;
     }
+
     throw _error;
   }
 };
@@ -128,6 +132,8 @@ const sendRawTx = async (
     params,
     overwrite,
     isEstimateGas,
+    myWeb3,
+    myContract,
   );
   const gas = await estimateGas(myContract, action, params, overwrite, provider);
   console.log('--->gas: ', gas);

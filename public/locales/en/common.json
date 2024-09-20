@@ -310,5 +310,7 @@
   "WEB3_MODAL_COMPONENT_NAMI": "NAMI",
   "WEB3_MODAL_COMPONENT_ETERNL": "Eternl",
   "WEB3_MODAL_COMPONENT_WALLET_STATUS_DETECTED": "Detected",
-  "WEB3_MODAL_COMPONENT_TERM_CONDITION": "  By connecting a wallet, you agree to FusionFi’\n            <a href=\"#\" target=\"_blank\">\n              Terms of Service\n            </a>\n            and consent to its\n            <a href=\"#\" target=\"_blank\">\n              Privacy Policy.\n            </a>"
+  "WEB3_MODAL_COMPONENT_TERM_CONDITION": "  By connecting a wallet, you agree to FusionFi’\n            <a href=\"#\" target=\"_blank\">\n              Terms of Service\n            </a>\n            and consent to its\n            <a href=\"#\" target=\"_blank\">\n              Privacy Policy.\n            </a>",
+  "BORROW_MODAL_BORROW_COLLATERAL_NON_ENOUGH": "You don’t have enough collateral",
+  "BORROW_MODAL_BORROW_COLLATERAL_EXCEEDS_ALLOWANCE": "Transfer amount exceeds allowance"
 }

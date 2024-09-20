@@ -10,12 +10,7 @@ import ModalRepayComponent from '@/components/borrow/modal-repay.component';
 import OverviewComponent from '@/components/common/overview.component';
 import TitleComponent from '@/components/common/title.component';
 import { CHAIN_INFO, SUPPORTED_CHAINS } from '@/constants/chains.constant';
-import {
-  ASSET_LIST,
-  COLLATERAL_TOKEN,
-  DEFAULT_PARAMS,
-  TYPE_COMMON,
-} from '@/constants/common.constant';
+import { ASSET_LIST, COLLATERAL_TOKEN, TYPE_COMMON } from '@/constants/common.constant';
 import { NETWORKS, STAKE_DEFAULT_NETWORK } from '@/constants/networks';
 import { useNotification } from '@/hooks/notifications.hook';
 import { CaretDownOutlined } from '@ant-design/icons';
@@ -35,7 +30,6 @@ import ModalBorrowFiatComponent from '@/components/borrow/modal-borrow-fiat/moda
 import ModalCollateralComponent from '@/components/borrow/modal-collateral.component';
 import ModalWithdrawCollateralComponent from '@/components/borrow/modal-withdraw-collateral.component';
 import service from '@/utils/backend/borrow';
-import { toCurrency } from '@/utils/common';
 
 type LabelRender = SelectProps['labelRender'];
 enum BorrowModalType {
@@ -123,18 +117,19 @@ export default function BorrowPage() {
     offset: 0,
     pageSize: 10,
   });
+  const [loanItem, setLoanItem] = useState<any>(undefined);
 
   const handlePrice = async () => {
     try {
       setLoadingAsset(true);
-      let data = (await service.getPool(DEFAULT_PARAMS.chainId)) as any;
+      let data = (await service.getPool(chainId)) as any;
       let price = {
         USDT: null,
         USDC: null,
       };
 
-      let priceUSDC = (await service.getPrice(DEFAULT_PARAMS.chainId, ASSET_LIST.USDC)) as any;
-      let priceUSDT = (await service.getPrice(DEFAULT_PARAMS.chainId, ASSET_LIST.USDT)) as any;
+      let priceUSDC = (await service.getPrice(chainId, ASSET_LIST.USDC)) as any;
+      let priceUSDT = (await service.getPrice(chainId, ASSET_LIST.USDT)) as any;
       price.USDC = priceUSDC?.price;
       price.USDT = priceUSDT?.price;
       setPrice(price);
@@ -157,12 +152,7 @@ export default function BorrowPage() {
   const handleLoans = async (offset = 0, limit = 10) => {
     try {
       setLoading(true);
-      let data = (await service.getLoans(
-        DEFAULT_PARAMS.address,
-        DEFAULT_PARAMS.chainId,
-        offset,
-        limit,
-      )) as any;
+      let data = (await service.getLoans(address, chainId, offset, limit)) as any;
       if (data) {
         setDataLoan(data);
       }
@@ -200,7 +190,7 @@ export default function BorrowPage() {
     setCollateralToken(token);
     setIsModalWithdrawCollateral(true);
   };
-  const showRepayModal = (token: string, repaymentCurrency: string) => {
+  const showRepayModal = (token: string, repaymentCurrency: string, record: any) => {
     if (repaymentCurrency) {
       setIsFiat(true);
       setCurrentToken(repaymentCurrency);
@@ -208,6 +198,7 @@ export default function BorrowPage() {
       setIsFiat(false);
       setCurrentToken(token);
     }
+    setLoanItem(record);
     setIsModalRepayOpen(true);
   };
   const showCollateralModal = (token: string) => {
@@ -244,12 +235,12 @@ export default function BorrowPage() {
   const itemLeft = [
     {
       text: t('BORROW_OVERVIEW_BALANCE'),
-      content: toCurrency(dataLoan?.total_loan, 2),
+      content: dataLoan?.total_loan ? dataLoan?.total_loan : 0,
       type: TYPE_COMMON.USD,
     },
     {
       text: t('BORROW_OVERVIEW_COLLATERAL'),
-      content: toCurrency(dataLoan?.total_collateral, 2),
+      content: dataLoan?.total_collateral ? dataLoan?.total_collateral : 0,
       type: TYPE_COMMON.USD,
     },
   ];
@@ -406,13 +397,15 @@ export default function BorrowPage() {
       <ModalBorrowComponent
         isModalOpen={BorrowModalType.Crypto == modal.type}
         handleCancel={handleCancel}
-        currentToken={modal.token}
+        stableCoin={modal.token}
         step={step}
         setStep={setStep}
         token={token}
         setToken={setToken}
         apr={modal.apr}
         decimalStableCoin={modal.decimals}
+        priceStableCoin={price}
+        handleLoans={handleLoans}
       />
       <ModalRepayComponent
         isModalOpen={isModalRepayOpen}
@@ -421,6 +414,9 @@ export default function BorrowPage() {
         step={step}
         setStep={setStep}
         isFiat={isFiat}
+        priceToken={price}
+        loanItem={loanItem}
+        handleLoans={handleLoans}
       />
       <ModalCollateralComponent
         isModalOpen={isModalCollateralOpen}

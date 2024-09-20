@@ -5,7 +5,7 @@ import { ASSET_TYPE } from '@/constants/common.constant';
 import { STAKE_DEFAULT_NETWORK } from '@/constants/networks';
 import { useAuth } from '@/hooks/auth.hook';
 import eventBus from '@/hooks/eventBus.hook';
-import { toAmountShow, toCurrency } from '@/utils/common';
+import { toAmountShow, toLessPart } from '@/utils/common';
 import { Button, Skeleton } from 'antd';
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
@@ -123,10 +123,10 @@ export default function assetComponent({
                               {t('BORROW_MODAL_BORROW_BORROW_LOAN_AVAILABLE')}
                             </div>
                             <div>
-                              {toCurrency(toAmountShow(item.loan_available, item.decimals), 2)}
+                              {toLessPart(toAmountShow(item.loan_available, item.decimals), 2)}
                             </div>
                             <div className="usd">
-                              $ {toCurrency(toAmountShow(item.usd, item.decimals), 2)}
+                              $ {toLessPart(toAmountShow(item.usd, item.decimals), 2)}
                             </div>
                           </div>
                         )}
@@ -134,7 +134,7 @@ export default function assetComponent({
                           <div className="asset-title">
                             {t('BORROW_FIAT_MODAL_TAB_COLLATERAL_APY')}
                           </div>
-                          {toCurrency(item.apr, 2)}%
+                          {toLessPart(item.apr, 2)}%
                         </div>
                       </div>
                     </div>

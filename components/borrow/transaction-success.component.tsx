@@ -18,8 +18,9 @@ interface TransactionSuccessProps {
   isWithdrawCollateral?: boolean;
   stableCoinAmount?: any;
   collateralAmount?: any;
-  hash?: any;
+  txLink?: any;
   errorTx?: any;
+  handleLoans?: any;
 }
 
 export default function TransactionSuccessComponent({
@@ -34,14 +35,18 @@ export default function TransactionSuccessComponent({
   isWithdrawCollateral = false,
   stableCoinAmount,
   collateralAmount,
-  hash,
+  txLink,
   errorTx,
+  handleLoans,
 }: TransactionSuccessProps) {
   const { t } = useTranslation('common');
 
   const handleFinish = () => {
     setStep(0);
     handleCancel();
+    if (status === TRANSACTION_STATUS.SUCCESS && handleLoans) {
+      handleLoans();
+    }
   };
 
   return (
@@ -94,7 +99,7 @@ export default function TransactionSuccessComponent({
             </React.Fragment>
           )}
         </div>
-        {isBorrow && (
+        {isBorrow && status === TRANSACTION_STATUS.SUCCESS && (
           <div className="coin">
             <Image
               className="mr-2"
@@ -108,7 +113,7 @@ export default function TransactionSuccessComponent({
             </span>
           </div>
         )}
-        {isBorrow && (
+        {/* {isBorrow && (
           <div className="tokens">
             <div className="mb-2">{t('BORROW_MODAL_SUCCESS_BORROW_RECEIVED')}</div>
             <div className="flex justify-between">
@@ -116,11 +121,13 @@ export default function TransactionSuccessComponent({
               <span className="metamask">{t('BORROW_MODAL_SUCCESS_BORROW_METAMASK')}</span>
             </div>
           </div>
+        )} */}
+        {txLink && (
+          <Link href={`${TX_LINK}${txLink}`} className="tx" target="_blank">
+            <ExportOutlined />
+            {t('BORROW_MODAL_SUCCESS_BORROW_REVIEW')}
+          </Link>
         )}
-        <Link href={`${TX_LINK}${hash}`} className="tx" target="_blank">
-          <ExportOutlined />
-          {t('BORROW_MODAL_SUCCESS_BORROW_REVIEW')}
-        </Link>
         <div className="px-6 py-4">
           <Button className="w-full" onClick={handleFinish}>
             {t('BORROW_MODAL_SUCCESS_BORROW_OK')}
