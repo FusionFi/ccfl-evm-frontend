@@ -1,12 +1,12 @@
 'use client';
-import { http, createConfig } from 'wagmi'
 import { defaultWagmiConfig } from '@web3modal/wagmi/react/config';
-import { mainnet, sepolia } from 'wagmi/chains';
+import { createConfig, http } from 'wagmi';
+import { avalancheFuji, mainnet, polygonAmoy, sepolia } from 'wagmi/chains';
 
 import yoroiConnector from '@/libs/YoroiWalletConnector';
 
 export const projectId = 'e44a1758d79ad2f0154ca0b27b46b9f0';
-export const chains = [sepolia, mainnet] as const; //TODO: config chains from backend side
+export const chains = [avalancheFuji, mainnet, polygonAmoy, sepolia] as const; //TODO: config chains from backend side
 
 export const metadata = {
   name: 'fusionfi',
@@ -37,5 +37,5 @@ export const createConfigWithCustomTransports = ({ chain, rpc }: any) => {
     transports: {
       [chain.id]: http(rpc),
     },
-  })
-}
+  });
+};

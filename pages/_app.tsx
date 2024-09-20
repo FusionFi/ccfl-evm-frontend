@@ -1,5 +1,4 @@
 import { MainLayout } from '@/layouts/main.layout';
-import yoroiConnector from '@/libs/YoroiWalletConnector';
 import { wrapper } from '@/store/index.store';
 import '@/styles/antd.css';
 import '@/styles/globals-custom.scss';
@@ -8,7 +7,6 @@ import { StyleProvider } from '@ant-design/cssinjs';
 import { Inter } from '@next/font/google';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createWeb3Modal } from '@web3modal/wagmi/react';
-import { defaultWagmiConfig } from '@web3modal/wagmi/react/config';
 import Aos from 'aos';
 import 'aos/dist/aos.css';
 import { appWithTranslation } from 'next-i18next';
@@ -20,8 +18,9 @@ import { Provider } from 'react-redux';
 import { persistStore } from 'redux-persist';
 import { PersistGate } from 'redux-persist/integration/react';
 import { WagmiProvider } from 'wagmi';
-import { mainnet, sepolia } from 'wagmi/chains';
-import { config, projectId } from '@/libs/wagmi.lib'
+
+import { config, projectId } from '@/libs/wagmi.lib';
+
 //const CHAIN_ID_CONFIG = Number(process.env.NEXT_PUBLIC_CHAIN_ID);
 
 // 0. Setup queryClient
@@ -34,8 +33,6 @@ createWeb3Modal({
   enableAnalytics: true, // Optional - defaults to your Cloud configuration
   enableOnramp: false, // Optional - false as default
 });
-// TODO: config supported chains using the BE side
-const supportedChains = process.env.NEXT_PUBLIC_IS_TESTNET ? [sepolia] : [mainnet];
 
 const inter = Inter({
   subsets: ['latin'],

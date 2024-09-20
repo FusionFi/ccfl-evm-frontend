@@ -14,6 +14,7 @@ import Image from 'next/image';
 import { useEffect, useMemo } from 'react';
 import { useAccount } from 'wagmi';
 import cssClass from './supply-overview.component.module.scss';
+
 type LabelRender = SelectProps['labelRender'];
 
 export default function SupplyOverviewComponent() {
