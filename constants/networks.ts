@@ -2,6 +2,7 @@ import ethTokenIcon from '@/public/images/common/WETH.png';
 import avalancheIcon from '@/public/images/stake/networks/avalanche.png';
 import defiIcon from '@/public/images/stake/networks/defi.png';
 import oasIcon from '@/public/images/stake/networks/oas.png';
+import polygonIcon from '@/public/images/stake/networks/polygon.png';
 import oasTokenIcon from '@/public/images/stake/tokens/oas.png';
 export const NETWORKS_MAINNET = [
   {
@@ -69,6 +70,22 @@ export const NETWORKS_TESTNET = [
       symbol: 'AVAX',
       decimals: 18,
       img_url: avalancheIcon,
+    },
+  },
+  {
+    id: 80002,
+    chain_id: '0x13882',
+    chain_id_decimals: 80002,
+    img_url: polygonIcon,
+    name: 'Polygon Amoy',
+    gasPrice: null,
+    explorer: 'https://amoy.polygonscan.com',
+    rpc: 'https://rpc-amoy.polygon.technology',
+    nativeCurrency: {
+      name: 'POL',
+      symbol: 'POL',
+      decimals: 18,
+      img_url: polygonIcon,
     },
   },
   {
