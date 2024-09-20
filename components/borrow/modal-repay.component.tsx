@@ -232,11 +232,12 @@ export default function ModalBorrowComponent({
           }
           if (res && (res.nonEnoughMoney || res.exceedsAllowance)) {
             setGasFee(0);
-            setErrorEstimate({
-              nonEnoughBalanceWallet: res.nonEnoughMoney,
-              exceedsAllowance: res.exceedsAllowance,
-            });
           }
+
+          setErrorEstimate({
+            nonEnoughBalanceWallet: res?.nonEnoughMoney,
+            exceedsAllowance: res?.exceedsAllowance,
+          });
           setLoadingGasFee(false);
         } catch (error) {
           setLoadingGasFee(false);
@@ -277,11 +278,11 @@ export default function ModalBorrowComponent({
 
           if (res && (res.nonEnoughMoney || res.exceedsAllowance)) {
             setGasFee(0);
-            setErrorEstimate({
-              nonEnoughBalanceWallet: res.nonEnoughMoney,
-              exceedsAllowance: res.exceedsAllowance,
-            });
           }
+          setErrorEstimate({
+            nonEnoughBalanceWallet: res?.nonEnoughMoney,
+            exceedsAllowance: res?.exceedsAllowance,
+          });
           setLoadingGasFee(false);
         } catch (error: any) {
           setLoadingGasFee(false);
@@ -503,7 +504,20 @@ export default function ModalBorrowComponent({
                       <Button
                         htmlType="submit"
                         type="primary"
-                        disabled={!tokenValue}
+                        disabled={
+                          !tokenValue ||
+                          loadingBalance ||
+                          loadingHealthFactor ||
+                          loading ||
+                          loadingGasFee ||
+                          errorEstimate.nonEnoughBalanceWallet ||
+                          errorEstimate.exceedsAllowance ||
+                          healthFactor === 0 ||
+                          gasFee === 0 ||
+                          !loanItem ||
+                          !stableCoinData.address ||
+                          stableCoinData.balance === 0
+                        }
                         className="w-full"
                         loading={loading}>
                         {t('BORROW_MODAL_BORROW_PAY', {

@@ -324,12 +324,12 @@ export default function ModalBorrowComponent({
           }
           if (res && (res.nonEnoughMoney || res.exceedsAllowance)) {
             setGasFee(0);
-            setErrorEstimate({
-              ...errorEstimate,
-              nonEnoughBalanceWallet: res.nonEnoughMoney,
-              exceedsAllowance: res.exceedsAllowance,
-            });
           }
+          setErrorEstimate({
+            ...errorEstimate,
+            nonEnoughBalanceWallet: res?.nonEnoughMoney,
+            exceedsAllowance: res?.exceedsAllowance,
+          });
           setLoadingGasFee(false);
         } catch (error) {
           setLoadingGasFee(false);
@@ -374,12 +374,12 @@ export default function ModalBorrowComponent({
 
           if (res && (res.nonEnoughMoney || res.exceedsAllowance)) {
             setGasFee(0);
-            setErrorEstimate({
-              ...errorEstimate,
-              nonEnoughBalanceWallet: res.nonEnoughMoney,
-              exceedsAllowance: res.exceedsAllowance,
-            });
           }
+          setErrorEstimate({
+            ...errorEstimate,
+            nonEnoughBalanceWallet: res?.nonEnoughMoney,
+            exceedsAllowance: res?.exceedsAllowance,
+          });
           setLoadingGasFee(false);
         } catch (error: any) {
           setLoadingGasFee(false);
