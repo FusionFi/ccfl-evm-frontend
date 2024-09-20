@@ -1,4 +1,4 @@
-import { avalancheFuji, mainnet, polygonMumbai, sepolia } from 'wagmi/chains';
+import { avalancheFuji, mainnet, polygonAmoy, sepolia } from 'wagmi/chains';
 
 const adaChain = {
   id: 'ADA',
@@ -45,7 +45,7 @@ export const TESTNET_CHAINS = [
     logo: '/images/tokens/avax.png',
   },
   {
-    ...polygonMumbai,
+    ...polygonAmoy,
     logo: '/images/tokens/matic.png',
   },
   {

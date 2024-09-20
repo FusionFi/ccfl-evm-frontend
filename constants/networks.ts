@@ -1,4 +1,5 @@
 import ethTokenIcon from '@/public/images/common/WETH.png';
+import avalancheIcon from '@/public/images/stake/networks/avalanche.png';
 import defiIcon from '@/public/images/stake/networks/defi.png';
 import oasIcon from '@/public/images/stake/networks/oas.png';
 import oasTokenIcon from '@/public/images/stake/tokens/oas.png';
@@ -52,6 +53,22 @@ export const NETWORKS_TESTNET = [
       symbol: 'ETH',
       decimals: 18,
       img_url: ethTokenIcon,
+    },
+  },
+  {
+    id: 43113,
+    chain_id: '0xA869',
+    chain_id_decimals: 43113,
+    img_url: avalancheIcon,
+    name: 'Alanvache Fuji Network',
+    gasPrice: null,
+    explorer: 'https://explorer.oasys.games/',
+    rpc: 'https://testnet.snowtrace.io',
+    nativeCurrency: {
+      name: 'AVAX',
+      symbol: 'AVAX',
+      decimals: 18,
+      img_url: avalancheIcon,
     },
   },
   {

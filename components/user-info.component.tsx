@@ -5,20 +5,20 @@ import { truncate } from '@/utils/address.util';
 //import css class module
 import { UserAvatar } from '@/components/user-avatar.component';
 import cssClass from '@/components/user-info.module.scss';
-import { NETWORKS, STAKE_DEFAULT_NETWORK } from '@/constants/networks';
+import { CHAIN_INFO, SUPPORTED_CHAINS } from '@/constants/chains.constant';
+import { NETWORKS } from '@/constants/networks';
 import { useResetState } from '@/hooks/auth.hook';
 import eventBus from '@/hooks/eventBus.hook';
 import { useNotification } from '@/hooks/notifications.hook';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import Image from 'next/image';
-import { CHAIN_INFO, SUPPORTED_CHAINS } from '@/constants/chains.constant';
 
+import { useCardanoConnected, useNetworkManager } from '@/hooks/auth.hook';
+import { useCardanoWalletConnected, useCardanoWalletDisconnect } from '@/hooks/cardano-wallet.hook';
 import { Button } from 'antd';
-import { useCallback, useEffect, useState, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { useAccount, useDisconnect, useSwitchChain } from 'wagmi';
-import { useCardanoConnected, useNetworkManager } from '@/hooks/auth.hook';
-import { useCardanoWalletConnected, useCardanoWalletDisconnect } from '@/hooks/cardano-wallet.hook'
 
 export const UserInfoComponent = () => {
   /**
@@ -31,7 +31,7 @@ export const UserInfoComponent = () => {
    */
   const { disconnect } = useDisconnect();
   const [resetState] = useResetState();
-  const { address, connector } = useAccount();
+  const { address, connector, chainId: wagmiChainId } = useAccount();
   const { getBalanceCoin } = useWeb3();
   const [showSuccess, showError, showWarning, contextHolder] = useNotification();
   const { switchChain } = useSwitchChain();
@@ -46,16 +46,15 @@ export const UserInfoComponent = () => {
     let _chain = CHAIN_INFO.get(chainId);
     if (!_chain) {
       if (isCardanoConnected) {
-        _chain = CHAIN_MAP.get('ADA')
+        _chain = CHAIN_MAP.get('ADA');
       } else {
-        _chain = CHAIN_MAP.get(11155111)
-
+        _chain = CHAIN_MAP.get(11155111);
       }
     }
     return _chain;
   }, [chainId, isCardanoConnected]);
 
-  console.log('selectedChain: ', selectedChain)
+  console.log('selectedChain: ', selectedChain);
 
   const address_ = useMemo(() => {
     if (isCardanoConnected) {
@@ -63,15 +62,18 @@ export const UserInfoComponent = () => {
     }
 
     return address;
-  }, [address, cardanoWalletConnected?.address])
+  }, [address, cardanoWalletConnected?.address]);
 
   /**
    * FUNCTIONS
    */
   const switchNetwork = async () => {
     try {
-      const provider = { rpcUrl: STAKE_DEFAULT_NETWORK?.rpc };
-      const rs = await switchChain({ chainId: STAKE_DEFAULT_NETWORK.chain_id_decimals });
+      const provider = { rpcUrl: selectedChain?.rpc };
+      const rs = await switchChain({ chainId: selectedChain?.id });
+
+      console.log('🚀 ~ switchNetwork ~ rs:', rs);
+      updateNetwork(selectedChain?.id);
     } catch (error) {
       console.log('🚀 ~ switchNetwork ~ error:', error);
       showError(error);
@@ -79,14 +81,16 @@ export const UserInfoComponent = () => {
   };
   const initNetworkInfo = useCallback(() => {
     if (chainId) {
+      console.log('🚀 ~ initNetworkInfo ~ chainId:', chainId);
       const networkCurrent = NETWORKS.find(item => item.chain_id_decimals === chainId);
+      console.log('🚀 ~ initNetworkInfo ~ networkCurrent:', networkCurrent);
       setNetworkInfo(networkCurrent || null);
     }
   }, [chainId]);
 
   const handleDisconnect = useCallback(() => {
     if (isCardanoConnected) {
-      disconnectCardanoWallet()
+      disconnectCardanoWallet();
     } else {
       disconnect();
     }
@@ -141,11 +145,11 @@ export const UserInfoComponent = () => {
       return null; // TODO: need to update here
     }
 
-    if (!networkInfo) {
+    if (!networkInfo || (networkInfo && networkInfo.id !== wagmiChainId)) {
       return (
         <div className="flex items-center">
           <Button className="switch-network btn-primary-custom" onClick={() => switchNetwork()}>
-            <ExclamationCircleOutlined /> Switch to {STAKE_DEFAULT_NETWORK?.name}
+            <ExclamationCircleOutlined /> Switch to {selectedChain?.name}
           </Button>
         </div>
       );
@@ -177,7 +181,7 @@ export const UserInfoComponent = () => {
     <div className={twMerge('flex justify-end items-center', cssClass.userInfo)}>
       {contextHolder}
       <div className="user-info-content flex items-center">
-        <div className='chain'>
+        <div className="chain">
           <Image
             src={selectedChain?.logo}
             alt={selectedChain?.name}
@@ -185,18 +189,18 @@ export const UserInfoComponent = () => {
             height={24}
             className="mr-2"
           />
-          <span>
-            {isCardanoConnected ? 'Cardano' : 'EVM'}:
-          </span>
+          <span>{isCardanoConnected ? 'Cardano' : 'EVM'}:</span>
         </div>
         <UserBalance />
-        {(networkInfo || isCardanoConnected) && <div className="rounded-full user-icon">
-          <div className="btn-actions">
-            <Button size="small" onClick={() => handleDisconnect()}>
-              <UserAvatar address={address_} size={24} /> {truncate(address_)} <LogoutIcon />
-            </Button>
+        {((networkInfo && networkInfo.id === wagmiChainId) || isCardanoConnected) && (
+          <div className="rounded-full user-icon">
+            <div className="btn-actions">
+              <Button size="small" onClick={() => handleDisconnect()}>
+                <UserAvatar address={address_} size={24} /> {truncate(address_)} <LogoutIcon />
+              </Button>
+            </div>
           </div>
-        </div>}
+        )}
       </div>
     </div>
   );

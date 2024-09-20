@@ -20,7 +20,7 @@ import { Provider } from 'react-redux';
 import { persistStore } from 'redux-persist';
 import { PersistGate } from 'redux-persist/integration/react';
 import { WagmiProvider } from 'wagmi';
-import { mainnet, sepolia } from 'wagmi/chains';
+import { avalancheFuji, mainnet, polygonAmoy, sepolia } from 'wagmi/chains';
 //const CHAIN_ID_CONFIG = Number(process.env.NEXT_PUBLIC_CHAIN_ID);
 
 // 0. Setup queryClient
@@ -37,7 +37,7 @@ const metadata = {
   icons: ['https://eadev.fusionfi.io/favicon.ico'], // TODO
 };
 
-const chains = [sepolia, mainnet] as const;
+const chains = [sepolia, avalancheFuji, polygonAmoy, mainnet] as const;
 const wagmiOptions = {}; // Optional - for overriding default options if necessary
 
 const config = defaultWagmiConfig({

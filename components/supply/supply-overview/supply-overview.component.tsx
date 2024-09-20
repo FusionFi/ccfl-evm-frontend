@@ -1,16 +1,16 @@
 import cssClass from './supply-overview.component.module.scss';
 
 import { CHAIN_INFO, SUPPORTED_CHAINS } from '@/constants/chains.constant';
+import { useCardanoConnected, useNetworkManager } from '@/hooks/auth.hook';
+import { useCardanoWalletConnected } from '@/hooks/cardano-wallet.hook';
+import eventBus from '@/hooks/eventBus.hook';
 import { CaretDownOutlined } from '@ant-design/icons';
 import type { SelectProps } from 'antd';
 import { Select } from 'antd';
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
+import { useMemo } from 'react';
 import { useAccount } from 'wagmi';
-import { useCardanoWalletConnected } from '@/hooks/cardano-wallet.hook'
-import { useMemo, useState } from 'react';
-import { useCardanoConnected, useNetworkManager } from '@/hooks/auth.hook';
-import eventBus from '@/hooks/eventBus.hook';
 
 type LabelRender = SelectProps['labelRender'];
 
@@ -21,24 +21,24 @@ export default function SupplyOverviewComponent({ isModalOpen, handleCancel, mes
   const [cardanoWalletConnected] = useCardanoWalletConnected();
   const [isCardanoConnected] = useCardanoConnected();
   const [chainId, updateNetwork] = useNetworkManager();
+  const CHAIN_MAP = new Map(SUPPORTED_CHAINS.map(item => [item.id, item]));
   const isConnected_ = useMemo(() => {
     return isConnected || !!cardanoWalletConnected?.address;
-  }, [isConnected, cardanoWalletConnected?.address])
+  }, [isConnected, cardanoWalletConnected?.address]);
 
   const selectedChain = useMemo(() => {
     let _chain = CHAIN_INFO.get(chainId);
     if (!_chain) {
       if (isCardanoConnected) {
-        _chain = CHAIN_MAP.get('ADA')
+        _chain = CHAIN_MAP.get('ADA');
       } else {
-        _chain = CHAIN_MAP.get(11155111)
-
+        _chain = CHAIN_MAP.get(11155111);
       }
     }
     return _chain;
   }, [chainId, isCardanoConnected]);
 
-  console.log('selectedChain: ', selectedChain)
+  console.log('selectedChain: ', selectedChain);
   const labelRender: LabelRender = (props: any) => {
     let { value } = props;
 
@@ -46,10 +46,9 @@ export default function SupplyOverviewComponent({ isModalOpen, handleCancel, mes
 
     if (!_chain) {
       if (isCardanoConnected) {
-        _chain = CHAIN_MAP.get('ADA')
+        _chain = CHAIN_MAP.get('ADA');
       } else {
-        _chain = CHAIN_MAP.get(11155111)
-
+        _chain = CHAIN_MAP.get(11155111);
       }
     }
 
@@ -71,26 +70,24 @@ export default function SupplyOverviewComponent({ isModalOpen, handleCancel, mes
     );
   };
 
-  const CHAIN_MAP = new Map(SUPPORTED_CHAINS.map(item => [item.id, item]));
-
   const handleNetworkChange = (item: any) => {
     try {
-      console.log(item, 'item')
-      console.log(chainId, 'chainId')
+      console.log(item, 'item');
+      console.log(chainId, 'chainId');
       const currentTab = chainId == 'ADA' ? 'cardano' : 'evm';
       const changedTab = item == 'ADA' ? 'cardano' : 'evm';
       if (currentTab != changedTab) {
         eventBus.emit('openWeb3Modal', {
           tab: item == 'ADA' ? 'cardano' : 'evm',
-          chainId: item
-        })
+          chainId: item,
+        });
       } else {
-        updateNetwork(item)
+        updateNetwork(item);
       }
     } catch (error) {
-      console.error('handle network changing failed: ', error)
+      console.error('handle network changing failed: ', error);
     }
-  }
+  };
   return (
     <div className={cssClass['supply-overview']}>
       <div className="flex">
