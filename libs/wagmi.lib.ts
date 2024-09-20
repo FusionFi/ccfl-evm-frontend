@@ -35,7 +35,7 @@ export const createConfigWithCustomTransports = ({ chain, rpc }: any) => {
   return createConfig({
     chains: [chain],
     transports: {
-      [chain.id]: http(rpc),
+      [chain?.id]: http(rpc),
     },
   });
 };

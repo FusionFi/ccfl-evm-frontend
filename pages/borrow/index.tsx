@@ -11,7 +11,7 @@ import OverviewComponent from '@/components/common/overview.component';
 import TitleComponent from '@/components/common/title.component';
 import { CHAIN_INFO, SUPPORTED_CHAINS } from '@/constants/chains.constant';
 import { ASSET_LIST, COLLATERAL_TOKEN, TYPE_COMMON } from '@/constants/common.constant';
-import { NETWORKS, STAKE_DEFAULT_NETWORK } from '@/constants/networks';
+import { NETWORKS } from '@/constants/networks';
 import { useNotification } from '@/hooks/notifications.hook';
 import { CaretDownOutlined } from '@ant-design/icons';
 import type { SelectProps } from 'antd';
@@ -55,7 +55,7 @@ export default function BorrowPage() {
   const [dataLoan, setDataLoan] = useState<DataType>();
   const [loading, setLoading] = useState(false);
 
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, chainId: wagmiChainId } = useAccount();
   const [isFiat, setIsFiat] = useState(false);
   const [cardanoWalletConnected] = useCardanoWalletConnected();
   const [networkInfo, setNetworkInfo] = useState<any | null>(null);
@@ -64,13 +64,10 @@ export default function BorrowPage() {
   const [chainId, updateNetwork] = useNetworkManager();
 
   const isConnected_ = useMemo(() => {
-    if (!!cardanoWalletConnected?.address) {
+    if (!!cardanoWalletConnected?.address || isConnected) {
       return true;
     }
 
-    if (isConnected && networkInfo) {
-      return true;
-    }
     return false;
   }, [isConnected, cardanoWalletConnected?.address, networkInfo]);
 
@@ -176,7 +173,7 @@ export default function BorrowPage() {
   useEffect(() => {
     handlePrice();
     handleLoans();
-  }, []);
+  }, [chainId]);
 
   const showModal = (token: string, apr: string, decimals: string) => {
     setModal({
@@ -293,7 +290,11 @@ export default function BorrowPage() {
   //connect wallet
   const switchNetwork = async () => {
     try {
-      const rs = await switchChain({ chainId: STAKE_DEFAULT_NETWORK?.chain_id_decimals });
+      const provider = { rpcUrl: selectedChain?.rpc };
+      const rs = await switchChain({ chainId: selectedChain?.id });
+
+      console.log('🚀 ~ switchNetwork ~ rs:', rs);
+      updateNetwork(selectedChain?.id);
     } catch (error) {
       console.log('🚀 ~ switchNetwork ~ error:', error);
       showError(error);
@@ -362,13 +363,17 @@ export default function BorrowPage() {
           </div>
         </TitleComponent>
       </div>
-      {isConnected_ && networkInfo && !loading && (
-        <div className="mb-4">
-          <OverviewComponent itemLeft={itemLeft} itemRight={itemRight} />
-        </div>
-      )}
+      {isConnected_ &&
+        networkInfo &&
+        networkInfo.id &&
+        networkInfo.id === wagmiChainId &&
+        !loading && (
+          <div className="mb-4">
+            <OverviewComponent itemLeft={itemLeft} itemRight={itemRight} />
+          </div>
+        )}
       <div className="flex gap-4 borrow-inner">
-        {isConnected_ && (
+        {isConnected_ && networkInfo && networkInfo.id && networkInfo.id === wagmiChainId && (
           <div className="xl:basis-1/2 basis-full">
             <LoansComponent
               showModal={showModal}
@@ -383,7 +388,12 @@ export default function BorrowPage() {
             />
           </div>
         )}
-        <div className={`${isConnected_ ? 'xl:basis-1/2' : 'xl:basis-full'} basis-full`}>
+        <div
+          className={`${
+            isConnected_ && networkInfo && networkInfo.id && networkInfo.id === wagmiChainId
+              ? 'xl:basis-1/2'
+              : 'xl:basis-full'
+          } basis-full`}>
           <AssetComponent
             showModal={showModal}
             isConnected={isConnected_}
@@ -391,6 +401,7 @@ export default function BorrowPage() {
             networkInfo={networkInfo}
             tokenList={tokenList}
             loadingAsset={loadingAsset}
+            wagmiChainId={wagmiChainId}
           />
         </div>
       </div>

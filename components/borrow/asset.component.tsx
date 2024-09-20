@@ -2,7 +2,6 @@
 import cssClass from '@/components/borrow/asset.component.module.scss';
 import SafeHtmlComponent from '@/components/common/safe-html.component';
 import { ASSET_TYPE } from '@/constants/common.constant';
-import { STAKE_DEFAULT_NETWORK } from '@/constants/networks';
 import { useAuth } from '@/hooks/auth.hook';
 import eventBus from '@/hooks/eventBus.hook';
 import { toAmountShow, toLessPart } from '@/utils/common';
@@ -19,6 +18,7 @@ interface AssetProps {
   networkInfo: any;
   tokenList: any;
   loadingAsset: any;
+  wagmiChainId: any;
 }
 
 export default function assetComponent({
@@ -28,6 +28,7 @@ export default function assetComponent({
   networkInfo,
   tokenList,
   loadingAsset,
+  wagmiChainId,
 }: AssetProps) {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const { t } = useTranslation('common');
@@ -63,6 +64,8 @@ export default function assetComponent({
   //   },
   // ];
 
+  console.log('networkInfo', isConnected, networkInfo, wagmiChainId);
+
   return (
     <div className={twMerge(cssClass.assetComponent)}>
       <div className="asset-container">
@@ -90,7 +93,10 @@ export default function assetComponent({
                           {item.asset?.toUpperCase()}
                         </div>
                         <div className={` flex justify-end `}>
-                          {isConnected && networkInfo ? (
+                          {isConnected &&
+                          networkInfo &&
+                          networkInfo.id &&
+                          networkInfo.id === wagmiChainId ? (
                             <Button
                               onClick={() => handleCheckLogin(item.asset, item.apr, item.decimals)}>
                               {t('BORROW_MODAL_BORROW_BORROW')}
@@ -99,11 +105,7 @@ export default function assetComponent({
                             <React.Fragment>
                               {isConnected ? (
                                 <Button onClick={() => switchNetwork()} className={'guest'}>
-                                  <SafeHtmlComponent
-                                    htmlContent={t('BORROW_SWITCH_NETWORK', {
-                                      networkName: STAKE_DEFAULT_NETWORK?.name,
-                                    })}
-                                  />
+                                  <SafeHtmlComponent htmlContent={t('BORROW_SWITCH_NETWORK')} />
                                 </Button>
                               ) : (
                                 <Button
