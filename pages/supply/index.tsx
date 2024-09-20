@@ -5,6 +5,7 @@ import ModalSupply from '@/components/supply/modal-supply/modal-supply.component
 import ModalWithdraw from '@/components/supply/modal-withdraw/modal-withdraw.component';
 import SupplyOverview from '@/components/supply/supply-overview/supply-overview.component';
 import { NETWORKS, STAKE_DEFAULT_NETWORK } from '@/constants/networks';
+import { useCardanoWalletConnected } from '@/hooks/cardano-wallet.hook';
 import eventBus from '@/hooks/eventBus.hook';
 import { useNotification } from '@/hooks/notifications.hook';
 import { useAssetManager, useNetworkManager, useUserManager } from '@/hooks/supply.hook';
@@ -17,7 +18,7 @@ import BigNumber from 'bignumber.js';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import Image from 'next/image';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { useAccount, useSwitchChain } from 'wagmi';
 
@@ -44,6 +45,7 @@ export default function SupplyPage() {
   const { address } = useAccount();
 
   const [_, showError] = useNotification();
+  const [cardanoWalletConnected] = useCardanoWalletConnected();
 
   const [networkInfo, setNetworkInfo] = useState<any | null>(null);
   const [asset, updateAssets] = useAssetManager();
@@ -95,6 +97,10 @@ export default function SupplyPage() {
       console.error('fetch user data on supply page failed: ', error);
     }
   };
+
+  const isConnected_ = useMemo(() => {
+    return isConnected || !!cardanoWalletConnected?.address;
+  }, [isConnected, cardanoWalletConnected?.address]);
 
   const switchNetwork = async () => {
     try {
@@ -166,7 +172,7 @@ export default function SupplyPage() {
     },
   ];
 
-  if (isConnected) {
+  if (isConnected_) {
     columns.push({
       title: () => {
         return (
@@ -262,7 +268,7 @@ export default function SupplyPage() {
   const [modal, setModal] = useState({} as any);
 
   const expandedRowRender = (record: any) => {
-    if (!isConnected) {
+    if (!isConnected_) {
       return (
         <TableAction>
           <Button
@@ -274,7 +280,7 @@ export default function SupplyPage() {
       );
     }
 
-    if (!networkInfo) {
+    if (!networkInfo && !cardanoWalletConnected?.address) {
       return (
         <TableAction>
           <Button
@@ -344,7 +350,7 @@ export default function SupplyPage() {
   };
 
   const title = () => {
-    if (!isConnected) {
+    if (!isConnected_) {
       return t('SUPPLY_GUEST_TABLE_TITLE');
     }
     return t('SUPPLY_TABLE_TITLE');

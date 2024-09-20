@@ -93,7 +93,7 @@ function App({ Component, ...rest }: AppProps) {
   return (
     <StyleProvider hashPriority="high">
       <Head>
-        <title>FUSIONFI</title>
+        <title>FusionFI</title>
         <meta name="description" content="FUNSIONFI on EVM" key="desc" />
         <link rel="shortcut icon" href="/favicon.ico" />
         <link

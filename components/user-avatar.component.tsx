@@ -2,12 +2,9 @@
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 //import css class module
 import cssClass from '@/components/user-avatar.module.scss';
-import { ComponentProps } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import { useAccount } from 'wagmi';
-
-export const UserAvatar = ({ style, className, size = 32, disabled }: ComponentProps<{}>) => {
+export const UserAvatar = ({ style, className, size = 32, disabled, address }: any) => {
   /**
    * STATES
    */
@@ -15,7 +12,6 @@ export const UserAvatar = ({ style, className, size = 32, disabled }: ComponentP
   /**
    * HOOKS
    */
-  const { address } = useAccount();
   /**
    * FUNCTIONS
    */

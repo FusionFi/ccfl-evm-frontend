@@ -12,6 +12,7 @@ import { ProfileBorrowed } from '@/components/profile/profile-borrowed.component
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation'
 import { useAccount } from 'wagmi';
+import { useCardanoWalletConnected } from '@/hooks/cardano-wallet.hook'
 
 export default function MyProfilePage() {
   /**
@@ -22,12 +23,13 @@ export default function MyProfilePage() {
   const [auth] = useAuth();
   console.log('🚀 ~ MyProfilePage ~ auth:', auth);
   const { address } = useAccount();
+  const [cardanoWalletConnected] = useCardanoWalletConnected();
 
   useEffect(() => {
-    if (!address) {
+    if (!address && !cardanoWalletConnected?.address) {
       router.push('/supply')
     }
-  }, [address])
+  }, [address, cardanoWalletConnected])
   return (
     <div className={twMerge('my-profile-page-container', cssClass.myProfilePage)}>
       <div className="my-profile-page-wrapper">

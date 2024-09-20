@@ -11,6 +11,7 @@ import { useTranslation } from 'next-i18next';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { useAccount, useConfig, useConnect, useDisconnect } from 'wagmi';
+
 declare global {
   interface Window {
     ethereum?: any;
@@ -221,8 +222,9 @@ export const WagmiButton = ({
     }
   };
   const openWeb3Modal = async () => {
-    eventBus.emit('openWeb3Modal', true);
-
+    eventBus.emit('openWeb3Modal', {
+      tab: 'evm'
+    });
     // USE web3modal lib old code
     // await open();
     // setTimeout(() => {

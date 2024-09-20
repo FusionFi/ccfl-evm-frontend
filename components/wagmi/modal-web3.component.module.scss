@@ -119,6 +119,23 @@
             }
           }
         }
+        .term {
+          color: #8c8c8c;
+          padding: 16px 24px;
+          font-family: Inter;
+          font-size: 12px;
+          font-style: normal;
+          font-weight: 400;
+          line-height: 20px;
+          a {
+            color: #8c8c8c;
+            text-decoration: underline;
+            margin: 0px 4px;
+            &:hover {
+              text-decoration: none;
+            }
+          }
+        }
       }
     }
   }

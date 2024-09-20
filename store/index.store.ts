@@ -4,6 +4,7 @@ import { getPersistConfig } from 'redux-deep-persist';
 import thunkMiddleware from 'redux-thunk';
 
 import auth from '@/reducers/auth.reducer';
+import cardanoWallet from '@/reducers/cardano-wallet.reducer';
 import global from '@/reducers/global.reducer';
 import supply from '@/reducers/supply.reducer';
 import storage from '@/store/sync-storage.store';
@@ -11,7 +12,8 @@ import storage from '@/store/sync-storage.store';
 const rootReducer = combineReducers({
   global,
   auth,
-  supply
+  supply,
+  cardanoWallet,
 });
 
 const bindMiddleware = (middleware: any) => {
@@ -36,7 +38,7 @@ const makeStore = ({ isServer }: { isServer: boolean }) => {
       timeout: 1000,
       key: 'fusionFi',
       keyPrefix: '',
-      whitelist: ['global', 'auth', 'supply'],
+      whitelist: ['global', 'auth', 'supply', 'cardanoWallet'],
       storage, // Use the correct storage based on environment
       rootReducer,
     });

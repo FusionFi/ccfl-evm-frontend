@@ -9,6 +9,7 @@
   "SIDEBAR_NAV_TEXT_SUPPLY": "Supply",
   "SIDEBAR_NAV_TEXT_BORROW": "Borrow",
   "LAYOUT_MAIN_HEADER_NAV_BTN_TITLE_CONNECT_WALLET": "Connect Wallet",
+  "LAYOUT_MAIN_HEADER_NAV_BTN_TITLE_CONNECT_WALLET_WITH_CHAIN": "Connect {{chain}}",
   "LAYOUT_MAIN_HEADER_NAV_BTN_TITLE_BRIDGE": "Bridge",
   "LAYOUT_MAIN_HEADER_NAV_BTN_TITLE_SWAP": "Swap",
   "BORROW_OVERVIEW_BALANCE": "Borrowed balance",
@@ -309,5 +310,5 @@
   "WEB3_MODAL_COMPONENT_NAMI": "NAMI",
   "WEB3_MODAL_COMPONENT_ETERNL": "Eternl",
   "WEB3_MODAL_COMPONENT_WALLET_STATUS_DETECTED": "Detected",
-  "WEB3_MODAL_COMPONENT_TERM_CONDITION": ""
+  "WEB3_MODAL_COMPONENT_TERM_CONDITION": "  By connecting a wallet, you agree to FusionFi’\n            <a href=\"#\" target=\"_blank\">\n              Terms of Service\n            </a>\n            and consent to its\n            <a href=\"#\" target=\"_blank\">\n              Privacy Policy.\n            </a>"
 }

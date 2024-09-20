@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useMemo } from 'react';
-import cssClass from './supply-overview.component.module.scss';
-
-import { CHAIN_LOGO_MAP, DEFAULT_CHAIN_ID } from '@/constants/chains.constant';
-import { useNetworkManager, useUserManager } from '@/hooks/supply.hook';
+import { CHAIN_INFO, SUPPORTED_CHAINS } from '@/constants/chains.constant';
+import { useCardanoConnected, useNetworkManager } from '@/hooks/auth.hook';
+import { useCardanoWalletConnected } from '@/hooks/cardano-wallet.hook';
+import eventBus from '@/hooks/eventBus.hook';
+import { useUserManager } from '@/hooks/supply.hook';
 import supplyBE from '@/utils/backend/supply';
 import { computeWithMinThreashold } from '@/utils/percent.util';
 import { CaretDownOutlined } from '@ant-design/icons';
@@ -11,58 +11,55 @@ import { Select } from 'antd';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
+import { useEffect, useMemo } from 'react';
 import { useAccount } from 'wagmi';
-
+import cssClass from './supply-overview.component.module.scss';
 type LabelRender = SelectProps['labelRender'];
 
 export default function SupplyOverviewComponent() {
   const { t } = useTranslation('common');
 
-  const { isConnected, chainId } = useAccount();
+  const { isConnected, address } = useAccount();
+  const [cardanoWalletConnected] = useCardanoWalletConnected();
+  const [isCardanoConnected] = useCardanoConnected();
+  const [chainId, updateNetwork] = useNetworkManager();
 
-  const [network, updateNetworks, selectNetwork] = useNetworkManager();
   const [user] = useUserManager();
+  const isConnected_ = useMemo(() => {
+    return isConnected || !!cardanoWalletConnected?.address;
+  }, [isConnected, cardanoWalletConnected?.address]);
+  const CHAIN_MAP = new Map(SUPPORTED_CHAINS.map(item => [item.id, item]));
 
-  const _updateSelectedChainId = () => {
-    try {
-      const result: any = network.listMap.get(chainId) || {};
-      if (result && result.chainId) {
-        selectNetwork(result.chainId);
+  const selectedChain = useMemo(() => {
+    let _chain = CHAIN_INFO.get(chainId);
+    if (!_chain) {
+      if (isCardanoConnected) {
+        _chain = CHAIN_MAP.get('ADA');
+      } else {
+        _chain = CHAIN_MAP.get(11155111);
       }
-    } catch (error) {
-      console.error('update selected chain on SupplyOverviewComponent failed: ', error);
     }
-  };
+    return _chain;
+  }, [chainId, isCardanoConnected]);
 
-  const fetchInitiaData = async () => {
-    try {
-      const [_networks] = await Promise.all([supplyBE.fetchNetworks()]);
-      updateNetworks(_networks);
-    } catch (error) {
-      console.error('fetch initial data on SupplyOverviewComponent failed: ', error);
-    }
-  };
-
-  useEffect(() => {
-    fetchInitiaData();
-    _updateSelectedChainId();
-  }, []);
-
+  console.log('selectedChain: ', selectedChain);
   const labelRender: LabelRender = (props: any) => {
     let { value } = props;
 
-    let _chain: any = network.listMap.get(value);
-
+    let _chain: any = CHAIN_MAP.get(value);
+    console.log('🚀 ~ SupplyOverviewComponent ~ _chain:', _chain);
     if (!_chain) {
-      _chain = network.listMap.get(DEFAULT_CHAIN_ID);
+      if (isCardanoConnected) {
+        _chain = CHAIN_MAP.get('ADA');
+      } else {
+        _chain = CHAIN_MAP.get(11155111);
+      }
     }
-
-    const logo = CHAIN_LOGO_MAP.get(_chain?.chainId);
 
     return (
       <div className="flex items-center">
         <Image
-          src={logo as any}
+          src={_chain?.logo}
           alt={_chain?.name}
           width={24}
           height={24}
@@ -77,10 +74,6 @@ export default function SupplyOverviewComponent() {
     );
   };
 
-  const handleNetworkChange = useCallback((data: any) => {
-    selectNetwork(data);
-  }, []);
-
   const totalSupply = useMemo(() => {
     return new BigNumber(user?.total_supply || 0).toFormat(2);
   }, [user?.total_supply]);
@@ -89,6 +82,49 @@ export default function SupplyOverviewComponent() {
     return new BigNumber(user?.total_earned || 0).toFormat(2);
   }, [user?.total_earned]);
 
+  const handleNetworkChange = (item: any) => {
+    try {
+      console.log(item, 'item');
+      console.log(chainId, 'chainId');
+      const currentTab = chainId == 'ADA' ? 'cardano' : 'evm';
+      const changedTab = item == 'ADA' ? 'cardano' : 'evm';
+      if (currentTab != changedTab) {
+        eventBus.emit('openWeb3Modal', {
+          tab: item == 'ADA' ? 'cardano' : 'evm',
+          chainId: item,
+        });
+      } else {
+        updateNetwork(item);
+      }
+    } catch (error) {
+      console.error('handle network changing failed: ', error);
+    }
+  };
+  // const _updateSelectedChainId = () => {
+  //   try {
+  //     const result: any = network.listMap.get(chainId) || {};
+  //     if (result && result.chainId) {
+  //       selectNetwork(result.chainId);
+  //     }
+  //   } catch (error) {
+  //     console.error('update selected chain on SupplyOverviewComponent failed: ', error);
+  //   }
+  // };
+
+  const fetchInitiaData = async () => {
+    try {
+      const [_networks] = await Promise.all([supplyBE.fetchNetworks()]);
+      //updateNetworks(_networks);
+    } catch (error) {
+      console.error('fetch initial data on SupplyOverviewComponent failed: ', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchInitiaData();
+    //_updateSelectedChainId();
+  }, []);
+
   return (
     <div className={cssClass['supply-overview']}>
       <div className="flex">
@@ -96,24 +132,22 @@ export default function SupplyOverviewComponent() {
         <div className="select-wrapper ml-6">
           <Select
             labelRender={labelRender}
-            onChange={handleNetworkChange}
             defaultValue={{
-              value: network.selected,
+              value: selectedChain?.id,
             }}
             value={{
-              value: network.selected,
+              value: selectedChain?.id,
             }}
-            options={network.list.map((item: any) => ({
-              value: item.chainId,
+            onChange={handleNetworkChange}
+            options={[...(CHAIN_MAP.values() as any)].map(item => ({
+              value: item.id,
             }))}
             optionRender={(option: any) => {
-              const _chain: any = network.listMap.get(option.value);
-              const _logo: any = CHAIN_LOGO_MAP.get(_chain.chainId);
-
+              const _chain: any = CHAIN_MAP.get(option.value);
               return (
                 <div className="chain-dropdown-item-wrapper">
                   <Image
-                    src={_logo}
+                    src={_chain?.logo}
                     alt={_chain?.name}
                     width={12}
                     height={12}
@@ -131,7 +165,7 @@ export default function SupplyOverviewComponent() {
           />
         </div>
       </div>
-      {isConnected && (
+      {isConnected_ && (
         <div className="supply-overview__body">
           <div className="supply-overview__body__wrapper">
             <div className="supply-overview__body__wrapper__item">
@@ -194,20 +228,6 @@ export default function SupplyOverviewComponent() {
                     0.07
                   </span>{' '}
                   %
-                </div>
-              </div>
-              <div className="supply-overview__body__wrapper__item">
-                <span className="supply-overview__body__wrapper__item__label">
-                  {t('SUPPLY_OVERVIEW_TOTAL_EARNED')}
-                </span>
-                <div className="supply-overview__body__wrapper__item__value">
-                  <span
-                    className="font-bold"
-                    style={{
-                      color: '#52C41A',
-                    }}>
-                    +$65.87
-                  </span>
                 </div>
               </div>
             </div>

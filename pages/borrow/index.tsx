@@ -1,6 +1,6 @@
 import cssClass from '@/pages/borrow/index.module.scss';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 // import SelectComponent from '@/components/common/select.component';
 import AssetComponent from '@/components/borrow/asset.component';
@@ -26,6 +26,10 @@ import Image from 'next/image';
 import { useAccount, useSwitchChain } from 'wagmi';
 // import { getNetwork } from '@wagmi/core';
 import { DataType } from '@/components/borrow/borrow';
+import { useCardanoConnected, useNetworkManager } from '@/hooks/auth.hook';
+import { useCardanoWalletConnected } from '@/hooks/cardano-wallet.hook';
+import eventBus from '@/hooks/eventBus.hook';
+
 import ModalBorrowFiatSuccessComponent from '@/components/borrow/modal-borrow-fiat/modal-borrow-fiat-success.component';
 import ModalBorrowFiatComponent from '@/components/borrow/modal-borrow-fiat/modal-borrow-fiat.component';
 import ModalCollateralComponent from '@/components/borrow/modal-collateral.component';
@@ -57,12 +61,59 @@ export default function BorrowPage() {
   const [dataLoan, setDataLoan] = useState<DataType>();
   const [loading, setLoading] = useState(false);
 
-  const { address, isConnected, chainId } = useAccount();
+  const { address, isConnected } = useAccount();
   const [isFiat, setIsFiat] = useState(false);
+  const [cardanoWalletConnected] = useCardanoWalletConnected();
+  const [networkInfo, setNetworkInfo] = useState<any | null>(null);
+  const [isCardanoConnected] = useCardanoConnected();
+
+  const [chainId, updateNetwork] = useNetworkManager();
+
+  const isConnected_ = useMemo(() => {
+    if (!!cardanoWalletConnected?.address) {
+      return true;
+    }
+
+    if (isConnected && networkInfo) {
+      return true;
+    }
+    return false;
+  }, [isConnected, cardanoWalletConnected?.address, networkInfo]);
 
   //connect wallet
   const [showSuccess, showError, showWarning, contextHolder] = useNotification();
-  const [networkInfo, setNetworkInfo] = useState<any | null>(null);
+
+  const handleNetworkChange = (item: any) => {
+    try {
+      console.log(item, 'item');
+      console.log(chainId, 'chainId');
+      const currentTab = chainId == 'ADA' ? 'cardano' : 'evm';
+      const changedTab = item == 'ADA' ? 'cardano' : 'evm';
+      if (currentTab != changedTab) {
+        eventBus.emit('openWeb3Modal', {
+          tab: item == 'ADA' ? 'cardano' : 'evm',
+          chainId: item,
+        });
+      } else {
+        updateNetwork(item);
+      }
+    } catch (error) {
+      console.error('handle network changing failed: ', error);
+    }
+  };
+
+  const selectedChain = useMemo(() => {
+    let _chain = CHAIN_INFO.get(chainId);
+    console.log('🚀 ~ selectedChain ~ _chain:', _chain);
+    if (!_chain) {
+      if (isCardanoConnected) {
+        _chain = CHAIN_MAP.get('ADA');
+      } else {
+        _chain = CHAIN_MAP.get(11155111);
+      }
+    }
+    return _chain;
+  }, [chainId, isCardanoConnected]);
 
   const [tokenList, setTokenList] = useState<any[]>([]);
   const [loadingAsset, setLoadingAsset] = useState(false);
@@ -218,10 +269,15 @@ export default function BorrowPage() {
   const labelRender: LabelRender = (props: any) => {
     let { value } = props;
 
-    const _chain: any = CHAIN_MAP.get(value) || {
-      name: 'Avalanche',
-      logo: '/images/tokens/avax.png',
-    };
+    let _chain: any = CHAIN_MAP.get(value);
+
+    if (!_chain) {
+      if (isCardanoConnected) {
+        _chain = CHAIN_MAP.get('ADA');
+      } else {
+        _chain = CHAIN_MAP.get(11155111);
+      }
+    }
 
     console.log('dataLoan', dataLoan);
 
@@ -242,7 +298,6 @@ export default function BorrowPage() {
       </div>
     );
   };
-  const selectedChain = CHAIN_INFO.get(chainId) || {};
 
   //connect wallet
   const switchNetwork = async () => {
@@ -285,6 +340,10 @@ export default function BorrowPage() {
               defaultValue={{
                 value: selectedChain?.id,
               }}
+              value={{
+                value: selectedChain?.id,
+              }}
+              onChange={handleNetworkChange}
               options={[...(CHAIN_MAP.values() as any)].map(item => ({
                 value: item.id,
               }))}
@@ -312,13 +371,13 @@ export default function BorrowPage() {
           </div>
         </TitleComponent>
       </div>
-      {isConnected && networkInfo && !loading && (
+      {isConnected_ && networkInfo && !loading && (
         <div className="mb-4">
           <OverviewComponent itemLeft={itemLeft} itemRight={itemRight} />
         </div>
       )}
       <div className="flex gap-4 borrow-inner">
-        {isConnected && networkInfo && (
+        {isConnected_ && (
           <div className="xl:basis-1/2 basis-full">
             <LoansComponent
               showModal={showModal}
@@ -333,11 +392,10 @@ export default function BorrowPage() {
             />
           </div>
         )}
-        <div
-          className={`${isConnected && networkInfo ? 'xl:basis-1/2' : 'xl:basis-full'} basis-full`}>
+        <div className={`${isConnected_ ? 'xl:basis-1/2' : 'xl:basis-full'} basis-full`}>
           <AssetComponent
             showModal={showModal}
-            isConnected={isConnected}
+            isConnected={isConnected_}
             switchNetwork={switchNetwork}
             networkInfo={networkInfo}
             tokenList={tokenList}
