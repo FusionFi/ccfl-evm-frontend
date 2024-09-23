@@ -290,6 +290,36 @@ const getGasFeeCreateLoan = async (
   }
 };
 
+const withdrawLoan = async (provider, contract_address, account, stableCoin, loanId) => {
+  let overwrite = { from: account };
+
+  try {
+    console.log('withdrawLoan', contract_address, stableCoin, loanId);
+    const tx = await sendRawTx(
+      provider,
+      abi,
+      contract_address,
+      'withdrawLoan',
+      [stableCoin, loanId],
+      overwrite,
+    );
+
+    console.log('Transaction successful:', tx);
+    if (tx.transactionHash || tx.hash) {
+      return {
+        link: tx.hash || tx.transactionHash,
+      };
+    } else {
+      return;
+    }
+  } catch (error) {
+    console.error('Error calling withdraw loan method:', error);
+    return {
+      error: error,
+    };
+  }
+};
+
 const service_ccfl_borrow = {
   getCollateralMinimum,
   approveBorrow,
@@ -298,5 +328,6 @@ const service_ccfl_borrow = {
   checkAllowance,
   getGasFeeCreateLoan,
   getHealthFactor,
+  withdrawLoan,
 };
 export default service_ccfl_borrow;

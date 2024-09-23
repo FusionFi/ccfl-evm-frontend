@@ -394,10 +394,7 @@ export default function ModalBorrowComponent({
                     {currentToken?.toUpperCase()}
                   </span>
                   {tokenValue && !(stableCoinData.balance - tokenValue >= 0) && (
-                    <span className="insufficient">
-                      {stableCoinData.balance - tokenValue}
-                      {t('BORROW_MODAL_INSUFFICIENT_BALANCE')}
-                    </span>
+                    <span className="insufficient">{t('BORROW_MODAL_INSUFFICIENT_BALANCE')}</span>
                   )}
                 </div>
               </div>

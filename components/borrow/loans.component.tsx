@@ -56,6 +56,7 @@ export default function LoansComponent(props: LoansProps) {
     BORROW: 'BORROW',
     REPAY: 'REPAY',
     DELETE: 'DELETE',
+    WITHDRAW_LOAN: 'WITHDRAW_LOAN',
   };
 
   const handleCheckLogin = (type: string, record: loanType) => {
@@ -71,6 +72,8 @@ export default function LoansComponent(props: LoansProps) {
           return props.showRepayModal(record.asset, record.repayment_currency, record);
         case ACTION_LOAN.DELETE:
           return handleDeleteLoan();
+        case ACTION_LOAN.WITHDRAW_LOAN:
+          return props.showModal(record.asset, record.apr);
         default:
           return props.showModal(record.asset, record.apr);
       }
@@ -278,17 +281,30 @@ export default function LoansComponent(props: LoansProps) {
               {![LOAN_STATUS.REPAID_FULL, LOAN_STATUS.UNPROCESSED].find(
                 status => status === final_status,
               ) && (
-                <Button
-                  disabled={
-                    !![LOAN_STATUS.LIQUIDATED, LOAN_STATUS.DISBURSEMENT].find(
-                      e => e === final_status,
-                    )
-                  }
-                  type="primary"
-                  className=""
-                  onClick={() => handleCheckLogin(ACTION_LOAN.REPAY, record)}>
-                  {t('BORROW_MODAL_BORROW_REPAY')}
-                </Button>
+                <>
+                  <Button
+                    disabled={
+                      !![LOAN_STATUS.LIQUIDATED, LOAN_STATUS.DISBURSEMENT].find(
+                        e => e === final_status,
+                      )
+                    }
+                    type="primary"
+                    className=""
+                    onClick={() => handleCheckLogin(ACTION_LOAN.REPAY, record)}>
+                    {t('BORROW_MODAL_BORROW_REPAY')}
+                  </Button>
+                  <Button
+                    disabled={
+                      !![LOAN_STATUS.LIQUIDATED, LOAN_STATUS.DISBURSEMENT].find(
+                        e => e === final_status,
+                      )
+                    }
+                    type="primary"
+                    className=""
+                    onClick={() => handleCheckLogin(ACTION_LOAN.WITHDRAW_LOAN, record)}>
+                    WITHDRAW LOAN
+                  </Button>
+                </>
               )}
               {final_status === LOAN_STATUS.UNPROCESSED && (
                 <Button
@@ -305,98 +321,98 @@ export default function LoansComponent(props: LoansProps) {
     );
   };
 
-  const dataLoan: loanType[] = [
-    {
-      asset: 'USDA',
-      loan_size: '3000',
-      apr: '1.82',
-      health: '12.76',
-      status: 'ACTIVE',
-      debt_remain: '2780',
-      collateral_amount: '2.5',
-      collateral_asset: 'WETH',
-      yield_generating: true,
-      yield_earned: '0.281',
-    },
-    {
-      asset: 'USD',
-      loan_size: '3000',
-      apr: '1.82',
-      health: '12.76',
-      status: 'DISBURSEMENT',
-      debt_remain: '2780',
-      collateral_amount: '2.5',
-      collateral_asset: 'WETH',
-      yield_generating: true,
-      yield_earned: '0.281',
-      repayment_currency: 'USDT',
-      currency: 'EUR',
-      sub_name: 'FIAT',
-    },
-    {
-      asset: 'USD',
-      loan_size: '3000',
-      apr: '1.82',
-      health: '12.76',
-      status: 'UNPROCESSED',
-      debt_remain: '2780',
-      collateral_amount: '2.5',
-      collateral_asset: 'WETH',
-      yield_generating: true,
-      yield_earned: '0.281',
-      repayment_currency: 'USDT',
-      currency: 'EUR',
-      sub_name: 'FIAT',
-    },
-    {
-      asset: 'USDC',
-      loan_size: '3000',
-      apr: '1.82',
-      health: '12.76',
-      status: 'ACTIVE',
-      debt_remain: '2780',
-      collateral_amount: '2.5',
-      collateral_asset: 'WETH',
-      yield_generating: true,
-      yield_earned: '0.281',
-    },
-    {
-      asset: 'USDC',
-      loan_size: '3000',
-      apr: '1.82',
-      health: '12.76',
-      status: 'REPAID_FULL',
-      debt_remain: '2780',
-      collateral_amount: '1',
-      collateral_asset: 'WETH',
-      yield_generating: true,
-      yield_earned: '0.281',
-    },
-    {
-      asset: 'USDT',
-      loan_size: '3000',
-      apr: '1.82',
-      health: '12.76',
-      status: 'LIQUIDATION_APPROACHING',
-      debt_remain: '2780',
-      collateral_amount: '2.5',
-      collateral_asset: 'WBTC',
-      yield_generating: true,
-      yield_earned: '0.281',
-    },
-    {
-      asset: 'USDT',
-      loan_size: '3000',
-      apr: '1.82',
-      health: '12.76',
-      status: 'LIQUIDATED',
-      debt_remain: '2780',
-      collateral_amount: '2.5',
-      collateral_asset: 'WBTC',
-      yield_generating: true,
-      yield_earned: '0.281',
-    },
-  ];
+  // const dataLoan: loanType[] = [
+  //   {
+  //     asset: 'USDA',
+  //     loan_size: '3000',
+  //     apr: '1.82',
+  //     health: '12.76',
+  //     status: 'ACTIVE',
+  //     debt_remain: '2780',
+  //     collateral_amount: '2.5',
+  //     collateral_asset: 'WETH',
+  //     yield_generating: true,
+  //     yield_earned: '0.281',
+  //   },
+  //   {
+  //     asset: 'USD',
+  //     loan_size: '3000',
+  //     apr: '1.82',
+  //     health: '12.76',
+  //     status: 'DISBURSEMENT',
+  //     debt_remain: '2780',
+  //     collateral_amount: '2.5',
+  //     collateral_asset: 'WETH',
+  //     yield_generating: true,
+  //     yield_earned: '0.281',
+  //     repayment_currency: 'USDT',
+  //     currency: 'EUR',
+  //     sub_name: 'FIAT',
+  //   },
+  //   {
+  //     asset: 'USD',
+  //     loan_size: '3000',
+  //     apr: '1.82',
+  //     health: '12.76',
+  //     status: 'UNPROCESSED',
+  //     debt_remain: '2780',
+  //     collateral_amount: '2.5',
+  //     collateral_asset: 'WETH',
+  //     yield_generating: true,
+  //     yield_earned: '0.281',
+  //     repayment_currency: 'USDT',
+  //     currency: 'EUR',
+  //     sub_name: 'FIAT',
+  //   },
+  //   {
+  //     asset: 'USDC',
+  //     loan_size: '3000',
+  //     apr: '1.82',
+  //     health: '12.76',
+  //     status: 'ACTIVE',
+  //     debt_remain: '2780',
+  //     collateral_amount: '2.5',
+  //     collateral_asset: 'WETH',
+  //     yield_generating: true,
+  //     yield_earned: '0.281',
+  //   },
+  //   {
+  //     asset: 'USDC',
+  //     loan_size: '3000',
+  //     apr: '1.82',
+  //     health: '12.76',
+  //     status: 'REPAID_FULL',
+  //     debt_remain: '2780',
+  //     collateral_amount: '1',
+  //     collateral_asset: 'WETH',
+  //     yield_generating: true,
+  //     yield_earned: '0.281',
+  //   },
+  //   {
+  //     asset: 'USDT',
+  //     loan_size: '3000',
+  //     apr: '1.82',
+  //     health: '12.76',
+  //     status: 'LIQUIDATION_APPROACHING',
+  //     debt_remain: '2780',
+  //     collateral_amount: '2.5',
+  //     collateral_asset: 'WBTC',
+  //     yield_generating: true,
+  //     yield_earned: '0.281',
+  //   },
+  //   {
+  //     asset: 'USDT',
+  //     loan_size: '3000',
+  //     apr: '1.82',
+  //     health: '12.76',
+  //     status: 'LIQUIDATED',
+  //     debt_remain: '2780',
+  //     collateral_amount: '2.5',
+  //     collateral_asset: 'WBTC',
+  //     yield_generating: true,
+  //     yield_earned: '0.281',
+  //   },
+  // ];
 
   let locale = {
     emptyText: <div className="loans-empty">{t('BORROW_MODAL_NO_DATA')}</div>,
