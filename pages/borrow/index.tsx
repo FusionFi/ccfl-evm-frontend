@@ -173,7 +173,11 @@ export default function BorrowPage() {
   useEffect(() => {
     handlePrice();
     handleLoans();
-  }, [chainId]);
+  }, [chainId, address]);
+
+  useEffect(() => {
+    handleLoans();
+  }, [address]);
 
   const showModal = (token: string, apr: string, decimals: string) => {
     setModal({

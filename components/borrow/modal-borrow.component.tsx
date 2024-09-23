@@ -111,6 +111,12 @@ export default function ModalBorrowComponent({
         );
         if (tx?.link) {
           setStep(1);
+          setErrorTx(undefined);
+          setErrorEstimate({
+            nonEnoughBalanceWallet: false,
+            exceedsAllowance: false,
+            nonEnoughBalanceCollateral: false,
+          });
         }
         if (tx?.error) {
           setStatus(TRANSACTION_STATUS.FAILED);
@@ -140,6 +146,12 @@ export default function ModalBorrowComponent({
         if (tx?.link) {
           setStep(2);
           setTxHash(tx.link);
+          setErrorTx(undefined);
+          setErrorEstimate({
+            nonEnoughBalanceWallet: false,
+            exceedsAllowance: false,
+            nonEnoughBalanceCollateral: false,
+          });
         }
         if (tx?.error) {
           setStatus(TRANSACTION_STATUS.FAILED);

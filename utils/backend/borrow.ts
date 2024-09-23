@@ -30,7 +30,7 @@ const getCollateralInfo = async (symbol: any, chainId: any) => {
   return res;
 };
 
-const getTokenInfo = async (symbol, chainId) => {
+const getTokenInfo = async (symbol: any, chainId: any) => {
   let res = await http.get(`${URL}/asset?chainId=${chainId}&symbol=${symbol}`);
   return res;
 };
