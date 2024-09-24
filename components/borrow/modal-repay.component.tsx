@@ -70,7 +70,7 @@ export default function ModalBorrowComponent({
     loanItem &&
     loanItem.debt_remain &&
     loanItem.decimals &&
-    (toLessPart(toAmountShow(loanItem.debt_remain, loanItem.decimals), 2) as any);
+    (toLessPart(toAmountShow(loanItem.debt_remain, loanItem.decimals), 6, true) as any);
   const [healthFactor, setHealthFactor] = useState(0) as any;
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingBalance, setLoadingBalance] = useState<boolean>(false);
@@ -330,6 +330,12 @@ export default function ModalBorrowComponent({
 
   useEffect(() => {
     if (isModalOpen) {
+      getGasFeeRepay();
+    }
+  }, [step]);
+
+  useEffect(() => {
+    if (isModalOpen) {
       getTokenInfo();
       resetState();
     }
@@ -378,7 +384,7 @@ export default function ModalBorrowComponent({
                     <span className="modal-borrow-usd">
                       ≈ $
                       {tokenValue && priceToken[currentToken]
-                        ? toLessPart(tokenValue * priceToken[currentToken], 2)
+                        ? toLessPart(tokenValue * priceToken[currentToken], 6, true)
                         : 0}
                     </span>
                     <Button
@@ -425,7 +431,7 @@ export default function ModalBorrowComponent({
                     {tokenValue && tokenValue > 0 && (
                       <div className="modal-borrow-repay remain">
                         <ArrowRightOutlined className="mx-1" />
-                        <span>{toLessPart(deptRemain - tokenValue, 2)}</span>
+                        <span>{deptRemain - tokenValue}</span>
                         <span className="ml-1">{isFiat ? 'USD' : currentToken?.toUpperCase()}</span>
                       </div>
                     )}
@@ -443,7 +449,9 @@ export default function ModalBorrowComponent({
                         {loadingHealthFactor ? (
                           <LoadingOutlined className="mr-1" />
                         ) : (
-                          <span className="">{healthFactor}</span>
+                          <span className="">
+                            {deptRemain - tokenValue === 0 ? '∞' : healthFactor}
+                          </span>
                         )}
                       </div>
                     ) : (

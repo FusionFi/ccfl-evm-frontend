@@ -241,7 +241,8 @@ export function toCurrency(value, decimalPlaces = 6) {
   // If there is no decimal part, return the formatted integer part
   return integerPart;
 }
-export function toLessPart(val, numFloor) {
+export function toLessPart(val, numFloor, isRound) {
   if (!val) return 0;
-  return val ? Math.floor(val * Math.pow(10, numFloor)) / Math.pow(10, numFloor) : val;
+  let finalValue = val ? Math.floor(val * Math.pow(10, numFloor)) / Math.pow(10, numFloor) : val;
+  return isRound ? Math.ceil(finalValue) : finalValue;
 }

@@ -201,14 +201,15 @@ export default function LoansComponent(props: LoansProps) {
         return (
           <div className="loans-status basis-1/7 ">
             <div className="highlight ml-1">
-              {toLessPart(toAmountShow(record.debt_remain, record.decimals), 2)}{' '}
+              {toLessPart(toAmountShow(record.debt_remain, record.decimals), 6, true)}{' '}
               {record.asset !== 'USD' ? record.asset : record.repayment_currency}
             </div>
             <div className="ml-1">
               ${' '}
               {toLessPart(
                 toAmountShow(record.debt_remain * record.asset_price, record.decimals),
-                2,
+                6,
+                true,
               )}
             </div>
           </div>
