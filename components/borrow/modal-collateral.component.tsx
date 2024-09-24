@@ -1,20 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { useForm, Controller, SubmitHandler } from 'react-hook-form';
+import TransactionSuccessComponent from '@/components/borrow/transaction-success.component';
 import ModalComponent from '@/components/common/modal.component';
-import { InputNumber } from 'antd';
-import Image from 'next/image';
-import { Button, Tooltip, Select, Checkbox } from 'antd';
+import { WalletIcon } from '@/components/icons/wallet.icon';
+import { TRANSACTION_STATUS } from '@/constants/common.constant';
 import {
+  ArrowRightOutlined,
+  CloseOutlined,
   InfoCircleOutlined,
   QuestionCircleOutlined,
-  DownOutlined,
-  CloseOutlined,
-  ArrowRightOutlined,
 } from '@ant-design/icons';
-import TransactionSuccessComponent from '@/components/borrow/transaction-success.component';
+import { Button, InputNumber, Tooltip } from 'antd';
 import { useTranslation } from 'next-i18next';
-import { TRANSACTION_STATUS } from '@/constants/common.constant';
-
+import Image from 'next/image';
+import { useEffect, useState } from 'react';
+import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 interface ModalCollateralProps {
   isModalOpen: boolean;
   handleCancel: any;
@@ -85,8 +83,12 @@ export default function ModalCollateralComponent({
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="modal-borrow-content">
               <div className="px-6 py-4 ">
-                <div className="modal-borrow-title mb-2 ">
+                <div className="modal-borrow-title mb-2 flex items-center">
                   {t('BORROW_MODAL_COLLATERAL_AMOUNT')}
+                  <div className="wallet-balance">
+                    <WalletIcon className="mr-2" /> <span>{t('FORM_BALANCE')}: </span> 50.000{' '}
+                    {currentToken?.toUpperCase()}{' '}
+                  </div>
                 </div>
                 <div className={`modal-borrow-amount ${loading ? 'loading' : ''}`}>
                   <div className="flex items-center">
@@ -124,8 +126,7 @@ export default function ModalCollateralComponent({
                 </div>
                 <div className="modal-borrow-balance">
                   <span>
-                    {t('BORROW_MODAL_BORROW_WALLET_BALANCE')}: 50,000.00{' '}
-                    {currentToken?.toUpperCase()}
+                    {t('FORM_MINIMUM_AMOUNT')}: 0.562 {currentToken?.toUpperCase()}
                   </span>
                   {/* <span className="insufficient">{t('BORROW_MODAL_INSUFFICIENT_BALANCE')}</span> */}
                 </div>
