@@ -56,7 +56,6 @@ export default function LoansComponent(props: LoansProps) {
     BORROW: 'BORROW',
     REPAY: 'REPAY',
     DELETE: 'DELETE',
-    WITHDRAW_LOAN: 'WITHDRAW_LOAN',
   };
 
   const handleCheckLogin = (type: string, record: loanType) => {
