@@ -117,6 +117,7 @@ export default function ModalBorrowComponent({
             exceedsAllowance: false,
             nonEnoughBalanceCollateral: false,
           });
+          setStatus(TRANSACTION_STATUS.SUCCESS);
         }
         if (tx?.error) {
           setStatus(TRANSACTION_STATUS.FAILED);
@@ -152,6 +153,7 @@ export default function ModalBorrowComponent({
             exceedsAllowance: false,
             nonEnoughBalanceCollateral: false,
           });
+          setStatus(TRANSACTION_STATUS.SUCCESS);
         }
         if (tx?.error) {
           setStatus(TRANSACTION_STATUS.FAILED);

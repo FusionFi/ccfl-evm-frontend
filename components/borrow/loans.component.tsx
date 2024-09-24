@@ -71,8 +71,6 @@ export default function LoansComponent(props: LoansProps) {
           return props.showRepayModal(record.asset, record.repayment_currency, record);
         case ACTION_LOAN.DELETE:
           return handleDeleteLoan();
-        case ACTION_LOAN.WITHDRAW_LOAN:
-          return props.showModal(record.asset, record.apr);
         default:
           return props.showModal(record.asset, record.apr);
       }
@@ -280,30 +278,17 @@ export default function LoansComponent(props: LoansProps) {
               {![LOAN_STATUS.REPAID_FULL, LOAN_STATUS.UNPROCESSED].find(
                 status => status === final_status,
               ) && (
-                <>
-                  <Button
-                    disabled={
-                      !![LOAN_STATUS.LIQUIDATED, LOAN_STATUS.DISBURSEMENT].find(
-                        e => e === final_status,
-                      )
-                    }
-                    type="primary"
-                    className=""
-                    onClick={() => handleCheckLogin(ACTION_LOAN.REPAY, record)}>
-                    {t('BORROW_MODAL_BORROW_REPAY')}
-                  </Button>
-                  <Button
-                    disabled={
-                      !![LOAN_STATUS.LIQUIDATED, LOAN_STATUS.DISBURSEMENT].find(
-                        e => e === final_status,
-                      )
-                    }
-                    type="primary"
-                    className=""
-                    onClick={() => handleCheckLogin(ACTION_LOAN.WITHDRAW_LOAN, record)}>
-                    WITHDRAW LOAN
-                  </Button>
-                </>
+                <Button
+                  disabled={
+                    !![LOAN_STATUS.LIQUIDATED, LOAN_STATUS.DISBURSEMENT].find(
+                      e => e === final_status,
+                    )
+                  }
+                  type="primary"
+                  className=""
+                  onClick={() => handleCheckLogin(ACTION_LOAN.REPAY, record)}>
+                  {t('BORROW_MODAL_BORROW_REPAY')}
+                </Button>
               )}
               {final_status === LOAN_STATUS.UNPROCESSED && (
                 <Button

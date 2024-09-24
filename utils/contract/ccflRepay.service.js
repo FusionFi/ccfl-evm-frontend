@@ -17,7 +17,7 @@ const getHealthFactor = async (provider, contract_address, amount, loanId) => {
     const contract = _initContract(provider, contract_address);
     console.log('getHealthFactor repay', loanId, amount);
     const resHealthFactor = await contract.methods.repayHealthFactor(loanId, amount).call();
-    console.log('getHealthFactor', resHealthFactor);
+    console.log('getHealthFactor res', resHealthFactor);
     // const resHealthFactor1 = await contract.methods.getHealthFactor(loanId).call();
     return resHealthFactor ? resHealthFactor / 100 : undefined;
   } catch (error) {

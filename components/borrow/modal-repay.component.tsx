@@ -105,6 +105,7 @@ export default function ModalBorrowComponent({
             nonEnoughBalanceWallet: false,
             exceedsAllowance: false,
           });
+          setStatus(TRANSACTION_STATUS.SUCCESS);
         }
         if (tx?.error) {
           setStatus(TRANSACTION_STATUS.FAILED);
@@ -136,6 +137,7 @@ export default function ModalBorrowComponent({
             nonEnoughBalanceWallet: false,
             exceedsAllowance: false,
           });
+          setStatus(TRANSACTION_STATUS.SUCCESS);
         }
         if (tx?.error) {
           setStatus(TRANSACTION_STATUS.FAILED);
@@ -199,6 +201,7 @@ export default function ModalBorrowComponent({
           toUnitWithDecimal(tokenValue, loanItem.decimals),
           loanItem.loan_id,
         )) as any;
+        console.log('healthFactor', healthFactor);
         if (healthFactor) {
           setHealthFactor(healthFactor);
         }
