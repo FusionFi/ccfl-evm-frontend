@@ -17,6 +17,7 @@ import { useTranslation } from 'next-i18next';
 import { useEffect, useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { useAccount } from 'wagmi';
+import Image from 'next/image';
 
 interface ModalBorrowProps {
   isModalOpen: boolean;
