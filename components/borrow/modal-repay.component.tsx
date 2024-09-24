@@ -1,24 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import { useForm, Controller, SubmitHandler } from 'react-hook-form';
-import ModalComponent from '@/components/common/modal.component';
-import { InputNumber } from 'antd';
-import Image from 'next/image';
-import { Button, Tooltip, Select, Checkbox } from 'antd';
-import {
-  InfoCircleOutlined,
-  QuestionCircleOutlined,
-  DownOutlined,
-  CloseOutlined,
-  ArrowRightOutlined,
-  LoadingOutlined,
-} from '@ant-design/icons';
 import TransactionSuccessComponent from '@/components/borrow/transaction-success.component';
-import { useTranslation } from 'next-i18next';
-import { TRANSACTION_STATUS, CONTRACT_ADDRESS } from '@/constants/common.constant';
+import ModalComponent from '@/components/common/modal.component';
+import { WalletIcon } from '@/components/icons/wallet.icon';
+import { CONTRACT_ADDRESS, TRANSACTION_STATUS } from '@/constants/common.constant';
 import service from '@/utils/backend/borrow';
-import service_ccfl_repay from '@/utils/contract/ccflRepay.service';
-import { useAccount } from 'wagmi';
 import { toAmountShow, toLessPart, toUnitWithDecimal } from '@/utils/common';
+import service_ccfl_repay from '@/utils/contract/ccflRepay.service';
+import {
+  ArrowRightOutlined,
+  CloseOutlined,
+  InfoCircleOutlined,
+  LoadingOutlined,
+  QuestionCircleOutlined,
+} from '@ant-design/icons';
+import { Button, InputNumber, Tooltip } from 'antd';
+import { useTranslation } from 'next-i18next';
+import { useEffect, useState } from 'react';
+import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { useAccount } from 'wagmi';
 
 interface ModalBorrowProps {
   isModalOpen: boolean;
@@ -352,7 +350,13 @@ export default function ModalBorrowComponent({
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="modal-borrow-content">
               <div className="px-6 py-4 ">
-                <div className="modal-borrow-title mb-2 ">{t('BORROW_MODAL_REPAY_AMOUNT')}</div>
+                <div className="modal-borrow-title mb-2 flex items-center">
+                  {t('BORROW_MODAL_REPAY_AMOUNT')}
+                  <div className="wallet-balance">
+                    <WalletIcon className="mr-2" /> <span>{t('FORM_BALANCE')}: </span> 50.000{' '}
+                    {currentToken?.toUpperCase()}{' '}
+                  </div>
+                </div>
                 <div className={`modal-borrow-amount ${loading ? 'loading' : ''}`}>
                   <div className="flex items-center">
                     <Controller
