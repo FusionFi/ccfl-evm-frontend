@@ -314,5 +314,6 @@
   "BORROW_MODAL_BORROW_COLLATERAL_NON_ENOUGH": "You don’t have enough collateral",
   "BORROW_MODAL_BORROW_COLLATERAL_EXCEEDS_ALLOWANCE": "Transfer amount exceeds allowance",
   "FORM_MINIMUM_AMOUNT": "Minimum add amount",
-  "FORM_BALANCE": "Balance"
+  "FORM_BALANCE": "Balance",
+  "FORM_MINIMUM_REPAYMENT": "Minimum repayment"
 }

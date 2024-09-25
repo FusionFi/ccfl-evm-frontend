@@ -82,6 +82,8 @@ export default function ModalBorrowComponent({
   }) as any;
   const [errorTx, setErrorTx] = useState() as any;
   const [txHash, setTxHash] = useState();
+  const [loadingMinimum, setLoadingMinimum] = useState<boolean>(false);
+  const [minimum, setMinimum] = useState(0);
 
   console.log('loanItem', loanItem);
 
@@ -305,6 +307,26 @@ export default function ModalBorrowComponent({
     }
   };
 
+  const handleMinimumRepayment = async () => {
+    try {
+      const provider = await connector?.getProvider();
+      setLoadingMinimum(true);
+      let res = (await service_ccfl_repay.getMinimumRepayment(
+        provider,
+        CONTRACT_ADDRESS,
+        loanItem.loan_id,
+      )) as any;
+      if (res) {
+        setMinimum(res);
+      } else {
+        setMinimum(0);
+      }
+      setLoadingMinimum(false);
+    } catch (error) {
+      setLoadingMinimum(false);
+    }
+  };
+
   const resetState = () => {
     setLoading(false);
     setHealthFactor(undefined);
@@ -336,6 +358,7 @@ export default function ModalBorrowComponent({
   useEffect(() => {
     if (isModalOpen) {
       getTokenInfo();
+      handleMinimumRepayment();
       resetState();
     }
   }, [isModalOpen]);
@@ -354,7 +377,8 @@ export default function ModalBorrowComponent({
                 <div className="modal-borrow-title mb-2 flex items-center">
                   {t('BORROW_MODAL_REPAY_AMOUNT')}
                   <div className="wallet-balance">
-                    <WalletIcon className="mr-2" /> <span>{t('FORM_BALANCE')}: </span> 50.000{' '}
+                    <WalletIcon className="mr-2" /> <span>{t('FORM_BALANCE')}: </span>{' '}
+                    {loadingBalance ? <LoadingOutlined className="mr-1" /> : stableCoinData.balance}{' '}
                     {currentToken?.toUpperCase()}{' '}
                   </div>
                 </div>
@@ -403,8 +427,8 @@ export default function ModalBorrowComponent({
                 </div>
                 <div className="modal-borrow-balance">
                   <span>
-                    {t('BORROW_MODAL_BORROW_WALLET_BALANCE')}:{' '}
-                    {loadingBalance ? <LoadingOutlined className="mr-1" /> : stableCoinData.balance}{' '}
+                    {t('FORM_MINIMUM_REPAYMENT')}:{' '}
+                    {loadingMinimum ? <LoadingOutlined className="mr-1" /> : minimum}{' '}
                     {currentToken?.toUpperCase()}
                   </span>
                   {tokenValue && !(stableCoinData.balance - tokenValue >= 0) && (
@@ -507,7 +531,8 @@ export default function ModalBorrowComponent({
                         gasFee === 0 ||
                         !loanItem ||
                         !stableCoinData.address ||
-                        stableCoinData.balance === 0
+                        stableCoinData.balance === 0 ||
+                        tokenValue < minimum
                       }
                       className="w-full"
                       loading={loading}>
@@ -535,7 +560,8 @@ export default function ModalBorrowComponent({
                           gasFee === 0 ||
                           !loanItem ||
                           !stableCoinData.address ||
-                          stableCoinData.balance === 0
+                          stableCoinData.balance === 0 ||
+                          tokenValue < minimum
                         }
                         className="w-full"
                         loading={loading}>

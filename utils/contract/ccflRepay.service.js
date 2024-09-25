@@ -6,10 +6,16 @@ import { getAllowance } from '@/utils/contract/erc20';
 import { ethers } from 'ethers';
 import abi_erc20 from '@/utils/contract/abi/erc20.json';
 import { isError } from 'lodash';
+import abi_pool from '@/utils/contract/abi/ccflPool.json';
 
 const _initContract = (provider, contract_address) => {
   const myWeb3 = getWeb3(provider);
   return new myWeb3.eth.Contract(abi, contract_address);
+};
+
+const _initContractPool = (provider, contract_address) => {
+  const myWeb3 = getWeb3(provider);
+  return new myWeb3.eth.Contract(abi_pool, contract_address);
 };
 
 const getHealthFactor = async (provider, contract_address, amount, loanId) => {
@@ -22,6 +28,18 @@ const getHealthFactor = async (provider, contract_address, amount, loanId) => {
     return resHealthFactor ? resHealthFactor / 100 : undefined;
   } catch (error) {
     console.log('🚀 ~ healthFactor ~ error:', error);
+  }
+};
+
+const getMinimumRepayment = async (provider, contract_address, loanId) => {
+  try {
+    const contract = _initContractPool(provider, contract_address);
+    console.log('getMinimumRepayment repay', loanId);
+    const resMinimumRepayment = await contract.methods.getCurrentLoan(loanId).call();
+    console.log('getMinimumRepayment res', resMinimumRepayment);
+    return resMinimumRepayment;
+  } catch (error) {
+    console.log('🚀 ~ getMinimumRepayment ~ error:', error);
   }
 };
 
@@ -241,5 +259,6 @@ const service_ccfl_borrow = {
   checkAllowance,
   getGasFeeRepayLoan,
   getHealthFactor,
+  getMinimumRepayment,
 };
 export default service_ccfl_borrow;
