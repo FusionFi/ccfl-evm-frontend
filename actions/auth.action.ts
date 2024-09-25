@@ -9,3 +9,13 @@ export const updateCardanoConnected = createAction<{ isCardanoConnected: Boolean
 export const updateNetwork = createAction<{ chainId: any }>( // TODO for mock only
   'auth/updateNetwork',
 );
+export const updateProvider = createAction<{
+  provider: {
+    type?: 'EVM' | 'Cardano',
+    chainId?: any,
+    account?: any,
+    connector?: any
+  }
+}>( // TODO for mock only
+  'auth/updateProvider',
+);

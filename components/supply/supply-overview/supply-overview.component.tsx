@@ -1,6 +1,5 @@
-import { CHAIN_INFO, SUPPORTED_CHAINS } from '@/constants/chains.constant';
-import { useCardanoConnected, useNetworkManager } from '@/hooks/auth.hook';
-import { useCardanoWalletConnected } from '@/hooks/cardano-wallet.hook';
+import { CARDANO_NETWORK_ID, SUPPORTED_CHAINS_MAP } from '@/constants/chains.constant';
+import { useConnectedNetworkManager, useProviderManager } from '@/hooks/auth.hook';
 import eventBus from '@/hooks/eventBus.hook';
 import { useUserManager, useNetworkManager as useSupplyNetworkManager } from '@/hooks/supply.hook';
 import supplyBE from '@/utils/backend/supply';
@@ -12,7 +11,6 @@ import BigNumber from 'bignumber.js';
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
 import { useEffect, useMemo } from 'react';
-import { useAccount } from 'wagmi';
 import cssClass from './supply-overview.component.module.scss';
 
 type LabelRender = SelectProps['labelRender'];
@@ -20,42 +18,17 @@ type LabelRender = SelectProps['labelRender'];
 export default function SupplyOverviewComponent() {
   const { t } = useTranslation('common');
 
-  const { isConnected, address } = useAccount();
-  const [cardanoWalletConnected] = useCardanoWalletConnected();
-  const [isCardanoConnected] = useCardanoConnected();
-  const [chainId, updateNetwork] = useNetworkManager();
+  const { selectedChain, updateNetwork } = useConnectedNetworkManager();
   const [, updateNetworks] = useSupplyNetworkManager()
+  const [provider] = useProviderManager();
 
   const [user] = useUserManager();
-  const isConnected_ = useMemo(() => {
-    return isConnected || !!cardanoWalletConnected?.address;
-  }, [isConnected, cardanoWalletConnected?.address]);
-  const CHAIN_MAP = new Map(SUPPORTED_CHAINS.map(item => [item.id, item]));
-
-  const selectedChain = useMemo(() => {
-    let _chain = CHAIN_INFO.get(chainId);
-    if (!_chain) {
-      if (isCardanoConnected) {
-        _chain = CHAIN_MAP.get('ADA');
-      } else {
-        _chain = CHAIN_MAP.get(11155111);
-      }
-    }
-    return _chain;
-  }, [chainId, isCardanoConnected]);
 
   const labelRender: LabelRender = (props: any) => {
     let { value } = props;
 
-    let _chain: any = CHAIN_MAP.get(value);
+    const _chain: any = SUPPORTED_CHAINS_MAP.get(value);
     console.log('🚀 ~ SupplyOverviewComponent ~ _chain:', _chain);
-    if (!_chain) {
-      if (isCardanoConnected) {
-        _chain = CHAIN_MAP.get('ADA');
-      } else {
-        _chain = CHAIN_MAP.get(11155111);
-      }
-    }
 
     return (
       <div className="flex items-center">
@@ -85,13 +58,11 @@ export default function SupplyOverviewComponent() {
 
   const handleNetworkChange = (item: any) => {
     try {
-      console.log(item, 'item');
-      console.log(chainId, 'chainId');
-      const currentTab = chainId == 'ADA' ? 'cardano' : 'evm';
-      const changedTab = item == 'ADA' ? 'cardano' : 'evm';
+      const currentTab = selectedChain?.id == CARDANO_NETWORK_ID ? 'cardano' : 'evm';
+      const changedTab = item == CARDANO_NETWORK_ID ? 'cardano' : 'evm';
       if (currentTab != changedTab) {
         eventBus.emit('openWeb3Modal', {
-          tab: item == 'ADA' ? 'cardano' : 'evm',
+          tab: changedTab,
           chainId: item,
         });
       } else {
@@ -101,7 +72,7 @@ export default function SupplyOverviewComponent() {
       console.error('handle network changing failed: ', error);
     }
   };
-  
+
 
   const fetchInitiaData = async () => {
     try {
@@ -130,11 +101,11 @@ export default function SupplyOverviewComponent() {
               value: selectedChain?.id,
             }}
             onChange={handleNetworkChange}
-            options={[...(CHAIN_MAP.values() as any)].map(item => ({
+            options={[...(SUPPORTED_CHAINS_MAP.values() as any)].map(item => ({
               value: item.id,
             }))}
             optionRender={(option: any) => {
-              const _chain: any = CHAIN_MAP.get(option.value);
+              const _chain: any = SUPPORTED_CHAINS_MAP.get(option.value);
               return (
                 <div className="chain-dropdown-item-wrapper">
                   <Image
@@ -156,7 +127,7 @@ export default function SupplyOverviewComponent() {
           />
         </div>
       </div>
-      {isConnected_ && (
+      {provider?.account && (
         <div className="supply-overview__body">
           <div className="supply-overview__body__wrapper">
             <div className="supply-overview__body__wrapper__item">

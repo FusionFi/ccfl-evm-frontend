@@ -1,6 +1,5 @@
 import * as SupplyActions from '@/actions/supply.action';
 import { createReducer } from '@reduxjs/toolkit';
-import { DEFAULT_CHAIN_ID } from '@/constants/chains.constant';
 
 /**
  * CALL API ACTIONS
@@ -8,7 +7,7 @@ import { DEFAULT_CHAIN_ID } from '@/constants/chains.constant';
 // Define an async thunk for API call
 
 export interface SupplyState {
-  network: any;
+  networks: any;
   asset: any;
   loading: boolean;
   error: any;
@@ -16,10 +15,7 @@ export interface SupplyState {
 }
 
 export const initialState: SupplyState = {
-  network: {
-    list: [],
-    selected: DEFAULT_CHAIN_ID,
-  },
+  networks: [],
   asset: {
     list: [],
     selected: '',
@@ -33,10 +29,18 @@ export default createReducer(initialState, builder =>
   builder
     .addCase(SupplyActions.resetState, state => {
       console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>resetState');
-      state = { ...initialState };
+      state.networks = [];
+      state.asset = {
+        list: [],
+        selected: '',
+      }
+
+      state.user = null;
+      state.loading = false;
+      state.error = false;
     })
     .addCase(SupplyActions.updateNetworks, (state, { payload: { networks } }) => {
-      state.network.list = [].concat(networks);
+      state.networks = [].concat(networks);
     })
     .addCase(SupplyActions.updateAssets, (state, { payload: { assets } }) => {
       state.asset.list = [].concat(assets);
@@ -44,7 +48,4 @@ export default createReducer(initialState, builder =>
     .addCase(SupplyActions.updateUser, (state, { payload: { user } }) => {
       state.user = user;
     })
-    .addCase(SupplyActions.selectNetwork, (state, { payload: { chainId } }) => {
-      state.network.selected = chainId;
-    }),
 );

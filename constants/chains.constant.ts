@@ -1,7 +1,10 @@
 import { avalancheFuji, mainnet, polygonAmoy, sepolia } from 'wagmi/chains';
 
-const adaChain = {
-  id: 'ADA',
+export const CARDANO_NETWORK_ID: any = Number(process.env.NEXT_PUBLIC_CARDANO_NETWORK_ID || 0)
+
+//TODO: update here
+export const adaChain = {
+  id: Number(CARDANO_NETWORK_ID),
   name: 'Cardano',
   nativeCurrency: {
     name: 'ADA',
@@ -35,6 +38,7 @@ const adaChain = {
   },
   testnet: false,
 };
+
 export const TESTNET_CHAINS = [
   {
     ...sepolia,
@@ -68,5 +72,7 @@ export const CHAIN_INFO: any = new Map(
 export const SUPPORTED_CHAINS = process.env.NEXT_PUBLIC_IS_TESTNET
   ? TESTNET_CHAINS
   : MAINNET_CHAINS;
+
+export const SUPPORTED_CHAINS_MAP = new Map(SUPPORTED_CHAINS.map(item => [item.id, item]));
 
 export const DEFAULT_CHAIN_ID = Number(process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID || 11155111);
