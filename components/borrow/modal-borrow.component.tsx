@@ -194,13 +194,13 @@ export default function ModalBorrowComponent({
       if (res_balance) {
         setCollateralData({
           balance: res_balance.balance
-            ? toLessPart(toAmountShow(res_balance.balance, res_balance.decimals), 5)
+            ? toLessPart(toAmountShow(res_balance.balance, res_balance.decimals), 8)
             : 0,
           balance_usd:
             res_token && res_token[0] && res_token[0].price && res_balance.balance
               ? toLessPart(
                   toAmountShow(res_balance.balance * res_token[0].price, res_balance.decimals),
-                  5,
+                  8,
                 )
               : 0,
           decimals: res_balance.decimals ? res_balance.decimals : 8,
@@ -261,7 +261,7 @@ export default function ModalBorrowComponent({
         if (minimalCollateral && res_collateral && res_collateral[0]?.decimals) {
           let minimum = toLessPart(
             toAmountShow(minimalCollateral, res_collateral[0].decimals),
-            7,
+            8,
           ) as any;
           setMinimalCollateral(minimum);
         } else {
@@ -336,9 +336,9 @@ export default function ModalBorrowComponent({
             setGasFee(gasFee);
             console.log('handleGetFee', res, gasFee);
           }
-          if (res && (res.nonEnoughMoney || res.exceedsAllowance)) {
-            setGasFee(0);
-          }
+          // if (res && (res.nonEnoughMoney || res.exceedsAllowance)) {
+          //   setGasFee(0);
+          // }
           setErrorEstimate({
             ...errorEstimate,
             nonEnoughBalanceWallet: res?.nonEnoughMoney,
@@ -386,9 +386,9 @@ export default function ModalBorrowComponent({
             setGasFee(gasFee);
           }
 
-          if (res && (res.nonEnoughMoney || res.exceedsAllowance)) {
-            setGasFee(0);
-          }
+          // if (res && (res.nonEnoughMoney || res.exceedsAllowance)) {
+          //   setGasFee(0);
+          // }
           setErrorEstimate({
             ...errorEstimate,
             nonEnoughBalanceWallet: res?.nonEnoughMoney,
@@ -540,7 +540,7 @@ export default function ModalBorrowComponent({
                     <span className="modal-borrow-usd">
                       ≈ $
                       {stableCoinValue && priceStableCoin[stableCoin]
-                        ? toLessPart(stableCoinValue * priceStableCoin[stableCoin], 2)
+                        ? toLessPart(stableCoinValue * priceStableCoin[stableCoin], 6)
                         : 0}
                     </span>
                     {/* <Button disabled={loading} className="modal-borrow-max">
@@ -705,7 +705,7 @@ export default function ModalBorrowComponent({
                   {loadingGasFee ? (
                     <LoadingOutlined className="mr-1" />
                   ) : (
-                    <span className="ml-1">{toLessPart(gasFee, 2)}</span>
+                    <span className="ml-1">{toLessPart(gasFee, 8)}</span>
                   )}
                 </div>
               </div>

@@ -64,7 +64,7 @@ export default function LoansComponent(props: LoansProps) {
     } else {
       switch (type) {
         case ACTION_LOAN.COLLATERAL:
-          return props.showCollateralModal(record.collateral_asset);
+          return props.showCollateralModal(record.collateral_asset, record);
         case ACTION_LOAN.WITHDRAW_COLLATERAL:
           return props.showWithdrawCollateralModal(record.collateral_asset);
         case ACTION_LOAN.REPAY:

@@ -85,7 +85,7 @@ export default function ModalBorrowComponent({
   const [loadingMinimum, setLoadingMinimum] = useState<boolean>(false);
   const [minimum, setMinimum] = useState(0);
 
-  console.log('loanItem', loanItem);
+  // console.log('loanItem', loanItem);
 
   const onSubmit: SubmitHandler<IFormInput> = async data => {
     const provider = await connector?.getProvider();
@@ -172,7 +172,7 @@ export default function ModalBorrowComponent({
       let token = stableCoinData;
       if (res_balance) {
         token.balance = res_balance.balance
-          ? toLessPart(toAmountShow(res_balance.balance, res_balance.decimals), 2)
+          ? toLessPart(toAmountShow(res_balance.balance, res_balance.decimals), 6)
           : 0;
       }
       if (res_info && res_info[0]) {
@@ -244,9 +244,9 @@ export default function ModalBorrowComponent({
             let gasFee = res.gasPrice * res_price.price;
             setGasFee(gasFee);
           }
-          if (res && (res.nonEnoughMoney || res.exceedsAllowance)) {
-            setGasFee(0);
-          }
+          // if (res && (res.nonEnoughMoney || res.exceedsAllowance)) {
+          //   setGasFee(0);
+          // }
 
           setErrorEstimate({
             nonEnoughBalanceWallet: res?.nonEnoughMoney,
@@ -290,9 +290,9 @@ export default function ModalBorrowComponent({
             setGasFee(gasFee);
           }
 
-          if (res && (res.nonEnoughMoney || res.exceedsAllowance)) {
-            setGasFee(0);
-          }
+          // if (res && (res.nonEnoughMoney || res.exceedsAllowance)) {
+          //   setGasFee(0);
+          // }
           setErrorEstimate({
             nonEnoughBalanceWallet: res?.nonEnoughMoney,
             exceedsAllowance: res?.exceedsAllowance,
@@ -311,13 +311,16 @@ export default function ModalBorrowComponent({
     try {
       const provider = await connector?.getProvider();
       setLoadingMinimum(true);
+      let res_pool = (await service.getPoolAddress(chainId, currentToken)) as any;
+
       let res = (await service_ccfl_repay.getMinimumRepayment(
         provider,
-        CONTRACT_ADDRESS,
+        res_pool && res_pool[0] ? res_pool[0].address : CONTRACT_ADDRESS,
         loanItem.loan_id,
       )) as any;
-      if (res) {
-        setMinimum(res);
+
+      if (res && loanItem && loanItem.decimals) {
+        setMinimum(toLessPart(toAmountShow(res, loanItem.decimals), 6) as any);
       } else {
         setMinimum(0);
       }
@@ -503,7 +506,7 @@ export default function ModalBorrowComponent({
                   {loadingGasFee ? (
                     <LoadingOutlined className="mr-1" />
                   ) : (
-                    <span className="ml-1">{toLessPart(gasFee, 2)}</span>
+                    <span className="ml-1">{toLessPart(gasFee, 8)}</span>
                   )}
                 </div>
               </div>

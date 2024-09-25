@@ -202,7 +202,8 @@ export default function BorrowPage() {
     setLoanItem(record);
     setIsModalRepayOpen(true);
   };
-  const showCollateralModal = (token: string) => {
+  const showCollateralModal = (token: string, record: any) => {
+    setLoanItem(record);
     setCollateralToken(token);
     setIsModalCollateralOpen(true);
   };
@@ -439,6 +440,7 @@ export default function BorrowPage() {
         currentToken={collateralToken}
         step={step}
         setStep={setStep}
+        loanItem={loanItem}
       />
       <ModalWithdrawCollateralComponent
         isModalOpen={isModalWithdrawCollateral}
