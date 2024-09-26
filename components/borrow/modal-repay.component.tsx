@@ -83,7 +83,7 @@ export default function ModalBorrowComponent({
   const [errorTx, setErrorTx] = useState() as any;
   const [txHash, setTxHash] = useState();
   const [loadingMinimum, setLoadingMinimum] = useState<boolean>(false);
-  const [minimum, setMinimum] = useState() as any;
+  const [minimum, setMinimum] = useState(0) as any;
 
   // console.log('loanItem', loanItem);
 
@@ -322,7 +322,7 @@ export default function ModalBorrowComponent({
       let res = (await service.getSetting(MIN_AMOUNT_KEY.MIN_AMOUNT_REPAY)) as any;
 
       if (res && res[0]?.value) {
-        setMinimum(res[0]?.value);
+        // setMinimum(res[0]?.value);
       } else {
         setMinimum(0);
       }
