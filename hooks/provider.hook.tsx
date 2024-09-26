@@ -17,7 +17,6 @@ export function useAllowance(provider: any) {
 
     const refetch = useCallback(async (params: any) => {
         try {
-            console.log('refetch: ', params)
             const result = await provider.fetchAllowance(params)
             setAllowance(new BigNumber(result || 0).toString())
         } catch (error) {

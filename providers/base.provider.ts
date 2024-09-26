@@ -15,6 +15,18 @@ class BaseProvider {
         this.account = account || '';
         this.chainId = chainId || '';
     }
+
+    async fetchAllowance(params: any) {
+        // TODO: update here
+        console.log('[fetchAllowance]  params: ', params)
+        return 0;
+    }
+
+    async estimateNormalTxFee(params: any) {
+        // TODO: update here
+        console.log('[estimateNormalTxFee]  params: ', params)
+        return 0;
+    }
 }
 
 export default BaseProvider;
