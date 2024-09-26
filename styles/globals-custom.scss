@@ -731,6 +731,21 @@
             }
           }
         }
+        &-balance-minimum {
+          margin: 8px 24px 16px;
+
+          color: var(--Text-sub_text, #808089);
+
+          /* Body/B3_14px_Regular */
+          font-family: Inter;
+          font-size: 14px;
+          font-style: normal;
+          font-weight: 400;
+          line-height: 20px; /* 142.857% */
+
+          display: flex;
+          justify-content: space-between;
+        }
         &-balance {
           color: var(--Text-sub_text, #808089);
 
