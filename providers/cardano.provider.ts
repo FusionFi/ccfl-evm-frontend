@@ -12,6 +12,10 @@ class CardanoProvider extends BaseProvider {
             ...params,
             type: 'cardano'
         })
+
+        if (params?.connector?.id) {
+            this.connector = new Connector[params?.connector.id]();
+        }
     }
 
     async connect(connector: any) {
@@ -33,8 +37,8 @@ class CardanoProvider extends BaseProvider {
         lucid.selectWallet(api);
 
         const address = await lucid.wallet.address();
+        this.connector = _connector;
 
-        // TODO: listen events
         return {
             accounts: [address],
             chainId: networkId,
@@ -55,13 +59,13 @@ class CardanoProvider extends BaseProvider {
         return true;
     }
 
-    async fetchAllowance(params: any) {
+    async fetchAllowance(params: any): Promise<any> {
         // TODO: update here
         console.log('[fetchAllowance]  params: ', params)
         return true;
     }
 
-    async estimateNormalTxFee(params: any) {
+    async estimateNormalTxFee(params: any): Promise<any> {
         // TODO: update here
         console.log('[estimateNormalTxFee]  params: ', params)
         return true;
@@ -71,6 +75,14 @@ class CardanoProvider extends BaseProvider {
         // TODO: update here
         console.log('[supply] params: ', params)
         return true;
+    }
+
+    subscribeEvents(dispatch: any): any {
+        this.connector?.subscribeEvents(dispatch);
+    }
+
+    unsubscribeEvents(): any {
+        this.connector?.unsubscribeEvents();
     }
 }
 

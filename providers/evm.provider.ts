@@ -1,10 +1,17 @@
 import AbiPool from '@/utils/contract/abi/ccflPool.json'
-import { getGasPrice, waitForTransactionReceipt, switchChain, writeContract, connect, disconnect, getChainId, getAccount, getConnectors, readContract } from '@wagmi/core'
+import { getGasPrice, watchChainId, watchAccount, waitForTransactionReceipt, switchChain, writeContract, connect, disconnect, getChainId, getAccount, getConnectors, readContract } from '@wagmi/core'
 import { config } from '@/libs/wagmi.lib'
 import BaseProvider from './base.provider'
 import AbiERC20 from '@/utils/contract/abi/erc20.json'
 import { createConfigWithCustomTransports } from '@/libs/wagmi.lib';
 import BigNumber from 'bignumber.js';
+import * as Actions from "@/actions/auth.action";
+
+
+// TODO: watch chain, account
+
+let events: any = [];
+console.log('events: ', events)
 
 class EVMProvider extends BaseProvider {
 
@@ -34,8 +41,6 @@ class EVMProvider extends BaseProvider {
     }
 
     async switchChain(chainId: any) {
-        const connectors = getConnectors(config);
-        console.log('connectors: ', connectors)
         return await switchChain(config, { chainId })
     }
 
@@ -101,6 +106,41 @@ class EVMProvider extends BaseProvider {
         const result = new BigNumber(gasPrice.toString()).times(21000).toString();
 
         return result;
+    }
+
+    subscribeEvents(dispatch: any): any {
+        events.push(watchAccount(config, {
+            onChange(data) {
+                console.log('Account changed!', data)
+                dispatch(
+                    Actions.updateProvider({
+                        provider: {
+                            account: data.address
+                        }
+                    })
+                )
+            },
+        }))
+
+        events.push(watchChainId(config, {
+            onChange(chainId) {
+                console.log('Chain ID changed!', chainId)
+                dispatch(
+                    Actions.updateProvider({
+                        provider: {
+                            chainId
+                        }
+                    })
+                )
+            },
+        }))
+    }
+
+    unsubscribeEvents(): any {
+        events.forEach((unwatch: any) => {
+            unwatch()
+        });
+        events = [];
     }
 }
 

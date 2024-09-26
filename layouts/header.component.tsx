@@ -15,6 +15,7 @@ import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import eventBus from '@/hooks/eventBus.hook';
 import { ProviderType } from '@/providers/index.provider';
+import { useDispatch } from 'react-redux';
 
 export const MainHeader = () => {
   /**
@@ -25,6 +26,7 @@ export const MainHeader = () => {
   /**
    * HOOKS
    */
+  const dispatch = useDispatch();
   const router = useRouter();
   const [messageApi, contextHolder] = message.useMessage();
   const { t } = useTranslation('common');
@@ -60,6 +62,7 @@ export const MainHeader = () => {
       setIsLandingPage(false);
     }
   }, [router.pathname]);
+
   useEffect(() => {
     const handleScroll = () => {
       const shouldChangeBackground = window.scrollY > 20;
@@ -76,6 +79,12 @@ export const MainHeader = () => {
     };
   }, []);
 
+
+  useEffect(() => {
+    provider.subscribeEvents(dispatch)
+
+    return () => provider.unsubscribeEvents();
+  }, [provider]);
 
   /**
    * RENDERS

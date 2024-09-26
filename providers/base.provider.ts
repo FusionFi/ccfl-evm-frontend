@@ -11,21 +11,26 @@ class BaseProvider {
         chainId
     }: any) {
         this.type = type;
-        this.connector = connector;
         this.account = account || '';
         this.chainId = chainId || '';
     }
 
-    async fetchAllowance(params: any) {
-        // TODO: update here
+    async fetchAllowance(params: any): Promise<any> {
         console.log('[fetchAllowance]  params: ', params)
         return 0;
     }
 
-    async estimateNormalTxFee(params: any) {
-        // TODO: update here
+    async estimateNormalTxFee(params: any): Promise<any> {
         console.log('[estimateNormalTxFee]  params: ', params)
         return 0;
+    }
+
+    subscribeEvents(dispatch: any) {
+        return true;
+    }
+
+    unsubscribeEvents() {
+        return true;
     }
 }
 

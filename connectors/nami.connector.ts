@@ -16,7 +16,7 @@ class NamiConnector extends BaseConnector {
     });
   }
 
-  async subscribeEvents({ dispatch }: any) {
+  async subscribeEvents(dispatch: any) {
     if (events.length > 0) {
       return;
     }

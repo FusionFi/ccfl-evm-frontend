@@ -11,13 +11,14 @@ import { useEffect, useState } from 'react';
 import cssClass from './modal-web3.component.module.scss';
 import { makeProvider, ProviderType } from '@/providers/index.provider'
 import { CARDANO_NETWORK_ID } from '@/constants/chains.constant';
-
+import { useDispatch } from 'react-redux';
 
 interface ModalCollateralProps { }
 
 export default function ModalWeb3Component({ }: ModalCollateralProps) {
   const { t } = useTranslation('common');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const dispatch = useDispatch();
   const [provider, updateProvider] = useProviderManager();
   const [chainId, setChainId] = useState<any>(null)
   const { updateNetwork } = useConnectedNetworkManager();
@@ -74,14 +75,14 @@ export default function ModalWeb3Component({ }: ModalCollateralProps) {
           _chainId = result.chainId;
         }
       }
-      console.log('_chainId: ', _chainId)
       updateNetwork(_chainId)
       setChainId(null);
 
       updateProvider({
         account: result.accounts[0],
         chainId: result.chainId,
-        type: activeTab
+        type: activeTab,
+        connector: connector
       })
       setIsModalOpen(false);
     } catch (error) {
