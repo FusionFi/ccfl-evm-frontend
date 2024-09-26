@@ -309,21 +309,21 @@ export default function ModalBorrowComponent({
 
   const handleMinimumRepayment = async () => {
     try {
-      const provider = await connector?.getProvider();
-      setLoadingMinimum(true);
-      let res_pool = (await service.getPoolAddress(chainId, currentToken)) as any;
+      // const provider = await connector?.getProvider();
+      // setLoadingMinimum(true);
+      // let res_pool = (await service.getPoolAddress(chainId, currentToken)) as any;
 
-      let res = (await service_ccfl_repay.getMinimumRepayment(
-        provider,
-        res_pool && res_pool[0] ? res_pool[0].address : CONTRACT_ADDRESS,
-        loanItem.loan_id,
-      )) as any;
+      // let res = (await service_ccfl_repay.getMinimumRepayment(
+      //   provider,
+      //   res_pool && res_pool[0] ? res_pool[0].address : CONTRACT_ADDRESS,
+      //   loanItem.loan_id,
+      // )) as any;
 
-      if (res && loanItem && loanItem.decimals) {
-        setMinimum(toLessPart(toAmountShow(res, loanItem.decimals), 6) as any);
-      } else {
-        setMinimum(0);
-      }
+      // if (res && loanItem && loanItem.decimals) {
+      //   setMinimum(toLessPart(toAmountShow(res, loanItem.decimals), 6) as any);
+      // } else {
+      //   setMinimum(0);
+      // }
       setLoadingMinimum(false);
     } catch (error) {
       setLoadingMinimum(false);

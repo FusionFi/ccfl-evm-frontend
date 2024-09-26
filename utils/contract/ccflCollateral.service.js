@@ -22,7 +22,7 @@ const getHealthFactor = async (provider, contract_address, amount, loanId) => {
   try {
     const contract = _initContract(provider, contract_address);
     console.log('getHealthFactor repay', loanId, amount);
-    const resHealthFactor = await contract.methods.repayHealthFactor(loanId, amount).call();
+    const resHealthFactor = await contract.methods.addCollateralHealthFactor(loanId, amount).call();
     console.log('getHealthFactor res', resHealthFactor);
     // const resHealthFactor1 = await contract.methods.getHealthFactor(loanId).call();
     return resHealthFactor ? resHealthFactor / 100 : undefined;
@@ -31,11 +31,13 @@ const getHealthFactor = async (provider, contract_address, amount, loanId) => {
   }
 };
 
-const getMinimumRepayment = async (provider, contract_address, loanId) => {
+const getMinimumRepayment = async (provider, contract_address, amount, stableCoin, collateral) => {
   try {
-    const contract = _initContractPool(provider, contract_address);
-    console.log('getMinimumRepayment repay', loanId);
-    const resMinimumRepayment = await contract.methods.getCurrentLoan(loanId).call();
+    const contract = _initContract(provider, contract_address);
+    console.log('getMinimumRepayment Collateral', amount, stableCoin, collateral);
+    const resMinimumRepayment = await contract.methods
+      .checkMinimalCollateralForLoan(amount, stableCoin, collateral)
+      .call();
     console.log('getMinimumRepayment res', resMinimumRepayment);
     return resMinimumRepayment;
   } catch (error) {
