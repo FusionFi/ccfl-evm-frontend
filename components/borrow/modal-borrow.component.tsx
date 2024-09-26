@@ -203,7 +203,7 @@ export default function ModalBorrowComponent({
             res_token && res_token[0] && res_token[0].price && res_balance.balance
               ? toLessPart(
                   toAmountShow(res_balance.balance * res_token[0].price, res_balance.decimals),
-                  8,
+                  2,
                 )
               : 0,
           decimals: res_balance.decimals ? res_balance.decimals : 8,
@@ -560,7 +560,7 @@ export default function ModalBorrowComponent({
                     <span className="modal-borrow-usd">
                       ≈ $
                       {stableCoinValue && priceStableCoin[stableCoin]
-                        ? toLessPart(stableCoinValue * priceStableCoin[stableCoin], 6)
+                        ? toLessPart(stableCoinValue * priceStableCoin[stableCoin], 2)
                         : 0}
                     </span>
                     {/* <Button disabled={loading} className="modal-borrow-max">

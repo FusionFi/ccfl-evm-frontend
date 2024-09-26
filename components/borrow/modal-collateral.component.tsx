@@ -387,7 +387,7 @@ export default function ModalCollateralComponent({
                     <span className="modal-borrow-usd">
                       ≈ ${' '}
                       {tokenValue && collateralData?.price
-                        ? toLessPart(tokenValue * collateralData?.price, 4, true)
+                        ? toLessPart(tokenValue * collateralData?.price, 2, true)
                         : 0}
                     </span>
                     <Button
@@ -449,9 +449,9 @@ export default function ModalCollateralComponent({
                         {tokenValue && tokenValue > 0
                           ? toLessPart(
                               parseFloat(tokenValue + collateralData.amount) * collateralData.price,
-                              8,
+                              2,
                             )
-                          : toLessPart(collateralData.amount * collateralData.price, 8)}
+                          : toLessPart(collateralData.amount * collateralData.price, 2)}
                       </span>
                     </div>
                   </div>

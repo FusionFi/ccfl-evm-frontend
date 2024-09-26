@@ -418,7 +418,7 @@ export default function ModalBorrowComponent({
                     <span className="modal-borrow-usd">
                       ≈ $
                       {tokenValue && priceToken[currentToken]
-                        ? toLessPart(tokenValue * priceToken[currentToken], 6, true)
+                        ? toLessPart(tokenValue * priceToken[currentToken], 2, true)
                         : 0}
                     </span>
                     <Button
