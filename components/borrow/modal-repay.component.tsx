@@ -443,7 +443,7 @@ export default function ModalBorrowComponent({
               </div>
               {errorEstimate.nonEnoughBalanceWallet && (
                 <div className="modal-borrow-error">
-                  {t('BORROW_MODAL_BORROW_COLLATERAL_NON_ENOUGH')}
+                  {t('BORROW_MODAL_BORROW_COLLATERAL_NON_ENOUGH_GAS')}
                 </div>
               )}
               {errorEstimate.exceedsAllowance && (
@@ -508,7 +508,7 @@ export default function ModalBorrowComponent({
                   {loadingGasFee ? (
                     <LoadingOutlined className="mr-1" />
                   ) : (
-                    <span className="ml-1">{toLessPart(gasFee, 8)}</span>
+                    <span className="ml-1">{toLessPart(gasFee, 2)}</span>
                   )}
                 </div>
               </div>

@@ -102,17 +102,32 @@ const approveAddCollateral = async (provider, contract_address, amount, adresss,
   }
 };
 
-const addCollateral = async (amount, stableCoin, provider, account, contract_address, loanId) => {
+const addCollateral = async (
+  amountCollateral,
+  collateral,
+  provider,
+  account,
+  contract_address,
+  loanId,
+) => {
   let overwrite = { from: account };
 
   try {
-    console.log('addCollateral', amount, stableCoin, provider, account, contract_address, loanId);
+    console.log(
+      'addCollateral',
+      amountCollateral,
+      collateral,
+      provider,
+      account,
+      contract_address,
+      loanId,
+    );
     const tx = await sendRawTx(
       provider,
       abi,
       contract_address,
       'addCollateral',
-      [loanId, amount, stableCoin],
+      [loanId, amountCollateral, collateral],
       overwrite,
     );
 
@@ -183,8 +198,8 @@ const getGasFeeAddCollateral = async (
   provider,
   account,
   contract_address,
-  amount,
-  stableCoin,
+  amountCollateral,
+  collateral,
   loanId,
 ) => {
   console.log(
@@ -192,8 +207,8 @@ const getGasFeeAddCollateral = async (
     provider,
     account,
     contract_address,
-    amount,
-    stableCoin,
+    amountCollateral,
+    collateral,
     loanId,
   );
 
@@ -207,7 +222,7 @@ const getGasFeeAddCollateral = async (
       abi,
       contract_address,
       'addCollateral',
-      [loanId, amount, stableCoin],
+      [loanId, amountCollateral, collateral],
       overwrite,
       true,
     );
