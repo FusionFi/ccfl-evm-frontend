@@ -1,6 +1,9 @@
 .landingContent {
   :global {
     .landing-container {
+      .section {
+        height: 500px;
+      }
     }
   }
 }

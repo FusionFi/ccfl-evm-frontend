@@ -6,6 +6,8 @@ import FeaturesComponent from './features/features.component';
 import FormComponent from './form/form.component';
 import WhyComponent from './why/why.component';
 import WorksComponent from './works/works.component';
+import { Element } from 'react-scroll';
+
 export default function LandingContent() {
   /**
    * HOOKS
@@ -14,21 +16,25 @@ export default function LandingContent() {
   return (
     <div className={twMerge(cssClass.landingContent)}>
       <div className="landing-container">
-        <section className="section" id="banner">
+        <Element name="banner" className="section">
           <BannerComponent />
-        </section>
-        <section className="section" id="works">
+        </Element>
+
+        <Element name="works" className="section">
           <WorksComponent />
-        </section>
-        <section className="section" id="features">
+        </Element>
+
+        <Element name="features" className="section">
           <FeaturesComponent />
-        </section>
-        <section className="section" id="why">
+        </Element>
+
+        <Element name="why" className="section">
           <WhyComponent />
-        </section>
-        <section className="section" id="form">
+        </Element>
+
+        <Element name="form" className="section">
           <FormComponent />
-        </section>
+        </Element>
       </div>
     </div>
   );

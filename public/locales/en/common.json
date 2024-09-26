@@ -310,5 +310,12 @@
   "WEB3_MODAL_COMPONENT_WALLET_STATUS_DETECTED": "Detected",
   "WEB3_MODAL_COMPONENT_TERM_CONDITION": "  By connecting a wallet, you agree to FusionFi’\n            <a href=\"#\" target=\"_blank\">\n              Terms of Service\n            </a>\n            and consent to its\n            <a href=\"#\" target=\"_blank\">\n              Privacy Policy.\n            </a>",
   "FORM_MINIMUM_AMOUNT": "Minimum add amount",
-  "FORM_BALANCE": "Balance"
+  "FORM_BALANCE": "Balance",
+  "LANDING_PAGE_HEADER_NAVIGATION_HOW_IT_WORK": "How it works",
+  "LANDING_PAGE_HEADER_NAVIGATION_FEATURES": "Features",
+  "LANDING_PAGE_HEADER_NAVIGATION_WHY": "Why FusionFi",
+  "LANDING_PAGE_HEADER_BUTTON": "Get Early Access",
+  "LANDING_PAGE_FOOTER_TERM": "Terms of Service",
+  "LANDING_PAGE_FOOTER_PRIVACY": "Privacy Policy",
+  "LANDING_PAGE_FOOTER_SUPPORT": "Support"
 }
