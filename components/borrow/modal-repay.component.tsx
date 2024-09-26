@@ -1,7 +1,7 @@
 import TransactionSuccessComponent from '@/components/borrow/transaction-success.component';
 import ModalComponent from '@/components/common/modal.component';
 import { WalletIcon } from '@/components/icons/wallet.icon';
-import { CONTRACT_ADDRESS, TRANSACTION_STATUS } from '@/constants/common.constant';
+import { CONTRACT_ADDRESS, TRANSACTION_STATUS, MIN_AMOUNT_KEY } from '@/constants/common.constant';
 import service from '@/utils/backend/borrow';
 import { toAmountShow, toLessPart, toUnitWithDecimal } from '@/utils/common';
 import service_ccfl_repay from '@/utils/contract/ccflRepay.service';
@@ -83,7 +83,7 @@ export default function ModalBorrowComponent({
   const [errorTx, setErrorTx] = useState() as any;
   const [txHash, setTxHash] = useState();
   const [loadingMinimum, setLoadingMinimum] = useState<boolean>(false);
-  const [minimum, setMinimum] = useState(10);
+  const [minimum, setMinimum] = useState() as any;
 
   // console.log('loanItem', loanItem);
 
@@ -310,7 +310,6 @@ export default function ModalBorrowComponent({
   const handleMinimumRepayment = async () => {
     try {
       // const provider = await connector?.getProvider();
-      // setLoadingMinimum(true);
       // let res_pool = (await service.getPoolAddress(chainId, currentToken)) as any;
 
       // let res = (await service_ccfl_repay.getMinimumRepayment(
@@ -319,11 +318,14 @@ export default function ModalBorrowComponent({
       //   loanItem.loan_id,
       // )) as any;
 
-      // if (res && loanItem && loanItem.decimals) {
-      //   setMinimum(toLessPart(toAmountShow(res, loanItem.decimals), 6) as any);
-      // } else {
-      //   setMinimum(0);
-      // }
+      setLoadingMinimum(true);
+      let res = (await service.getSetting(MIN_AMOUNT_KEY.MIN_AMOUNT_REPAY)) as any;
+
+      if (res && res[0]?.value) {
+        setMinimum(res[0]?.value);
+      } else {
+        setMinimum(0);
+      }
       setLoadingMinimum(false);
     } catch (error) {
       setLoadingMinimum(false);

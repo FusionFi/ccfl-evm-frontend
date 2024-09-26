@@ -373,8 +373,12 @@ export default function ModalCollateralComponent({
                   </sup>
                 </div>
                 <div className="modal-borrow-gas-value">
-                  <span>$</span>
-                  <span className="ml-1">0.00</span>
+                  <span>$ </span>
+                  {loadingGasFee ? (
+                    <LoadingOutlined className="mr-1" />
+                  ) : (
+                    <span className="ml-1">{toLessPart(gasFee, 8)}</span>
+                  )}
                 </div>
               </div>
               <div className="modal-borrow-footer">

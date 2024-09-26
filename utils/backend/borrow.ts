@@ -40,6 +40,11 @@ const getPoolAddress = async (chainId: any, symbol: any) => {
   return res;
 };
 
+const getSetting = async (key: any) => {
+  let res = await http.get(`${URL}/setting?key=${key}`);
+  return res;
+};
+
 const service = {
   getPool,
   getPrice,
@@ -48,5 +53,6 @@ const service = {
   getCollateralInfo,
   getTokenInfo,
   getPoolAddress,
+  getSetting,
 };
 export default service;
