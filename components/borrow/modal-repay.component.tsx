@@ -83,7 +83,7 @@ export default function ModalBorrowComponent({
   const [errorTx, setErrorTx] = useState() as any;
   const [txHash, setTxHash] = useState();
   const [loadingMinimum, setLoadingMinimum] = useState<boolean>(false);
-  const [minimum, setMinimum] = useState(0);
+  const [minimum, setMinimum] = useState(10);
 
   // console.log('loanItem', loanItem);
 
