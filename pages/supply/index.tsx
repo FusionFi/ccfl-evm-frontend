@@ -44,7 +44,7 @@ export default function SupplyPage() {
   const [asset, updateAssets] = useAssetManager();
   const [user, updateUser] = useUserManager();
   const [provider, updateProvider] = useProviderManager();
-  const { selectedChain } = useConnectedNetworkManager()
+  const { selectedChain, switchNetwork } = useConnectedNetworkManager()
 
   const fetchPublicData = async () => {
     try {
@@ -101,15 +101,10 @@ export default function SupplyPage() {
     }
   };
 
-  const switchNetwork = async () => {
+  const handleNetworkSwitch = async () => {
     try {
       // TODO: need to check the method using wallet connect or coinbase wallet
-      const rs = await provider.switchChain(selectedChain?.id);
-
-      console.log('🚀 ~ switchNetwork ~ rs:', rs);
-      updateProvider({
-        chainId: selectedChain?.id
-      });
+      await switchNetwork();
     } catch (error) {
       console.log('🚀 ~ switchNetwork ~ error:', error);
       showError(error);
@@ -278,7 +273,7 @@ export default function SupplyPage() {
       return (
         <TableAction>
           <Button
-            onClick={() => switchNetwork()}
+            onClick={handleNetworkSwitch}
             className="btn-primary-custom table-wrapper__action__connect">
             {t('COMMON_CONNECT_WALLET_SWITCH', {
               network: selectedChain?.name,

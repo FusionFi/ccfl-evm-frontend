@@ -26,7 +26,7 @@ export const UserInfoComponent = () => {
   const [resetState] = useResetState();
   const [, showError, , contextHolder] = useNotification();
 
-  const { selectedChain } = useConnectedNetworkManager();
+  const { selectedChain, switchNetwork } = useConnectedNetworkManager();
   const [provider, updateProvider] = useProviderManager();
 
   const address_ = useMemo(() => {
@@ -36,15 +36,9 @@ export const UserInfoComponent = () => {
   /**
    * FUNCTIONS
    */
-  const switchNetwork = async () => {
+  const handleNetworkSwitch = async () => {
     try {
-      // TODO: need to check the method using wallet connect or coinbase wallet
-      const rs = await provider.switchChain(selectedChain?.id);
-
-      console.log('🚀 ~ switchNetwork ~ rs:', rs);
-      updateProvider({
-        chainId: selectedChain?.id
-      });
+      await switchNetwork();
     } catch (error) {
       console.log('🚀 ~ switchNetwork ~ error:', error);
       showError(error);
@@ -75,7 +69,7 @@ export const UserInfoComponent = () => {
     if (selectedChain?.id != provider?.chainId) {
       return (
         <div className="flex items-center">
-          <Button className="switch-network btn-primary-custom" onClick={() => switchNetwork()}>
+          <Button className="switch-network btn-primary-custom" onClick={handleNetworkSwitch}>
             <ExclamationCircleOutlined /> Switch to {selectedChain?.name}
           </Button>
         </div>

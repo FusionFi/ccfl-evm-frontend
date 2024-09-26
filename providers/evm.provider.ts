@@ -1,7 +1,10 @@
 import AbiPool from '@/utils/contract/abi/ccflPool.json'
-import { waitForTransactionReceipt, switchChain, writeContract, connect, disconnect, getChainId, getAccount, getConnectors, reconnect } from '@wagmi/core'
+import { getGasPrice, waitForTransactionReceipt, switchChain, writeContract, connect, disconnect, getChainId, getAccount, getConnectors, readContract } from '@wagmi/core'
 import { config } from '@/libs/wagmi.lib'
 import BaseProvider from './base.provider'
+import AbiERC20 from '@/utils/contract/abi/erc20.json'
+import { createConfigWithCustomTransports } from '@/libs/wagmi.lib';
+import BigNumber from 'bignumber.js';
 
 class EVMProvider extends BaseProvider {
 
@@ -31,16 +34,9 @@ class EVMProvider extends BaseProvider {
     }
 
     async switchChain(chainId: any) {
+        const connectors = getConnectors(config);
+        console.log('connectors: ', connectors)
         return await switchChain(config, { chainId })
-    }
-
-
-    getChainId() {
-        try {
-            return getChainId(config);
-        } catch (error) {
-            return null;
-        }
     }
 
     async disconnect() {
@@ -51,10 +47,10 @@ class EVMProvider extends BaseProvider {
         return result;
     }
 
-    async supply({ amount, contractAddress }: any) {
+    async supply({ amount, contractAddress, abi }: any) {
         const result = await writeContract(config, {
             address: contractAddress,
-            abi: AbiPool,
+            abi: abi || AbiPool,
             functionName: 'supply',
             args: [amount],
         })
@@ -65,6 +61,46 @@ class EVMProvider extends BaseProvider {
         })
 
         return tx;
+    }
+
+    async approve({ abi, value, spender, contractAddress }: any) {
+        const result = await writeContract(config, {
+            address: contractAddress,
+            abi: abi || AbiERC20,
+            functionName: 'approve',
+            args: [spender, value],
+        })
+
+        const tx = await waitForTransactionReceipt(config, {
+            confirmations: 1,
+            hash: result
+        })
+
+        return tx;
+    }
+
+    async fetchAllowance({ abi, owner, spender, chain, contractAddress, network }: any) {
+        if (!contractAddress) {
+            return 0;
+        }
+
+        const config_ = createConfigWithCustomTransports({ chain, rpc: network?.rpcUrl });
+        const result = await readContract(config_, {
+            abi: abi || AbiERC20,
+            address: contractAddress,
+            functionName: 'allowance',
+            args: [owner, spender],
+        })
+
+        return result;
+    }
+
+    async estimateNormalTxFee({ chain, network }: any) {
+        const config_ = createConfigWithCustomTransports({ chain, rpc: network?.rpcUrl });
+        const gasPrice = await getGasPrice(config_)
+        const result = new BigNumber(gasPrice.toString()).times(21000).toString();
+
+        return result;
     }
 }
 

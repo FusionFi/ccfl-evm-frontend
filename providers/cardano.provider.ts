@@ -49,12 +49,27 @@ class CardanoProvider extends BaseProvider {
         this.connector?.unsubscribeEvents();
     }
 
-    getChainId() {
-        return 0;
+    async approve(params: any) {
+        // TODO: update here
+        console.log('[approve]  params: ', params)
+        return true;
+    }
+
+    async fetchAllowance(params: any) {
+        // TODO: update here
+        console.log('[fetchAllowance]  params: ', params)
+        return true;
+    }
+
+    async estimateNormalTxFee(params: any) {
+        // TODO: update here
+        console.log('[estimateNormalTxFee]  params: ', params)
+        return true;
     }
 
     async supply(params: any) {
-        console.log('supply params: ', params)
+        // TODO: update here
+        console.log('[supply] params: ', params)
         return true;
     }
 }

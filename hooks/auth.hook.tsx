@@ -68,7 +68,24 @@ export function useConnectedNetworkManager() {
     return _chain;
   }, [provider, chainId]);
 
-  return { updateNetwork, selectedChain, chainId };
+  const switchNetwork = useCallback(async () => {
+    // TODO: need to check the method using wallet connect or coinbase wallet
+    const _provider = makeProvider(provider);
+
+    console.log('_provider: ', _provider, selectedChain, selectedChain?.id)
+
+    const rs = await _provider.switchChain(selectedChain?.id);
+
+    console.log('🚀 ~ switchNetwork ~ rs:', rs);
+    dispatch(AuthActions.updateProvider({
+      provider: {
+        chainId: selectedChain?.id
+      }
+    }));
+
+  }, [provider, dispatch, selectedChain?.id]);
+
+  return { updateNetwork, selectedChain, chainId, switchNetwork };
 }
 
 export function useProviderManager() {

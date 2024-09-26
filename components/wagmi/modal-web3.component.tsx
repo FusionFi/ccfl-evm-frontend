@@ -59,6 +59,10 @@ export default function ModalWeb3Component({ }: ModalCollateralProps) {
       });
 
       const result: any = await _provider.connect(connector);
+      if (_provider.type == provider.type) {
+        setIsModalOpen(false);
+        return
+      }
 
       provider.disconnect?.()
 
