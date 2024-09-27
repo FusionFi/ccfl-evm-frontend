@@ -48,22 +48,17 @@ export function useAssetManager() {
 
 export function useNetworkManager() {
   const dispatch = useDispatch();
-  const network = useSelector(
-    (state: any) => state.supply.network,
+  const _networks = useSelector(
+    (state: any) => state.supply.networks,
   );
 
   const updateNetworks = useCallback((networks: any) => {
     dispatch(SupplyActions.updateNetworks({ networks }));
   }, [dispatch]);
 
-  const selectNetwork = useCallback((chainId: any) => {
-    dispatch(SupplyActions.selectNetwork({ chainId }));
-  }, [dispatch]);
+  const list: any = new Map(_networks?.map((item: any) => [item.chainId, item]))
 
-  return [{
-    ...network,
-    listMap: new Map(network?.list?.map((item: any) => [item.chainId, item]))
-  }, updateNetworks, selectNetwork];
+  return [list, updateNetworks];
 }
 
 

@@ -11,14 +11,12 @@ import { InfoCircleIcon } from '@/components/icons/info-circle.icon';
 import { QuestionCircleIcon } from '@/components/icons/question-circle.icon';
 import { computeWithMinThreashold } from '@/utils/percent.util';
 import BigNumber from 'bignumber.js';
-import { getGasPrice } from '@wagmi/core'
-import { createConfigWithCustomTransports } from '@/libs/wagmi.lib';
 import supplyBE from '@/utils/backend/supply';
-import { useAccount } from 'wagmi';
-import { useApproval, useAllowance } from '@/hooks/erc20.hook'
 import { formatUnits, parseUnits } from 'ethers';
 import { useNetworkManager } from '@/hooks/supply.hook';
-import { useSupply } from '@/hooks/pool.hook'
+import { useConnectedNetworkManager, useProviderManager } from '@/hooks/auth.hook'
+
+import { useAllowance, useApproval, useSupply, useTxFee } from '@/hooks/provider.hook'
 
 type FieldType = {
   amount?: any;
@@ -34,53 +32,48 @@ export default function ModalSupplyComponent({
 
   const [form] = Form.useForm();
   const [_isPending, _setIsPending] = useState(false);
-  const [gas, setGas] = useState<any>(0);
-  const [ethPrice, setEthPrice] = useState<any>(0)
-  const { isConnected, chainId, address, chain } = useAccount();
-  const [network] = useNetworkManager()
-  const selectedChain = useMemo(() => {
-    return network?.listMap?.get(network.selected) || {}
-  }, [network])
+  // TODO: need to store using redux
+  const [networkPrice, setNetworkPrice] = useState<any>(0)
+  const [networks] = useNetworkManager()
+  const { selectedChain } = useConnectedNetworkManager();
+  const [provider] = useProviderManager();
 
-  const WagmiConfig = useMemo(() => {
-    return createConfigWithCustomTransports({ chain, rpc: selectedChain?.rpcUrl })
-  }, [selectedChain, chain])
+  const selectedNetwork = useMemo(() => {
+    return networks?.get(selectedChain?.id) || {}
+  }, [networks, selectedChain])
 
-  const [, approve] = useApproval({
-    contractAddress: asset?.address,
-    config: WagmiConfig
-  })
+  const [fee, estimateNormalTxFee] = useTxFee(provider);
 
-  const [allowance, refetchAllowance] = useAllowance({
-    contractAddress: asset?.address,
-    owner: address,
-    spender: asset?.pool_address,
-    config: WagmiConfig,
-    query: {
+  const [allowance, refetchAllowance] = useAllowance(provider)
+  const [approve] = useApproval(provider)
 
-    }
-  })
-
-  const [supply] = useSupply({
-    contractAddress: asset?.pool_address,
-  })
+  const [supply] = useSupply(provider)
 
   const handleApprove = useCallback(async (value: any) => {
     await approve({
-      spender: asset.pool_address,
+      contractAddress: asset?.address,
+      spender: asset?.pool_address,
       value: value
+      // TODO: update cardano params
     });
-    await refetchAllowance()
-  }, [approve, asset, refetchAllowance]);
+    refetchAllowance({
+      network: selectedNetwork,
+      chain: selectedChain,
+      contractAddress: asset?.address,
+      owner: provider?.account,
+      spender: asset?.pool_address,
+      // TODO: update cardano params
+    });
+  }, [approve, asset, refetchAllowance, selectedNetwork, selectedChain, provider]);
 
   const _handleOk = useCallback(async (amount: any) => {
-    const result = await supply({ amount })
+    const result = await supply({ amount, contractAddress: asset?.pool_address, })
     handleOk({
       amount: formatUnits(amount, asset?.decimals),
-      txUrl: `${selectedChain?.txUrl}tx/${result}`,
+      txUrl: `${selectedNetwork?.txUrl}tx/${result}`,
       token: asset?.symbol
     });
-  }, [asset, selectedChain])
+  }, [asset, selectedNetwork, supply])
 
   const _handleCancel = useCallback(() => {
     _setIsPending(false)
@@ -108,43 +101,52 @@ export default function ModalSupplyComponent({
     }, 1000);
   };
 
-  const fetchEthPrice = async () => {
+  const fetchNetworkPrice = async () => {
     try {
       const result: any = await supplyBE.fetchPrice({
-        chainId
+        chainId: selectedChain?.id
       });
-      setEthPrice(result?.price || 0)
+      setNetworkPrice(result?.price || 0)
     } catch (error) {
       console.error('fetch gas to estimate failed: ', error)
     }
   }
 
-  const fetchGasToEstimate = async () => {
-    try {
-      const gasPrice = await getGasPrice(WagmiConfig)
-      const result = new BigNumber(gasPrice.toString()).times(21000).dividedBy(10 ** 18).toString();
-      setGas(result.toString())
-    } catch (error) {
-      console.error('fetch gas to estimate failed: ', error)
-    }
-  }
+  console.log('allowance: ', allowance)
 
   useEffect(() => {
-    fetchGasToEstimate();
-    fetchEthPrice();
+    estimateNormalTxFee({
+      network: selectedNetwork,
+      chain: selectedChain,
+      // TODO: update cardano params
+    });
+    fetchNetworkPrice();
+    refetchAllowance({
+      network: selectedNetwork,
+      chain: selectedChain,
+      contractAddress: asset?.address,
+      owner: provider?.account,
+      spender: asset?.pool_address,
+      // TODO: update cardano params
+    });
+
     const interval_ = setInterval(() => {
-      fetchGasToEstimate();
+      estimateNormalTxFee({
+        network: selectedNetwork,
+        chain: selectedChain,
+        // TODO: update cardano params
+      });
     }, 15000);
 
     return (() => {
       clearInterval(interval_)
     })
-  }, [])
+  }, [asset?.address, selectedNetwork, selectedChain, provider])
 
-
-  const gasWithPrice = useMemo(() => {
-    return new BigNumber(gas).multipliedBy(ethPrice).toFormat(2)
-  }, [gas, ethPrice])
+  const feeWithPrice = useMemo(() => {
+    const decimals = selectedChain?.nativeCurrency?.decimals || 18
+    return new BigNumber(fee).multipliedBy(networkPrice).dividedBy(10 ** decimals).toFormat(2)
+  }, [fee, networkPrice, selectedChain])
 
   return (
     <Modal
@@ -257,8 +259,8 @@ export default function ModalSupplyComponent({
                       </span>
                     </Tooltip>
                   </div>
-                  {gas != 0 && amount > 0 ? <span className="supply-modal-container__overview__apy__value text-sm">
-                    $<span className="text-white">{gasWithPrice}</span>
+                  {fee != 0 && amount > 0 ? <span className="supply-modal-container__overview__apy__value text-sm">
+                    $<span className="text-white">{feeWithPrice}</span>
                   </span> :
                     <span className="supply-modal-container__overview__apy__value text-sm">
                       --

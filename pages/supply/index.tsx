@@ -4,11 +4,9 @@ import ModalSuccess from '@/components/supply/modal-success/modal-success.compon
 import ModalSupply from '@/components/supply/modal-supply/modal-supply.component';
 import ModalWithdraw from '@/components/supply/modal-withdraw/modal-withdraw.component';
 import SupplyOverview from '@/components/supply/supply-overview/supply-overview.component';
-import { NETWORKS, STAKE_DEFAULT_NETWORK } from '@/constants/networks';
-import { useCardanoWalletConnected } from '@/hooks/cardano-wallet.hook';
 import eventBus from '@/hooks/eventBus.hook';
 import { useNotification } from '@/hooks/notifications.hook';
-import { useAssetManager, useNetworkManager, useUserManager } from '@/hooks/supply.hook';
+import { useAssetManager, useUserManager } from '@/hooks/supply.hook';
 import cssClass from '@/pages/supply/index.module.scss';
 import supplyBE from '@/utils/backend/supply';
 import { computeWithMinThreashold } from '@/utils/percent.util';
@@ -18,9 +16,9 @@ import BigNumber from 'bignumber.js';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import Image from 'next/image';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
-import { useAccount, useSwitchChain } from 'wagmi';
+import { useProviderManager, useConnectedNetworkManager } from '@/hooks/auth.hook';
 
 interface DataType {
   key: string;
@@ -40,29 +38,25 @@ enum ModalType {
 
 export default function SupplyPage() {
   const { t } = useTranslation('common');
-  const { switchChain } = useSwitchChain();
-  const { isConnected, chainId } = useAccount();
-  const { address } = useAccount();
 
   const [_, showError] = useNotification();
-  const [cardanoWalletConnected] = useCardanoWalletConnected();
 
-  const [networkInfo, setNetworkInfo] = useState<any | null>(null);
   const [asset, updateAssets] = useAssetManager();
-  const [network] = useNetworkManager();
   const [user, updateUser] = useUserManager();
+  const [provider, updateProvider] = useProviderManager();
+  const { selectedChain, switchNetwork } = useConnectedNetworkManager()
 
   const fetchPublicData = async () => {
     try {
       const [assets, pools, contracts]: any = await Promise.all([
         supplyBE.fetchAssets({
-          chainId: network.selected,
+          chainId: selectedChain?.id,
         }),
         supplyBE.fetchPools({
-          chainId: network.selected,
+          chainId: selectedChain?.id,
         }),
         supplyBE.fetchContracts({
-          chainId: network.selected,
+          chainId: selectedChain?.id,
         }),
       ]);
 
@@ -89,15 +83,15 @@ export default function SupplyPage() {
 
   const fetchUserData = async () => {
     try {
-      if (!address) {
+      if (!provider?.account) {
         updateUser(null);
         return;
       }
 
       const [user] = await Promise.all([
         supplyBE.fetchUserSupply({
-          chainId: network.selected,
-          address: '0x4A230206fD8E97121C1FE2748C63643dbAaE214E', // TODO
+          chainId: selectedChain?.id,
+          address: provider?.account,
         }),
       ]);
 
@@ -107,15 +101,12 @@ export default function SupplyPage() {
     }
   };
 
-  const isConnected_ = useMemo(() => {
-    return isConnected || !!cardanoWalletConnected?.address;
-  }, [isConnected, cardanoWalletConnected?.address]);
-
-  const switchNetwork = async () => {
+  const handleNetworkSwitch = async () => {
     try {
-      const rs = await switchChain({ chainId: STAKE_DEFAULT_NETWORK?.chain_id_decimals });
+      // TODO: need to check the method using wallet connect or coinbase wallet
+      await switchNetwork();
     } catch (error) {
-      console.error('🚀 ~ switchNetwork ~ error:', error);
+      console.log('🚀 ~ switchNetwork ~ error:', error);
       showError(error);
     }
   };
@@ -181,7 +172,7 @@ export default function SupplyPage() {
     },
   ];
 
-  if (isConnected_) {
+  if (!!provider?.account) {
     columns.push({
       title: () => {
         return (
@@ -215,7 +206,7 @@ export default function SupplyPage() {
       apy: item?.apy || '0',
       wallet_balance: ['0.00', '0.00', 0],
     };
-    if (isConnected) {
+    if (provider?.account) {
       const supplied = user.supplyMap.get(item.symbol);
       if (supplied) {
         const supplyBalance = new BigNumber(supplied.supply_balance || 0).dividedBy(
@@ -253,22 +244,11 @@ export default function SupplyPage() {
     return result;
   });
 
-  const initNetworkInfo = useCallback(() => {
-    if (chainId) {
-      const networkCurrent = NETWORKS.find(item => item.chain_id_decimals === chainId);
-      setNetworkInfo(networkCurrent || null);
-    }
-  }, [chainId]);
 
   useEffect(() => {
-    if (address) {
-      // getBalance();
-      initNetworkInfo();
-    }
-
     fetchUserData();
     fetchPublicData();
-  }, [address, initNetworkInfo, network.selected]);
+  }, [provider?.account, selectedChain?.id]);
 
   const TableAction = ({ children }: any) => {
     return <div className="table-wrapper__action">{children}</div>;
@@ -277,7 +257,7 @@ export default function SupplyPage() {
   const [modal, setModal] = useState({} as any);
 
   const expandedRowRender = (record: any) => {
-    if (!isConnected_) {
+    if (!provider?.account) {
       return (
         <TableAction>
           <Button
@@ -289,14 +269,14 @@ export default function SupplyPage() {
       );
     }
 
-    if (!networkInfo && !cardanoWalletConnected?.address) {
+    if (selectedChain?.id != provider?.chainId) {
       return (
         <TableAction>
           <Button
-            onClick={() => switchNetwork()}
+            onClick={handleNetworkSwitch}
             className="btn-primary-custom table-wrapper__action__connect">
             {t('COMMON_CONNECT_WALLET_SWITCH', {
-              network: STAKE_DEFAULT_NETWORK?.name,
+              network: selectedChain?.name,
             })}
           </Button>
         </TableAction>
@@ -347,6 +327,8 @@ export default function SupplyPage() {
         amount,
       }),
     });
+
+    fetchUserData();
   };
 
   const handleModalWithdrawOk = () => {
@@ -359,7 +341,7 @@ export default function SupplyPage() {
   };
 
   const title = () => {
-    if (!isConnected_) {
+    if (!provider?.account) {
       return t('SUPPLY_GUEST_TABLE_TITLE');
     }
     return t('SUPPLY_TABLE_TITLE');

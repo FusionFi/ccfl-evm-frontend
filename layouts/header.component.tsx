@@ -10,12 +10,12 @@ import header from '@/styles/layout/header.module.scss';
 import { Button } from 'antd';
 import { UserIcon } from '@/components/icons/user.icon';
 import { WagmiButton } from '@/components/wagmi/wagmi.btn.component';
-import { useCardanoConnected } from '@/hooks/auth.hook';
+import { useProviderManager } from '@/hooks/auth.hook';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
-import { useAccount, useConnect } from 'wagmi';
-import { useCardanoWalletConnected } from '@/hooks/cardano-wallet.hook'
 import eventBus from '@/hooks/eventBus.hook';
+import { ProviderType } from '@/providers/index.provider';
+import { useDispatch } from 'react-redux';
 
 export const MainHeader = () => {
   /**
@@ -26,20 +26,15 @@ export const MainHeader = () => {
   /**
    * HOOKS
    */
+  const dispatch = useDispatch();
   const router = useRouter();
-  const { address, connector } = useAccount();
   const [messageApi, contextHolder] = message.useMessage();
   const { t } = useTranslation('common');
-  const { connect } = useConnect();
-  const [isCardanoConnected, updateCardanoConnected] = useCardanoConnected();
-  const [cardanoWalletConnected] = useCardanoWalletConnected();
-  const address_ = useMemo(() => {
-    if (isCardanoConnected) {
-      return cardanoWalletConnected?.address;
-    }
+  const [provider] = useProviderManager();
 
-    return address;
-  }, [address, cardanoWalletConnected?.address])
+  const address_ = useMemo(() => {
+    return provider?.account;
+  }, [provider])
 
 
   /**
@@ -67,6 +62,7 @@ export const MainHeader = () => {
       setIsLandingPage(false);
     }
   }, [router.pathname]);
+
   useEffect(() => {
     const handleScroll = () => {
       const shouldChangeBackground = window.scrollY > 20;
@@ -83,10 +79,12 @@ export const MainHeader = () => {
     };
   }, []);
 
-  const handleNetworkSwitch = () => {
 
-  }
+  useEffect(() => {
+    provider.subscribeEvents(dispatch)
 
+    return () => provider.unsubscribeEvents();
+  }, [provider]);
 
   /**
    * RENDERS
@@ -134,14 +132,14 @@ export const MainHeader = () => {
                 <Button
                   className={twMerge('btn-default-custom', 'ml-2')}
                   onClick={() => eventBus.emit('openWeb3Modal', {
-                    tab: isCardanoConnected ? 'evm' : 'cardano',
+                    tab: provider?.type == ProviderType.Cardano ? ProviderType.EVM : ProviderType.Cardano,
                   })}
                   style={{
                     flex: '0 1 0'
                   }}
                 >
                   {t('LAYOUT_MAIN_HEADER_NAV_BTN_TITLE_CONNECT_WALLET_WITH_CHAIN', {
-                    chain: isCardanoConnected ? 'EVM' : 'Cardano'
+                    chain: provider?.type == ProviderType.Cardano ? 'EVM' : 'Cardano'
                   })}
                 </Button>
               </div>

@@ -21,7 +21,7 @@ import Image from 'next/image';
 import { useAccount, useSwitchChain } from 'wagmi';
 // import { getNetwork } from '@wagmi/core';
 import { DataType } from '@/components/borrow/borrow';
-import { useCardanoConnected, useNetworkManager } from '@/hooks/auth.hook';
+import { useCardanoConnected, useConnectedNetworkManager } from '@/hooks/auth.hook';
 import { useCardanoWalletConnected } from '@/hooks/cardano-wallet.hook';
 import eventBus from '@/hooks/eventBus.hook';
 
@@ -61,7 +61,7 @@ export default function BorrowPage() {
   const [networkInfo, setNetworkInfo] = useState<any | null>(null);
   const [isCardanoConnected] = useCardanoConnected();
 
-  const [chainId, updateNetwork] = useNetworkManager();
+  const { selectedChain, updateNetwork, chainId } = useConnectedNetworkManager();
 
   const isConnected_ = useMemo(() => {
     if (!!cardanoWalletConnected?.address) {
@@ -95,19 +95,6 @@ export default function BorrowPage() {
       console.error('handle network changing failed: ', error);
     }
   };
-
-  const selectedChain = useMemo(() => {
-    let _chain = CHAIN_INFO.get(chainId);
-    console.log('🚀 ~ selectedChain ~ _chain:', _chain);
-    if (!_chain) {
-      if (isCardanoConnected) {
-        _chain = CHAIN_MAP.get('ADA');
-      } else {
-        _chain = CHAIN_MAP.get(11155111);
-      }
-    }
-    return _chain;
-  }, [chainId, isCardanoConnected]);
 
   const [tokenList, setTokenList] = useState<any[]>([]);
   const [loadingAsset, setLoadingAsset] = useState(false);
@@ -260,17 +247,8 @@ export default function BorrowPage() {
   const labelRender: LabelRender = (props: any) => {
     let { value } = props;
 
-    let _chain: any = CHAIN_MAP.get(value);
-
-    if (!_chain) {
-      if (isCardanoConnected) {
-        _chain = CHAIN_MAP.get('ADA');
-      } else {
-        _chain = CHAIN_MAP.get(11155111);
-      }
-    }
-
-    console.log('dataLoan', dataLoan);
+    const _chain: any = SUPPORTED_CHAINS_MAP.get(value);
+    console.log('🚀 ~ SupplyOverviewComponent ~ _chain:', _chain);
 
     return (
       <div className="flex items-center">
@@ -320,7 +298,7 @@ export default function BorrowPage() {
       paymentMethod,
     });
   };
-  const CHAIN_MAP = new Map(SUPPORTED_CHAINS.map(item => [item.id, item]));
+  const SUPPORTED_CHAINS_MAP = new Map(SUPPORTED_CHAINS.map(item => [item.id, item]));
   return (
     <div className={twMerge('borrow-page-container', cssClass.borrowPage)}>
       <div className="borrow-header">
@@ -335,11 +313,11 @@ export default function BorrowPage() {
                 value: selectedChain?.id,
               }}
               onChange={handleNetworkChange}
-              options={[...(CHAIN_MAP.values() as any)].map(item => ({
+              options={[...(SUPPORTED_CHAINS_MAP.values() as any)].map(item => ({
                 value: item.id,
               }))}
               optionRender={(option: any) => {
-                const _chain: any = CHAIN_MAP.get(option.value);
+                const _chain: any = SUPPORTED_CHAINS_MAP.get(option.value);
                 return (
                   <div className="chain-dropdown-item-wrapper">
                     <Image

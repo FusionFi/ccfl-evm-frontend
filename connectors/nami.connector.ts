@@ -1,11 +1,11 @@
 import { NamiIcon } from "@/components/icons/nami.icon";
 import { getAddressDetails } from "lucid-cardano";
-import BaseWallet from "./base.wallet";
+import BaseConnector from "./base.connector";
 import * as Actions from "@/actions/auth.action";
 
 let events: any = [];
 
-class NamiWallet extends BaseWallet {
+class NamiConnector extends BaseConnector {
   constructor() {
     super({
       provider: window.cardano?.nami,
@@ -54,4 +54,4 @@ class NamiWallet extends BaseWallet {
   }
 }
 
-export default NamiWallet;
+export default NamiConnector;
