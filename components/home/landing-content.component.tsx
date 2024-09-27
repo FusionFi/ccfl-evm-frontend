@@ -7,7 +7,7 @@ import FormComponent from './form/form.component';
 import WhyComponent from './why/why.component';
 import WorksComponent from './works/works.component';
 import { Element } from 'react-scroll';
-
+import SafeHtmlComponent from '@/components/common/safe-html.component';
 export default function LandingContent() {
   /**
    * HOOKS
@@ -32,8 +32,12 @@ export default function LandingContent() {
           <WhyComponent />
         </Element>
 
-        <Element name="form" className="section">
+        <Element name="form" className="section involved">
+          <div className="section-title">
+            <SafeHtmlComponent htmlContent={t('LANDING_PAGE_INVOLVED_TITLE')} />
+          </div>
           <FormComponent />
+          {/* <FormComponent className="dark-themes" /> */}
         </Element>
       </div>
     </div>

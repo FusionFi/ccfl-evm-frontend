@@ -3,6 +3,37 @@
     .landing-container {
       .section {
         height: 500px;
+        &.involved {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          flex-direction: column;
+          height: auto;
+          padding: 252px 0px;
+          background-image: url('/images/landing/involved-bg.png');
+          background-repeat: no-repeat;
+          background-size: cover;
+          background-position: center;
+        }
+        .section-title {
+          color: rgba(255, 255, 255, 0.85);
+          text-align: center;
+          text-shadow: 0px 0px 6.8px rgba(0, 0, 0, 0.75);
+          font-family: Inter;
+          font-size: 38px;
+          font-style: normal;
+          font-weight: 900;
+          line-height: 46px; /* 121.053% */
+          text-transform: uppercase;
+          margin-bottom: 48px;
+          .highlight {
+            text-shadow: none;
+            background: linear-gradient(270deg, #2e77e3 0.39%, #37b4cb 99.75%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+          }
+        }
       }
     }
   }

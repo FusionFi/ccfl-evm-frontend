@@ -317,5 +317,10 @@
   "LANDING_PAGE_HEADER_BUTTON": "Get Early Access",
   "LANDING_PAGE_FOOTER_TERM": "Terms of Service",
   "LANDING_PAGE_FOOTER_PRIVACY": "Privacy Policy",
-  "LANDING_PAGE_FOOTER_SUPPORT": "Support"
+  "LANDING_PAGE_FOOTER_SUPPORT": "Support",
+  "LANDING_PAGE_INVOLVED_TITLE": "Want to get <span class=\"highlight\">involved? </span>",
+  "LANDING_PAGE_FORM_INPUT_PLACEHOLDER": "Enter your email address",
+  "LANDING_PAGE_FORM_BTN_TITLE": "Get Early Access",
+  "EMAIL_VALIDATION": "Please enter a valid email address",
+  "EMAIL_REQUIRED": "Please enter an email address"
 }

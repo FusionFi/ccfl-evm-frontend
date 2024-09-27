@@ -1,6 +1,71 @@
 .formComponent {
   :global {
     .form-container {
+      &.dark-themes {
+        .submit-form {
+          .ant-form-item-control-input {
+            .ant-form-item-control-input-content {
+              .input-custom {
+                background: rgba(0, 0, 0, 0.6) !important;
+                color: rgba(255, 255, 255, 0.8) !important;
+              }
+            }
+          }
+        }
+      }
+      .submit-form {
+        .ant-form-item-control-input {
+          .ant-form-item-control-input-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            .input-custom {
+              border: none !important;
+              border-radius: 100px;
+              background: rgba(255, 255, 255, 0.8) !important;
+              padding: 16px 220px 16px 32px;
+              color: rgba(0, 0, 0, 0.45);
+              font-family: Raleway;
+              font-size: 16px;
+              font-style: normal;
+              font-weight: 500;
+              line-height: 28px;
+              width: 592px;
+              @media screen and (max-width: 767px) {
+                width: 100%;
+              }
+            }
+            .btn-submit {
+              max-width: 188px;
+              position: absolute;
+              right: 12px;
+              border-radius: 100px;
+              background: linear-gradient(270deg, #2e77e3 0.39%, #37b4cb 99.75%);
+              color: #fff;
+              text-align: center;
+              font-family: Raleway;
+              font-size: 16px;
+              font-style: normal;
+              font-weight: 600;
+              line-height: 32px; /* 200% */
+              letter-spacing: -0.32px;
+              &:hover,
+              &:active,
+              &:focus,
+              &:disabled {
+                background: linear-gradient(270deg, #2e77e3 0.39%, #37b4cb 99.75%) !important;
+                color: #fff !important;
+                border: none !important;
+                opacity: 0.5;
+              }
+              .ant-spin {
+                color: #2e77e3;
+              }
+            }
+          }
+        }
+      }
     }
   }
 }
