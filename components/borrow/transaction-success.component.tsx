@@ -87,7 +87,7 @@ export default function TransactionSuccessComponent({
               {isCollateral && (
                 <span>
                   {t('BORROW_MODAL_COLLATERAL_DONE', {
-                    amount: 500,
+                    amount: stableCoinAmount,
                     token: currentToken?.toUpperCase(),
                   })}
                 </span>

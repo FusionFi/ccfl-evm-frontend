@@ -1,7 +1,7 @@
 import TransactionSuccessComponent from '@/components/borrow/transaction-success.component';
 import ModalComponent from '@/components/common/modal.component';
 import { WalletIcon } from '@/components/icons/wallet.icon';
-import { CONTRACT_ADDRESS, TRANSACTION_STATUS } from '@/constants/common.constant';
+import { CONTRACT_ADDRESS, TRANSACTION_STATUS, MIN_AMOUNT_KEY } from '@/constants/common.constant';
 import service from '@/utils/backend/borrow';
 import { toAmountShow, toLessPart, toUnitWithDecimal } from '@/utils/common';
 import service_ccfl_repay from '@/utils/contract/ccflRepay.service';
@@ -17,6 +17,7 @@ import { useTranslation } from 'next-i18next';
 import { useEffect, useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { useAccount } from 'wagmi';
+import Image from 'next/image';
 
 interface ModalBorrowProps {
   isModalOpen: boolean;
@@ -68,7 +69,7 @@ export default function ModalBorrowComponent({
     loanItem &&
     loanItem.debt_remain &&
     loanItem.decimals &&
-    (toLessPart(toAmountShow(loanItem.debt_remain, loanItem.decimals), 2) as any);
+    (toLessPart(toAmountShow(loanItem.debt_remain, loanItem.decimals), 6, true) as any);
   const [healthFactor, setHealthFactor] = useState(0) as any;
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingBalance, setLoadingBalance] = useState<boolean>(false);
@@ -81,8 +82,10 @@ export default function ModalBorrowComponent({
   }) as any;
   const [errorTx, setErrorTx] = useState() as any;
   const [txHash, setTxHash] = useState();
+  const [loadingMinimum, setLoadingMinimum] = useState<boolean>(false);
+  const [minimum, setMinimum] = useState(0) as any;
 
-  console.log('loanItem', loanItem);
+  // console.log('loanItem', loanItem);
 
   const onSubmit: SubmitHandler<IFormInput> = async data => {
     const provider = await connector?.getProvider();
@@ -98,6 +101,12 @@ export default function ModalBorrowComponent({
         );
         if (tx?.link) {
           setStep(1);
+          setErrorTx(undefined);
+          setErrorEstimate({
+            nonEnoughBalanceWallet: false,
+            exceedsAllowance: false,
+          });
+          setStatus(TRANSACTION_STATUS.SUCCESS);
         }
         if (tx?.error) {
           setStatus(TRANSACTION_STATUS.FAILED);
@@ -124,6 +133,12 @@ export default function ModalBorrowComponent({
         if (tx?.link) {
           setStep(2);
           setTxHash(tx.link);
+          setErrorTx(undefined);
+          setErrorEstimate({
+            nonEnoughBalanceWallet: false,
+            exceedsAllowance: false,
+          });
+          setStatus(TRANSACTION_STATUS.SUCCESS);
         }
         if (tx?.error) {
           setStatus(TRANSACTION_STATUS.FAILED);
@@ -157,7 +172,7 @@ export default function ModalBorrowComponent({
       let token = stableCoinData;
       if (res_balance) {
         token.balance = res_balance.balance
-          ? toLessPart(toAmountShow(res_balance.balance, res_balance.decimals), 2)
+          ? toLessPart(toAmountShow(res_balance.balance, res_balance.decimals), 6)
           : 0;
       }
       if (res_info && res_info[0]) {
@@ -187,6 +202,7 @@ export default function ModalBorrowComponent({
           toUnitWithDecimal(tokenValue, loanItem.decimals),
           loanItem.loan_id,
         )) as any;
+        console.log('healthFactor', healthFactor);
         if (healthFactor) {
           setHealthFactor(healthFactor);
         }
@@ -228,9 +244,9 @@ export default function ModalBorrowComponent({
             let gasFee = res.gasPrice * res_price.price;
             setGasFee(gasFee);
           }
-          if (res && (res.nonEnoughMoney || res.exceedsAllowance)) {
-            setGasFee(0);
-          }
+          // if (res && (res.nonEnoughMoney || res.exceedsAllowance)) {
+          //   setGasFee(0);
+          // }
 
           setErrorEstimate({
             nonEnoughBalanceWallet: res?.nonEnoughMoney,
@@ -274,9 +290,9 @@ export default function ModalBorrowComponent({
             setGasFee(gasFee);
           }
 
-          if (res && (res.nonEnoughMoney || res.exceedsAllowance)) {
-            setGasFee(0);
-          }
+          // if (res && (res.nonEnoughMoney || res.exceedsAllowance)) {
+          //   setGasFee(0);
+          // }
           setErrorEstimate({
             nonEnoughBalanceWallet: res?.nonEnoughMoney,
             exceedsAllowance: res?.exceedsAllowance,
@@ -288,6 +304,31 @@ export default function ModalBorrowComponent({
       } else {
         setGasFee(0);
       }
+    }
+  };
+
+  const handleMinimumRepayment = async () => {
+    try {
+      // const provider = await connector?.getProvider();
+      // let res_pool = (await service.getPoolAddress(chainId, currentToken)) as any;
+
+      // let res = (await service_ccfl_repay.getMinimumRepayment(
+      //   provider,
+      //   res_pool && res_pool[0] ? res_pool[0].address : CONTRACT_ADDRESS,
+      //   loanItem.loan_id,
+      // )) as any;
+
+      setLoadingMinimum(true);
+      let res = (await service.getSetting(MIN_AMOUNT_KEY.MIN_AMOUNT_REPAY)) as any;
+
+      if (res && res[0]?.value) {
+        setMinimum(res[0]?.value);
+      } else {
+        setMinimum(0);
+      }
+      setLoadingMinimum(false);
+    } catch (error) {
+      setLoadingMinimum(false);
     }
   };
 
@@ -315,7 +356,14 @@ export default function ModalBorrowComponent({
 
   useEffect(() => {
     if (isModalOpen) {
+      getGasFeeRepay();
+    }
+  }, [step]);
+
+  useEffect(() => {
+    if (isModalOpen) {
       getTokenInfo();
+      handleMinimumRepayment();
       resetState();
     }
   }, [isModalOpen]);
@@ -334,7 +382,8 @@ export default function ModalBorrowComponent({
                 <div className="modal-borrow-title mb-2 flex items-center">
                   {t('BORROW_MODAL_REPAY_AMOUNT')}
                   <div className="wallet-balance">
-                    <WalletIcon className="mr-2" /> <span>{t('FORM_BALANCE')}: </span> 50.000{' '}
+                    <WalletIcon className="mr-2" /> <span>{t('FORM_BALANCE')}: </span>{' '}
+                    {loadingBalance ? <LoadingOutlined className="mr-1" /> : stableCoinData.balance}{' '}
                     {currentToken?.toUpperCase()}{' '}
                   </div>
                 </div>
@@ -369,7 +418,7 @@ export default function ModalBorrowComponent({
                     <span className="modal-borrow-usd">
                       ≈ $
                       {tokenValue && priceToken[currentToken]
-                        ? toLessPart(tokenValue * priceToken[currentToken], 2)
+                        ? toLessPart(tokenValue * priceToken[currentToken], 2, true)
                         : 0}
                     </span>
                     <Button
@@ -383,21 +432,18 @@ export default function ModalBorrowComponent({
                 </div>
                 <div className="modal-borrow-balance">
                   <span>
-                    {t('BORROW_MODAL_BORROW_WALLET_BALANCE')}:{' '}
-                    {loadingBalance ? <LoadingOutlined className="mr-1" /> : stableCoinData.balance}{' '}
+                    {t('FORM_MINIMUM_REPAYMENT')}:{' '}
+                    {loadingMinimum ? <LoadingOutlined className="mr-1" /> : minimum}{' '}
                     {currentToken?.toUpperCase()}
                   </span>
                   {tokenValue && !(stableCoinData.balance - tokenValue >= 0) && (
-                    <span className="insufficient">
-                      {stableCoinData.balance - tokenValue}
-                      {t('BORROW_MODAL_INSUFFICIENT_BALANCE')}
-                    </span>
+                    <span className="insufficient">{t('BORROW_MODAL_INSUFFICIENT_BALANCE')}</span>
                   )}
                 </div>
               </div>
               {errorEstimate.nonEnoughBalanceWallet && (
                 <div className="modal-borrow-error">
-                  {t('BORROW_MODAL_BORROW_COLLATERAL_NON_ENOUGH')}
+                  {t('BORROW_MODAL_BORROW_COLLATERAL_NON_ENOUGH_GAS')}
                 </div>
               )}
               {errorEstimate.exceedsAllowance && (
@@ -419,7 +465,7 @@ export default function ModalBorrowComponent({
                     {tokenValue && tokenValue > 0 && (
                       <div className="modal-borrow-repay remain">
                         <ArrowRightOutlined className="mx-1" />
-                        <span>{toLessPart(deptRemain - tokenValue, 2)}</span>
+                        <span>{deptRemain - tokenValue}</span>
                         <span className="ml-1">{isFiat ? 'USD' : currentToken?.toUpperCase()}</span>
                       </div>
                     )}
@@ -437,7 +483,9 @@ export default function ModalBorrowComponent({
                         {loadingHealthFactor ? (
                           <LoadingOutlined className="mr-1" />
                         ) : (
-                          <span className="">{healthFactor}</span>
+                          <span className="">
+                            {deptRemain - tokenValue === 0 ? '∞' : healthFactor}
+                          </span>
                         )}
                       </div>
                     ) : (
@@ -488,7 +536,8 @@ export default function ModalBorrowComponent({
                         gasFee === 0 ||
                         !loanItem ||
                         !stableCoinData.address ||
-                        stableCoinData.balance === 0
+                        stableCoinData.balance === 0 ||
+                        tokenValue < minimum
                       }
                       className="w-full"
                       loading={loading}>
@@ -516,7 +565,8 @@ export default function ModalBorrowComponent({
                           gasFee === 0 ||
                           !loanItem ||
                           !stableCoinData.address ||
-                          stableCoinData.balance === 0
+                          stableCoinData.balance === 0 ||
+                          tokenValue < minimum
                         }
                         className="w-full"
                         loading={loading}>

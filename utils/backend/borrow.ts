@@ -30,8 +30,18 @@ const getCollateralInfo = async (symbol: any, chainId: any) => {
   return res;
 };
 
-const getTokenInfo = async (symbol, chainId) => {
+const getTokenInfo = async (symbol: any, chainId: any) => {
   let res = await http.get(`${URL}/asset?chainId=${chainId}&symbol=${symbol}`);
+  return res;
+};
+
+const getPoolAddress = async (chainId: any, symbol: any) => {
+  let res = await http.get(`${URL}/contract?chainId=${chainId}&asset=${symbol}`);
+  return res;
+};
+
+const getSetting = async (key: any) => {
+  let res = await http.get(`${URL}/setting?key=${key}`);
   return res;
 };
 
@@ -42,5 +52,7 @@ const service = {
   getCollateralBalance,
   getCollateralInfo,
   getTokenInfo,
+  getPoolAddress,
+  getSetting,
 };
 export default service;

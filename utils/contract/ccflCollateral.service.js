@@ -13,32 +13,16 @@ const _initContract = (provider, contract_address) => {
   return new myWeb3.eth.Contract(abi, contract_address);
 };
 
-const _initContractPool = (provider, contract_address) => {
-  const myWeb3 = getWeb3(provider);
-  return new myWeb3.eth.Contract(abi_pool, contract_address);
-};
-
 const getHealthFactor = async (provider, contract_address, amount, loanId) => {
   try {
     const contract = _initContract(provider, contract_address);
-    console.log('getHealthFactor repay', loanId, amount);
-    const resHealthFactor = await contract.methods.repayHealthFactor(loanId, amount).call();
+    console.log('getHealthFactor addCollateral', loanId, amount);
+    const resHealthFactor = await contract.methods.addCollateralHealthFactor(loanId, amount).call();
     console.log('getHealthFactor res', resHealthFactor);
+    // const resHealthFactor1 = await contract.methods.getHealthFactor(loanId).call();
     return resHealthFactor ? resHealthFactor / 100 : undefined;
   } catch (error) {
     console.log('🚀 ~ healthFactor ~ error:', error);
-  }
-};
-
-const getMinimumRepayment = async (provider, contract_address, loanId) => {
-  try {
-    const contract = _initContractPool(provider, contract_address);
-    console.log('getMinimumRepayment repay', loanId);
-    const resMinimumRepayment = await contract.methods.getCurrentLoan(loanId).call();
-    console.log('getMinimumRepayment res', resMinimumRepayment);
-    return resMinimumRepayment;
-  } catch (error) {
-    console.log('🚀 ~ getMinimumRepayment ~ error:', error);
   }
 };
 
@@ -94,7 +78,7 @@ const getMinimumRepayment = async (provider, contract_address, loanId) => {
 // };
 //end debug - keep to check contract
 
-const approveRepay = async (provider, contract_address, amount, adresss, tokenContract) => {
+const approveAddCollateral = async (provider, contract_address, amount, adresss, tokenContract) => {
   try {
     console.log('PARAMS approveBorrow', provider, contract_address, amount, adresss, tokenContract);
     // addTokenToMetamask({ address: WBTC_ERC20_CONTRACT, symbol: 'WBTC', decimals: 8 });
@@ -118,17 +102,32 @@ const approveRepay = async (provider, contract_address, amount, adresss, tokenCo
   }
 };
 
-const repayLoan = async (amount, stableCoin, provider, account, contract_address, loanId) => {
+const addCollateral = async (
+  amountCollateral,
+  collateral,
+  provider,
+  account,
+  contract_address,
+  loanId,
+) => {
   let overwrite = { from: account };
 
   try {
-    console.log('repayLoan', amount, stableCoin, provider, account, contract_address, loanId);
+    console.log(
+      'addCollateral',
+      amountCollateral,
+      collateral,
+      provider,
+      account,
+      contract_address,
+      loanId,
+    );
     const tx = await sendRawTx(
       provider,
       abi,
       contract_address,
-      'repayLoan',
-      [loanId, amount, stableCoin],
+      'addCollateral',
+      [loanId, amountCollateral, collateral],
       overwrite,
     );
 
@@ -142,7 +141,7 @@ const repayLoan = async (amount, stableCoin, provider, account, contract_address
       return;
     }
   } catch (error) {
-    console.error('Error calling repay loan method:', error);
+    console.error('Error calling add Collateral  method:', error);
     return {
       error: error,
     };
@@ -195,21 +194,21 @@ const getGasFeeApprove = async (provider, account, amount, tokenAddress, contrac
   }
 };
 
-const getGasFeeRepayLoan = async (
+const getGasFeeAddCollateral = async (
   provider,
   account,
   contract_address,
-  amount,
-  stableCoin,
+  amountCollateral,
+  collateral,
   loanId,
 ) => {
   console.log(
-    'getGasFeeRepayLoan',
+    'getGasFeeAddCollateral',
     provider,
     account,
     contract_address,
-    amount,
-    stableCoin,
+    amountCollateral,
+    collateral,
     loanId,
   );
 
@@ -222,8 +221,8 @@ const getGasFeeRepayLoan = async (
       provider,
       abi,
       contract_address,
-      'repayLoan',
-      [loanId, amount, stableCoin],
+      'addCollateral',
+      [loanId, amountCollateral, collateral],
       overwrite,
       true,
     );
@@ -242,7 +241,7 @@ const getGasFeeRepayLoan = async (
       nonEnoughMoney: true,
     };
   } catch (error) {
-    console.log('getGasFeeRepayLoan error', error);
+    console.log('getGasFeeAddCollateral error', error);
     return {
       gasPrice: 0,
       nonEnoughMoney: false,
@@ -252,12 +251,11 @@ const getGasFeeRepayLoan = async (
 };
 
 const service_ccfl_borrow = {
-  approveRepay,
-  repayLoan,
+  approveAddCollateral,
+  addCollateral,
   getGasFeeApprove,
   checkAllowance,
-  getGasFeeRepayLoan,
+  getGasFeeAddCollateral,
   getHealthFactor,
-  getMinimumRepayment,
 };
 export default service_ccfl_borrow;
