@@ -2,14 +2,13 @@ import cssClass from '@/pages/borrow/index.module.scss';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
-// import SelectComponent from '@/components/common/select.component';
 import AssetComponent from '@/components/borrow/asset.component';
 import LoansComponent from '@/components/borrow/loans.component';
 import ModalBorrowComponent from '@/components/borrow/modal-borrow.component';
 import ModalRepayComponent from '@/components/borrow/modal-repay.component';
 import OverviewComponent from '@/components/common/overview.component';
 import TitleComponent from '@/components/common/title.component';
-import { CHAIN_INFO, SUPPORTED_CHAINS } from '@/constants/chains.constant';
+import { CARDANO_NETWORK_ID, SUPPORTED_CHAINS_MAP } from '@/constants/chains.constant';
 import { ASSET_LIST, COLLATERAL_TOKEN, TYPE_COMMON } from '@/constants/common.constant';
 import { NETWORKS } from '@/constants/networks';
 import { useNotification } from '@/hooks/notifications.hook';
@@ -18,18 +17,16 @@ import type { SelectProps } from 'antd';
 import { Select } from 'antd';
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
-import { useAccount, useSwitchChain } from 'wagmi';
-// import { getNetwork } from '@wagmi/core';
 import { DataType } from '@/components/borrow/borrow';
-import { useCardanoConnected, useConnectedNetworkManager } from '@/hooks/auth.hook';
-import { useCardanoWalletConnected } from '@/hooks/cardano-wallet.hook';
+import { useConnectedNetworkManager, useProviderManager } from '@/hooks/auth.hook';
 import eventBus from '@/hooks/eventBus.hook';
-
 import ModalBorrowFiatSuccessComponent from '@/components/borrow/modal-borrow-fiat/modal-borrow-fiat-success.component';
 import ModalBorrowFiatComponent from '@/components/borrow/modal-borrow-fiat/modal-borrow-fiat.component';
 import ModalCollateralComponent from '@/components/borrow/modal-collateral.component';
 import ModalWithdrawCollateralComponent from '@/components/borrow/modal-withdraw-collateral.component';
 import service from '@/utils/backend/borrow';
+import { useNetworkManager } from '@/hooks/supply.hook';
+import { ProviderType } from '@/providers/index.provider';
 
 type LabelRender = SelectProps['labelRender'];
 enum BorrowModalType {
@@ -40,49 +37,30 @@ enum BorrowModalType {
 
 export default function BorrowPage() {
   const { t } = useTranslation('common');
-  const { switchChain } = useSwitchChain();
   const [modal, setModal] = useState({} as any);
   const [isModalRepayOpen, setIsModalRepayOpen] = useState(false);
   const [isModalCollateralOpen, setIsModalCollateralOpen] = useState(false);
   const [isModalWithdrawCollateral, setIsModalWithdrawCollateral] = useState(false);
-
   const [currentToken, setCurrentToken] = useState('');
-
   const [collateralToken, setCollateralToken] = useState(COLLATERAL_TOKEN[0].name);
   const [step, setStep] = useState(0);
   const [token, setToken] = useState(COLLATERAL_TOKEN[0].name);
-
   const [dataLoan, setDataLoan] = useState<DataType>();
   const [loading, setLoading] = useState(false);
-
-  const { address, isConnected, chainId: wagmiChainId } = useAccount();
   const [isFiat, setIsFiat] = useState(false);
-  const [cardanoWalletConnected] = useCardanoWalletConnected();
   const [networkInfo, setNetworkInfo] = useState<any | null>(null);
-  const [isCardanoConnected] = useCardanoConnected();
-
-  const { selectedChain, updateNetwork, chainId } = useConnectedNetworkManager();
-
-  const isConnected_ = useMemo(() => {
-    if (!!cardanoWalletConnected?.address || isConnected) {
-      return true;
-    }
-
-    return false;
-  }, [isConnected, cardanoWalletConnected?.address, networkInfo]);
-
-  //connect wallet
-  const [showSuccess, showError, showWarning, contextHolder] = useNotification();
+  const { selectedChain, updateNetwork } = useConnectedNetworkManager();
+  const [, updateNetworks] = useNetworkManager();
+  const [provider] = useProviderManager();
 
   const handleNetworkChange = (item: any) => {
     try {
-      console.log(item, 'item');
-      console.log(chainId, 'chainId');
-      const currentTab = chainId == 'ADA' ? 'cardano' : 'evm';
-      const changedTab = item == 'ADA' ? 'cardano' : 'evm';
+      const currentTab =
+        selectedChain?.id == CARDANO_NETWORK_ID ? ProviderType.Cardano : ProviderType.EVM;
+      const changedTab = item == CARDANO_NETWORK_ID ? ProviderType.Cardano : ProviderType.EVM;
       if (currentTab != changedTab) {
         eventBus.emit('openWeb3Modal', {
-          tab: item == 'ADA' ? 'cardano' : 'evm',
+          tab: changedTab,
           chainId: item,
         });
       } else {
@@ -106,14 +84,14 @@ export default function BorrowPage() {
   const handlePrice = async () => {
     try {
       setLoadingAsset(true);
-      let data = (await service.getPool(chainId)) as any;
+      let data = (await service.getPool(selectedChain?.id)) as any;
       let price = {
         USDT: null,
         USDC: null,
       };
 
-      let priceUSDC = (await service.getPrice(chainId, ASSET_LIST.USDC)) as any;
-      let priceUSDT = (await service.getPrice(chainId, ASSET_LIST.USDT)) as any;
+      let priceUSDC = (await service.getPrice(selectedChain?.id, ASSET_LIST.USDC)) as any;
+      let priceUSDT = (await service.getPrice(selectedChain?.id, ASSET_LIST.USDT)) as any;
       price.USDC = priceUSDC?.price;
       price.USDT = priceUSDT?.price;
       setPrice(price);
@@ -136,7 +114,12 @@ export default function BorrowPage() {
   const handleLoans = async (offset = 0, limit = 10) => {
     try {
       setLoading(true);
-      let data = (await service.getLoans(address, chainId, offset, limit)) as any;
+      let data = (await service.getLoans(
+        provider?.account,
+        selectedChain?.id,
+        offset,
+        limit,
+      )) as any;
       if (data) {
         setDataLoan(data);
       }
@@ -156,15 +139,6 @@ export default function BorrowPage() {
     });
     handleLoans((page - 1) * pageSize, pageSize);
   };
-
-  useEffect(() => {
-    handlePrice();
-    handleLoans();
-  }, [chainId, address]);
-
-  useEffect(() => {
-    handleLoans();
-  }, [address]);
 
   const showModal = (token: string, apr: string, decimals: string) => {
     setModal({
@@ -246,6 +220,7 @@ export default function BorrowPage() {
       type: TYPE_COMMON.FINANCE_HEALTH,
     },
   ];
+
   const labelRender: LabelRender = (props: any) => {
     let { value } = props;
 
@@ -270,33 +245,14 @@ export default function BorrowPage() {
     );
   };
 
-  //connect wallet
-  const switchNetwork = async () => {
+  const fetchNetworkBorrow = async () => {
     try {
-      const provider = { rpcUrl: selectedChain?.rpc };
-      const rs = await switchChain({ chainId: selectedChain?.id });
-
-      console.log('🚀 ~ switchNetwork ~ rs:', rs);
-      updateNetwork(selectedChain?.id);
+      const [_networks] = await Promise.all([service.fetchNetworks()]);
+      updateNetworks(_networks);
     } catch (error) {
-      console.log('🚀 ~ switchNetwork ~ error:', error);
-      showError(error);
+      console.error('fetchNetwork failed: ', error);
     }
   };
-
-  const initNetworkInfo = useCallback(() => {
-    if (chainId) {
-      const networkCurrent = NETWORKS.find(item => item.chain_id_decimals === chainId);
-      setNetworkInfo(networkCurrent || null);
-    }
-  }, [chainId]);
-
-  useEffect(() => {
-    if (address) {
-      // getBalance();
-      initNetworkInfo();
-    }
-  }, [address, initNetworkInfo]);
 
   const handleBorrowFiatOk = ({ paymentMethod }: any) => {
     setModal({
@@ -304,7 +260,16 @@ export default function BorrowPage() {
       paymentMethod,
     });
   };
-  const SUPPORTED_CHAINS_MAP = new Map(SUPPORTED_CHAINS.map(item => [item.id, item]));
+
+  useEffect(() => {
+    handlePrice();
+    handleLoans();
+  }, [selectedChain?.id, provider?.account]);
+
+  useEffect(() => {
+    fetchNetworkBorrow();
+  }, []);
+
   return (
     <div className={twMerge('borrow-page-container', cssClass.borrowPage)}>
       <div className="borrow-header">
@@ -346,17 +311,13 @@ export default function BorrowPage() {
           </div>
         </TitleComponent>
       </div>
-      {isConnected_ &&
-        networkInfo &&
-        networkInfo.id &&
-        networkInfo.id === wagmiChainId &&
-        !loading && (
-          <div className="mb-4">
-            <OverviewComponent itemLeft={itemLeft} itemRight={itemRight} />
-          </div>
-        )}
+      {provider?.account && selectedChain?.id == provider?.chainId && !loading && (
+        <div className="mb-4">
+          <OverviewComponent itemLeft={itemLeft} itemRight={itemRight} />
+        </div>
+      )}
       <div className="flex gap-4 borrow-inner">
-        {isConnected_ && networkInfo && networkInfo.id && networkInfo.id === wagmiChainId && (
+        {provider?.account && selectedChain?.id == provider?.chainId && (
           <div className="xl:basis-1/2 basis-full">
             <LoansComponent
               showModal={showModal}
@@ -373,18 +334,15 @@ export default function BorrowPage() {
         )}
         <div
           className={`${
-            isConnected_ && networkInfo && networkInfo.id && networkInfo.id === wagmiChainId
+            provider?.account && selectedChain?.id == provider?.chainId
               ? 'xl:basis-1/2'
               : 'xl:basis-full'
           } basis-full`}>
           <AssetComponent
             showModal={showModal}
-            isConnected={isConnected_}
-            switchNetwork={switchNetwork}
             networkInfo={networkInfo}
             tokenList={tokenList}
             loadingAsset={loadingAsset}
-            wagmiChainId={wagmiChainId}
           />
         </div>
       </div>

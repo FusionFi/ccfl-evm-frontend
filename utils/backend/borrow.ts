@@ -1,6 +1,7 @@
 import http from '@/utils/backend/http';
 
 const URL = process.env.NEXT_PUBLIC_API_URL;
+const isTestnet = Boolean(process.env.NEXT_PUBLIC_IS_TESTNET || false);
 
 const getPool = async (chainId: any) => {
   let res = await http.get(`${URL}/pool/all/${chainId}`);
@@ -26,7 +27,9 @@ const getCollateralBalance = async (user_address: any, chainId: any, asset: any)
 };
 
 const getCollateralInfo = async (symbol: any, chainId: any) => {
-  let res = await http.get(`${URL}/asset?category=collateral&chainId=${chainId}&symbol=${symbol}`);
+  let res = await http.get(
+    `${URL}/asset?category=collateral&chainId=${chainId}&symbol=${symbol}&isMainnet=${!isTestnet}`,
+  );
   return res;
 };
 
@@ -45,6 +48,16 @@ const getSetting = async (key: any) => {
   return res;
 };
 
+const fetchNetworks = async () => {
+  const res = await http.get(`${URL}/network`, {
+    params: {
+      isMainnet: !isTestnet,
+    },
+  });
+
+  return res;
+};
+
 const service = {
   getPool,
   getPrice,
@@ -54,5 +67,6 @@ const service = {
   getTokenInfo,
   getPoolAddress,
   getSetting,
+  fetchNetworks,
 };
 export default service;
