@@ -16,7 +16,11 @@ export default function LandingContent() {
   return (
     <div className={twMerge(cssClass.landingContent)}>
       <div className="landing-container">
-        <Element name="banner" className="section">
+        <Element name="banner" className="section banner">
+          <div className="section-title">
+            <SafeHtmlComponent htmlContent={t('LANDING_PAGE_BANNER_TITLE_NEW')} />
+          </div>
+          <div className="section-description">{t('LANDING_PAGE_BANNER_DESCRIPTION_NEW')}</div>
           <BannerComponent />
         </Element>
 

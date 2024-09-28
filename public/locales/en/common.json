@@ -322,5 +322,10 @@
   "LANDING_PAGE_FORM_INPUT_PLACEHOLDER": "Enter your email address",
   "LANDING_PAGE_FORM_BTN_TITLE": "Get Early Access",
   "EMAIL_VALIDATION": "Please enter a valid email address",
-  "EMAIL_REQUIRED": "Please enter an email address"
+  "EMAIL_REQUIRED": "Please enter an email address",
+  "LANDING_PAGE_BANNER_TITLE_NEW": "UNLOCK THE FUTURE OF <span class=\"highlight\"> CRYPTO LENDING </span>",
+  "LANDING_PAGE_BANNER_DESCRIPTION_NEW": "Leverage your crypto for fiat loans",
+  "LANDING_PAGE_BANNER_ABOUT_TITLE": "About FusionFi",
+  "LANDING_PAGE_BANNER_ABOUT_DESCRIPTION": "FusionFi lets you unlock the full potential of your crypto without parting with it. Secure fiat and stablecoin loans using your crypto as collateral. Enjoy seamless multi-chain support and flexible, tailored repayment options to fit your needs.",
+  "LANDING_PAGE_BANNER_PARTNERS": "Our close partners"
 }

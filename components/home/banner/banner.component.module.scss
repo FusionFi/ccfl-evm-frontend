@@ -1,6 +1,201 @@
 .bannerContent {
   :global {
     .banner-container {
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      position: relative;
+      .banner-image {
+        width: 912px;
+        height: 768px;
+        position: absolute;
+        z-index: 0;
+        .banner-image-bg {
+          width: 100%;
+          height: 100%;
+          opacity: 0.7;
+          background: #1890ff;
+          filter: blur(250px);
+          position: absolute;
+        }
+        .banner-image-container {
+          position: relative;
+          .fusion-image {
+            width: 768px;
+            height: auto;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -5%);
+            z-index: 0;
+
+            @media screen and (max-width: 767px) {
+              width: 100%;
+            }
+          }
+          .cube-image {
+            width: 404px;
+            height: auto;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, 43%);
+            z-index: 3;
+            @media screen and (max-width: 767px) {
+              width: 100%;
+            }
+          }
+          .usdc-blur {
+            width: 83px;
+            height: auto;
+            position: absolute;
+            top: -100px;
+            left: 40%;
+            z-index: 1;
+            opacity: 0;
+            animation: usdc-blur-fall 2s ease-in forwards, float 2s ease-in-out infinite;
+            animation-delay: 0s;
+          }
+          .usdt-blur {
+            width: 98px;
+            height: auto;
+            position: absolute;
+            top: -100px;
+            left: 28%;
+            z-index: 2;
+            opacity: 0;
+            animation: usdt-blur-fall 2s ease-in forwards, float 2s ease-in-out infinite;
+            animation-delay: 1s;
+          }
+          .dollar-image {
+            width: 191px;
+            height: auto;
+            position: absolute;
+            top: -100px;
+            left: 15%;
+            z-index: 4;
+            opacity: 0;
+            animation: dollar-fall 2s ease-in forwards, float 2s ease-in-out infinite;
+            animation-delay: 2s;
+          }
+          .usdc-image {
+            width: 124px;
+            height: auto;
+            position: absolute;
+            top: -100px;
+            left: 39%;
+            z-index: 4;
+            opacity: 0;
+            animation: usdc-fall 2s ease-in forwards, float 2s ease-in-out infinite;
+            animation-delay: 3s;
+          }
+          .usdt-image {
+            width: 146px;
+            height: auto;
+            position: absolute;
+            top: -100px;
+            left: 40%;
+            z-index: 4;
+            opacity: 0;
+            animation: usdt-fall 2s ease-in forwards, float 2s ease-in-out infinite;
+            animation-delay: 4s;
+          }
+          .ada-image {
+            width: 200px;
+            height: auto;
+            position: absolute;
+            top: -100px;
+            left: 56%;
+            z-index: 4;
+            opacity: 0;
+            animation: ada-fall 2s ease-in forwards, float 2s ease-in-out infinite;
+            animation-delay: 5s;
+          }
+        }
+      }
+      .banner-form {
+        margin-top: 320px;
+        margin-bottom: 32px;
+        position: relative;
+        z-index: 1;
+      }
+      .banner-infos {
+        padding: 56px 48px;
+        border-radius: 2px;
+        border: 1px solid var(--Gradient-primary, #2e77e3);
+        background: #1f1f1f;
+        width: 1128px;
+        position: relative;
+        z-index: 1;
+        @media screen and (max-width: 767px) {
+          padding: 24px 16px;
+          width: 100%;
+        }
+        .banner-info {
+          display: flex;
+          align-items: center;
+          padding-top: 28px;
+          padding-bottom: 28px;
+          border-bottom: 1px solid var(--Gradient-primary, #2e77e3);
+          &:first-child {
+            padding-top: 0;
+          }
+          &:last-child {
+            padding-bottom: 0;
+            border-bottom: 0;
+          }
+          .content-left {
+            width: 176px;
+            margin-right: 40px;
+          }
+          .info-title {
+            color: #fff;
+            font-family: Inter;
+            font-size: 30px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: 40px;
+          }
+          .info-description {
+            color: rgba(255, 255, 255, 0.65);
+            font-family: Inter;
+            font-size: 20px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 28px;
+          }
+          .partners-list {
+            display: flex;
+            align-items: center;
+            margin: 0px;
+            padding: 0px;
+            list-style-type: none;
+            gap: 64px;
+            @media screen and (max-width: 767px) {
+              gap: 24px;
+            }
+            li {
+              img {
+                width: 100%;
+                height: auto;
+                object-fit: cover;
+                &.emurgo {
+                  width: 220px;
+                }
+                &.encryptus {
+                  width: 231px;
+                }
+                &.anzens {
+                  width: 180px;
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

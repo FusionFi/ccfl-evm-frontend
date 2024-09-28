@@ -1247,3 +1247,95 @@
     color: #808089;
   }
 }
+// LANDING BANNER ANIMATIONS
+.fusion-image-rotate {
+  transform: translate(-50%, -5%) rotate(360deg);
+  animation: rotation 20s infinite linear;
+}
+
+@keyframes rotation {
+  from {
+    transform: translate(-50%, -5%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -5%) rotate(360deg);
+  }
+}
+@keyframes usdc-blur-fall {
+  0% {
+    top: -100px;
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    top: 90px;
+    opacity: 1;
+  }
+}
+@keyframes usdt-blur-fall {
+  0% {
+    top: -100px;
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    top: 120px;
+    opacity: 1;
+  }
+}
+@keyframes dollar-fall {
+  0% {
+    top: -100px;
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    top: 200px;
+    opacity: 1;
+  }
+}
+@keyframes usdc-fall {
+  0% {
+    top: -100px;
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    top: 210px;
+    opacity: 1;
+  }
+}
+@keyframes usdt-fall {
+  0% {
+    top: -100px;
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    top: 360px;
+    opacity: 1;
+  }
+}
+@keyframes ada-fall {
+  0% {
+    top: -100px;
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    top: 120px;
+    opacity: 1;
+  }
+}
