@@ -332,5 +332,21 @@
   "LANDING_PAGE_WORKS_DESCRIPTION": "Effortlessly sign up, secure a loan with your crypto, and receive funds through flexible channels",
   "LANDING_PAGE_WORKS_STEP_1": "CONNECT\nYOUR WALLET",
   "LANDING_PAGE_WORKS_STEP_2": "SELECT A LOAN POOL",
-  "LANDING_PAGE_WORKS_STEP_3": "RECEIVE LOAN - FLEXIBLE CHANNELS"
+  "LANDING_PAGE_WORKS_STEP_3": "RECEIVE LOAN - FLEXIBLE CHANNELS",
+  "LANDING_PAGE_FEATURES_TITLE": "LEADING <span class=\"highlight\">FEATURES </span>",
+  "LANDING_PAGE_FEATURES_1_TITLE": "Multi-Chain Support",
+  "LANDING_PAGE_FEATURES_1_DESCRIPTION": "Leverage your crypto assets across multiple blockchains for ultimate flexibility.",
+  "LANDING_PAGE_FEATURES_2_TITLE": "Borrow Fiat or Stablecoins",
+  "LANDING_PAGE_FEATURES_2_DESCRIPTION": "Access a wide range of loan options with both fiat and stablecoin choices",
+  "LANDING_PAGE_FEATURES_3_TITLE": "Earn While You Borrow",
+  "LANDING_PAGE_FEATURES_3_DESCRIPTION": "Continue earning yield on your crypto collateral, even while securing a loan.",
+  "LANDING_PAGE_FEATURES_4_TITLE": "Global\nReach",
+  "LANDING_PAGE_FEATURES_4_DESCRIPTION": "Get access to fiat loans in over 130 countries",
+  "LANDING_PAGE_WHY_TITLE": "Why <span class=\"highlight\">FusionFi </span>",
+  "LANDING_PAGE_WHY_1_TITLE": "Transparency",
+  "LANDING_PAGE_WHY_1_DESCRIPTION": "Real-time data reporting and loan health monitoring to ensure both lenders and borrowers have clear visibility into the status of their loans.",
+  "LANDING_PAGE_WHY_2_TITLE": "Security",
+  "LANDING_PAGE_WHY_2_DESCRIPTION": "Overcollateralized loans to provide a safe and stable lending environment using crypto collateral.",
+  "LANDING_PAGE_WHY_3_TITLE": "Accessibility",
+  "LANDING_PAGE_WHY_3_DESCRIPTION": "Convert crypto-backed loans into cash in your local currency without losing your crypto or triggering tax events."
 }

@@ -29,6 +29,9 @@ export default function LandingContent() {
         </Element>
 
         <Element name="features" className="section features">
+          <div className="section-title" data-aos="fade-down">
+            <SafeHtmlComponent htmlContent={t('LANDING_PAGE_FEATURES_TITLE')} />
+          </div>
           <FeaturesComponent />
         </Element>
 
