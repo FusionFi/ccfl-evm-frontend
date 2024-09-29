@@ -1339,3 +1339,45 @@
     opacity: 1;
   }
 }
+// LANDING BANNER ANIMATIONS - END
+// LANDING HOW IT WORKS - START
+@keyframes step1-fall {
+  0% {
+    top: -100px;
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    top: -72px;
+    opacity: 1;
+  }
+}
+@keyframes step2-fall {
+  0% {
+    top: -100px;
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    top: 130px;
+    opacity: 1;
+  }
+}
+@keyframes step3-fall {
+  0% {
+    top: -100px;
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    top: 340px;
+    opacity: 1;
+  }
+}
+// LANDING HOW IT WORKS - END

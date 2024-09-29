@@ -327,5 +327,10 @@
   "LANDING_PAGE_BANNER_DESCRIPTION_NEW": "Leverage your crypto for fiat loans",
   "LANDING_PAGE_BANNER_ABOUT_TITLE": "About FusionFi",
   "LANDING_PAGE_BANNER_ABOUT_DESCRIPTION": "FusionFi lets you unlock the full potential of your crypto without parting with it. Secure fiat and stablecoin loans using your crypto as collateral. Enjoy seamless multi-chain support and flexible, tailored repayment options to fit your needs.",
-  "LANDING_PAGE_BANNER_PARTNERS": "Our close partners"
+  "LANDING_PAGE_BANNER_PARTNERS": "Our close partners",
+  "LANDING_PAGE_WORKS_TITLE": "HOW IT <span class=\"highlight\">WORK? </span>",
+  "LANDING_PAGE_WORKS_DESCRIPTION": "Effortlessly sign up, secure a loan with your crypto, and receive funds through flexible channels",
+  "LANDING_PAGE_WORKS_STEP_1": "CONNECT\nYOUR WALLET",
+  "LANDING_PAGE_WORKS_STEP_2": "SELECT A LOAN POOL",
+  "LANDING_PAGE_WORKS_STEP_3": "RECEIVE LOAN - FLEXIBLE CHANNELS"
 }

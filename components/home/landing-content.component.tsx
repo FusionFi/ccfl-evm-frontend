@@ -24,11 +24,11 @@ export default function LandingContent() {
           <BannerComponent />
         </Element>
 
-        <Element name="works" className="section">
+        <Element name="works" className="section works">
           <WorksComponent />
         </Element>
 
-        <Element name="features" className="section">
+        <Element name="features" className="section features">
           <FeaturesComponent />
         </Element>
 

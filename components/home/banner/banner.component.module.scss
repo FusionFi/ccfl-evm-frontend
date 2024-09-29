@@ -18,7 +18,7 @@
           height: 100%;
           opacity: 0.7;
           background: #1890ff;
-          filter: blur(250px);
+          filter: blur(80px);
           position: absolute;
         }
         .banner-image-container {
@@ -130,6 +130,9 @@
         width: 1128px;
         position: relative;
         z-index: 1;
+        @media screen and (max-width: 1127px) {
+          width: 100%;
+        }
         @media screen and (max-width: 767px) {
           padding: 24px 16px;
           width: 100%;
@@ -140,6 +143,9 @@
           padding-top: 28px;
           padding-bottom: 28px;
           border-bottom: 1px solid var(--Gradient-primary, #2e77e3);
+          @media screen and (max-width: 767px) {
+            flex-direction: column;
+          }
           &:first-child {
             padding-top: 0;
           }
@@ -150,6 +156,12 @@
           .content-left {
             width: 176px;
             margin-right: 40px;
+            @media screen and (max-width: 767px) {
+              width: 100%;
+              margin-right: 0px;
+              text-align: center;
+              margin-bottom: 16px;
+            }
           }
           .info-title {
             color: #fff;
@@ -176,12 +188,17 @@
             gap: 64px;
             @media screen and (max-width: 767px) {
               gap: 24px;
+              flex-direction: column;
             }
             li {
               img {
                 width: 100%;
                 height: auto;
                 object-fit: cover;
+                transition: transform 0.3s ease-in-out;
+                &:hover {
+                  transform: scale(1.2);
+                }
                 &.emurgo {
                   width: 220px;
                 }
