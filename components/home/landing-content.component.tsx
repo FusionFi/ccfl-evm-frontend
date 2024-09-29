@@ -35,7 +35,7 @@ export default function LandingContent() {
           <FeaturesComponent />
         </Element>
 
-        <Element name="why" className="section">
+        <Element name="why" className="section why">
           <WhyComponent />
         </Element>
 

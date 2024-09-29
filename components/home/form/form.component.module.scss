@@ -1,6 +1,9 @@
 .formComponent {
   :global {
     .form-container {
+      @media screen and (max-width: 767px) {
+        padding: 0px 32px;
+      }
       &.dark-themes {
         .submit-form {
           .ant-form-item-control-input {
