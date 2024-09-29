@@ -148,6 +148,10 @@
           line-height: 46px; /* 121.053% */
           text-transform: uppercase;
           margin-bottom: 16px;
+          @media screen and (max-width: 767px) {
+            font-size: 48px;
+            line-height: 56px;
+          }
           .highlight {
             text-shadow: none;
             background: linear-gradient(270deg, #2e77e3 0.39%, #37b4cb 99.75%);

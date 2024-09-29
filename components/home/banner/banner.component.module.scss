@@ -33,7 +33,9 @@
             z-index: 0;
 
             @media screen and (max-width: 767px) {
-              width: 100%;
+              width: 48%;
+              transform: translate(-50%, -28%);
+              margin: 0 auto;
             }
           }
           .cube-image {
@@ -45,19 +47,26 @@
             transform: translate(-50%, 43%);
             z-index: 3;
             @media screen and (max-width: 767px) {
-              width: 100%;
+              width: 28%;
+              transform: translate(-50%, 24%);
+              margin: 0 auto;
             }
           }
           .usdc-blur {
             width: 83px;
             height: auto;
             position: absolute;
-            top: -100px;
             left: 40%;
             z-index: 1;
             opacity: 0;
             animation: usdc-blur-fall 2s ease-in forwards, float 2s ease-in-out infinite;
             animation-delay: 0s;
+            @media screen and (max-width: 767px) {
+              width: 40px;
+              left: 44%;
+              animation: usdc-blur-fall-mobile 2s ease-in forwards, float 2s ease-in-out infinite;
+              animation-delay: 0s;
+            }
           }
           .usdt-blur {
             width: 98px;
@@ -69,6 +78,12 @@
             opacity: 0;
             animation: usdt-blur-fall 2s ease-in forwards, float 2s ease-in-out infinite;
             animation-delay: 1s;
+            @media screen and (max-width: 767px) {
+              width: 48px;
+              left: 36%;
+              animation: usdt-blur-fall-mobile 2s ease-in forwards, float 2s ease-in-out infinite;
+              animation-delay: 1s;
+            }
           }
           .dollar-image {
             width: 191px;
@@ -80,6 +95,12 @@
             opacity: 0;
             animation: dollar-fall 2s ease-in forwards, float 2s ease-in-out infinite;
             animation-delay: 2s;
+            @media screen and (max-width: 767px) {
+              width: 96px;
+              left: 30%;
+              animation: dollar-fall-mobile 2s ease-in forwards, float 2s ease-in-out infinite;
+              animation-delay: 2s;
+            }
           }
           .usdc-image {
             width: 124px;
@@ -91,6 +112,12 @@
             opacity: 0;
             animation: usdc-fall 2s ease-in forwards, float 2s ease-in-out infinite;
             animation-delay: 3s;
+            @media screen and (max-width: 767px) {
+              width: 64px;
+              left: 45%;
+              animation: usdc-fall-mobile 2s ease-in forwards, float 2s ease-in-out infinite;
+              animation-delay: 3s;
+            }
           }
           .usdt-image {
             width: 146px;
@@ -102,6 +129,12 @@
             opacity: 0;
             animation: usdt-fall 2s ease-in forwards, float 2s ease-in-out infinite;
             animation-delay: 4s;
+            @media screen and (max-width: 767px) {
+              width: 80px;
+              left: 48%;
+              animation: usdt-fall-mobile 2s ease-in forwards, float 2s ease-in-out infinite;
+              animation-delay: 4s;
+            }
           }
           .ada-image {
             width: 200px;
@@ -113,6 +146,12 @@
             opacity: 0;
             animation: ada-fall 2s ease-in forwards, float 2s ease-in-out infinite;
             animation-delay: 5s;
+            @media screen and (max-width: 767px) {
+              width: 100px;
+              left: 56%;
+              animation: ada-fall-mobile 2s ease-in forwards, float 2s ease-in-out infinite;
+              animation-delay: 5s;
+            }
           }
         }
       }
@@ -121,6 +160,10 @@
         margin-bottom: 32px;
         position: relative;
         z-index: 1;
+        @media screen and (max-width: 767px) {
+          margin-top: 240px;
+          margin-bottom: 0px;
+        }
       }
       .banner-infos {
         padding: 56px 48px;
