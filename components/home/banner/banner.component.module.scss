@@ -59,12 +59,12 @@
             left: 40%;
             z-index: 1;
             opacity: 0;
-            animation: usdc-blur-fall 2s ease-in forwards, float 2s ease-in-out infinite;
+            animation: usdc-blur-fall 0.5s ease-in forwards, float 2s ease-in-out infinite;
             animation-delay: 0s;
             @media screen and (max-width: 767px) {
               width: 40px;
               left: 44%;
-              animation: usdc-blur-fall-mobile 2s ease-in forwards, float 2s ease-in-out infinite;
+              animation: usdc-blur-fall-mobile 0.5s ease-in forwards, float 2s ease-in-out infinite;
               animation-delay: 0s;
             }
           }
@@ -76,13 +76,13 @@
             left: 28%;
             z-index: 2;
             opacity: 0;
-            animation: usdt-blur-fall 2s ease-in forwards, float 2s ease-in-out infinite;
-            animation-delay: 1s;
+            animation: usdt-blur-fall 0.5s ease-in forwards, float 2s ease-in-out infinite;
+            animation-delay: 0.1s;
             @media screen and (max-width: 767px) {
               width: 48px;
               left: 36%;
-              animation: usdt-blur-fall-mobile 2s ease-in forwards, float 2s ease-in-out infinite;
-              animation-delay: 1s;
+              animation: usdt-blur-fall-mobile 1s ease-in forwards, float 2s ease-in-out infinite;
+              animation-delay: 0.1s;
             }
           }
           .dollar-image {
@@ -93,13 +93,13 @@
             left: 15%;
             z-index: 4;
             opacity: 0;
-            animation: dollar-fall 2s ease-in forwards, float 2s ease-in-out infinite;
-            animation-delay: 2s;
+            animation: dollar-fall 0.5s ease-in forwards, float 2s ease-in-out infinite;
+            animation-delay: 0.2s;
             @media screen and (max-width: 767px) {
               width: 96px;
               left: 30%;
-              animation: dollar-fall-mobile 2s ease-in forwards, float 2s ease-in-out infinite;
-              animation-delay: 2s;
+              animation: dollar-fall-mobile 1s ease-in forwards, float 2s ease-in-out infinite;
+              animation-delay: 0.2s;
             }
           }
           .usdc-image {
@@ -110,13 +110,13 @@
             left: 39%;
             z-index: 4;
             opacity: 0;
-            animation: usdc-fall 2s ease-in forwards, float 2s ease-in-out infinite;
-            animation-delay: 3s;
+            animation: usdc-fall 0.5s ease-in forwards, float 2s ease-in-out infinite;
+            animation-delay: 0.3s;
             @media screen and (max-width: 767px) {
               width: 64px;
               left: 45%;
-              animation: usdc-fall-mobile 2s ease-in forwards, float 2s ease-in-out infinite;
-              animation-delay: 3s;
+              animation: usdc-fall-mobile 1s ease-in forwards, float 2s ease-in-out infinite;
+              animation-delay: 0.3s;
             }
           }
           .usdt-image {
@@ -127,13 +127,13 @@
             left: 40%;
             z-index: 4;
             opacity: 0;
-            animation: usdt-fall 2s ease-in forwards, float 2s ease-in-out infinite;
-            animation-delay: 4s;
+            animation: usdt-fall 0.5s ease-in forwards, float 2s ease-in-out infinite;
+            animation-delay: 0.8s;
             @media screen and (max-width: 767px) {
               width: 80px;
               left: 48%;
-              animation: usdt-fall-mobile 2s ease-in forwards, float 2s ease-in-out infinite;
-              animation-delay: 4s;
+              animation: usdt-fall-mobile 1s ease-in forwards, float 2s ease-in-out infinite;
+              animation-delay: 0.8s;
             }
           }
           .ada-image {
@@ -144,13 +144,13 @@
             left: 56%;
             z-index: 4;
             opacity: 0;
-            animation: ada-fall 2s ease-in forwards, float 2s ease-in-out infinite;
-            animation-delay: 5s;
+            animation: ada-fall 0.5s ease-in forwards, float 2s ease-in-out infinite;
+            animation-delay: 0.5s;
             @media screen and (max-width: 767px) {
               width: 100px;
               left: 56%;
-              animation: ada-fall-mobile 2s ease-in forwards, float 2s ease-in-out infinite;
-              animation-delay: 5s;
+              animation: ada-fall-mobile 1s ease-in forwards, float 2s ease-in-out infinite;
+              animation-delay: 0.5s;
             }
           }
         }

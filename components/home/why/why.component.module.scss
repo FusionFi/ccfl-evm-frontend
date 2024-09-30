@@ -4,6 +4,10 @@
       display: flex;
       padding: 32px 120px;
       position: relative;
+      @media (min-width: 767px) and (max-width: 1023px) {
+        flex-direction: column;
+        padding: 32px 80px;
+      }
       @media screen and (max-width: 767px) {
         flex-direction: column;
         padding: 32px;
@@ -32,10 +36,17 @@
         text-transform: uppercase;
         margin-bottom: 48px;
         width: 40%;
+        @media (min-width: 768px) and (max-width: 1024px) {
+          width: 100%;
+          font-size: 48px;
+          line-height: 56px;
+          margin-bottom: 60px;
+        }
         @media screen and (max-width: 767px) {
           width: 100%;
           font-size: 48px;
           line-height: 56px;
+          margin-bottom: 108px;
         }
         .highlight {
           text-shadow: none;
@@ -49,6 +60,9 @@
         width: 60%;
         position: relative;
         z-index: 1;
+        @media (min-width: 768px) and (max-width: 1024px) {
+          width: 100%;
+        }
         @media screen and (max-width: 767px) {
           width: 100%;
         }
@@ -58,7 +72,15 @@
           &:last-child {
             margin-bottom: 0;
           }
+          &:nth-child(2) {
+            .why-icon {
+              > img {
+                animation: float2 3s ease-in-out infinite;
+              }
+            }
+          }
           @media screen and (max-width: 767px) {
+            margin-bottom: 108px;
           }
           .why-bg {
             position: absolute;
@@ -75,11 +97,18 @@
             height: 100%;
             left: -8%;
             z-index: 1;
-
+            @media screen and (max-width: 767px) {
+              left: 50%;
+              transform: translateX(-50%);
+              top: -60px;
+              > img {
+                margin: 0 auto;
+              }
+            }
             > img {
               width: 220px;
               height: auto;
-              animation: float 2s ease-in-out infinite;
+              animation: float 3s ease-in-out infinite;
               @media screen and (max-width: 767px) {
                 width: 160px;
               }
@@ -90,7 +119,8 @@
             position: relative;
             z-index: 1;
             @media screen and (max-width: 767px) {
-              padding-left: 120px;
+              padding-left: 32px;
+              padding-top: 96px;
             }
             .why-label {
               font-family: Inter;
