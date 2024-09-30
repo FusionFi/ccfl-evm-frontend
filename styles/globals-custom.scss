@@ -1247,6 +1247,30 @@
     color: #808089;
   }
 }
+.ipad-below {
+  display: none;
+  @media screen and (max-width: 1023px) {
+    display: block;
+  }
+}
+.ipad-above {
+  display: block;
+  @media screen and (max-width: 1023px) {
+    display: none;
+  }
+}
+.mobile-only {
+  display: none;
+  @media screen and (max-width: 767px) {
+    display: block;
+  }
+}
+.desktop-only {
+  display: block;
+  @media screen and (max-width: 767px) {
+    display: none;
+  }
+}
 // LANDING BANNER ANIMATIONS
 .fusion-image-rotate {
   transform: translate(-50%, -5%) rotate(360deg);

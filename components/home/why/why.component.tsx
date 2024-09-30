@@ -16,7 +16,7 @@ export default function WhyComponent() {
           <SafeHtmlComponent htmlContent={t('LANDING_PAGE_WHY_TITLE')} />
         </div>
         <div className="why-items">
-          <div className="why-item" data-aos="fade-up" data-aos-duration="700" data-aos-delay="700">
+          <div className="why-item" data-aos="fade-up" data-aos-duration="500" data-aos-delay="500">
             <div className="why-bg">
               <Image
                 src="/images/landing/why/why-card.png"
@@ -34,10 +34,10 @@ export default function WhyComponent() {
             </div>
           </div>
           <div
-            className="why-item"
+            className="why-item why-2"
             data-aos="fade-up"
-            data-aos-duration="700"
-            data-aos-delay="1400">
+            data-aos-duration="500"
+            data-aos-delay="1000">
             <div className="why-bg">
               <Image
                 src="/images/landing/why/why-card.png"
@@ -57,8 +57,8 @@ export default function WhyComponent() {
           <div
             className="why-item"
             data-aos="fade-up"
-            data-aos-duration="700"
-            data-aos-delay="2100">
+            data-aos-duration="500"
+            data-aos-delay="1500">
             <div className="why-bg">
               <Image
                 src="/images/landing/why/why-card.png"

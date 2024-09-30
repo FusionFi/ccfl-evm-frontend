@@ -38,14 +38,16 @@
         width: 40%;
         @media (min-width: 768px) and (max-width: 1024px) {
           width: 100%;
-          font-size: 48px;
-          line-height: 56px;
+          font-size: 24px;
+          line-height: 32px;
+          text-align: center;
           margin-bottom: 60px;
         }
         @media screen and (max-width: 767px) {
           width: 100%;
-          font-size: 48px;
-          line-height: 56px;
+          font-size: 24px;
+          line-height: 32px;
+          text-align: center;
           margin-bottom: 108px;
         }
         .highlight {
@@ -73,10 +75,15 @@
             margin-bottom: 0;
           }
           &:nth-child(2) {
+            position: relative;
+            left: -20%;
             .why-icon {
               > img {
                 animation: float2 3s ease-in-out infinite;
               }
+            }
+            @media screen and (max-width: 767px) {
+              left: 0%;
             }
           }
           @media screen and (max-width: 767px) {

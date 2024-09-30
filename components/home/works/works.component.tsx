@@ -12,6 +12,13 @@ export default function WorksComponent() {
     <div className={twMerge(cssClass.worksComponent)}>
       <div className="works-container">
         <div className="works-bg"> </div>
+        <div className="ipad-below">
+          <div className="works-title">
+            <SafeHtmlComponent htmlContent={t('LANDING_PAGE_WORKS_TITLE')} />
+          </div>
+          <div className="works-description">{t('LANDING_PAGE_WORKS_DESCRIPTION')}</div>
+        </div>
+
         <div className="content-left" data-aos="fade-right">
           <div className="content-left-bg"> </div>
           <div className="content-left-container">
@@ -24,7 +31,7 @@ export default function WorksComponent() {
             />
             <div
               data-aos="fade-down"
-              data-aos-duration="700"
+              data-aos-duration="500"
               data-aos-delay="500"
               className="step1-container">
               <Image
@@ -37,7 +44,20 @@ export default function WorksComponent() {
             </div>
             <div
               data-aos="fade-down"
-              data-aos-duration="700"
+              data-aos-duration="500"
+              data-aos-delay="1000"
+              className="step4-container">
+              <Image
+                src="/images/landing/works/step4.png"
+                alt="step4 image"
+                width={470}
+                height={182}
+                className="step4-image"
+              />
+            </div>
+            <div
+              data-aos="fade-down"
+              data-aos-duration="500"
               data-aos-delay="1500"
               className="step2-container">
               <Image
@@ -50,8 +70,8 @@ export default function WorksComponent() {
             </div>
             <div
               data-aos="fade-down"
-              data-aos-duration="700"
-              data-aos-delay="2500"
+              data-aos-duration="500"
+              data-aos-delay="2000"
               className="step3-container">
               <Image
                 src="/images/landing/works/step3.png"
@@ -64,10 +84,13 @@ export default function WorksComponent() {
           </div>
         </div>
         <div className="content-right" data-aos="fade-down">
-          <div className="works-title">
-            <SafeHtmlComponent htmlContent={t('LANDING_PAGE_WORKS_TITLE')} />
+          <div className="ipad-above">
+            <div className="works-title">
+              <SafeHtmlComponent htmlContent={t('LANDING_PAGE_WORKS_TITLE')} />
+            </div>
+            <div className="works-description">{t('LANDING_PAGE_WORKS_DESCRIPTION')}</div>
           </div>
-          <div className="works-description">{t('LANDING_PAGE_WORKS_DESCRIPTION')}</div>
+
           <div className="steps-container">
             <div className="step step1">
               <div className="step-number"> 01</div>
