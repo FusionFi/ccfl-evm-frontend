@@ -38,11 +38,11 @@ export default function BannerComponent() {
               className="usdc-blur"
             />
             <Image
-              src="/images/landing/banners/usdt-blur.png"
-              alt="usdt-blur image"
-              width={220}
-              height={158}
-              className="usdt-blur"
+              src="/images/landing/banners/usda.png"
+              alt="usda image"
+              width={298}
+              height={290}
+              className="usda"
             />
             <Image
               src="/images/landing/banners/dollar.png"
@@ -80,48 +80,46 @@ export default function BannerComponent() {
         <div className="banner-infos">
           <div className="banner-info">
             <div className="content-left">
-              <div className="info-title">{t('LANDING_PAGE_BANNER_ABOUT_TITLE')}</div>
+              <div className="info-title">
+                {t('LANDING_PAGE_BANNER_ABOUT_TITLE')}
+                <Image src="/images/landing/banner-logo.png" alt="logo" width={260} height={64} />
+              </div>
             </div>
             <div className="content-right">
               <div className="info-description">{t('LANDING_PAGE_BANNER_ABOUT_DESCRIPTION')}</div>
             </div>
           </div>
           <div className="banner-info">
-            <div className="content-left">
-              <div className="info-title">{t('LANDING_PAGE_BANNER_PARTNERS')}</div>
-            </div>
-            <div className="content-right">
-              <div className="info-description">
-                <ul className="partners-list">
-                  <li>
-                    <Image
-                      src="/images/landing/partners/emurgo.png"
-                      alt="emurgo logo"
-                      width={438}
-                      height={108}
-                      className="emurgo"
-                    />
-                  </li>
-                  <li>
-                    <Image
-                      src="/images/landing/partners/encryptus.png"
-                      alt="encryptus logo"
-                      width={462}
-                      height={96}
-                      className="encryptus"
-                    />
-                  </li>
-                  <li>
-                    <Image
-                      src="/images/landing/partners/anzens.png"
-                      alt="anzens logo"
-                      width={358}
-                      height={103}
-                      className="anzens"
-                    />
-                  </li>
-                </ul>
-              </div>
+            <div className="info-description">
+              <ul className="partners-list">
+                <li>
+                  <Image
+                    src="/images/landing/partners/emurgo.png"
+                    alt="emurgo logo"
+                    width={438}
+                    height={108}
+                    className="emurgo"
+                  />
+                </li>
+                <li>
+                  <Image
+                    src="/images/landing/partners/encryptus.png"
+                    alt="encryptus logo"
+                    width={462}
+                    height={96}
+                    className="encryptus"
+                  />
+                </li>
+                <li>
+                  <Image
+                    src="/images/landing/partners/anzens.png"
+                    alt="anzens logo"
+                    width={358}
+                    height={103}
+                    className="anzens"
+                  />
+                </li>
+              </ul>
             </div>
           </div>
         </div>
