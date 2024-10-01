@@ -1,7 +1,12 @@
 import TransactionSuccessComponent from '@/components/borrow/transaction-success.component';
 import ModalComponent from '@/components/common/modal.component';
 import { WalletIcon } from '@/components/icons/wallet.icon';
-import { CONTRACT_ADDRESS, TRANSACTION_STATUS, MIN_AMOUNT_KEY } from '@/constants/common.constant';
+import {
+  CONTRACT_ADDRESS,
+  TRANSACTION_STATUS,
+  MIN_AMOUNT_KEY,
+  ACTION_TYPE,
+} from '@/constants/common.constant';
 import service from '@/utils/backend/borrow';
 import { toAmountShow, toLessPart, toUnitWithDecimal } from '@/utils/common';
 import service_ccfl_repay from '@/utils/contract/ccflRepay.service';
@@ -18,6 +23,17 @@ import { useEffect, useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { useAccount } from 'wagmi';
 import Image from 'next/image';
+import {
+  useApprovalBorrow,
+  useCreateLoan,
+  useGetCollateralMinimum,
+  useGetGasFeeApprove,
+  useGetGasFeeCreateLoan,
+  useGetHealthFactor,
+  useAllowanceBorrow,
+  useRepayLoan,
+} from '@/hooks/provider.hook';
+import { useConnectedNetworkManager, useProviderManager } from '@/hooks/auth.hook';
 
 interface ModalBorrowProps {
   isModalOpen: boolean;
@@ -47,7 +63,9 @@ export default function ModalBorrowComponent({
   handleLoans,
 }: ModalBorrowProps) {
   const { t } = useTranslation('common');
-  const { address, connector, chainId } = useAccount();
+  const [provider] = useProviderManager();
+  const { connector } = useAccount();
+  const { selectedChain } = useConnectedNetworkManager();
 
   const {
     control,
@@ -87,18 +105,33 @@ export default function ModalBorrowComponent({
 
   // console.log('loanItem', loanItem);
 
+  //start hook
+  const [approveBorrow] = useApprovalBorrow(provider);
+  const [repayLoan] = useRepayLoan(provider);
+  const [getHealthFactor] = useGetHealthFactor(provider);
+  const [getGasFeeApprove] = useGetGasFeeApprove(provider);
+
+  //end hook
+
   const onSubmit: SubmitHandler<IFormInput> = async data => {
-    const provider = await connector?.getProvider();
+    const connector_provider = await connector?.getProvider();
     if (step === 0) {
       try {
         setLoading(true);
-        let tx = await service_ccfl_repay.approveRepay(
-          provider,
-          CONTRACT_ADDRESS,
-          toUnitWithDecimal(tokenValue, loanItem.decimals),
-          address,
-          stableCoinData.address,
-        );
+        // let tx = await service_ccfl_repay.approveRepay(
+        //   provider,
+        //   CONTRACT_ADDRESS,
+        //   toUnitWithDecimal(tokenValue, loanItem.decimals),
+        //   address,
+        //   stableCoinData.address,
+        // );
+        let tx = await approveBorrow({
+          provider: connector_provider,
+          contract_address: CONTRACT_ADDRESS,
+          amount: toUnitWithDecimal(tokenValue, loanItem.decimals),
+          address: provider?.account,
+          tokenContract: stableCoinData.address,
+        });
         if (tx?.link) {
           setStep(1);
           setErrorTx(undefined);
@@ -122,14 +155,23 @@ export default function ModalBorrowComponent({
       try {
         setLoading(true);
         let IsFiat = false;
-        let tx = await service_ccfl_repay.repayLoan(
-          toUnitWithDecimal(tokenValue, loanItem.decimals),
-          stableCoinData.address,
-          provider,
-          address,
-          CONTRACT_ADDRESS,
-          loanItem.loan_id,
-        );
+        // let tx = await service_ccfl_repay.repayLoan(
+        //   toUnitWithDecimal(tokenValue, loanItem.decimals),
+        //   stableCoinData.address,
+        //   provider,
+        //   provider?.account,
+        //   CONTRACT_ADDRESS,
+        //   loanItem.loan_id,
+        // );
+        let tx = await repayLoan({
+          amount: toUnitWithDecimal(tokenValue, loanItem.decimals),
+          stableCoin: stableCoinData.address,
+          provider: connector_provider,
+          account: provider?.account,
+          contract_address: CONTRACT_ADDRESS,
+          loanId: loanItem.loan_id,
+          isGas: false,
+        });
         if (tx?.link) {
           setStep(2);
           setTxHash(tx.link);
@@ -165,8 +207,12 @@ export default function ModalBorrowComponent({
   const getTokenInfo = async () => {
     try {
       setLoadingBalance(true);
-      let res_info = (await service.getTokenInfo(currentToken, chainId)) as any;
-      let res_balance = (await service.getCollateralBalance(address, chainId, currentToken)) as any;
+      let res_info = (await service.getTokenInfo(currentToken, selectedChain?.id)) as any;
+      let res_balance = (await service.getCollateralBalance(
+        provider?.account,
+        selectedChain?.id,
+        currentToken,
+      )) as any;
 
       console.log('res_info', res_info, res_balance);
       let token = stableCoinData;
@@ -190,18 +236,25 @@ export default function ModalBorrowComponent({
     setTokenValue(deptRemain);
   };
 
-  const getHealthFactor = async () => {
+  const handleGetHealthFactor = async () => {
     if (tokenValue && tokenValue > 0 && loanItem.decimals) {
-      const provider = await connector?.getProvider();
+      const connector_provider = await connector?.getProvider();
 
       try {
         setLoadingHealthFactor(true);
-        let healthFactor = (await service_ccfl_repay.getHealthFactor(
-          provider,
-          CONTRACT_ADDRESS,
-          toUnitWithDecimal(tokenValue, loanItem.decimals),
-          loanItem.loan_id,
-        )) as any;
+        // let healthFactor = (await service_ccfl_repay.getHealthFactor(
+        //   connector_provider,
+        //   CONTRACT_ADDRESS,
+        //   toUnitWithDecimal(tokenValue, loanItem.decimals),
+        //   loanItem.loan_id,
+        // )) as any;
+        let healthFactor = (await getHealthFactor({
+          type: ACTION_TYPE.REPAY,
+          provider: connector_provider,
+          contract_address: CONTRACT_ADDRESS,
+          amount: toUnitWithDecimal(tokenValue, loanItem.decimals),
+          loanId: loanItem.loan_id,
+        })) as any;
         console.log('healthFactor', healthFactor);
         if (healthFactor) {
           setHealthFactor(healthFactor);
@@ -216,8 +269,8 @@ export default function ModalBorrowComponent({
     }
   };
 
-  const getGasFeeApprove = async () => {
-    console.log('getGasFeeApprove', step, loanItem, tokenValue);
+  const handleGetGasFeeApprove = async () => {
+    console.log('handleGetGasFeeApprove', step, loanItem, tokenValue);
 
     if (step === 0) {
       if (
@@ -227,17 +280,17 @@ export default function ModalBorrowComponent({
         loanItem.loan_id &&
         stableCoinData.address
       ) {
-        const provider = await connector?.getProvider();
+        const connector_provider = await connector?.getProvider();
         try {
           setLoadingGasFee(true);
-          let res = (await service_ccfl_repay.getGasFeeApprove(
-            provider,
-            address,
-            toUnitWithDecimal(tokenValue, loanItem.decimals),
-            stableCoinData.address,
-            CONTRACT_ADDRESS,
-          )) as any;
-          let res_price = (await service.getPrice(chainId, 'ETH')) as any;
+          let res = (await getGasFeeApprove({
+            provider: connector_provider,
+            account: provider?.account,
+            amount: toUnitWithDecimal(tokenValue, loanItem.decimals),
+            tokenAddress: stableCoinData.address,
+            contract_address: CONTRACT_ADDRESS,
+          })) as any;
+          let res_price = (await service.getPrice(selectedChain?.id, 'ETH')) as any;
 
           console.log('gasFee approve', res, res_price);
           if (res && res.gasPrice && res_price && res_price.price) {
@@ -272,18 +325,19 @@ export default function ModalBorrowComponent({
         loanItem.decimals &&
         loanItem.loan_id
       ) {
-        const provider = await connector?.getProvider();
+        const connector_provider = await connector?.getProvider();
         try {
           setLoadingGasFee(true);
-          let res = (await service_ccfl_repay.getGasFeeRepayLoan(
-            provider,
-            address,
-            CONTRACT_ADDRESS,
-            toUnitWithDecimal(tokenValue, loanItem.decimals),
-            stableCoinData.address,
-            loanItem.loan_id,
-          )) as any;
-          let res_price = (await service.getPrice(chainId, 'ETH')) as any;
+          let res = (await repayLoan({
+            amount: toUnitWithDecimal(tokenValue, loanItem.decimals),
+            stableCoin: stableCoinData.address,
+            provider: connector_provider,
+            account: provider?.account,
+            contract_address: CONTRACT_ADDRESS,
+            loanId: loanItem.loan_id,
+            isGas: true,
+          })) as any;
+          let res_price = (await service.getPrice(selectedChain?.id, 'ETH')) as any;
           console.log('handleGetFeeCreateLoan res', res);
           if (res && res.gasPrice && res_price && res_price.price) {
             let gasFee = res.gasPrice * res_price.price;
@@ -309,8 +363,8 @@ export default function ModalBorrowComponent({
 
   const handleMinimumRepayment = async () => {
     try {
-      // const provider = await connector?.getProvider();
-      // let res_pool = (await service.getPoolAddress(chainId, currentToken)) as any;
+      // const connector_provider = await connector?.getProvider();
+      // let res_pool = (await service.getPoolAddress(selectedChain?.id, currentToken)) as any;
 
       // let res = (await service_ccfl_repay.getMinimumRepayment(
       //   provider,
@@ -348,8 +402,8 @@ export default function ModalBorrowComponent({
 
   useEffect(() => {
     if (isModalOpen) {
-      getHealthFactor();
-      getGasFeeApprove();
+      handleGetHealthFactor();
+      handleGetGasFeeApprove();
       getGasFeeRepay();
     }
   }, [tokenValue]);

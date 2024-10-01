@@ -25,27 +25,29 @@ export const initialState: BorrowState = {
   error: null,
 };
 
-export default createReducer(initialState, builder =>
-  builder
-    .addCase(BorrowActions.resetState, state => {
-      console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>resetState');
-      state.networks = [];
-      state.asset = {
-        list: [],
-        selected: '',
-      };
+export default createReducer(
+  initialState,
+  builder =>
+    builder
+      // .addCase(BorrowActions.resetState, state => {
+      //   console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>resetState');
+      //   state.networks = [];
+      //   state.asset = {
+      //     list: [],
+      //     selected: '',
+      //   };
 
-      state.user = null;
-      state.loading = false;
-      state.error = false;
-    })
-    .addCase(BorrowActions.updateNetworks, (state, { payload: { networks } }) => {
-      state.networks = [].concat(networks);
-    })
-    .addCase(BorrowActions.updateAssets, (state, { payload: { assets } }) => {
-      state.asset.list = [].concat(assets);
-    })
-    .addCase(BorrowActions.updateUser, (state, { payload: { user } }) => {
-      state.user = user;
-    }),
+      //   state.user = null;
+      //   state.loading = false;
+      //   state.error = false;
+      // })
+      .addCase(BorrowActions.updateNetworks, (state, { payload: { networks } }) => {
+        state.networks = [].concat(networks);
+      }),
+  // .addCase(BorrowActions.updateAssets, (state, { payload: { assets } }) => {
+  //   state.asset.list = [].concat(assets);
+  // })
+  // .addCase(BorrowActions.updateUser, (state, { payload: { user } }) => {
+  //   state.user = user;
+  // }),
 );
