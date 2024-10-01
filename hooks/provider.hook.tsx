@@ -129,19 +129,6 @@ export function useGetGasFeeApprove(provider: any) {
   return [getGasFeeApprove];
 }
 
-export function useGetGasFeeCreateLoan(provider: any) {
-  const getGasFeeCreateLoan = useCallback(
-    async (params: any) => {
-      const res = await provider.getGasFeeCreateLoan(params);
-
-      return res;
-    },
-    [provider],
-  ) as any;
-
-  return [getGasFeeCreateLoan];
-}
-
 export function useAllowanceBorrow(provider: any) {
   const allowanceBorrow = useCallback(
     async (params: any) => {

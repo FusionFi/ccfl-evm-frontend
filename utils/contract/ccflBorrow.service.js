@@ -182,9 +182,9 @@ const createLoan = async (
   }
 };
 
-const checkAllowance = async (provider, tokenAddress, account, contract_address) => {
+const checkAllowance = async (provider, tokenAddress, account, spender) => {
   try {
-    const allowance = await getAllowance(provider, tokenAddress, account, contract_address);
+    const allowance = await getAllowance(provider, tokenAddress, account, spender);
     return allowance;
   } catch (error) {}
 };

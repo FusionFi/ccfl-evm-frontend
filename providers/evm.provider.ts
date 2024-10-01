@@ -244,7 +244,7 @@ class EVMProvider extends BaseProvider {
     let res;
     switch (type) {
       case ACTION_TYPE.REPAY:
-        res = await service_ccfl_borrow.getHealthFactor(provider, contract_address, amount, loanId);
+        res = await service_ccfl_repay.getHealthFactor(provider, contract_address, amount, loanId);
         break;
       case ACTION_TYPE.COLLATERAL:
       default:
@@ -274,13 +274,8 @@ class EVMProvider extends BaseProvider {
     return res;
   }
 
-  async allowanceBorrow({ provider, tokenAddress, account, contract_address }: any) {
-    const res = await service_ccfl_borrow.checkAllowance(
-      provider,
-      tokenAddress,
-      account,
-      contract_address,
-    );
+  async allowanceBorrow({ provider, tokenAddress, account, spender }: any) {
+    const res = await service_ccfl_borrow.checkAllowance(provider, tokenAddress, account, spender);
 
     return res;
   }

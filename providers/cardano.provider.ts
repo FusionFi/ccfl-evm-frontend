@@ -111,15 +111,15 @@ class CardanoProvider extends BaseProvider {
     console.log('[getGasFeeApprove]  params: ', params);
     return 0;
   }
-  async getGasFeeCreateLoan(params: any): Promise<any> {
-    // TODO: update here
-    console.log('[getGasFeeCreateLoan]  params: ', params);
-    return 0;
-  }
   async allowanceBorrow(params: any): Promise<any> {
     // TODO: update here
     console.log('[allowanceBorrow]  params: ', params);
     return 0;
+  }
+  async repayLoan(params: any): Promise<any> {
+    // TODO: update here
+    console.log('[repayLoan]  params: ', params);
+    return true;
   }
   //end borrow part
 }

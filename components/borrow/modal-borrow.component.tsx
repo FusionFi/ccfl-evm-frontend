@@ -34,7 +34,6 @@ import {
   useCreateLoan,
   useGetCollateralMinimum,
   useGetGasFeeApprove,
-  useGetGasFeeCreateLoan,
   useGetHealthFactor,
   useAllowanceBorrow,
 } from '@/hooks/provider.hook';
@@ -95,7 +94,6 @@ export default function ModalBorrowComponent({
   const [getCollateralMinimum] = useGetCollateralMinimum(provider);
   const [getHealthFactor] = useGetHealthFactor(provider);
   const [getGasFeeApprove] = useGetGasFeeApprove(provider);
-  const [getGasFeeCreateLoan] = useGetGasFeeCreateLoan(provider);
   const [allowanceBorrow] = useAllowanceBorrow(provider);
   //end hook
 
@@ -535,8 +533,7 @@ export default function ModalBorrowComponent({
           provider: connector_provider,
           tokenAddress: stableCoinInfo.address,
           account: provider?.account,
-          // CONTRACT_ADDRESS,
-          contract_address: collateralData.address,
+          spender: collateralData.address,
         })) as any;
 
         console.log('allowance', res, toAmountShow(res, collateralData.decimals));

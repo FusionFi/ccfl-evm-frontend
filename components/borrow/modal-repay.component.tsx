@@ -25,15 +25,13 @@ import { useAccount } from 'wagmi';
 import Image from 'next/image';
 import {
   useApprovalBorrow,
-  useCreateLoan,
-  useGetCollateralMinimum,
-  useGetGasFeeApprove,
-  useGetGasFeeCreateLoan,
   useGetHealthFactor,
   useAllowanceBorrow,
   useRepayLoan,
+  useGetGasFeeApprove,
 } from '@/hooks/provider.hook';
 import { useConnectedNetworkManager, useProviderManager } from '@/hooks/auth.hook';
+import BigNumber from 'bignumber.js';
 
 interface ModalBorrowProps {
   isModalOpen: boolean;
@@ -110,7 +108,7 @@ export default function ModalBorrowComponent({
   const [repayLoan] = useRepayLoan(provider);
   const [getHealthFactor] = useGetHealthFactor(provider);
   const [getGasFeeApprove] = useGetGasFeeApprove(provider);
-
+  const [allowanceBorrow] = useAllowanceBorrow(provider);
   //end hook
 
   const onSubmit: SubmitHandler<IFormInput> = async data => {
@@ -386,6 +384,36 @@ export default function ModalBorrowComponent({
     }
   };
 
+  const handleCheckAllowance = async () => {
+    if (tokenValue && tokenValue > 0 && provider?.account && stableCoinData.address) {
+      const connector_provider = await connector?.getProvider();
+      try {
+        let res_pool = (await service.getPoolAddress(selectedChain?.id, currentToken)) as any;
+
+        let res = (await allowanceBorrow({
+          provider: connector_provider,
+          tokenAddress: res_pool && res_pool[0] ? res_pool[0].address : CONTRACT_ADDRESS,
+          account: provider?.account,
+          spender: stableCoinData.address,
+        })) as any;
+
+        console.log('allowance', res, toAmountShow(res, loanItem.decimals));
+
+        const isNotNeedToApprove = new BigNumber(
+          toAmountShow(res, loanItem.decimals),
+        ).isGreaterThanOrEqualTo(tokenValue);
+
+        if (isNotNeedToApprove) {
+          setStep(1);
+        } else {
+          setStep(0);
+        }
+      } catch (error) {
+        console.log('error', error);
+      }
+    }
+  };
+
   const resetState = () => {
     setLoading(false);
     setHealthFactor(undefined);
@@ -399,6 +427,12 @@ export default function ModalBorrowComponent({
     });
     setTokenValue(undefined);
   };
+
+  useEffect(() => {
+    if (isModalOpen) {
+      handleCheckAllowance();
+    }
+  }, [tokenValue, step]);
 
   useEffect(() => {
     if (isModalOpen) {
