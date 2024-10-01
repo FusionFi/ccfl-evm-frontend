@@ -151,6 +151,7 @@ export default function ModalBorrowComponent({
           address: provider?.account,
           tokenContract: collateralData.address,
         });
+
         if (tx?.link) {
           setStep(1);
           setErrorTx(undefined);

@@ -165,16 +165,15 @@ class EVMProvider extends BaseProvider {
 
   // start borrow part
   async approveBorrow({ provider, contract_address, amount, address, tokenContract }: any) {
-    console.log('approveBorrow', provider, contract_address, amount, address, tokenContract);
-    // const tx = await service_ccfl_borrow.approveBorrow(
-    //   provider,
-    //   contract_address,
-    //   amount,
-    //   address,
-    //   tokenContract,
-    // );
+    const tx = await service_ccfl_borrow.approveBorrow(
+      provider,
+      contract_address,
+      amount,
+      address,
+      tokenContract,
+    );
 
-    // return tx;
+    return tx;
   }
 
   async createLoan({
