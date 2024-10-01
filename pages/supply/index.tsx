@@ -290,6 +290,10 @@ export default function SupplyPage() {
           ...record.asset[2],
           wallet_balance: record.wallet_balance[0],
           wallet_balance_in_wei: record.wallet_balance[2],
+          supply_balance: record.supply_balance[0],
+          supply_balance_in_wei: record.supply_balance[2],
+          earned_reward: record.earned_reward[0],
+          earned_reward_in_wei: record.earned_reward[2],
           apy: record.apy,
         },
       });
@@ -318,7 +322,7 @@ export default function SupplyPage() {
     );
   };
 
-  const handleModalSupplyOk = ({ amount, txUrl, token }: any) => {
+  const handleOk = ({ amount, txUrl, token }: any) => {
     setModal({
       type: ModalType.Success,
       txUrl,
@@ -331,21 +335,19 @@ export default function SupplyPage() {
     fetchUserData();
   };
 
-  const handleModalWithdrawOk = () => {
-    setModal({
-      type: ModalType.Error,
-      code: '503',
-      txhash: 'input here',
-      message: 'Error message',
-    });
-  };
-
   const title = () => {
     if (!provider?.account) {
       return t('SUPPLY_GUEST_TABLE_TITLE');
     }
     return t('SUPPLY_TABLE_TITLE');
   };
+
+  const handleError = ({ code, message, txhash }: any) => {
+    setModal({
+      type: ModalType.Error,
+      code, message, txhash
+    });
+  }
 
   return (
     <div className={twMerge('supply-page-container', cssClass.supplyPage)}>
@@ -371,13 +373,15 @@ export default function SupplyPage() {
 
       <ModalSupply
         {...modal}
-        handleOk={handleModalSupplyOk}
+        handleOk={handleOk}
+        handleError={handleError}
         isModalOpen={modal?.type == ModalType.Supply}
         handleCancel={() => setModal({})}
       />
       <ModalWithdraw
         {...modal}
-        handleOk={handleModalWithdrawOk}
+        handleOk={handleOk}
+        handleError={handleError}
         isModalOpen={modal?.type == ModalType.Withdraw}
         handleCancel={() => setModal({})}
       />

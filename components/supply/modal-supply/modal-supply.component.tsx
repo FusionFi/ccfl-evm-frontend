@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import cssClass from './modal-supply.component.module.scss';
-import { Button, InputNumber, Tooltip } from 'antd';
+import { Button, InputNumber, message, Tooltip } from 'antd';
 import { twMerge } from 'tailwind-merge';
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
@@ -26,6 +26,7 @@ export default function ModalSupplyComponent({
   isModalOpen,
   handleCancel,
   handleOk,
+  handleError,
   asset
 }: any) {
   const { t } = useTranslation('common');
@@ -93,8 +94,13 @@ export default function ModalSupplyComponent({
         } else {
           await handleApprove(_amount.toString());
         }
-      } catch (error) {
+      } catch (error: any) {
+        // TODO: show message
         console.error('submit form failed: ', error)
+        handleError({
+          code: error?.code,
+          message: error?.message
+        })
       } finally {
         _setIsPending(false)
       }
@@ -108,11 +114,9 @@ export default function ModalSupplyComponent({
       });
       setNetworkPrice(result?.price || 0)
     } catch (error) {
-      console.error('fetch gas to estimate failed: ', error)
+      console.error('fetch network price failed: ', error)
     }
   }
-
-  console.log('allowance: ', allowance)
 
   useEffect(() => {
     estimateNormalTxFee({
@@ -203,7 +207,7 @@ export default function ModalSupplyComponent({
                         <div className="supply-modal-container__input__control__amount__token">
                           <Image
                             src={`/images/common/${asset?.symbol}.png`}
-                            alt="USDT"
+                            alt={asset?.name}
                             width={24}
                             height={24}
                             style={{
@@ -278,7 +282,7 @@ export default function ModalSupplyComponent({
                     className={twMerge('btn-primary-custom')}
                     block>
                     {t('SUPPLY_MODAL_SUPPLY_BUTTON', {
-                      token: 'USDT',
+                      token: asset?.symbol,
                     })}
                   </Button>
                 ) : (
@@ -301,7 +305,7 @@ export default function ModalSupplyComponent({
                       className={twMerge('btn-primary-custom', 'mt-4')}
                       block>
                       {t('SUPPLY_MODAL_APPROVE', {
-                        token: 'USDT',
+                        token: asset?.symbol,
                       })}
                     </Button>
                   </div>

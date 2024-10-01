@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import cssClass from './modal-withdraw.component.module.scss';
 import { Button, InputNumber, Tooltip } from 'antd';
@@ -9,6 +9,14 @@ import { Modal, Form } from 'antd';
 import type { FormProps } from 'antd';
 import { InfoCircleIcon } from '@/components/icons/info-circle.icon';
 import { QuestionCircleIcon } from '@/components/icons/question-circle.icon';
+import BigNumber from 'bignumber.js';
+
+import { formatUnits, parseUnits } from 'ethers';
+import { useNetworkManager, useUserManager } from '@/hooks/supply.hook';
+import { useConnectedNetworkManager, useProviderManager } from '@/hooks/auth.hook'
+import supplyBE from '@/utils/backend/supply';
+import { useTxFee } from '@/hooks/provider.hook'
+import { computeWithMinThreashold } from '@/utils/percent.util';
 
 type FieldType = {
   amount?: any;
@@ -17,44 +25,119 @@ type FieldType = {
 export default function ModalWithdrawComponent({
   isModalOpen,
   handleCancel,
-  handleOk
+  handleOk,
+  handleError,
+  asset
 }: any) {
   const { t } = useTranslation('common');
 
+  console.log('withdraw asset: ', asset)
   const [_isApproved, _setIsApproved] = useState(false);
+
+  const [form] = Form.useForm();
   const [_isPending, _setIsPending] = useState(false);
+  // TODO: need to store using redux
+  const [networkPrice, setNetworkPrice] = useState<any>(0)
+  const [networks] = useNetworkManager()
+  const { selectedChain } = useConnectedNetworkManager();
+  const [provider] = useProviderManager();
+  const [user] = useUserManager();
 
-  const handleApprove = useCallback(() => {
-    _setIsPending(true);
-    setTimeout(() => {
-      _setIsPending(false);
-      _setIsApproved(true);
-    }, 1000);
-  }, []);
+  const poolUserData = useMemo(() => {
+    if (user?.supplyMap && asset?.symbol) {
+      return user.supplyMap.get(asset.symbol);
+    }
+    return {}
+  }, [asset, user])
 
-  const _handleOk = useCallback(() => {
-    _setIsApproved(false)
-    _setIsPending(false)
-    handleOk();
-  }, [])
+  console.log('poolUserData: ', poolUserData)
+
+  const withdrawAvailable = useMemo(() => {
+    return new BigNumber(poolUserData?.withdraw_available || 0).dividedBy(10 ** asset?.decimals)
+  }, [poolUserData?.withdraw_available, asset?.decimals])
+
+  const poolUtilization = useMemo(() => {
+    return Number(poolUserData?.pool_utilization) * 100;
+  }, [poolUserData?.pool_utilization])
+
+  const selectedNetwork = useMemo(() => {
+    return networks?.get(selectedChain?.id) || {}
+  }, [networks, selectedChain])
+
+  const [fee, estimateNormalTxFee] = useTxFee(provider);
+
+  const feeWithPrice = useMemo(() => {
+    const decimals = selectedChain?.nativeCurrency?.decimals || 18
+    return new BigNumber(fee).multipliedBy(networkPrice).dividedBy(10 ** decimals).toFormat(2)
+  }, [fee, networkPrice, selectedChain])
+
+  const _handleOk = useCallback(async (amount: any) => {
+    const result = await provider.withdraw({ amount, contractAddress: asset?.pool_address, })
+
+    handleOk({
+      amount: formatUnits(amount, asset?.decimals),
+      txUrl: `${selectedNetwork?.txUrl}tx/${result}`,
+      token: asset?.symbol
+    });
+  }, [provider, asset, selectedNetwork])
 
   const _handleCancel = useCallback(() => {
-    _setIsApproved(false)
+    _setIsPending(false)
+    form.resetFields();
     handleCancel();
   }, [])
 
   const onFinish: FormProps<FieldType>['onFinish'] = (data) => {
     _setIsPending(true);
-    setTimeout(() => {
-      if (_isApproved) {
-        _handleOk();
-      } else {
-        handleApprove();
+    setTimeout(async () => {
+      try {
+        const _amount = parseUnits(data.amount.toString(), asset.decimals)
+        await _handleOk(_amount);
+      } catch (error: any) {
+        console.error('submit form failed: ', error)
+        handleError({
+          code: error?.code,
+          message: error?.message
+        })
+      } finally {
+        form.resetFields();
+        _setIsPending(false)
       }
 
-      _setIsPending(false)
     }, 1000);
   };
+
+  const fetchNetworkPrice = async () => {
+    try {
+      const result: any = await supplyBE.fetchPrice({
+        chainId: selectedChain?.id
+      });
+      setNetworkPrice(result?.price || 0)
+    } catch (error) {
+      console.error('fetch network price failed: ', error)
+    }
+  }
+
+  useEffect(() => {
+    estimateNormalTxFee({
+      network: selectedNetwork,
+      chain: selectedChain,
+      // TODO: update cardano params
+    });
+    fetchNetworkPrice();
+
+    const interval_ = setInterval(() => {
+      estimateNormalTxFee({
+        network: selectedNetwork,
+        chain: selectedChain,
+        // TODO: update cardano params
+      });
+    }, 15000);
+
+    return (() => {
+      clearInterval(interval_)
+    })
+  }, [asset?.address, selectedNetwork, selectedChain, provider])
 
   return (
     <Modal
@@ -64,10 +147,35 @@ export default function ModalWithdrawComponent({
       onOk={_handleOk}
       onCancel={_handleCancel}
       footer={null}>
-      <Form onFinish={onFinish}>
+      <Form onFinish={onFinish} form={form}>
         {(_, formInstance) => {
           const isNotValidForm = formInstance.getFieldsError().some(item => item.errors.length > 0)
           const amount = formInstance.getFieldValue('amount')
+
+          const max = withdrawAvailable.toNumber()
+          const remainingSupply = useMemo(() => {
+            const result = new BigNumber(asset?.supply_balance || 0).minus(amount || 0);
+            if (result.isGreaterThan(0)) {
+              return result.toFormat(2)
+            }
+            return '0.00'
+          }, [amount, asset?.supply_balance])
+
+          const handleMaxInput = () => {
+            formInstance.setFields([
+              {
+                name: "amount",
+                value: max,
+                errors: []
+              },
+            ]);
+
+            formInstance
+              .validateFields()
+              .then((e) => { })
+              .catch((e) => { })
+          }
+
           return (
             <div className="withdraw-modal-container">
               <div className="withdraw-modal-container__supply-overview">
@@ -82,16 +190,16 @@ export default function ModalWithdrawComponent({
                     <div className="withdraw-modal-container__supply-overview__container__values__item">
                       <span>{t('WITHDRAW_MODAL_OVERVIEW_MY_SUPPLY')}</span>
                       <span className="withdraw-modal-container__supply-overview__container__values__item__value">
-                        45,000.00
+                        {asset?.supply_balance}
                         <span className="withdraw-modal-container__supply-overview__container__values__item__value__unit">
-                          USDT
+                          {asset?.symbol}
                         </span>
                       </span>
                     </div>
                     <div className="withdraw-modal-container__supply-overview__container__values__item">
                       <span>{t('WITHDRAW_MODAL_OVERVIEW_POOL_UTILIZATION')}</span>
                       <span className="withdraw-modal-container__supply-overview__container__values__item__value">
-                        90
+                        {computeWithMinThreashold(poolUtilization, '')}
                         <span className="withdraw-modal-container__supply-overview__container__values__item__value__unit">
                           %
                         </span>
@@ -100,9 +208,9 @@ export default function ModalWithdrawComponent({
                     <div className="withdraw-modal-container__supply-overview__container__values__item">
                       <span>{t('WITHDRAW_MODAL_OVERVIEW_AVAILABLE_TO_WITHDRAW')}</span>
                       <span className="withdraw-modal-container__supply-overview__container__values__item__value">
-                        4,500.00
+                        {withdrawAvailable.toFormat(2)}
                         <span className="withdraw-modal-container__supply-overview__container__values__item__value__unit">
-                          USDT
+                          {asset?.symbol}
                         </span>
                       </span>
                     </div>
@@ -114,7 +222,7 @@ export default function ModalWithdrawComponent({
                   {t('WITHDRAW_MODAL_OVERVIEW_AMOUNT')}
                 </div>
                 <div className="withdraw-modal-container__input__control">
-                  <Form.Item name="amount" help="" rules={[{ max: 10, type: 'number', message: t('WITHDRAW_MODAL_VALIDATE_EXCEED_WITHDRAW_LIMIT') }, {
+                  <Form.Item name="amount" help="" rules={[{ max: max, type: 'number', message: t('WITHDRAW_MODAL_VALIDATE_EXCEED_WITHDRAW_LIMIT') }, {
                     required: true,
                     message: t('WITHDRAW_MODAL_VALIDATE_REQUIRE_AMOUNT')
                   }]} className='w-full'>
@@ -125,23 +233,24 @@ export default function ModalWithdrawComponent({
                       addonAfter={
                         <div className="withdraw-modal-container__input__control__amount__token">
                           <Image
-                            src={`/images/tokens/usdt.png`}
-                            alt="USDT"
+                            src={`/images/common/${asset?.symbol}.png`}
+                            alt={asset?.name}
                             width={24}
                             height={24}
                             style={{
                               height: 24,
                             }}
                           />
-                          USDT
+                          {asset?.symbol}
                         </div>
                       }
                     />
                   </Form.Item>
                   <div className="withdraw-modal-container__input__control__price">
-                    ≈ $4,000.00
+                    ≈ ${new BigNumber(asset?.price || 0).times(amount || 0).toFormat(2)}
                     <Button
                       type="link"
+                      onClick={handleMaxInput}
                       className="withdraw-modal-container__input__control__price__max">
                       {t('WITHDRAW_MODAL_INPUT_MAX')}
                     </Button>
@@ -157,18 +266,18 @@ export default function ModalWithdrawComponent({
                   <div className="withdraw-modal-container__supply-overview__container__values__item">
                     <span>{t('WITHDRAW_MODAL_OVERVIEW_REMAINING_SUPPLY')}</span>
                     <span className="withdraw-modal-container__supply-overview__container__values__item__value">
-                      45,000.00
+                      {remainingSupply}
                       <span className="withdraw-modal-container__supply-overview__container__values__item__value__unit">
-                        USDT
+                        {asset?.symbol}
                       </span>
                     </span>
                   </div>
                   <div className="withdraw-modal-container__supply-overview__container__values__item">
                     <span>{t('WITHDRAW_MODAL_OVERVIEW_REWARD_EARNED')}</span>
                     <span className="withdraw-modal-container__supply-overview__container__values__item__value">
-                      45,000.00
+                      {asset?.earned_reward}
                       <span className="withdraw-modal-container__supply-overview__container__values__item__value__unit">
-                        USDT
+                        {asset?.symbol}
                       </span>
                     </span>
                   </div>
@@ -184,47 +293,25 @@ export default function ModalWithdrawComponent({
                       </span>
                     </Tooltip>
                   </div>
-                  <span className="withdraw-modal-container__overview__apy__value text-sm">
-                    $<span className="text-white">0.02</span>
-                  </span>
+                  {fee != 0 && amount > 0 ? <span className="withdraw-modal-container__overview__apy__value text-sm">
+                    $<span className="text-white">{feeWithPrice}</span>
+                  </span> :
+                    <span className="withdraw-modal-container__overview__apy__value text-sm">
+                      --
+                    </span>
+                  }
                 </div>
               </div>
               <div className="withdraw-modal-container__action">
-                {_isApproved ? (
-                  <Button
-                    type="primary"
-                    loading={_isPending}
-                    disabled={isNotValidForm}
-                    onClick={_handleOk}
-                    className={twMerge('btn-primary-custom')}
-                    block>
-                    {t('WITHDRAW_MODAL_WITHDRAW_SUPPLY')}
-                  </Button>
-                ) : (
-                  <div className="withdraw-modal-container__action__approve">
-                    <div className="withdraw-modal-container__action__approve__helper">
-                      <QuestionCircleIcon />
-                      <Link
-                        className="withdraw-modal-container__action__approve__helper__link"
-                        href={'https://psychcentral.com/blog/what-drives-our-need-for-approval'}
-                        target="_blank">
-                        {t('WITHDRAW_MODAL_APPROVE_EXPLAIN')}
-                      </Link>
-                    </div>
-
-                    <Button
-                      loading={_isPending}
-                      onClick={handleApprove}
-                      type="primary"
-                      disabled={isNotValidForm || !amount}
-                      className={twMerge('btn-primary-custom', 'mt-4')}
-                      block>
-                      {t('WITHDRAW_MODAL_APPROVE', {
-                        token: 'USDT',
-                      })}
-                    </Button>
-                  </div>
-                )}
+                <Button
+                  type="primary"
+                  loading={_isPending}
+                  disabled={isNotValidForm || !amount}
+                  htmlType='submit'
+                  className={twMerge('btn-primary-custom')}
+                  block>
+                  {t('WITHDRAW_MODAL_WITHDRAW_SUPPLY')}
+                </Button>
               </div>
             </div>
           );

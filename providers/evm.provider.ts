@@ -68,6 +68,22 @@ class EVMProvider extends BaseProvider {
         return tx;
     }
 
+    async withdraw({ amount, contractAddress, abi }: any) {
+        const result = await writeContract(config, {
+            address: contractAddress,
+            abi: abi || AbiPool,
+            functionName: 'withdraw',
+            args: [amount],
+        })
+
+        const tx = await waitForTransactionReceipt(config, {
+            confirmations: 1,
+            hash: result
+        })
+
+        return tx;
+    }
+
     async approve({ abi, value, spender, contractAddress }: any) {
         const result = await writeContract(config, {
             address: contractAddress,

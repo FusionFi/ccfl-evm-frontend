@@ -40,7 +40,7 @@ export default function ModalErrorComponent({
             height={80}
           />
           <div className="modal-error-container__status__msg">
-            <span>Error code: 503</span>
+            {code && <span>Error code: {code}</span>}
             <span>{message}</span>
           </div>
         </div>

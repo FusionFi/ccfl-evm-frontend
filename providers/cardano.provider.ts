@@ -77,6 +77,12 @@ class CardanoProvider extends BaseProvider {
         return true;
     }
 
+    async withdraw(params: any) {
+        // TODO: update here
+        console.log('[withdraw] params: ', params)
+        return true;
+    }
+
     subscribeEvents(dispatch: any): any {
         this.connector?.subscribeEvents(dispatch);
     }
