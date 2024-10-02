@@ -1,3 +1,5 @@
+'use-client'
+
 import cssClass from '@/pages/borrow/index.module.scss';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useCallback, useEffect, useState, useMemo } from 'react';
@@ -66,6 +68,8 @@ export default function BorrowPage() {
     }
     return false
   }, [isConnected, cardanoWalletConnected?.address, networkInfo])
+
+  console.log(cardanoWalletConnected.address, 'cardanoWalletConnected.address')
 
   //connect wallet
   const [showSuccess, showError, showWarning, contextHolder] = useNotification();
