@@ -41,7 +41,7 @@ export default function ModalErrorComponent({
           />
           <div className="modal-error-container__status__msg">
             {code && <span>Error code: {code}</span>}
-            <span>{message}</span>
+            <span className='w-full'>{message}</span>
           </div>
         </div>
         <div className="modal-error-container__action">

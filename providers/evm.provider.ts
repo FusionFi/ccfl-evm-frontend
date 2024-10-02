@@ -65,7 +65,7 @@ class EVMProvider extends BaseProvider {
             hash: result
         })
 
-        return tx;
+        return tx?.transactionHash || result;
     }
 
     async withdraw({ amount, contractAddress, abi }: any) {
@@ -81,7 +81,7 @@ class EVMProvider extends BaseProvider {
             hash: result
         })
 
-        return tx;
+        return tx?.transactionHash || result;
     }
 
     async approve({ abi, value, spender, contractAddress }: any) {
@@ -97,7 +97,7 @@ class EVMProvider extends BaseProvider {
             hash: result
         })
 
-        return tx;
+        return tx?.transactionHash || result;
     }
 
     async fetchAllowance({ abi, owner, spender, chain, contractAddress, network }: any) {

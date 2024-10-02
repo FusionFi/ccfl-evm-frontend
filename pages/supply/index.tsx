@@ -323,6 +323,7 @@ export default function SupplyPage() {
   };
 
   const handleOk = ({ amount, txUrl, token }: any) => {
+    fetchUserData();
     setModal({
       type: ModalType.Success,
       txUrl,
@@ -331,8 +332,6 @@ export default function SupplyPage() {
         amount,
       }),
     });
-
-    fetchUserData();
   };
 
   const title = () => {
