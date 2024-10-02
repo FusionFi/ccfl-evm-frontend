@@ -390,11 +390,20 @@ export default function ModalBorrowComponent({
       try {
         let res_pool = (await service.getPoolAddress(selectedChain?.id, currentToken)) as any;
 
+        console.log(
+          'handleCheckAllowance',
+          tokenValue,
+          provider?.account,
+          res_pool,
+          res_pool[0].address,
+          stableCoinData.address,
+        );
+
         let res = (await allowanceBorrow({
           provider: connector_provider,
-          tokenAddress: res_pool && res_pool[0] ? res_pool[0].address : CONTRACT_ADDRESS,
+          tokenAddress: stableCoinData.address,
           account: provider?.account,
-          spender: stableCoinData.address,
+          spender: res_pool && res_pool[0] ? res_pool[0].address : CONTRACT_ADDRESS,
         })) as any;
 
         console.log('allowance', res, toAmountShow(res, loanItem.decimals));
