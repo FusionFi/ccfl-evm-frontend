@@ -22,6 +22,7 @@ import * as Actions from '@/actions/auth.action';
 import service_ccfl_borrow from '@/utils/contract/ccflBorrow.service';
 import service_ccfl_repay from '@/utils/contract/ccflRepay.service';
 import { ACTION_TYPE } from '@/constants/common.constant';
+import service_ccfl_collateral from '@/utils/contract/ccflCollateral.service';
 
 // TODO: watch chain, account
 
@@ -247,7 +248,14 @@ class EVMProvider extends BaseProvider {
         res = await service_ccfl_repay.getHealthFactor(provider, contract_address, amount, loanId);
         break;
       case ACTION_TYPE.COLLATERAL:
-      default:
+        res = await service_ccfl_collateral.getHealthFactor(
+          provider,
+          contract_address,
+          amount,
+          loanId,
+        );
+        break;
+      case ACTION_TYPE.BORROW:
         res = await service_ccfl_borrow.getHealthFactor(
           provider,
           contract_address,
@@ -298,6 +306,39 @@ class EVMProvider extends BaseProvider {
         provider,
         account,
         contract_address,
+        loanId,
+      );
+    }
+
+    return tx;
+  }
+
+  async addCollateral({
+    provider,
+    account,
+    contract_address,
+    amountCollateral,
+    collateral,
+    loanId,
+    isGas,
+  }: any) {
+    let tx;
+    if (isGas) {
+      tx = await service_ccfl_collateral.getGasFeeAddCollateral(
+        provider,
+        account,
+        contract_address,
+        amountCollateral,
+        collateral,
+        loanId,
+      );
+    } else {
+      tx = await service_ccfl_collateral.addCollateral(
+        provider,
+        account,
+        contract_address,
+        amountCollateral,
+        collateral,
         loanId,
       );
     }

@@ -154,4 +154,17 @@ export function useRepayLoan(provider: any) {
 
   return [createLoan];
 }
+
+export function useAddCollateral(provider: any) {
+  const addCollateral = useCallback(
+    async (params: any) => {
+      const tx = await provider.addCollateral(params);
+
+      return tx;
+    },
+    [provider],
+  ) as any;
+
+  return [addCollateral];
+}
 //end borrow part

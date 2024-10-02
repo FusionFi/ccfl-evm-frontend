@@ -385,7 +385,13 @@ export default function ModalBorrowComponent({
   };
 
   const handleCheckAllowance = async () => {
-    if (tokenValue && tokenValue > 0 && provider?.account && stableCoinData.address) {
+    if (
+      tokenValue &&
+      tokenValue > 0 &&
+      provider?.account &&
+      stableCoinData?.address &&
+      loanItem?.decimals
+    ) {
       const connector_provider = await connector?.getProvider();
       try {
         let res_pool = (await service.getPoolAddress(selectedChain?.id, currentToken)) as any;

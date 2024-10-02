@@ -57,6 +57,10 @@ class BaseProvider {
     console.log('[repayLoan]  params: ', params);
     return true;
   }
+  async addCollateral(params: any): Promise<any> {
+    console.log('[addCollateral]  params: ', params);
+    return true;
+  }
   //end borrow part
 }
 

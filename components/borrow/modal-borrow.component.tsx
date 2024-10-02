@@ -427,10 +427,7 @@ export default function ModalBorrowComponent({
           let res = (await getGasFeeApprove({
             provider: connector_provider,
             account: provider?.account,
-            amount: toUnitWithDecimal(
-              collateralValue ? collateralValue : 0,
-              collateralData.decimals,
-            ),
+            amount: toUnitWithDecimal(collateralValue, collateralData.decimals),
             tokenAddress: collateralData.address,
             contract_address: CONTRACT_ADDRESS,
           })) as any;
@@ -514,9 +511,9 @@ export default function ModalBorrowComponent({
 
   const handleCheckAllowance = async () => {
     if (
-      collateralData.address &&
+      collateralData?.address &&
       provider?.account &&
-      stableCoinInfo.address &&
+      stableCoinInfo?.address &&
       collateralValue &&
       collateralValue > 0
     ) {
