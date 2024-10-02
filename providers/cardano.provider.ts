@@ -126,6 +126,11 @@ class CardanoProvider extends BaseProvider {
     console.log('[addCollateral]  params: ', params);
     return true;
   }
+  async withdrawAllCollateral(params: any): Promise<any> {
+    // TODO: update here
+    console.log('[withdrawAllCollateral]  params: ', params);
+    return true;
+  }
   //end borrow part
 }
 

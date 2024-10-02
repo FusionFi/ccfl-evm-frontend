@@ -61,6 +61,10 @@ class BaseProvider {
     console.log('[addCollateral]  params: ', params);
     return true;
   }
+  async withdrawAllCollateral(params: any): Promise<any> {
+    console.log('[withdrawAllCollateral]  params: ', params);
+    return true;
+  }
   //end borrow part
 }
 

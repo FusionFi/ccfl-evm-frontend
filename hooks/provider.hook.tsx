@@ -167,4 +167,17 @@ export function useAddCollateral(provider: any) {
 
   return [addCollateral];
 }
+
+export function useWithdrawAllCollateral(provider: any) {
+  const withdrawAllCollateral = useCallback(
+    async (params: any) => {
+      const tx = await provider.withdrawAllCollateral(params);
+
+      return tx;
+    },
+    [provider],
+  ) as any;
+
+  return [withdrawAllCollateral];
+}
 //end borrow part

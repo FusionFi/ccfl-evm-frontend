@@ -15,7 +15,23 @@ import {
 import TransactionSuccessComponent from '@/components/borrow/transaction-success.component';
 import { useTranslation } from 'next-i18next';
 import { COLLATERAL_TOKEN } from '@/constants/common.constant';
-import { TRANSACTION_STATUS } from '@/constants/common.constant';
+import {
+  CONTRACT_ADDRESS,
+  TRANSACTION_STATUS,
+  MIN_AMOUNT_KEY,
+  ACTION_TYPE,
+} from '@/constants/common.constant';
+import {
+  useApprovalBorrow,
+  useGetHealthFactor,
+  useAllowanceBorrow,
+  useWithdrawAllCollateral,
+  useGetGasFeeApprove,
+} from '@/hooks/provider.hook';
+import { useConnectedNetworkManager, useProviderManager } from '@/hooks/auth.hook';
+import BigNumber from 'bignumber.js';
+import { useAccount } from 'wagmi';
+import { toAmountShow, toLessPart, toUnitWithDecimal } from '@/utils/common';
 
 interface ModalWithdrawCollateralProps {
   isModalOpen: boolean;
@@ -23,6 +39,7 @@ interface ModalWithdrawCollateralProps {
   currentToken: string;
   step: any;
   setStep: any;
+  loanItem: any;
 }
 
 interface IFormInput {}
@@ -33,8 +50,19 @@ export default function ModalWithdrawCollateralComponent({
   currentToken,
   step,
   setStep,
+  loanItem,
 }: ModalWithdrawCollateralProps) {
   const { t } = useTranslation('common');
+  const [provider] = useProviderManager();
+  const { connector } = useAccount();
+  const { selectedChain } = useConnectedNetworkManager();
+
+  //start hook
+  const [approveBorrow] = useApprovalBorrow(provider);
+  const [withdrawAllCollateral] = useWithdrawAllCollateral(provider);
+  const [getGasFeeApprove] = useGetGasFeeApprove(provider);
+  const [allowanceBorrow] = useAllowanceBorrow(provider);
+  //end hook
 
   const {
     control,
@@ -46,17 +74,90 @@ export default function ModalWithdrawCollateralComponent({
     defaultValues: {},
   });
 
-  const onSubmit: SubmitHandler<IFormInput> = data => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setStep(step + 2);
-    }, 1000);
+  const [tokenValue, setTokenValue] = useState();
+  const [stableCoinData, setStableCoinData] = useState({
+    yeild: 0,
+    address: undefined,
+  }) as any;
+  const [errorTx, setErrorTx] = useState() as any;
+  const [txHash, setTxHash] = useState();
+  const [loading, setLoading] = useState<boolean>(false);
+  const [loadingGasFee, setLoadingGasFee] = useState<boolean>(false);
+  const [gasFee, setGasFee] = useState(0);
+  const [errorEstimate, setErrorEstimate] = useState({
+    nonEnoughBalanceWallet: false,
+    exceedsAllowance: false,
+  }) as any;
+  const [status, setStatus] = useState(TRANSACTION_STATUS.SUCCESS);
+
+  const onSubmit: SubmitHandler<IFormInput> = async data => {
+    const connector_provider = await connector?.getProvider();
+    if (step === 0) {
+      try {
+        setLoading(true);
+
+        let tx = await approveBorrow({
+          provider: connector_provider,
+          contract_address: CONTRACT_ADDRESS,
+          amount: toUnitWithDecimal(tokenValue, loanItem.collateral_decimals),
+          address: provider?.account,
+          tokenContract: stableCoinData.address,
+        });
+        if (tx?.link) {
+          setStep(1);
+          setErrorTx(undefined);
+          setErrorEstimate({
+            nonEnoughBalanceWallet: false,
+            exceedsAllowance: false,
+          });
+          setStatus(TRANSACTION_STATUS.SUCCESS);
+        }
+        if (tx?.error) {
+          setStatus(TRANSACTION_STATUS.FAILED);
+          setErrorTx(tx.error as any);
+        }
+        setLoading(false);
+      } catch (error) {
+        setStatus(TRANSACTION_STATUS.FAILED);
+        setLoading(false);
+      }
+    }
+    if (step == 1) {
+      try {
+        setLoading(true);
+        let IsFiat = false;
+
+        //todo
+        let tx = await withdrawAllCollateral({
+          provider: connector_provider,
+          account: provider?.account,
+          contract_address: CONTRACT_ADDRESS,
+          loanId: loanItem.loan_id,
+          isGas: false,
+          isETH: false,
+        });
+        if (tx?.link) {
+          setStep(2);
+          setTxHash(tx.link);
+          setErrorTx(undefined);
+          setErrorEstimate({
+            nonEnoughBalanceWallet: false,
+            exceedsAllowance: false,
+          });
+          setStatus(TRANSACTION_STATUS.SUCCESS);
+        }
+        if (tx?.error) {
+          setStatus(TRANSACTION_STATUS.FAILED);
+          setErrorTx(tx.error as any);
+        }
+        setLoading(false);
+      } catch (error) {
+        setStatus(TRANSACTION_STATUS.FAILED);
+        setLoading(false);
+      }
+    }
   };
 
-  const [loading, setLoading] = useState<boolean>(false);
-
-  const status = 'SUCCESS';
   const renderTitle = () => {
     if (step === 2) {
       if (status === TRANSACTION_STATUS.FAILED) {
