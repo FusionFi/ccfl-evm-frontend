@@ -241,11 +241,10 @@
         padding-right: 160px;
         padding-left: 40px;
         @media (min-width: 768px) and (max-width: 1180px) {
-          padding-right: 0px;
+          padding: 0px 32px;
         }
         @media screen and (max-width: 767px) {
-          padding-right: 16px;
-          padding-left: 16px;
+          padding: 0px 32px;
         }
 
         .steps-container {
