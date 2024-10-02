@@ -14,8 +14,8 @@ export default function FeaturesComponent() {
           <div
             className="feature-item feature-1"
             data-aos="fade-left"
-            data-aos-duration="500"
-            data-aos-delay="500">
+            data-aos-duration="300"
+            data-aos-delay="300">
             <div className="feature-bg">
               <Image
                 src="/images/landing/features/feature-card.png"
@@ -40,8 +40,8 @@ export default function FeaturesComponent() {
           <div
             className="feature-item feature-2"
             data-aos="fade-left"
-            data-aos-duration="500"
-            data-aos-delay="1000">
+            data-aos-duration="300"
+            data-aos-delay="600">
             <div className="feature-bg">
               <Image
                 src="/images/landing/features/feature-card.png"
@@ -66,8 +66,8 @@ export default function FeaturesComponent() {
           <div
             className="feature-item feature-3"
             data-aos="fade-left"
-            data-aos-duration="500"
-            data-aos-delay="1500">
+            data-aos-duration="300"
+            data-aos-delay="900">
             <div className="feature-bg">
               <Image
                 src="/images/landing/features/feature-card.png"
@@ -92,8 +92,8 @@ export default function FeaturesComponent() {
           <div
             className="feature-item feature-4"
             data-aos="fade-left"
-            data-aos-duration="500"
-            data-aos-delay={2000}>
+            data-aos-duration="300"
+            data-aos-delay={1200}>
             <div className="feature-bg">
               <Image
                 src="/images/landing/features/feature-card.png"

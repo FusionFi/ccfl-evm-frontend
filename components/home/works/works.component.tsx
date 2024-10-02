@@ -63,8 +63,8 @@ export default function WorksComponent() {
               <Image
                 src="/images/landing/works/step2.png"
                 alt="step2 image"
-                width={470}
-                height={220}
+                width={636}
+                height={192}
                 className="step2-image"
               />
             </div>
