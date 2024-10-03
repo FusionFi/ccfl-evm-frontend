@@ -17,8 +17,8 @@ import Image from 'next/image';
 import { useCallback, useEffect, useState, useMemo } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { useAccount, useSwitchChain } from 'wagmi';
-import { useCardanoWalletConnected } from '@/hooks/cardano-wallet.hook'
-
+import { useCardanoWalletConnected } from '@/hooks/cardano-wallet.hook';
+import { useRouter } from 'next/router';
 interface DataType {
   key: string;
   asset: Array<any>;
@@ -48,8 +48,9 @@ export default function SupplyPage() {
 
   const isConnected_ = useMemo(() => {
     return isConnected || !!cardanoWalletConnected?.address;
-  }, [isConnected, cardanoWalletConnected?.address])
+  }, [isConnected, cardanoWalletConnected?.address]);
 
+  const router = useRouter();
   const switchNetwork = async () => {
     try {
       const rs = await switchChain({ chainId: STAKE_DEFAULT_NETWORK?.chain_id_decimals });
@@ -176,6 +177,7 @@ export default function SupplyPage() {
   }, [chainId]);
 
   useEffect(() => {
+    router.push('/');
     if (address) {
       // getBalance();
       initNetworkInfo();

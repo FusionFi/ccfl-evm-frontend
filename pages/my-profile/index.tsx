@@ -5,31 +5,32 @@ import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { twMerge } from 'tailwind-merge';
 
-import { ProfileAccount } from '@/components/profile/profile-account.component'
-import { ProfileKycStatus } from '@/components/profile/profile-kyc-status.component'
-import { ProfileSupply } from '@/components/profile/profile-supply.component'
-import { ProfileBorrowed } from '@/components/profile/profile-borrowed.component'
+import { ProfileAccount } from '@/components/profile/profile-account.component';
+import { ProfileKycStatus } from '@/components/profile/profile-kyc-status.component';
+import { ProfileSupply } from '@/components/profile/profile-supply.component';
+import { ProfileBorrowed } from '@/components/profile/profile-borrowed.component';
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation';
 import { useAccount } from 'wagmi';
-import { useCardanoWalletConnected } from '@/hooks/cardano-wallet.hook'
+import { useCardanoWalletConnected } from '@/hooks/cardano-wallet.hook';
 
 export default function MyProfilePage() {
   /**
    * HOOKS
    */
   const { t } = useTranslation('common');
-  const router = useRouter()
+  const router = useRouter();
   const [auth] = useAuth();
   console.log('🚀 ~ MyProfilePage ~ auth:', auth);
   const { address } = useAccount();
   const [cardanoWalletConnected] = useCardanoWalletConnected();
 
   useEffect(() => {
+    router.push('/');
     if (!address && !cardanoWalletConnected?.address) {
-      router.push('/supply')
+      router.push('/supply');
     }
-  }, [address, cardanoWalletConnected])
+  }, [address, cardanoWalletConnected]);
   return (
     <div className={twMerge('my-profile-page-container', cssClass.myProfilePage)}>
       <div className="my-profile-page-wrapper">
