@@ -9,17 +9,6 @@ import React, { useEffect, useState } from 'react';
 
 
 export const testTx = async (wallet: any): Promise<TxHash> => {
-    // const [cardanoWalletConnected] = useCardanoWalletConnected();
-    //const [lucid, setLucid] = useState<Lucid | null>(null);
-    //   const [TxHash, setTxHash] = useState("");
-
-    // useEffect(() => {
-    //     if (!lucid && wallet) {
-    //         initLucid(wallet).then((lucid: Lucid) => {
-    //             setLucid(lucid);
-    //         });
-    //     }
-    // }, [lucid, wallet]);
 
     const lucid = await getLucid();
     const _wallet = new Wallets[wallet.metadata.id]();

@@ -47,6 +47,7 @@ export default function CardanoPage() {
                 console.log(e);
                 let index = e.indexOf("[AIKEN validator ERROR]");
                 if (index >= 0) {
+                    console.log('no need.')
                 } else {
 
                 }
