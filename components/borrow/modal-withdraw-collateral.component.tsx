@@ -94,74 +94,73 @@ export default function ModalWithdrawCollateralComponent({
 
   const onSubmit: SubmitHandler<IFormInput> = async data => {
     const connector_provider = await connector?.getProvider();
-    if (step === 0) {
-      try {
-        setLoading(true);
+    // if (step === 0) {
+    //   try {
+    //     setLoading(true);
 
-        let tx = await approveBorrow({
-          provider: connector_provider,
-          contract_address: CONTRACT_ADDRESS,
-          amount: toUnitWithDecimal(tokenValue, loanItem.collateral_decimals),
-          address: provider?.account,
-          tokenContract: stableCoinData.address,
-        });
-        if (tx?.link) {
-          setStep(1);
-          setErrorTx(undefined);
-          setErrorEstimate({
-            nonEnoughBalanceWallet: false,
-            exceedsAllowance: false,
-          });
-          setStatus(TRANSACTION_STATUS.SUCCESS);
-        }
-        if (tx?.error) {
-          setStatus(TRANSACTION_STATUS.FAILED);
-          setErrorTx(tx.error as any);
-        }
-        setLoading(false);
-      } catch (error) {
-        setStatus(TRANSACTION_STATUS.FAILED);
-        setLoading(false);
-      }
-    }
-    if (step == 1) {
-      try {
-        setLoading(true);
-        let IsFiat = false;
+    //     let tx = await approveBorrow({
+    //       provider: connector_provider,
+    //       contract_address: CONTRACT_ADDRESS,
+    //       amount: toUnitWithDecimal(tokenValue, loanItem.collateral_decimals),
+    //       address: provider?.account,
+    //       tokenContract: stableCoinData.address,
+    //     });
+    //     if (tx?.link) {
+    //       setStep(1);
+    //       setErrorTx(undefined);
+    //       setErrorEstimate({
+    //         nonEnoughBalanceWallet: false,
+    //         exceedsAllowance: false,
+    //       });
+    //       setStatus(TRANSACTION_STATUS.SUCCESS);
+    //     }
+    //     if (tx?.error) {
+    //       setStatus(TRANSACTION_STATUS.FAILED);
+    //       setErrorTx(tx.error as any);
+    //     }
+    //     setLoading(false);
+    //   } catch (error) {
+    //     setStatus(TRANSACTION_STATUS.FAILED);
+    //     setLoading(false);
+    //   }
+    // }
 
-        //todo
-        let tx = await withdrawAllCollateral({
-          provider: connector_provider,
-          account: provider?.account,
-          contract_address: CONTRACT_ADDRESS,
-          loanId: loanItem.loan_id,
-          isGas: false,
-          isETH: false,
+    try {
+      setLoading(true);
+      let IsFiat = false;
+
+      //todo
+      let tx = await withdrawAllCollateral({
+        provider: connector_provider,
+        account: provider?.account,
+        contract_address: CONTRACT_ADDRESS,
+        loanId: loanItem.loan_id,
+        isGas: false,
+        isETH: false,
+      });
+      if (tx?.link) {
+        setStep(2);
+        setTxHash(tx.link);
+        setErrorTx(undefined);
+        setErrorEstimate({
+          nonEnoughBalanceWallet: false,
+          exceedsAllowance: false,
         });
-        if (tx?.link) {
-          setStep(2);
-          setTxHash(tx.link);
-          setErrorTx(undefined);
-          setErrorEstimate({
-            nonEnoughBalanceWallet: false,
-            exceedsAllowance: false,
-          });
-          setStatus(TRANSACTION_STATUS.SUCCESS);
-        }
-        if (tx?.error) {
-          setStatus(TRANSACTION_STATUS.FAILED);
-          setErrorTx(tx.error as any);
-        }
-        setLoading(false);
-      } catch (error) {
-        setStatus(TRANSACTION_STATUS.FAILED);
-        setLoading(false);
+        setStatus(TRANSACTION_STATUS.SUCCESS);
       }
+      if (tx?.error) {
+        setStatus(TRANSACTION_STATUS.FAILED);
+        setErrorTx(tx.error as any);
+      }
+      setLoading(false);
+    } catch (error) {
+      setStatus(TRANSACTION_STATUS.FAILED);
+      setLoading(false);
     }
   };
 
   const renderTitle = () => {
-    if (step === 2) {
+    if (step === 1) {
       if (status === TRANSACTION_STATUS.FAILED) {
         return `${t('BORROW_MODAL_FAILED')}`;
       }
@@ -179,7 +178,7 @@ export default function ModalWithdrawCollateralComponent({
         isModalOpen={isModalOpen}
         handleCancel={handleCancel}
         closeIcon={step === 2 ? false : <CloseOutlined />}>
-        {step !== 2 && (
+        {step !== 1 && (
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="modal-borrow-content">
               <div className="modal-borrow-overview">
@@ -245,7 +244,7 @@ export default function ModalWithdrawCollateralComponent({
             </div>
           </form>
         )}
-        {step === 2 && (
+        {step === 1 && (
           <div>
             <TransactionSuccessComponent
               handleCancel={handleCancel}

@@ -13,7 +13,6 @@ import BigNumber from 'bignumber.js';
 import { toAmountShow } from '@/utils/common';
 import { addTokenToMetamask, approveStableCoin } from '@/utils/contract/erc20';
 import { MaxUint256, getAllowance } from '@/utils/contract/erc20';
-import { ethers } from 'ethers';
 import abi_erc20 from '@/utils/contract/abi/erc20.json';
 
 //import multicall from './multicall.js';
@@ -21,7 +20,6 @@ const _initContract = (provider, contract_address) => {
   const myWeb3 = getWeb3(provider);
   return new myWeb3.eth.Contract(AbiCcflPool, contract_address);
 };
-
 
 // const providerURL = 'https://eth-sepolia.g.alchemy.com/v2/h_yCYWntvdt2dbI4vL2J-XjZnQk0jYnl';
 // const BORROWER_PRIVATE_KEY =
@@ -44,10 +42,10 @@ const getGasFeeApprove = async (provider, account, amount, tokenAddress, contrac
     );
     return res && res.gasPrice
       ? BigNumber(res.gasPrice)
-        .div(10 ** 18)
-        .toFixed()
+          .div(10 ** 18)
+          .toFixed()
       : 0;
-  } catch (error) { }
+  } catch (error) {}
 };
 
 const getGasFeeCreateLoan = async (
@@ -97,10 +95,10 @@ const getGasFeeCreateLoan = async (
 
     return res && res.gasPrice
       ? BigNumber(res.gasPrice)
-        .div(10 ** 18)
-        .toFixed()
+          .div(10 ** 18)
+          .toFixed()
       : 0;
-  } catch (error) { }
+  } catch (error) {}
 };
 
 const service_ccfl_borrow = {
