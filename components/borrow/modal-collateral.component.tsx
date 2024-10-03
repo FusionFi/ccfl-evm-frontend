@@ -69,7 +69,7 @@ export default function ModalCollateralComponent({
 
   const [tokenValue, setTokenValue] = useState();
   const [loadingMinimum, setLoadingMinimum] = useState<boolean>(false);
-  const [minimum, setMinimum] = useState(0);
+  const [minimum, setMinimum] = useState(undefined);
   const [loadingBalance, setLoadingBalance] = useState<boolean>(false);
   const [stableCoinData, setStableCoinData] = useState({
     balance: 0,
@@ -209,7 +209,7 @@ export default function ModalCollateralComponent({
         if (res && res[0]?.value) {
           setMinimum(toLessPart(res[0]?.value / loanItem.collateral_price, 5));
         } else {
-          setMinimum(0);
+          setMinimum(undefined);
         }
         setLoadingMinimum(false);
       } catch (error) {
@@ -475,11 +475,13 @@ export default function ModalCollateralComponent({
                   </div>
                 </div>
                 <div className="modal-borrow-balance">
-                  <span>
-                    {t('FORM_MINIMUM_AMOUNT')}:{' '}
-                    {loadingMinimum ? <LoadingOutlined className="mr-1" /> : minimum}{' '}
-                    {currentToken?.toUpperCase()}
-                  </span>
+                  {minimum !== 0 && (
+                    <span>
+                      {t('FORM_MINIMUM_AMOUNT')}:{' '}
+                      {loadingMinimum ? <LoadingOutlined className="mr-1" /> : minimum}{' '}
+                      {currentToken?.toUpperCase()}
+                    </span>
+                  )}
                   {tokenValue && !(stableCoinData.balance - tokenValue >= 0) && (
                     <span className="insufficient">{t('BORROW_MODAL_INSUFFICIENT_BALANCE')}</span>
                   )}{' '}
@@ -591,7 +593,7 @@ export default function ModalCollateralComponent({
                         stableCoinData.balance === 0 ||
                         errorEstimate.nonEnoughBalanceWallet ||
                         errorEstimate.exceedsAllowance ||
-                        tokenValue < minimum ||
+                        (minimum && tokenValue < minimum) ||
                         !stableCoinData.address
                       }
                       className="w-full"
@@ -618,7 +620,7 @@ export default function ModalCollateralComponent({
                           stableCoinData.balance === 0 ||
                           errorEstimate.nonEnoughBalanceWallet ||
                           errorEstimate.exceedsAllowance ||
-                          tokenValue < minimum ||
+                          (minimum && tokenValue < minimum) ||
                           !stableCoinData.address
                         }
                         className="w-full"

@@ -303,7 +303,7 @@ export default function ModalBorrowComponent({
       if (res && res[0]?.value) {
         setMinimum(res[0]?.value);
       } else {
-        setMinimum(0);
+        setMinimum(undefined);
       }
       setLoadingMinimum(false);
     } catch (error) {
@@ -677,11 +677,13 @@ export default function ModalBorrowComponent({
                 </div>
               </div>
               <div className="modal-borrow-balance-minimum">
-                <span>
-                  {t('BORROW_FIAT_MODAL_TAB_COLLATERAL_MINIMUM_AMOUNT')}:{' '}
-                  {loadingMinimum ? <LoadingOutlined className="mr-1" /> : minimum}{' '}
-                  {stableCoin?.toUpperCase()}
-                </span>
+                {minimum !== 0 && (
+                  <span>
+                    {t('BORROW_FIAT_MODAL_TAB_COLLATERAL_MINIMUM_AMOUNT')}:{' '}
+                    {loadingMinimum ? <LoadingOutlined className="mr-1" /> : minimum}{' '}
+                    {stableCoin?.toUpperCase()}
+                  </span>
+                )}
               </div>
               <div className="modal-borrow-overview">
                 <div className="modal-borrow-sub-title">
@@ -873,7 +875,7 @@ export default function ModalBorrowComponent({
                         errorEstimate.exceedsAllowance ||
                         errorEstimate.nonEnoughBalanceCollateral ||
                         stableCoinInfo.loadingStatus ||
-                        stableCoinValue < minimum
+                        (minimum && stableCoinValue < minimum)
                       }
                       className="w-full"
                       loading={loading}>
@@ -902,7 +904,7 @@ export default function ModalBorrowComponent({
                           errorEstimate.exceedsAllowance ||
                           errorEstimate.nonEnoughBalanceCollateral ||
                           stableCoinInfo.loadingStatus ||
-                          stableCoinValue < minimum
+                          (minimum && stableCoinValue < minimum)
                         }
                         className="w-full"
                         loading={loading}>
