@@ -102,11 +102,11 @@ const approveAddCollateral = async (provider, contract_address, amount, adresss,
 };
 
 const addCollateral = async (
-  amountCollateral,
-  collateral,
   provider,
   account,
   contract_address,
+  amountCollateral,
+  collateral,
   loanId,
 ) => {
   let overwrite = { from: account };
