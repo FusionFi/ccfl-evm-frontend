@@ -386,7 +386,7 @@ export default function ModalCollateralComponent({
 
   useEffect(() => {
     if (isModalOpen) {
-      handleCheckAllowance();
+      // handleCheckAllowance();
     }
   }, [tokenValue, step]);
 

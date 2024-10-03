@@ -609,7 +609,7 @@ export default function ModalBorrowComponent({
 
   useEffect(() => {
     if (isModalOpen) {
-      handleCheckAllowance();
+      // handleCheckAllowance();
     }
   }, [isModalOpen, stableCoinValue, collateralValue, step, isYield, token]);
 

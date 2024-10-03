@@ -445,7 +445,7 @@ export default function ModalBorrowComponent({
 
   useEffect(() => {
     if (isModalOpen) {
-      handleCheckAllowance();
+      // handleCheckAllowance();
     }
   }, [tokenValue, step]);
 
