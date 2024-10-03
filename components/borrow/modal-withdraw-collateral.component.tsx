@@ -21,13 +21,7 @@ import {
   MIN_AMOUNT_KEY,
   ACTION_TYPE,
 } from '@/constants/common.constant';
-import {
-  useApprovalBorrow,
-  useGetHealthFactor,
-  useAllowanceBorrow,
-  useWithdrawAllCollateral,
-  useGetGasFeeApprove,
-} from '@/hooks/provider.hook';
+import { useWithdrawAllCollateral } from '@/hooks/provider.hook';
 import { useConnectedNetworkManager, useProviderManager } from '@/hooks/auth.hook';
 import BigNumber from 'bignumber.js';
 import { useAccount } from 'wagmi';
@@ -60,10 +54,7 @@ export default function ModalWithdrawCollateralComponent({
   const { selectedChain } = useConnectedNetworkManager();
 
   //start hook
-  const [approveBorrow] = useApprovalBorrow(provider);
   const [withdrawAllCollateral] = useWithdrawAllCollateral(provider);
-  const [getGasFeeApprove] = useGetGasFeeApprove(provider);
-  const [allowanceBorrow] = useAllowanceBorrow(provider);
   //end hook
 
   const {
@@ -76,7 +67,6 @@ export default function ModalWithdrawCollateralComponent({
     defaultValues: {},
   });
 
-  const [tokenValue, setTokenValue] = useState();
   const [stableCoinData, setStableCoinData] = useState({
     yeild: 0,
     address: undefined,
@@ -207,7 +197,15 @@ export default function ModalWithdrawCollateralComponent({
                   <div className="modal-borrow-sub-content">{t('BORROW_MODAL_YIELD_REWARD')}</div>
                   <div className="flex">
                     <div className="modal-borrow-repay">
-                      <span>50.00</span>
+                      <span>
+                        {' '}
+                        {loanItem?.yield_earned
+                          ? toLessPart(
+                              toAmountShow(loanItem.yield_earned, loanItem.collateral_decimals),
+                              4,
+                            )
+                          : 0}
+                      </span>
                       <span className="ml-1">{currentToken.toUpperCase()}</span>
                     </div>
                   </div>
