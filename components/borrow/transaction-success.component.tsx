@@ -102,7 +102,7 @@ export default function TransactionSuccessComponent({
               )}
               {isWithdrawCollateral && (
                 <span>
-                  {t('BORROW_MODAL_WITHDRAW_DONE')} 4,000 {currentToken?.toUpperCase()}
+                  {t('BORROW_MODAL_WITHDRAW_DONE')} {stableCoinAmount} {currentToken?.toUpperCase()}
                 </span>
               )}
             </React.Fragment>

@@ -361,14 +361,25 @@ class EVMProvider extends BaseProvider {
   }
 
   async withdrawAllCollateral({ provider, account, contract_address, loanId, isETH, isGas }: any) {
-    const tx = await service_ccfl_collateral.withdrawAllCollateral(
-      provider,
-      account,
-      contract_address,
-      loanId,
-      isETH,
-      isGas,
-    );
+    let tx;
+    console.log(provider, account, contract_address, loanId, isETH, isGas);
+    if (isGas) {
+      tx = await service_ccfl_collateral.getGasFeeWithdrawAllCollateral(
+        provider,
+        account,
+        contract_address,
+        loanId,
+        isETH,
+      );
+    } else {
+      tx = await service_ccfl_collateral.withdrawAllCollateral(
+        provider,
+        account,
+        contract_address,
+        loanId,
+        isETH,
+      );
+    }
 
     return tx;
   }

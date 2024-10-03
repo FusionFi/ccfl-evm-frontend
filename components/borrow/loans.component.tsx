@@ -239,7 +239,8 @@ export default function LoansComponent(props: LoansProps) {
               <div>
                 {t('BORROW_MODAL_BORROW_YIELD_EARNED')}:{' '}
                 <span className="ml-1">
-                  {record.yield_earned} {record.collateral_asset}
+                  {toLessPart(toAmountShow(record.yield_earned, record.collateral_decimals), 4)}{' '}
+                  {record.collateral_asset}
                 </span>
               </div>
             </div>

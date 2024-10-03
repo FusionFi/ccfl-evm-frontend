@@ -1,31 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { useForm, Controller, SubmitHandler } from 'react-hook-form';
+import { useForm, SubmitHandler } from 'react-hook-form';
 import ModalComponent from '@/components/common/modal.component';
-import { InputNumber } from 'antd';
-import Image from 'next/image';
-import { Button, Tooltip, Select, Checkbox } from 'antd';
-import {
-  InfoCircleOutlined,
-  QuestionCircleOutlined,
-  DownOutlined,
-  CloseOutlined,
-  WalletOutlined,
-  ArrowRightOutlined,
-} from '@ant-design/icons';
+
+import { Button, Tooltip } from 'antd';
+import { InfoCircleOutlined, CloseOutlined, LoadingOutlined } from '@ant-design/icons';
 import TransactionSuccessComponent from '@/components/borrow/transaction-success.component';
 import { useTranslation } from 'next-i18next';
-import { COLLATERAL_TOKEN } from '@/constants/common.constant';
-import {
-  CONTRACT_ADDRESS,
-  TRANSACTION_STATUS,
-  MIN_AMOUNT_KEY,
-  ACTION_TYPE,
-} from '@/constants/common.constant';
+import { CONTRACT_ADDRESS, TRANSACTION_STATUS } from '@/constants/common.constant';
 import { useWithdrawAllCollateral } from '@/hooks/provider.hook';
 import { useConnectedNetworkManager, useProviderManager } from '@/hooks/auth.hook';
-import BigNumber from 'bignumber.js';
 import { useAccount } from 'wagmi';
-import { toAmountShow, toLessPart, toUnitWithDecimal } from '@/utils/common';
+import { toAmountShow, toLessPart } from '@/utils/common';
+import service from '@/utils/backend/borrow';
 
 interface ModalWithdrawCollateralProps {
   isModalOpen: boolean;
@@ -67,10 +53,6 @@ export default function ModalWithdrawCollateralComponent({
     defaultValues: {},
   });
 
-  const [stableCoinData, setStableCoinData] = useState({
-    yeild: 0,
-    address: undefined,
-  }) as any;
   const [errorTx, setErrorTx] = useState() as any;
   const [txHash, setTxHash] = useState();
   const [loading, setLoading] = useState<boolean>(false);
@@ -81,52 +63,22 @@ export default function ModalWithdrawCollateralComponent({
     exceedsAllowance: false,
   }) as any;
   const [status, setStatus] = useState(TRANSACTION_STATUS.SUCCESS);
+  const [stableCoinValue, setStableCoinValue] = useState(0);
 
   const onSubmit: SubmitHandler<IFormInput> = async data => {
     const connector_provider = await connector?.getProvider();
-    // if (step === 0) {
-    //   try {
-    //     setLoading(true);
-
-    //     let tx = await approveBorrow({
-    //       provider: connector_provider,
-    //       contract_address: CONTRACT_ADDRESS,
-    //       amount: toUnitWithDecimal(tokenValue, loanItem.collateral_decimals),
-    //       address: provider?.account,
-    //       tokenContract: stableCoinData.address,
-    //     });
-    //     if (tx?.link) {
-    //       setStep(1);
-    //       setErrorTx(undefined);
-    //       setErrorEstimate({
-    //         nonEnoughBalanceWallet: false,
-    //         exceedsAllowance: false,
-    //       });
-    //       setStatus(TRANSACTION_STATUS.SUCCESS);
-    //     }
-    //     if (tx?.error) {
-    //       setStatus(TRANSACTION_STATUS.FAILED);
-    //       setErrorTx(tx.error as any);
-    //     }
-    //     setLoading(false);
-    //   } catch (error) {
-    //     setStatus(TRANSACTION_STATUS.FAILED);
-    //     setLoading(false);
-    //   }
-    // }
 
     try {
       setLoading(true);
       let IsFiat = false;
 
-      //todo
       let tx = await withdrawAllCollateral({
         provider: connector_provider,
         account: provider?.account,
         contract_address: CONTRACT_ADDRESS,
         loanId: loanItem.loan_id,
-        isGas: false,
         isETH: false,
+        isGas: false,
       });
       if (tx?.link) {
         setStep(1);
@@ -146,6 +98,35 @@ export default function ModalWithdrawCollateralComponent({
     } catch (error) {
       setStatus(TRANSACTION_STATUS.FAILED);
       setLoading(false);
+    }
+  };
+
+  const getGasFeeWithdrawCollateral = async () => {
+    const connector_provider = await connector?.getProvider();
+    try {
+      setLoadingGasFee(true);
+      let res = (await withdrawAllCollateral({
+        provider: connector_provider,
+        account: provider?.account,
+        contract_address: CONTRACT_ADDRESS,
+        loanId: loanItem.loan_id,
+        isETH: false,
+        isGas: true,
+      })) as any;
+      let res_price = (await service.getPrice(selectedChain?.id, 'ETH')) as any;
+      console.log('getGasFeeWithdrawCollateral res', res);
+      if (res && res.gasPrice && res_price && res_price.price) {
+        let gasFee = res.gasPrice * res_price.price;
+        setGasFee(gasFee);
+      }
+
+      setErrorEstimate({
+        nonEnoughBalanceWallet: res?.nonEnoughMoney,
+        exceedsAllowance: res?.exceedsAllowance,
+      });
+      setLoadingGasFee(false);
+    } catch (error: any) {
+      setLoadingGasFee(false);
     }
   };
 
@@ -173,8 +154,17 @@ export default function ModalWithdrawCollateralComponent({
   console.log('loanItem1', loanItem);
 
   useEffect(() => {
+    if (isModalOpen && loanItem && loanItem.collateral_amount && loanItem.collateral_decimals) {
+      setStableCoinValue(
+        toLessPart(toAmountShow(loanItem.collateral_amount, loanItem.collateral_decimals), 4),
+      );
+    }
+  }, [loanItem]);
+
+  useEffect(() => {
     if (isModalOpen) {
       resetState();
+      getGasFeeWithdrawCollateral();
     }
   }, [isModalOpen]);
 
@@ -189,6 +179,16 @@ export default function ModalWithdrawCollateralComponent({
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="modal-borrow-content">
               <div className="modal-borrow-overview">
+                {errorEstimate.nonEnoughBalanceWallet && (
+                  <div className="modal-borrow-error">
+                    {t('BORROW_MODAL_BORROW_COLLATERAL_NON_ENOUGH_GAS')}
+                  </div>
+                )}
+                {errorEstimate.exceedsAllowance && (
+                  <div className="modal-borrow-error">
+                    {t('BORROW_MODAL_BORROW_COLLATERAL_EXCEEDS_ALLOWANCE')}
+                  </div>
+                )}
                 <div className="modal-borrow-sub-title mb-4">
                   {t('BORROW_MODAL_COLLATERAL_OVERVIEW')}
                 </div>
@@ -198,14 +198,7 @@ export default function ModalWithdrawCollateralComponent({
                   </div>
                   <div className="flex">
                     <div className="modal-borrow-repay">
-                      {loanItem && (
-                        <span>
-                          {toLessPart(
-                            toAmountShow(loanItem.collateral_amount, loanItem.collateral_decimals),
-                            4,
-                          )}
-                        </span>
-                      )}
+                      <span>{stableCoinValue}</span>
                       <span className="ml-1">{currentToken.toUpperCase()}</span>
                     </div>
                   </div>
@@ -238,8 +231,12 @@ export default function ModalWithdrawCollateralComponent({
                   </sup>
                 </div>
                 <div className="modal-borrow-gas-value">
-                  <span>$</span>
-                  <span className="ml-1">0.00</span>
+                  <span>$</span>{' '}
+                  {loadingGasFee ? (
+                    <LoadingOutlined className="mr-1" />
+                  ) : (
+                    <span className="ml-1">{toLessPart(gasFee, 2)}</span>
+                  )}
                 </div>
               </div>
               <div className="modal-borrow-footer">
@@ -248,7 +245,15 @@ export default function ModalWithdrawCollateralComponent({
                     <Button
                       htmlType="submit"
                       type="primary"
-                      disabled={false}
+                      disabled={
+                        loading ||
+                        loadingGasFee ||
+                        errorEstimate.nonEnoughBalanceWallet ||
+                        errorEstimate.exceedsAllowance ||
+                        !provider?.account ||
+                        !loanItem ||
+                        !loanItem?.loan_id
+                      }
                       className="w-full"
                       loading={loading}>
                       {t('BORROW_MODAL_WITHDRAW_MY_COLLATERAL')}
@@ -270,7 +275,7 @@ export default function ModalWithdrawCollateralComponent({
               errorTx={errorTx}
               handleLoans={handleLoans}
               txLink={txHash}
-              stableCoinAmount={loanItem?.collateral_asset}
+              stableCoinAmount={stableCoinValue}
             />
           </div>
         )}

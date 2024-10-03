@@ -9,7 +9,6 @@ import {
 } from '@/constants/common.constant';
 import service from '@/utils/backend/borrow';
 import { toAmountShow, toLessPart, toUnitWithDecimal } from '@/utils/common';
-import service_ccfl_repay from '@/utils/contract/ccflRepay.service';
 import {
   ArrowRightOutlined,
   CloseOutlined,

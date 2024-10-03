@@ -20,7 +20,6 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { useAccount } from 'wagmi';
-import service_ccfl_collateral from '@/utils/contract/ccflCollateral.service';
 import service from '@/utils/backend/borrow';
 import { toAmountShow, toLessPart, toUnitWithDecimal } from '@/utils/common';
 import { useConnectedNetworkManager, useProviderManager } from '@/hooks/auth.hook';

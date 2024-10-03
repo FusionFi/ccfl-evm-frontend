@@ -25,7 +25,6 @@ import {
 } from '@/constants/common.constant';
 import { toAmountShow, toLessPart, toUnitWithDecimal } from '@/utils/common';
 import service from '@/utils/backend/borrow';
-import service_ccfl_borrow from '@/utils/contract/ccflBorrow.service';
 import { useAccount, useConfig } from 'wagmi';
 import { debounce } from 'lodash';
 import { useConnectedNetworkManager, useProviderManager } from '@/hooks/auth.hook';
