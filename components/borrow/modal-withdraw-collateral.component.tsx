@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 import ModalComponent from '@/components/common/modal.component';
 import { InputNumber } from 'antd';
@@ -129,7 +129,7 @@ export default function ModalWithdrawCollateralComponent({
         isETH: false,
       });
       if (tx?.link) {
-        setStep(2);
+        setStep(1);
         setTxHash(tx.link);
         setErrorTx(undefined);
         setErrorEstimate({
@@ -159,7 +159,24 @@ export default function ModalWithdrawCollateralComponent({
     return `${t('BORROW_MODAL_WITHDRAW_COLLATERAL')}`;
   };
 
+  const resetState = () => {
+    setLoading(false);
+    setStatus(TRANSACTION_STATUS.SUCCESS);
+    setGasFee(0);
+    setErrorTx(undefined);
+    setTxHash(undefined);
+    setErrorEstimate({
+      nonEnoughBalanceWallet: false,
+      exceedsAllowance: false,
+    });
+  };
   console.log('loanItem1', loanItem);
+
+  useEffect(() => {
+    if (isModalOpen) {
+      resetState();
+    }
+  }, [isModalOpen]);
 
   return (
     <div>
@@ -167,7 +184,7 @@ export default function ModalWithdrawCollateralComponent({
         title={renderTitle()}
         isModalOpen={isModalOpen}
         handleCancel={handleCancel}
-        closeIcon={step === 2 ? false : <CloseOutlined />}>
+        closeIcon={step === 1 ? false : <CloseOutlined />}>
         {step !== 1 && (
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="modal-borrow-content">
