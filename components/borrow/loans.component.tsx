@@ -229,81 +229,75 @@ export default function LoansComponent(props: LoansProps) {
     }
 
     return (
-      <>
-        <div className="flex justify-between items-end gap-1 loans-yield-wrapper">
-          {record.yield_generating ? (
-            <div className="loans-yield">
-              <div className="mr-2">
-                {t('BORROW_MODAL_BORROW_YIELD_GENERATING')}: <CheckOutlined className="ml-1" />
-              </div>
-              <div>
-                {t('BORROW_MODAL_BORROW_YIELD_EARNED')}:{' '}
-                <span className="ml-1">
-                  {toLessPart(toAmountShow(record.yield_earned, record.collateral_decimals), 4)}{' '}
-                  {record.collateral_asset}
-                </span>
-              </div>
+      <div className="flex justify-between items-end gap-1 loans-yield-wrapper">
+        {record.yield_generating ? (
+          <div className="loans-yield">
+            <div className="mr-2">
+              {t('BORROW_MODAL_BORROW_YIELD_GENERATING')}: <CheckOutlined className="ml-1" />
             </div>
-          ) : (
-            <div></div>
-          )}
-          <div className="flex items-center">
-            <div className="loans-collateral">
-              {![LOAN_STATUS.REPAID_FULL, LOAN_STATUS.UNPROCESSED].find(e => e === final_status) ? (
-                <Button
-                  disabled={
-                    !![LOAN_STATUS.LIQUIDATED, LOAN_STATUS.DISBURSEMENT].find(
-                      e => e === final_status,
-                    )
-                  }
-                  onClick={() => handleCheckLogin(ACTION_LOAN.COLLATERAL, record)}>
-                  {t('BORROW_MODAL_BORROW_ADJUST_COLLATERAL')}
-                </Button>
-              ) : (
-                <Button
-                  disabled={record.collateral_amount == 0}
-                  onClick={() => handleCheckLogin(ACTION_LOAN.WITHDRAW_COLLATERAL, record)}>
-                  {t('BORROW_MODAL_WITHDRAW_COLLATERAL')}
-                </Button>
-              )}
-            </div>
-            <div className="loans-button">
-              {final_status === LOAN_STATUS.REPAID_FULL && (
-                <Button
-                  disabled={record.collateral_amount > 0}
-                  type="primary"
-                  className=""
-                  onClick={() => handleCheckLogin(ACTION_LOAN.BORROW, record)}>
-                  {t('BORROW_MODAL_BORROW_BORROW_AGAIN')}
-                </Button>
-              )}
-              {![LOAN_STATUS.REPAID_FULL, LOAN_STATUS.UNPROCESSED].find(
-                status => status === final_status,
-              ) && (
-                <Button
-                  disabled={
-                    !![LOAN_STATUS.LIQUIDATED, LOAN_STATUS.DISBURSEMENT].find(
-                      e => e === final_status,
-                    )
-                  }
-                  type="primary"
-                  className=""
-                  onClick={() => handleCheckLogin(ACTION_LOAN.REPAY, record)}>
-                  {t('BORROW_MODAL_BORROW_REPAY')}
-                </Button>
-              )}
-              {final_status === LOAN_STATUS.UNPROCESSED && (
-                <Button
-                  type="primary"
-                  className="delete"
-                  onClick={() => handleCheckLogin(ACTION_LOAN.DELETE, record)}>
-                  {t('BORROW_MODAL_DELETE')}
-                </Button>
-              )}
+            <div>
+              {t('BORROW_MODAL_BORROW_YIELD_EARNED')}:{' '}
+              <span className="ml-1">
+                {toLessPart(toAmountShow(record.yield_earned, record.collateral_decimals), 4)}{' '}
+                {record.collateral_asset}
+              </span>
             </div>
           </div>
+        ) : (
+          <div></div>
+        )}
+        <div className="flex items-center">
+          <div className="loans-collateral">
+            {![LOAN_STATUS.REPAID_FULL, LOAN_STATUS.UNPROCESSED].find(e => e === final_status) ? (
+              <Button
+                disabled={
+                  !![LOAN_STATUS.LIQUIDATED, LOAN_STATUS.DISBURSEMENT].find(e => e === final_status)
+                }
+                onClick={() => handleCheckLogin(ACTION_LOAN.COLLATERAL, record)}>
+                {t('BORROW_MODAL_BORROW_ADJUST_COLLATERAL')}
+              </Button>
+            ) : (
+              <Button
+                disabled={record.is_finally}
+                onClick={() => handleCheckLogin(ACTION_LOAN.WITHDRAW_COLLATERAL, record)}>
+                {t('BORROW_MODAL_WITHDRAW_COLLATERAL')}
+              </Button>
+            )}
+          </div>
+          <div className="loans-button">
+            {final_status === LOAN_STATUS.REPAID_FULL && (
+              <Button
+                disabled={record.collateral_amount > 0}
+                type="primary"
+                className=""
+                onClick={() => handleCheckLogin(ACTION_LOAN.BORROW, record)}>
+                {t('BORROW_MODAL_BORROW_BORROW_AGAIN')}
+              </Button>
+            )}
+            {![LOAN_STATUS.REPAID_FULL, LOAN_STATUS.UNPROCESSED].find(
+              status => status === final_status,
+            ) && (
+              <Button
+                disabled={
+                  !![LOAN_STATUS.LIQUIDATED, LOAN_STATUS.DISBURSEMENT].find(e => e === final_status)
+                }
+                type="primary"
+                className=""
+                onClick={() => handleCheckLogin(ACTION_LOAN.REPAY, record)}>
+                {t('BORROW_MODAL_BORROW_REPAY')}
+              </Button>
+            )}
+            {final_status === LOAN_STATUS.UNPROCESSED && (
+              <Button
+                type="primary"
+                className="delete"
+                onClick={() => handleCheckLogin(ACTION_LOAN.DELETE, record)}>
+                {t('BORROW_MODAL_DELETE')}
+              </Button>
+            )}
+          </div>
         </div>
-      </>
+      </div>
     );
   };
 
