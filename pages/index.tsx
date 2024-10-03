@@ -1,4 +1,4 @@
-import Banner from '@/components/home/banner.component';
+import LandingContent from '@/components/home/landing-content.component';
 import cssClass from '@/pages/index.module.scss';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
@@ -9,7 +9,7 @@ export default function HomePage() {
     <div className={twMerge('home-page-container', cssClass.landingPage)}>
       <div className="landing-container">
         <section className="section">
-          <Banner />
+          <LandingContent />
         </section>
       </div>
     </div>

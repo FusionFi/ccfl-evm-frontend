@@ -94,14 +94,22 @@ function App({ Component, ...rest }: AppProps) {
     <StyleProvider hashPriority="high">
       <Head>
         <title>FusionFI</title>
-        <meta name="description" content="FUNSIONFI on EVM" key="desc" />
+        <meta name="description" content="FUNSIONFI" key="desc" />
         <link rel="shortcut icon" href="/favicon.ico" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap"
           rel="stylesheet"
         />
         <link
           href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Karla:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
       </Head>

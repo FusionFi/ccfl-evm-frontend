@@ -14,11 +14,7 @@ type FieldType = {
   amount?: any;
 };
 
-export default function ModalSupplyComponent({
-  isModalOpen,
-  handleCancel,
-  handleOk
-}: any) {
+export default function ModalSupplyComponent({ isModalOpen, handleCancel, handleOk }: any) {
   const { t } = useTranslation('common');
 
   const [_isApproved, _setIsApproved] = useState(false);
@@ -29,17 +25,17 @@ export default function ModalSupplyComponent({
   }, []);
 
   const _handleOk = useCallback(() => {
-    _setIsApproved(false)
+    _setIsApproved(false);
     handleOk();
-  }, [])
+  }, []);
 
   const _handleCancel = useCallback(() => {
-    _setIsApproved(false)
-    _setIsPending(false)
+    _setIsApproved(false);
+    _setIsPending(false);
     handleCancel();
-  }, [])
+  }, []);
 
-  const onFinish: FormProps<FieldType>['onFinish'] = (data) => {
+  const onFinish: FormProps<FieldType>['onFinish'] = data => {
     _setIsPending(true);
     setTimeout(() => {
       if (_isApproved) {
@@ -47,7 +43,7 @@ export default function ModalSupplyComponent({
       } else {
         handleApprove();
       }
-      _setIsPending(false)
+      _setIsPending(false);
     }, 1000);
   };
 
@@ -63,9 +59,9 @@ export default function ModalSupplyComponent({
       footer={null}>
       <Form onFinish={onFinish}>
         {(_, formInstance) => {
-          const isNotValidForm = formInstance.getFieldsError().some(item => item.errors.length > 0)
-          const amount = formInstance.getFieldValue('amount')
-          console.log('amount: ', amount)
+          const isNotValidForm = formInstance.getFieldsError().some(item => item.errors.length > 0);
+          const amount = formInstance.getFieldValue('amount');
+          console.log('amount: ', amount);
           return (
             <div className="supply-modal-container">
               <div className="supply-modal-container__input">
@@ -73,12 +69,19 @@ export default function ModalSupplyComponent({
                   {t('SUPPLY_MODAL_INPUT_AMOUNT')}
                 </div>
                 <div className="supply-modal-container__input__control">
-                  <Form.Item name="amount" help="" style={{
-                    width: '100%'
-                  }} rules={[{ max: 10, type: 'number', message: t('SUPPLY_MODAL_VALIDATE_INSUFFICIENT_BALANCE') }, {
-                    required: true,
-                    message: t('SUPPLY_MODAL_VALIDATE_REQUIRE_AMOUNT')
-                  }]}>
+                  <Form.Item
+                    name="amount"
+                    help=""
+                    style={{
+                      width: '100%',
+                    }}
+                    rules={[
+                      { type: 'email', message: t('EMAIL_VALIDATION') },
+                      {
+                        required: true,
+                        message: t('EMAIL_REQUIRED'),
+                      },
+                    ]}>
                     <InputNumber
                       placeholder={t('SUPPLY_MODAL_INPUT_PLACEHOLDER')}
                       className="supply-modal-container__input__control__amount"
@@ -102,20 +105,21 @@ export default function ModalSupplyComponent({
 
                   <div className="supply-modal-container__input__control__price">
                     ≈ $4,000.00
-                    <Button type="link" className="supply-modal-container__input__control__price__max">
+                    <Button
+                      type="link"
+                      className="supply-modal-container__input__control__price__max">
                       {t('SUPPLY_MODAL_MAX')}
                     </Button>
-
                   </div>
-
                 </div>
-                <div className='flex justify-between w-full'>
+                <div className="flex justify-between w-full">
                   <div className="supply-modal-container__input__balance">
                     {t('SUPPLY_MODAL_WALLET_BALANCE')}: 50,000.00 USDT
                   </div>
-                  <span className="supply-modal-container__input__error">{formInstance.getFieldError('amount')[0]}</span>
+                  <span className="supply-modal-container__input__error">
+                    {formInstance.getFieldError('amount')[0]}
+                  </span>
                 </div>
-
               </div>
               <div className="supply-modal-container__overview">
                 <div className="supply-modal-container__overview__title">
@@ -157,7 +161,7 @@ export default function ModalSupplyComponent({
                     type="primary"
                     loading={_isPending}
                     disabled={isNotValidForm}
-                    htmlType='submit'
+                    htmlType="submit"
                     className={twMerge('btn-primary-custom')}
                     block>
                     {t('SUPPLY_MODAL_SUPPLY_BUTTON', {
@@ -179,7 +183,7 @@ export default function ModalSupplyComponent({
                     <Button
                       loading={_isPending}
                       type="primary"
-                      htmlType='submit'
+                      htmlType="submit"
                       disabled={isNotValidForm || !amount}
                       className={twMerge('btn-primary-custom', 'mt-4')}
                       block>

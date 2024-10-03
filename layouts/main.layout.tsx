@@ -93,11 +93,11 @@ export const MainLayout = ({ children }: PropsWithChildren<{}>) => {
               isHeaderScrolled ? 'top-3.5' : 'top-5',
               'fixed transition-all block md:hidden z-40',
             )}>
-            <Button
+            {/* <Button
               type="link"
               onClick={handleSiderbarCollapsed}
               className="text-white"
-              icon={siderbar?.collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}></Button>
+              icon={siderbar?.collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}></Button> */}
           </div>
           <div className="h-full relative">{children}</div>
         </div>

@@ -1,0 +1,326 @@
+.worksComponent {
+  :global {
+    .works-container {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 40px;
+      @media (min-width: 768px) and (max-width: 1180px) {
+        flex-direction: column;
+      }
+      @media screen and (max-width: 767px) {
+        flex-direction: column;
+      }
+      .ipad-below {
+        padding: 0px 16px;
+        margin-bottom: 64px;
+        .works-title {
+          text-align: center;
+        }
+        .works-description {
+          text-align: center;
+        }
+      }
+      .works-bg {
+        position: absolute;
+        top: -280px;
+        right: -280px;
+        width: 752px;
+        height: 680px;
+        border-radius: 752px;
+        opacity: 0.7;
+        background: #1890ff;
+        filter: blur(250px);
+        @media screen and (max-width: 767px) {
+        }
+      }
+      .works-title {
+        color: rgba(255, 255, 255, 0.85);
+        text-shadow: 0px 0px 6.8px rgba(0, 0, 0, 0.75);
+        font-family: Inter;
+        font-size: 38px;
+        font-style: normal;
+        font-weight: 900;
+        line-height: 46px; /* 121.053% */
+        text-transform: uppercase;
+        margin-bottom: 16px;
+        @media screen and (max-width: 767px) {
+          font-size: 24px;
+          line-height: 32px;
+        }
+        .highlight {
+          text-shadow: none;
+          background: linear-gradient(270deg, #2e77e3 0.39%, #37b4cb 99.75%);
+          background-clip: text;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+      }
+      .works-description {
+        font-family: Inter;
+        color: rgba(255, 255, 255, 0.65);
+        font-size: 20px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 28px;
+        @media screen and (max-width: 767px) {
+          font-size: 14px;
+          line-height: 22px;
+        }
+      }
+      .content-left {
+        position: relative;
+        padding-left: 64px;
+        padding-right: 64px;
+        @media screen and (max-width: 767px) {
+          padding-left: 32px;
+          padding-right: 32px;
+        }
+        .content-left-bg {
+          position: absolute;
+          z-index: 0;
+          top: 0;
+          right: 0;
+          width: 254px;
+          height: 188px;
+          background: #1890ff;
+          transform: rotate(60.833deg);
+          opacity: 0.8;
+          filter: blur(71.5px);
+        }
+        .content-left-container {
+          position: relative;
+          z-index: 1;
+          .main-image {
+            max-width: 540px;
+            height: auto;
+            object-fit: cover;
+            @media (min-width: 768px) and (max-width: 1024px) {
+              max-width: 80%;
+              margin: 0 auto;
+            }
+            @media screen and (max-width: 767px) {
+              max-width: 80%;
+              margin: 0 auto;
+            }
+          }
+          .step1-container {
+            width: 149px;
+            height: 135px;
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            @media screen and (max-width: 767px) {
+              width: 20%;
+              height: auto;
+            }
+          }
+          .step1-image {
+            width: 100%;
+            height: auto;
+            position: absolute;
+            top: -72px;
+            right: 0%;
+            z-index: 1;
+            opacity: 1;
+            animation: float 3s ease-in-out infinite;
+            @media (min-width: 768px) and (max-width: 1024px) {
+              top: -32px;
+              right: 16px;
+            }
+            @media screen and (max-width: 767px) {
+              top: -32px;
+              right: 16px;
+            }
+          }
+
+          .step2-container {
+            width: 300px;
+            height: auto;
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            @media (min-width: 768px) and (max-width: 1024px) {
+              width: 36%;
+              height: auto;
+            }
+            @media screen and (max-width: 767px) {
+              width: 36%;
+              height: auto;
+            }
+          }
+          .step2-image {
+            width: 100%;
+            height: auto;
+            position: absolute;
+            top: 130px;
+            left: -14%;
+            z-index: 1;
+            opacity: 1;
+            animation: float 3s ease-in-out infinite;
+            @media (min-width: 768px) and (max-width: 1024px) {
+              top: 120px;
+              left: -2%;
+            }
+            @media screen and (max-width: 767px) {
+              top: 70px;
+              left: -2%;
+            }
+          }
+          .step3-container {
+            width: 343px;
+            height: 71px;
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            @media (min-width: 768px) and (max-width: 1024px) {
+              width: 36%;
+              height: 100%;
+            }
+            @media screen and (max-width: 767px) {
+              width: 36%;
+              height: 100%;
+            }
+          }
+          .step3-image {
+            width: 100%;
+            height: auto;
+            position: absolute;
+            top: 340px;
+            left: 68%;
+            z-index: 1;
+            opacity: 1;
+            animation: float2 3s ease-in-out infinite;
+            @media (min-width: 768px) and (max-width: 1024px) {
+              top: 80%;
+              left: 130%;
+            }
+            @media screen and (max-width: 767px) {
+              top: 80%;
+              left: 130%;
+            }
+          }
+          .step4-container {
+            width: 217px;
+            height: auto;
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            @media (min-width: 768px) and (max-width: 1024px) {
+              width: 36%;
+              height: auto;
+            }
+            @media screen and (max-width: 767px) {
+              width: 36%;
+              height: auto;
+            }
+          }
+          .step4-image {
+            width: 100%;
+            height: auto;
+            position: absolute;
+            top: -48px;
+            left: 42%;
+            z-index: 1;
+            opacity: 1;
+            animation: float2 3s ease-in-out infinite;
+            @media (min-width: 768px) and (max-width: 1024px) {
+              top: -48px;
+              left: 68%;
+            }
+            @media screen and (max-width: 767px) {
+              top: -48px;
+              left: 68%;
+            }
+          }
+        }
+      }
+      .content-right {
+        position: relative;
+        padding-right: 160px;
+        padding-left: 40px;
+        @media (min-width: 768px) and (max-width: 1180px) {
+          padding: 0px 32px;
+        }
+        @media screen and (max-width: 767px) {
+          padding: 0px 32px;
+        }
+
+        .steps-container {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          margin-top: 50px;
+          @media screen and (max-width: 767px) {
+            flex-direction: column;
+            margin-top: 16px;
+          }
+          .step {
+            padding: 12px;
+            border: 1px solid #37b4cb;
+            position: relative;
+            width: 33.33%;
+            align-self: normal;
+            @media screen and (max-width: 767px) {
+              width: 100%;
+            }
+            .step-number {
+              font-family: Inter;
+              font-size: 24px;
+              font-style: normal;
+              font-weight: 900;
+              line-height: 32px;
+              text-transform: uppercase;
+              background: linear-gradient(270deg, #2e77e3 0.39%, #37b4cb 99.75%);
+              background-clip: text;
+              -webkit-background-clip: text;
+              -webkit-text-fill-color: transparent;
+              margin-bottom: 8px;
+            }
+            .step-label {
+              font-family: Inter;
+              font-size: 20px;
+              font-style: normal;
+              font-weight: 400;
+              line-height: 28px;
+              color: rgba(255, 255, 255, 0.65);
+              @media screen and (max-width: 767px) {
+                font-size: 16px;
+                line-height: 20px;
+              }
+            }
+            .arrow {
+              position: absolute;
+              &.arrow-up {
+                top: -28px;
+                right: -32px;
+                @media screen and (max-width: 767px) {
+                  top: unset;
+                  right: -40px;
+                  bottom: -16px;
+                  transform: rotate(90deg);
+                }
+              }
+              &.arrow-down {
+                bottom: -28px;
+                right: -32px;
+                @media screen and (max-width: 767px) {
+                  top: unset;
+                  right: unset;
+                  left: -40px;
+                  bottom: -16px;
+                  transform: rotate(90deg);
+                }
+              }
+              > img {
+                width: 44px;
+                height: auto;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

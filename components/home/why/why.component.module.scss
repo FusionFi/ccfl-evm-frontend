@@ -1,0 +1,173 @@
+.whyComponent {
+  :global {
+    .why-container {
+      display: flex;
+      padding: 32px 120px;
+      position: relative;
+      @media (min-width: 767px) and (max-width: 1024px) {
+        flex-direction: column;
+        padding: 32px 120px;
+      }
+      @media screen and (max-width: 767px) {
+        flex-direction: column;
+        padding: 32px;
+      }
+      .why-container-bg {
+        width: 772px;
+        height: 889px;
+        border-radius: 889px;
+        opacity: 0.7;
+        background: #1890ff;
+        filter: blur(250px);
+        position: absolute;
+        top: -24%;
+        left: -16%;
+        z-index: 0;
+      }
+      .why-title {
+        position: relative;
+        z-index: 1;
+        color: rgba(255, 255, 255, 0.85);
+        font-family: Inter;
+        font-size: 38px;
+        font-style: normal;
+        font-weight: 900;
+        line-height: 46px; /* 121.053% */
+        margin-bottom: 48px;
+        display: block;
+        width: 40%;
+        @media (min-width: 768px) and (max-width: 1024px) {
+          width: 100%;
+          font-size: 24px;
+          line-height: 32px;
+          text-align: center;
+          margin-bottom: 60px;
+        }
+        @media screen and (max-width: 767px) {
+          width: 100%;
+          font-size: 24px;
+          line-height: 32px;
+          text-align: center;
+          margin-bottom: 108px;
+        }
+        .highlight {
+          text-shadow: none;
+          background: linear-gradient(270deg, #2e77e3 0.39%, #37b4cb 99.75%);
+          background-clip: text;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+      }
+      .why-items {
+        width: 60%;
+        position: relative;
+        z-index: 1;
+        @media (min-width: 768px) and (max-width: 1024px) {
+          width: 100%;
+        }
+        @media screen and (max-width: 767px) {
+          width: 100%;
+        }
+        .why-item {
+          position: relative;
+          margin-bottom: 48px;
+          &:last-child {
+            margin-bottom: 0;
+          }
+          &:nth-child(2n) {
+            position: relative;
+            left: -60%;
+            .why-icon {
+              > img {
+                animation: float2 3s ease-in-out infinite;
+              }
+            }
+            @media (min-width: 768px) and (max-width: 1024px) {
+              left: 0%;
+            }
+            @media screen and (max-width: 767px) {
+              left: 0%;
+            }
+          }
+          @media screen and (max-width: 767px) {
+            margin-bottom: 108px;
+          }
+          &.why-2 {
+            .why-icon {
+              top: -24%;
+            }
+          }
+          &.why-4 {
+            .why-icon {
+              top: -24%;
+            }
+          }
+          .why-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            > img {
+              width: 100%;
+              height: 100%;
+            }
+          }
+          .why-icon {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            left: -8%;
+            z-index: 1;
+            @media screen and (max-width: 767px) {
+              left: 50%;
+              transform: translateX(-50%);
+              top: -60px;
+              > img {
+                margin: 0 auto;
+              }
+            }
+            > img {
+              width: 220px;
+              height: auto;
+              animation: float 3s ease-in-out infinite;
+              @media screen and (max-width: 767px) {
+                width: 160px;
+              }
+            }
+          }
+          .why-content {
+            padding: 48px 32px 48px 180px;
+            position: relative;
+            z-index: 1;
+            @media screen and (max-width: 767px) {
+              padding-left: 32px;
+              padding-top: 96px;
+            }
+            .why-label {
+              font-family: Inter;
+              font-size: 24px;
+              font-style: normal;
+              font-weight: 900;
+              line-height: 32px;
+              background: var(
+                --Gradient-primary,
+                linear-gradient(270deg, #2e77e3 0.39%, #37b4cb 99.75%)
+              );
+              background-clip: text;
+              -webkit-background-clip: text;
+              -webkit-text-fill-color: transparent;
+              margin-bottom: 8px;
+            }
+            .why-description {
+              font-family: Inter;
+              font-size: 20px;
+              font-style: normal;
+              font-weight: 400;
+              line-height: 28px;
+              color: rgba(255, 255, 255, 0.65);
+            }
+          }
+        }
+      }
+    }
+  }
+}

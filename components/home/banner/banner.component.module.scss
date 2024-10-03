@@ -1,0 +1,284 @@
+.bannerContent {
+  :global {
+    .banner-container {
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      position: relative;
+      .banner-image {
+        width: 912px;
+        height: 768px;
+        position: absolute;
+        z-index: 0;
+        .banner-image-bg {
+          width: 100%;
+          height: 100%;
+          opacity: 0.7;
+          background: #1890ff;
+          filter: blur(80px);
+          position: absolute;
+        }
+        .banner-image-container {
+          position: relative;
+          .fusion-image {
+            width: 768px;
+            height: auto;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -5%);
+            z-index: 0;
+
+            @media screen and (max-width: 767px) {
+              width: 48%;
+              transform: translate(-50%, -28%);
+              margin: 0 auto;
+            }
+          }
+          .cube-image {
+            width: 404px;
+            height: auto;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, 43%);
+            z-index: 3;
+            @media screen and (max-width: 767px) {
+              width: 28%;
+              transform: translate(-50%, 24%);
+              margin: 0 auto;
+            }
+          }
+          .usdc-blur {
+            width: 83px;
+            height: auto;
+            position: absolute;
+            left: 46%;
+            z-index: 1;
+            opacity: 0;
+            animation: usdc-blur-fall 0.5s ease-in forwards, float 2s ease-in-out infinite;
+            animation-delay: 0s;
+            @media screen and (max-width: 767px) {
+              width: 40px;
+              left: 44%;
+              animation: usdc-blur-fall-mobile 0.5s ease-in forwards, float 2s ease-in-out infinite;
+              animation-delay: 0s;
+            }
+          }
+          .usda {
+            width: 149px;
+            height: auto;
+            position: absolute;
+            top: -100px;
+            left: 24%;
+            z-index: 4;
+            opacity: 0;
+            animation: usda-fall 0.5s ease-in forwards, float 2s ease-in-out infinite;
+            animation-delay: 0.1s;
+            @media screen and (max-width: 767px) {
+              width: 48px;
+              left: 36%;
+              animation: usda-fall-mobile 1s ease-in forwards, float 2s ease-in-out infinite;
+              animation-delay: 0.1s;
+            }
+          }
+          .dollar-image {
+            width: 191px;
+            height: auto;
+            position: absolute;
+            top: -100px;
+            left: 15%;
+            z-index: 4;
+            opacity: 0;
+            animation: dollar-fall 0.5s ease-in forwards, float 2s ease-in-out infinite;
+            animation-delay: 0.2s;
+            @media screen and (max-width: 767px) {
+              width: 96px;
+              left: 30%;
+              animation: dollar-fall-mobile 1s ease-in forwards, float 2s ease-in-out infinite;
+              animation-delay: 0.2s;
+            }
+          }
+          .usdc-image {
+            width: 124px;
+            height: auto;
+            position: absolute;
+            top: -100px;
+            left: 39%;
+            z-index: 4;
+            opacity: 0;
+            animation: usdc-fall 0.5s ease-in forwards, float 2s ease-in-out infinite;
+            animation-delay: 0.3s;
+            @media screen and (max-width: 767px) {
+              width: 64px;
+              left: 45%;
+              animation: usdc-fall-mobile 1s ease-in forwards, float 2s ease-in-out infinite;
+              animation-delay: 0.3s;
+            }
+          }
+          .usdt-image {
+            width: 146px;
+            height: auto;
+            position: absolute;
+            top: -100px;
+            left: 40%;
+            z-index: 4;
+            opacity: 0;
+            animation: usdt-fall 0.5s ease-in forwards, float 2s ease-in-out infinite;
+            animation-delay: 0.8s;
+            @media screen and (max-width: 767px) {
+              width: 80px;
+              left: 48%;
+              animation: usdt-fall-mobile 1s ease-in forwards, float 2s ease-in-out infinite;
+              animation-delay: 0.8s;
+            }
+          }
+          .ada-image {
+            width: 200px;
+            height: auto;
+            position: absolute;
+            top: -100px;
+            left: 56%;
+            z-index: 4;
+            opacity: 0;
+            animation: ada-fall 0.5s ease-in forwards, float 2s ease-in-out infinite;
+            animation-delay: 0.5s;
+            @media screen and (max-width: 767px) {
+              width: 100px;
+              left: 56%;
+              animation: ada-fall-mobile 1s ease-in forwards, float 2s ease-in-out infinite;
+              animation-delay: 0.5s;
+            }
+          }
+        }
+      }
+      .banner-form {
+        margin-top: 320px;
+        margin-bottom: 8px;
+        position: relative;
+        z-index: 1;
+        @media screen and (max-width: 767px) {
+          margin-top: 240px;
+          margin-bottom: 0px;
+          width: 100%;
+          padding: 0px 16px;
+        }
+      }
+      .banner-infos {
+        padding: 56px 48px;
+        border-radius: 2px;
+        border: 1px solid var(--Gradient-primary, #2e77e3);
+        background: #1f1f1f;
+        width: 1128px;
+        position: relative;
+        z-index: 1;
+        @media screen and (max-width: 1127px) {
+          padding: 24px 16px;
+          width: calc(100% - 32px);
+        }
+        @media screen and (max-width: 767px) {
+          padding: 24px 16px;
+          width: calc(100% - 32px);
+        }
+        .banner-info {
+          display: flex;
+          align-items: center;
+          padding-top: 28px;
+          padding-bottom: 28px;
+          border-bottom: 1px solid var(--Gradient-primary, #2e77e3);
+          @media screen and (max-width: 767px) {
+            flex-direction: column;
+          }
+          &:first-child {
+            padding-top: 0;
+          }
+          &:last-child {
+            padding-bottom: 0;
+            border-bottom: 0;
+          }
+          .content-left {
+            width: 176px;
+            margin-right: 40px;
+            @media screen and (max-width: 767px) {
+              width: 100%;
+              margin-right: 0px;
+              text-align: center;
+              margin-bottom: 16px;
+            }
+            .info-title {
+              @media screen and (max-width: 767px) {
+                display: flex;
+                align-items: center;
+                > img {
+                  margin-left: 16px;
+                  width: 171px;
+                }
+              }
+            }
+          }
+          .content-right {
+            width: calc(100% - 176px);
+            @media screen and (max-width: 767px) {
+              width: 100%;
+            }
+          }
+          .info-title {
+            color: #fff;
+            font-family: Inter;
+            font-size: 30px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: 40px;
+          }
+          .info-description {
+            color: rgba(255, 255, 255, 0.65);
+            font-family: Inter;
+            font-size: 20px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 28px;
+            width: 100%;
+          }
+          .partners-list {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            width: 100%;
+            padding: 0px;
+            list-style-type: none;
+            gap: 64px;
+            @media screen and (max-width: 767px) {
+              gap: 24px;
+              padding: 0px;
+              flex-direction: column;
+            }
+            li {
+              img {
+                width: 100%;
+                height: auto;
+                object-fit: cover;
+                transition: transform 0.3s ease-in-out;
+                &:hover {
+                  transform: scale(1.2);
+                }
+                &.emurgo {
+                  width: 220px;
+                }
+                &.encryptus {
+                  width: 231px;
+                }
+                &.anzens {
+                  width: 180px;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
