@@ -15,7 +15,7 @@ import { formatUnits, parseUnits } from 'ethers';
 import { useNetworkManager, useUserManager } from '@/hooks/supply.hook';
 import { useConnectedNetworkManager, useProviderManager } from '@/hooks/auth.hook'
 import supplyBE from '@/utils/backend/supply';
-import { useTxFee } from '@/hooks/provider.hook'
+import { useWithdrawFee } from '@/hooks/provider.hook'
 import { computeWithMinThreashold } from '@/utils/percent.util';
 
 type FieldType = {
@@ -64,7 +64,7 @@ export default function ModalWithdrawComponent({
     return networks?.get(selectedChain?.id) || {}
   }, [networks, selectedChain])
 
-  const [fee, estimateNormalTxFee] = useTxFee(provider);
+  const [fee, estimateGasForWithdraw] = useWithdrawFee(provider);
 
   const feeWithPrice = useMemo(() => {
     const decimals = selectedChain?.nativeCurrency?.decimals || 18
@@ -119,17 +119,19 @@ export default function ModalWithdrawComponent({
   }
 
   useEffect(() => {
-    estimateNormalTxFee({
+    estimateGasForWithdraw({
       network: selectedNetwork,
       chain: selectedChain,
+      contractAddress: asset?.pool_address,
       // TODO: update cardano params
     });
     fetchNetworkPrice();
 
     const interval_ = setInterval(() => {
-      estimateNormalTxFee({
+      estimateGasForWithdraw({
         network: selectedNetwork,
         chain: selectedChain,
+        contractAddress: asset?.pool_address,
         // TODO: update cardano params
       });
     }, 15000);

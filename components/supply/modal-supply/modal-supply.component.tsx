@@ -16,7 +16,7 @@ import { formatUnits, parseUnits } from 'ethers';
 import { useNetworkManager } from '@/hooks/supply.hook';
 import { useConnectedNetworkManager, useProviderManager } from '@/hooks/auth.hook';
 
-import { useAllowance, useApproval, useSupply, useTxFee } from '@/hooks/provider.hook';
+import { useAllowance, useApproval, useSupply, useSupplyFee } from '@/hooks/provider.hook';
 
 type FieldType = {
   amount?: any;
@@ -43,8 +43,9 @@ export default function ModalSupplyComponent({
     return networks?.get(selectedChain?.id) || {};
   }, [networks, selectedChain]);
 
-  const [fee, estimateNormalTxFee] = useTxFee(provider);
+  const [fee, estimateGasForSupply] = useSupplyFee(provider);
 
+  console.log('fee: ', fee)
   const [allowance, refetchAllowance] = useAllowance(provider);
   const [approve] = useApproval(provider);
 
@@ -127,11 +128,11 @@ export default function ModalSupplyComponent({
   };
 
   useEffect(() => {
-    estimateNormalTxFee({
+    estimateGasForSupply({
+      contractAddress: asset?.pool_address,
       network: selectedNetwork,
       chain: selectedChain,
-      // TODO: update cardano params
-    });
+    })
     fetchNetworkPrice();
     refetchAllowance({
       network: selectedNetwork,
@@ -143,7 +144,8 @@ export default function ModalSupplyComponent({
     });
 
     const interval_ = setInterval(() => {
-      estimateNormalTxFee({
+      estimateGasForSupply({
+        contractAddress: asset?.pool_address,
         network: selectedNetwork,
         chain: selectedChain,
         // TODO: update cardano params
@@ -182,8 +184,8 @@ export default function ModalSupplyComponent({
             .toNumber();
           const isNotNeedToApprove = amount
             ? new BigNumber(allowance).isGreaterThanOrEqualTo(
-                parseUnits(String(amount), asset?.decimals).toString(),
-              )
+              parseUnits(String(amount), asset?.decimals).toString(),
+            )
             : false;
           const handleMaxInput = () => {
             formInstance.setFields([
@@ -196,8 +198,8 @@ export default function ModalSupplyComponent({
 
             formInstance
               .validateFields()
-              .then(e => {})
-              .catch(e => {});
+              .then(e => { })
+              .catch(e => { });
           };
 
           return (
