@@ -25,10 +25,11 @@ export const testTx = async (wallet: any): Promise<TxHash> => {
     const _wallet = new Wallets[wallet.metadata.id]();
     const api = await _wallet.getApi();
     lucid.selectWallet(api);
+    console.log(wallet)
 
     const tx = await lucid
         .newTx()
-        .payToAddress(wallet, { lovelace: 10000000n })
+        .payToAddress(wallet.address, { lovelace: 10000000n })
         .complete()
 
     const signedTx = await tx.sign().complete()
