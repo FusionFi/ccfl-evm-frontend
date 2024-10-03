@@ -1,7 +1,12 @@
 import TransactionSuccessComponent from '@/components/borrow/transaction-success.component';
 import ModalComponent from '@/components/common/modal.component';
 import { WalletIcon } from '@/components/icons/wallet.icon';
-import { CONTRACT_ADDRESS, MIN_AMOUNT_KEY, TRANSACTION_STATUS } from '@/constants/common.constant';
+import {
+  ACTION_TYPE,
+  CONTRACT_ADDRESS,
+  MIN_AMOUNT_KEY,
+  TRANSACTION_STATUS,
+} from '@/constants/common.constant';
 import {
   ArrowRightOutlined,
   CloseOutlined,
@@ -18,6 +23,16 @@ import { useAccount } from 'wagmi';
 import service_ccfl_collateral from '@/utils/contract/ccflCollateral.service';
 import service from '@/utils/backend/borrow';
 import { toAmountShow, toLessPart, toUnitWithDecimal } from '@/utils/common';
+import { useConnectedNetworkManager, useProviderManager } from '@/hooks/auth.hook';
+import {
+  useApprovalBorrow,
+  useAddCollateral,
+  useGetGasFeeApprove,
+  useGetHealthFactor,
+  useAllowanceBorrow,
+} from '@/hooks/provider.hook';
+import { useNetworkManager } from '@/hooks/borrow.hook';
+import BigNumber from 'bignumber.js';
 
 interface ModalCollateralProps {
   isModalOpen: boolean;
@@ -43,7 +58,9 @@ export default function ModalCollateralComponent({
   handleLoans,
 }: ModalCollateralProps) {
   const { t } = useTranslation('common');
-  const { address, connector, chainId } = useAccount();
+  const { connector } = useAccount();
+  const [provider] = useProviderManager();
+  const { selectedChain } = useConnectedNetworkManager();
 
   const { control, handleSubmit } = useForm({
     defaultValues: {
@@ -72,18 +89,27 @@ export default function ModalCollateralComponent({
   const [errorTx, setErrorTx] = useState() as any;
   const [txHash, setTxHash] = useState();
 
+  //start hook
+  const [approveBorrow] = useApprovalBorrow(provider);
+  const [getHealthFactor] = useGetHealthFactor(provider);
+  const [getGasFeeApprove] = useGetGasFeeApprove(provider);
+  const [allowanceBorrow] = useAllowanceBorrow(provider);
+  const [addCollateral] = useAddCollateral(provider);
+
+  //end hook
+
   const onSubmit: SubmitHandler<IFormInput> = async data => {
-    const provider = await connector?.getProvider();
+    const connector_provider = await connector?.getProvider();
     if (step === 0) {
       try {
         setLoading(true);
-        let tx = await service_ccfl_collateral.approveAddCollateral(
-          provider,
-          CONTRACT_ADDRESS,
-          toUnitWithDecimal(tokenValue, loanItem.collateral_decimals),
-          address,
-          stableCoinData.address,
-        );
+        let tx = await approveBorrow({
+          provider: connector_provider,
+          contract_address: CONTRACT_ADDRESS,
+          amount: toUnitWithDecimal(tokenValue, loanItem.collateral_decimals),
+          address: provider?.account,
+          tokenContract: stableCoinData.address,
+        });
         if (tx?.link) {
           setStep(1);
           setErrorTx(undefined);
@@ -106,14 +132,15 @@ export default function ModalCollateralComponent({
     if (step == 1) {
       try {
         setLoading(true);
-        let tx = await service_ccfl_collateral.addCollateral(
-          toUnitWithDecimal(tokenValue, loanItem.collateral_decimals),
-          stableCoinData.address,
-          provider,
-          address,
-          CONTRACT_ADDRESS,
-          loanItem.loan_id,
-        );
+        let tx = await addCollateral({
+          amountCollateral: toUnitWithDecimal(tokenValue, loanItem.collateral_decimals),
+          collateral: stableCoinData.address,
+          provider: connector_provider,
+          account: provider?.account,
+          contract_address: CONTRACT_ADDRESS,
+          loanId: loanItem.loan_id,
+          isGas: false,
+        });
         if (tx?.link) {
           setStep(2);
           setTxHash(tx.link);
@@ -149,8 +176,12 @@ export default function ModalCollateralComponent({
   const getTokenInfo = async () => {
     try {
       setLoadingBalance(true);
-      let res_info = (await service.getTokenInfo(currentToken, chainId)) as any;
-      let res_balance = (await service.getCollateralBalance(address, chainId, currentToken)) as any;
+      let res_info = (await service.getTokenInfo(currentToken, selectedChain?.id)) as any;
+      let res_balance = (await service.getCollateralBalance(
+        provider?.account,
+        selectedChain?.id,
+        currentToken,
+      )) as any;
 
       console.log('res_info', res_info, res_balance);
       let token = stableCoinData;
@@ -202,18 +233,19 @@ export default function ModalCollateralComponent({
     setTokenValue(undefined);
   };
 
-  const getHealthFactor = async () => {
+  const handleGetHealthFactor = async () => {
     if (tokenValue && tokenValue > 0 && loanItem.collateral_decimals && loanItem.loan_id) {
-      const provider = await connector?.getProvider();
+      const connector_provider = await connector?.getProvider();
 
       try {
         setLoadingHealthFactor(true);
-        let healthFactor = (await service_ccfl_collateral.getHealthFactor(
-          provider,
-          CONTRACT_ADDRESS,
-          toUnitWithDecimal(tokenValue, loanItem.collateral_decimals),
-          loanItem.loan_id,
-        )) as any;
+        let healthFactor = (await getHealthFactor({
+          type: ACTION_TYPE.COLLATERAL,
+          provider: connector_provider,
+          contract_address: CONTRACT_ADDRESS,
+          amount: toUnitWithDecimal(tokenValue, loanItem.collateral_decimals),
+          loanId: loanItem.loan_id,
+        })) as any;
         console.log('healthFactor', healthFactor);
         if (healthFactor) {
           setHealthFactor(healthFactor);
@@ -228,20 +260,20 @@ export default function ModalCollateralComponent({
     }
   };
 
-  const getGasFeeApprove = async () => {
+  const handleGetGasFeeApprove = async () => {
     if (step === 0) {
       if (tokenValue && tokenValue > 0 && loanItem.collateral_decimals && stableCoinData.address) {
-        const provider = await connector?.getProvider();
+        const connector_provider = await connector?.getProvider();
         try {
           setLoadingGasFee(true);
-          let res = (await service_ccfl_collateral.getGasFeeApprove(
-            provider,
-            address,
-            toUnitWithDecimal(tokenValue, loanItem.collateral_decimals),
-            stableCoinData.address,
-            CONTRACT_ADDRESS,
-          )) as any;
-          let res_price = (await service.getPrice(chainId, 'ETH')) as any;
+          let res = (await getGasFeeApprove({
+            provider: connector_provider,
+            account: provider?.account,
+            amount: toUnitWithDecimal(tokenValue, loanItem.collateral_decimals),
+            tokenAddress: stableCoinData.address,
+            contract_address: CONTRACT_ADDRESS,
+          })) as any;
+          let res_price = (await service.getPrice(selectedChain?.id, 'ETH')) as any;
 
           console.log('gasFee approve', res, res_price);
           if (res && res.gasPrice && res_price && res_price.price) {
@@ -273,18 +305,19 @@ export default function ModalCollateralComponent({
         loanItem.collateral_decimals &&
         loanItem.loan_id
       ) {
-        const provider = await connector?.getProvider();
+        const connector_provider = await connector?.getProvider();
         try {
           setLoadingGasFee(true);
-          let res = (await service_ccfl_collateral.getGasFeeAddCollateral(
-            provider,
-            address,
-            CONTRACT_ADDRESS,
-            toUnitWithDecimal(tokenValue, loanItem.collateral_decimals),
-            stableCoinData.address,
-            loanItem.loan_id,
-          )) as any;
-          let res_price = (await service.getPrice(chainId, 'ETH')) as any;
+          let res = (await addCollateral({
+            provider: connector_provider,
+            account: provider?.account,
+            contract_address: CONTRACT_ADDRESS,
+            amountCollateral: toUnitWithDecimal(tokenValue, loanItem.collateral_decimals),
+            collateral: stableCoinData.address,
+            loanId: loanItem.loan_id,
+            isGas: true,
+          })) as any;
+          let res_price = (await service.getPrice(selectedChain?.id, 'ETH')) as any;
           console.log('getGasFeeCollateral res', res);
           if (res && res.gasPrice && res_price && res_price.price) {
             let gasFee = res.gasPrice * res_price.price;
@@ -305,6 +338,44 @@ export default function ModalCollateralComponent({
     }
   };
 
+  const handleCheckAllowance = async () => {
+    if (
+      tokenValue &&
+      tokenValue > 0 &&
+      provider?.account &&
+      stableCoinData?.address &&
+      loanItem?.collateral_decimals
+    ) {
+      const connector_provider = await connector?.getProvider();
+      try {
+        // let res_pool = (await service.getPoolAddress(selectedChain?.id, currentToken)) as any;
+
+        console.log('handleCheckAllowance', tokenValue, provider?.account, stableCoinData.address);
+
+        let res = (await allowanceBorrow({
+          provider: connector_provider,
+          tokenAddress: stableCoinData.address,
+          account: provider?.account,
+          spender: CONTRACT_ADDRESS,
+        })) as any;
+
+        console.log('allowance', res, toAmountShow(res, loanItem.collateral_decimals));
+
+        const isNotNeedToApprove = new BigNumber(
+          toAmountShow(res, loanItem.collateral_decimals),
+        ).isGreaterThanOrEqualTo(tokenValue);
+
+        if (isNotNeedToApprove) {
+          setStep(1);
+        } else {
+          setStep(0);
+        }
+      } catch (error) {
+        console.log('error', error);
+      }
+    }
+  };
+
   const collateralData = {
     amount:
       loanItem && loanItem.collateral_amount && loanItem.collateral_decimals
@@ -315,8 +386,14 @@ export default function ModalCollateralComponent({
 
   useEffect(() => {
     if (isModalOpen) {
-      getHealthFactor();
-      getGasFeeApprove();
+      handleCheckAllowance();
+    }
+  }, [tokenValue, step]);
+
+  useEffect(() => {
+    if (isModalOpen) {
+      handleGetHealthFactor();
+      handleGetGasFeeApprove();
       getGasFeeCollateral();
     }
   }, [tokenValue]);

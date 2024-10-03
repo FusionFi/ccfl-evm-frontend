@@ -1,163 +1,378 @@
-import AbiPool from '@/utils/contract/abi/ccflPool.json'
-import { getGasPrice, watchChainId, watchAccount, waitForTransactionReceipt, switchChain, writeContract, connect, disconnect, getChainId, getAccount, getConnectors, readContract } from '@wagmi/core'
-import { config } from '@/libs/wagmi.lib'
-import BaseProvider from './base.provider'
-import AbiERC20 from '@/utils/contract/abi/erc20.json'
+import AbiPool from '@/utils/contract/abi/ccflPool.json';
+import {
+  getGasPrice,
+  watchChainId,
+  watchAccount,
+  waitForTransactionReceipt,
+  switchChain,
+  writeContract,
+  connect,
+  disconnect,
+  getChainId,
+  getAccount,
+  getConnectors,
+  readContract,
+} from '@wagmi/core';
+import { config } from '@/libs/wagmi.lib';
+import BaseProvider from './base.provider';
+import AbiERC20 from '@/utils/contract/abi/erc20.json';
 import { createConfigWithCustomTransports } from '@/libs/wagmi.lib';
 import BigNumber from 'bignumber.js';
-import * as Actions from "@/actions/auth.action";
-
+import * as Actions from '@/actions/auth.action';
+import service_ccfl_borrow from '@/utils/contract/ccflBorrow.service';
+import service_ccfl_repay from '@/utils/contract/ccflRepay.service';
+import { ACTION_TYPE } from '@/constants/common.constant';
+import service_ccfl_collateral from '@/utils/contract/ccflCollateral.service';
 
 // TODO: watch chain, account
 
 let events: any = [];
-console.log('events: ', events)
+console.log('events: ', events);
 
 class EVMProvider extends BaseProvider {
+  constructor(params: any) {
+    super({
+      ...params,
+      type: 'evm',
+    });
+  }
 
-    constructor(params: any) {
-        super({
-            ...params,
-            type: 'evm'
-        })
+  async connect(connector: any) {
+    const account = getAccount(config);
+
+    if (account?.isConnected && account?.status == 'connected') {
+      return {
+        accounts: account.addresses,
+        chainId: account.chainId,
+      };
     }
 
-    async connect(connector: any) {
-        const account = getAccount(config)
+    const connectors = getConnectors(config);
+    const _connector: any = connectors.find(
+      item => item.name.toLowerCase() == connector.id.toLowerCase() || connector.id == item.type,
+    );
 
-        if (account?.isConnected && account?.status == 'connected') {
-            return {
-                accounts: account.addresses,
-                chainId: account.chainId
-            }
-        }
+    return await connect(config, {
+      connector: _connector,
+    });
+  }
 
-        const connectors = getConnectors(config);
-        const _connector: any = connectors.find(item => item.name.toLowerCase() == connector.id.toLowerCase() || connector.id == item.type);
+  async switchChain(chainId: any) {
+    return await switchChain(config, { chainId });
+  }
 
-        return await connect(config, {
-            connector: _connector
-        })
+  async disconnect() {
+    const { connector } = getAccount(config);
+    const result = await disconnect(config, {
+      connector,
+    });
+    return result;
+  }
+
+  async supply({ amount, contractAddress, abi }: any) {
+    const result = await writeContract(config, {
+      address: contractAddress,
+      abi: abi || AbiPool,
+      functionName: 'supply',
+      args: [amount],
+    });
+
+    const tx = await waitForTransactionReceipt(config, {
+      confirmations: 1,
+      hash: result,
+    });
+
+    return tx;
+  }
+
+  async approve({ abi, value, spender, contractAddress }: any) {
+    const result = await writeContract(config, {
+      address: contractAddress,
+      abi: abi || AbiERC20,
+      functionName: 'approve',
+      args: [spender, value],
+    });
+
+    const tx = await waitForTransactionReceipt(config, {
+      confirmations: 1,
+      hash: result,
+    });
+
+    return tx;
+  }
+
+  async fetchAllowance({ abi, owner, spender, chain, contractAddress, network }: any) {
+    if (!contractAddress) {
+      return 0;
     }
 
-    async switchChain(chainId: any) {
-        return await switchChain(config, { chainId })
+    const config_ = createConfigWithCustomTransports({ chain, rpc: network?.rpcUrl });
+    const result = await readContract(config_, {
+      abi: abi || AbiERC20,
+      address: contractAddress,
+      functionName: 'allowance',
+      args: [owner, spender],
+    });
+
+    return result;
+  }
+
+  async estimateNormalTxFee({ chain, network }: any) {
+    const config_ = createConfigWithCustomTransports({ chain, rpc: network?.rpcUrl });
+    const gasPrice = await getGasPrice(config_);
+    const result = new BigNumber(gasPrice.toString()).times(21000).toString();
+
+    return result;
+  }
+
+  subscribeEvents(dispatch: any): any {
+    events.push(
+      watchAccount(config, {
+        onChange(data) {
+          console.log('Account changed!', data);
+          dispatch(
+            Actions.updateProvider({
+              provider: {
+                account: data.address,
+              },
+            }),
+          );
+        },
+      }),
+    );
+
+    events.push(
+      watchChainId(config, {
+        onChange(chainId) {
+          console.log('Chain ID changed!', chainId);
+          dispatch(
+            Actions.updateProvider({
+              provider: {
+                chainId,
+              },
+            }),
+          );
+        },
+      }),
+    );
+  }
+
+  unsubscribeEvents(): any {
+    events.forEach((unwatch: any) => {
+      unwatch();
+    });
+    events = [];
+  }
+  async withdraw({ amount, contractAddress, abi }: any) {
+    const result = await writeContract(config, {
+      address: contractAddress,
+      abi: abi || AbiPool,
+      functionName: 'withdraw',
+      args: [amount],
+    });
+
+    const tx = await waitForTransactionReceipt(config, {
+      confirmations: 1,
+      hash: result,
+    });
+
+    return tx?.transactionHash || result;
+  }
+
+  // start borrow part
+  async approveBorrow({ provider, contract_address, amount, address, tokenContract }: any) {
+    const tx = await service_ccfl_borrow.approveBorrow(
+      provider,
+      contract_address,
+      amount,
+      address,
+      tokenContract,
+    );
+
+    return tx;
+  }
+
+  async createLoan({
+    amount,
+    amountCollateral,
+    stableCoin,
+    collateral,
+    IsYieldGenerating,
+    IsFiat,
+    provider,
+    account,
+    contract_address,
+    isGas,
+    isFiat,
+  }: any) {
+    let tx;
+    if (isGas) {
+      tx = await service_ccfl_borrow.getGasFeeCreateLoan(
+        provider,
+        account,
+        contract_address,
+        amount,
+        stableCoin,
+        amountCollateral,
+        collateral,
+        IsYieldGenerating,
+        isFiat,
+      );
+    } else {
+      tx = await service_ccfl_borrow.createLoan(
+        amount,
+        amountCollateral,
+        stableCoin,
+        collateral,
+        IsYieldGenerating,
+        IsFiat,
+        provider,
+        account,
+        contract_address,
+      );
     }
 
-    async disconnect() {
-        const { connector } = getAccount(config)
-        const result = await disconnect(config, {
-            connector
-        })
-        return result;
+    return tx;
+  }
+
+  async getCollateralMinimum({ provider, contract_address, amount, stableCoin, collateral }: any) {
+    const res = await service_ccfl_borrow.getCollateralMinimum(
+      provider,
+      contract_address,
+      amount,
+      stableCoin,
+      collateral,
+    );
+
+    return res;
+  }
+
+  async getHealthFactor({
+    type,
+    provider,
+    contract_address,
+    amount,
+    stableCoin,
+    collateral,
+    amountCollateral,
+    loanId,
+  }: any) {
+    let res;
+    switch (type) {
+      case ACTION_TYPE.REPAY:
+        res = await service_ccfl_repay.getHealthFactor(provider, contract_address, amount, loanId);
+        break;
+      case ACTION_TYPE.COLLATERAL:
+        res = await service_ccfl_collateral.getHealthFactor(
+          provider,
+          contract_address,
+          amount,
+          loanId,
+        );
+        break;
+      case ACTION_TYPE.BORROW:
+        res = await service_ccfl_borrow.getHealthFactor(
+          provider,
+          contract_address,
+          amount,
+          stableCoin,
+          collateral,
+          amountCollateral,
+        );
+        break;
     }
 
-    async supply({ amount, contractAddress, abi }: any) {
-        const result = await writeContract(config, {
-            address: contractAddress,
-            abi: abi || AbiPool,
-            functionName: 'supply',
-            args: [amount],
-        })
+    return res;
+  }
 
-        const tx = await waitForTransactionReceipt(config, {
-            confirmations: 1,
-            hash: result
-        })
+  async getGasFeeApprove({ provider, account, amount, tokenAddress, contract_address }: any) {
+    const res = await service_ccfl_borrow.getGasFeeApprove(
+      provider,
+      account,
+      amount,
+      tokenAddress,
+      contract_address,
+    );
+    return res;
+  }
 
-        return tx?.transactionHash || result;
+  async allowanceBorrow({ provider, tokenAddress, account, spender }: any) {
+    const res = await service_ccfl_borrow.checkAllowance(provider, tokenAddress, account, spender);
+
+    return res;
+  }
+
+  async repayLoan({ amount, stableCoin, provider, account, contract_address, loanId, isGas }: any) {
+    let tx;
+    if (isGas) {
+      tx = await service_ccfl_repay.getGasFeeRepayLoan(
+        provider,
+        account,
+        contract_address,
+        amount,
+        stableCoin,
+        loanId,
+      );
+    } else {
+      tx = await service_ccfl_repay.repayLoan(
+        amount,
+        stableCoin,
+        provider,
+        account,
+        contract_address,
+        loanId,
+      );
     }
 
-    async withdraw({ amount, contractAddress, abi }: any) {
-        const result = await writeContract(config, {
-            address: contractAddress,
-            abi: abi || AbiPool,
-            functionName: 'withdraw',
-            args: [amount],
-        })
+    return tx;
+  }
 
-        const tx = await waitForTransactionReceipt(config, {
-            confirmations: 1,
-            hash: result
-        })
-
-        return tx?.transactionHash || result;
+  async addCollateral({
+    provider,
+    account,
+    contract_address,
+    amountCollateral,
+    collateral,
+    loanId,
+    isGas,
+  }: any) {
+    let tx;
+    if (isGas) {
+      tx = await service_ccfl_collateral.getGasFeeAddCollateral(
+        provider,
+        account,
+        contract_address,
+        amountCollateral,
+        collateral,
+        loanId,
+      );
+    } else {
+      tx = await service_ccfl_collateral.addCollateral(
+        provider,
+        account,
+        contract_address,
+        amountCollateral,
+        collateral,
+        loanId,
+      );
     }
 
-    async approve({ abi, value, spender, contractAddress }: any) {
-        const result = await writeContract(config, {
-            address: contractAddress,
-            abi: abi || AbiERC20,
-            functionName: 'approve',
-            args: [spender, value],
-        })
+    return tx;
+  }
 
-        const tx = await waitForTransactionReceipt(config, {
-            confirmations: 1,
-            hash: result
-        })
+  async withdrawAllCollateral({ provider, account, contract_address, loanId, isETH, isGas }: any) {
+    const tx = await service_ccfl_collateral.withdrawAllCollateral(
+      provider,
+      account,
+      contract_address,
+      loanId,
+      isETH,
+      isGas,
+    );
 
-        return tx?.transactionHash || result;
-    }
-
-    async fetchAllowance({ abi, owner, spender, chain, contractAddress, network }: any) {
-        if (!contractAddress) {
-            return 0;
-        }
-
-        const config_ = createConfigWithCustomTransports({ chain, rpc: network?.rpcUrl });
-        const result = await readContract(config_, {
-            abi: abi || AbiERC20,
-            address: contractAddress,
-            functionName: 'allowance',
-            args: [owner, spender],
-        })
-
-        return result;
-    }
-
-    async estimateNormalTxFee({ chain, network }: any) {
-        const config_ = createConfigWithCustomTransports({ chain, rpc: network?.rpcUrl });
-        const gasPrice = await getGasPrice(config_)
-        const result = new BigNumber(gasPrice.toString()).times(21000).toString();
-
-        return result;
-    }
-
-    subscribeEvents(dispatch: any): any {
-        events.push(watchAccount(config, {
-            onChange(data) {
-                console.log('Account changed!', data)
-                dispatch(
-                    Actions.updateProvider({
-                        provider: {
-                            account: data.address
-                        }
-                    })
-                )
-            },
-        }))
-
-        events.push(watchChainId(config, {
-            onChange(chainId) {
-                console.log('Chain ID changed!', chainId)
-                dispatch(
-                    Actions.updateProvider({
-                        provider: {
-                            chainId
-                        }
-                    })
-                )
-            },
-        }))
-    }
-
-    unsubscribeEvents(): any {
-        events.forEach((unwatch: any) => {
-            unwatch()
-        });
-        events = [];
-    }
+    return tx;
+  }
+  //end borrow part
 }
 
 export default EVMProvider;

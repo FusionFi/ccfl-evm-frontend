@@ -250,6 +250,38 @@ const getGasFeeAddCollateral = async (
   }
 };
 
+const withdrawAllCollateral = async (provider, account, contract_address, loanId, isETH, isGas) => {
+  let overwrite = { from: account };
+
+  try {
+    console.log('withdrawAllCollateral', isETH, loanId);
+    const tx = await sendRawTx(
+      provider,
+      abi,
+      contract_address,
+      'withdrawAllCollateral',
+      [loanId, isETH],
+      overwrite,
+      !!isGas,
+    );
+
+    // const txReceipt = await txResponse.wait();
+    console.log('Transaction successful:', tx);
+    if (tx.transactionHash || tx.hash) {
+      return {
+        link: tx.hash || tx.transactionHash,
+      };
+    } else {
+      return;
+    }
+  } catch (error) {
+    console.error('Error calling withdrawAllCollateral  method:', error);
+    return {
+      error: error,
+    };
+  }
+};
+
 const service_ccfl_borrow = {
   approveAddCollateral,
   addCollateral,
@@ -257,5 +289,6 @@ const service_ccfl_borrow = {
   checkAllowance,
   getGasFeeAddCollateral,
   getHealthFactor,
+  withdrawAllCollateral,
 };
 export default service_ccfl_borrow;

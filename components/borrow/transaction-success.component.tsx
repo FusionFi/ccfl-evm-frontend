@@ -4,7 +4,9 @@ import { Button } from 'antd';
 import Link from 'next/link';
 import { useTranslation } from 'next-i18next';
 import { TRANSACTION_STATUS, TX_LINK } from '@/constants/common.constant';
-import React from 'react';
+import React, { useMemo } from 'react';
+import { useNetworkManager } from '@/hooks/supply.hook';
+import { useConnectedNetworkManager } from '@/hooks/auth.hook';
 
 interface TransactionSuccessProps {
   handleCancel: any;
@@ -40,6 +42,12 @@ export default function TransactionSuccessComponent({
   handleLoans,
 }: TransactionSuccessProps) {
   const { t } = useTranslation('common');
+  const [networks] = useNetworkManager();
+  const { selectedChain } = useConnectedNetworkManager();
+
+  const selectedNetwork = useMemo(() => {
+    return networks?.get(selectedChain?.id) || {};
+  }, [networks, selectedChain]);
 
   const handleFinish = () => {
     setStep(0);
@@ -124,7 +132,14 @@ export default function TransactionSuccessComponent({
           </div>
         )} */}
         {txLink && (
-          <Link href={`${TX_LINK}${txLink}`} className="tx" target="_blank">
+          <Link
+            href={
+              selectedNetwork && selectedNetwork.txUrl
+                ? `${selectedNetwork?.txUrl}tx/${txLink}`
+                : `${TX_LINK}${txLink}`
+            }
+            className="tx"
+            target="_blank">
             <ExportOutlined />
             {t('BORROW_MODAL_SUCCESS_BORROW_REVIEW')}
           </Link>

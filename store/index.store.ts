@@ -8,12 +8,14 @@ import cardanoWallet from '@/reducers/cardano-wallet.reducer';
 import global from '@/reducers/global.reducer';
 import supply from '@/reducers/supply.reducer';
 import storage from '@/store/sync-storage.store';
+import borrow from '@/reducers/borrow.reducer';
 
 const rootReducer = combineReducers({
   global,
   auth,
   supply,
   cardanoWallet,
+  borrow,
 });
 
 const bindMiddleware = (middleware: any) => {
@@ -38,7 +40,7 @@ const makeStore = ({ isServer }: { isServer: boolean }) => {
       timeout: 1000,
       key: 'fusionFi',
       keyPrefix: '',
-      whitelist: ['global', 'auth', 'supply', 'cardanoWallet'],
+      whitelist: ['global', 'auth', 'supply', 'cardanoWallet', 'borrow'],
       storage, // Use the correct storage based on environment
       rootReducer,
     });

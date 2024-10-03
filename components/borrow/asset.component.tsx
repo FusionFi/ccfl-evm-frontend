@@ -2,7 +2,7 @@
 import cssClass from '@/components/borrow/asset.component.module.scss';
 import SafeHtmlComponent from '@/components/common/safe-html.component';
 import { ASSET_TYPE } from '@/constants/common.constant';
-import { useAuth } from '@/hooks/auth.hook';
+import { useAuth, useConnectedNetworkManager, useProviderManager } from '@/hooks/auth.hook';
 import eventBus from '@/hooks/eventBus.hook';
 import { toAmountShow, toLessPart } from '@/utils/common';
 import { Button, Skeleton } from 'antd';
@@ -13,27 +13,23 @@ import { twMerge } from 'tailwind-merge';
 
 interface AssetProps {
   showModal: any;
-  isConnected: any;
-  switchNetwork: any;
   networkInfo: any;
   tokenList: any;
   loadingAsset: any;
-  wagmiChainId: any;
 }
 
 export default function assetComponent({
   showModal,
-  isConnected,
-  switchNetwork,
   networkInfo,
   tokenList,
   loadingAsset,
-  wagmiChainId,
 }: AssetProps) {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const { t } = useTranslation('common');
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const [auth] = useAuth();
+  const { selectedChain, switchNetwork } = useConnectedNetworkManager();
+  const [provider] = useProviderManager();
 
   const handleCheckLogin = (name: string, apr: string, decimals: any) => {
     if (!auth?.userName && name === ASSET_TYPE.FIAT) {
@@ -64,7 +60,7 @@ export default function assetComponent({
   //   },
   // ];
 
-  console.log('networkInfo', isConnected, networkInfo, wagmiChainId);
+  console.log('networkInfo', networkInfo);
 
   return (
     <div className={twMerge(cssClass.assetComponent)}>
@@ -93,17 +89,14 @@ export default function assetComponent({
                           {item.asset?.toUpperCase()}
                         </div>
                         <div className={` flex justify-end `}>
-                          {isConnected &&
-                          networkInfo &&
-                          networkInfo.id &&
-                          networkInfo.id === wagmiChainId ? (
+                          {provider?.account && selectedChain?.id == provider?.chainId ? (
                             <Button
                               onClick={() => handleCheckLogin(item.asset, item.apr, item.decimals)}>
                               {t('BORROW_MODAL_BORROW_BORROW')}
                             </Button>
                           ) : (
                             <React.Fragment>
-                              {isConnected ? (
+                              {provider?.account ? (
                                 <Button onClick={() => switchNetwork()} className={'guest'}>
                                   <SafeHtmlComponent htmlContent={t('BORROW_SWITCH_NETWORK')} />
                                 </Button>
