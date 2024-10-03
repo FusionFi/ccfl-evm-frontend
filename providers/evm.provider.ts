@@ -163,6 +163,21 @@ class EVMProvider extends BaseProvider {
     });
     events = [];
   }
+  async withdraw({ amount, contractAddress, abi }: any) {
+    const result = await writeContract(config, {
+      address: contractAddress,
+      abi: abi || AbiPool,
+      functionName: 'withdraw',
+      args: [amount],
+    });
+
+    const tx = await waitForTransactionReceipt(config, {
+      confirmations: 1,
+      hash: result,
+    });
+
+    return tx?.transactionHash || result;
+  }
 
   // start borrow part
   async approveBorrow({ provider, contract_address, amount, address, tokenContract }: any) {
@@ -278,7 +293,6 @@ class EVMProvider extends BaseProvider {
       tokenAddress,
       contract_address,
     );
-
     return res;
   }
 
