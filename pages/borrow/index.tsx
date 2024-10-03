@@ -148,7 +148,8 @@ export default function BorrowPage() {
       decimals,
     });
   };
-  const showWithdrawCollateralModal = (token: string) => {
+  const showWithdrawCollateralModal = (token: string, record: any) => {
+    setLoanItem(record);
     setCollateralToken(token);
     setIsModalWithdrawCollateral(true);
   };
@@ -377,6 +378,7 @@ export default function BorrowPage() {
         step={step}
         setStep={setStep}
         loanItem={loanItem}
+        handleLoans={handleLoans}
       />
       <ModalWithdrawCollateralComponent
         isModalOpen={isModalWithdrawCollateral}
@@ -384,6 +386,8 @@ export default function BorrowPage() {
         currentToken={collateralToken}
         step={step}
         setStep={setStep}
+        loanItem={loanItem}
+        handleLoans={handleLoans}
       />
       <ModalBorrowFiatComponent
         isModalOpen={BorrowModalType.Fiat == modal.type}

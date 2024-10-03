@@ -40,6 +40,7 @@ interface ModalWithdrawCollateralProps {
   step: any;
   setStep: any;
   loanItem: any;
+  handleLoans: any;
 }
 
 interface IFormInput {}
@@ -51,6 +52,7 @@ export default function ModalWithdrawCollateralComponent({
   step,
   setStep,
   loanItem,
+  handleLoans,
 }: ModalWithdrawCollateralProps) {
   const { t } = useTranslation('common');
   const [provider] = useProviderManager();
@@ -168,6 +170,8 @@ export default function ModalWithdrawCollateralComponent({
     return `${t('BORROW_MODAL_WITHDRAW_COLLATERAL')}`;
   };
 
+  console.log('loanItem1', loanItem);
+
   return (
     <div>
       <ModalComponent
@@ -188,7 +192,14 @@ export default function ModalWithdrawCollateralComponent({
                   </div>
                   <div className="flex">
                     <div className="modal-borrow-repay">
-                      <span>5,000.00</span>
+                      {loanItem && (
+                        <span>
+                          {toLessPart(
+                            toAmountShow(loanItem.collateral_amount, loanItem.collateral_decimals),
+                            4,
+                          )}
+                        </span>
+                      )}
                       <span className="ml-1">{currentToken.toUpperCase()}</span>
                     </div>
                   </div>
@@ -242,6 +253,10 @@ export default function ModalWithdrawCollateralComponent({
               setStep={setStep}
               isWithdrawCollateral={true}
               status={status}
+              errorTx={errorTx}
+              handleLoans={handleLoans}
+              txLink={txHash}
+              stableCoinAmount={tokenValue}
             />
           </div>
         )}
