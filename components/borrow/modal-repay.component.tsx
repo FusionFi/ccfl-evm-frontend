@@ -443,11 +443,11 @@ export default function ModalBorrowComponent({
     setTokenValue(undefined);
   };
 
-  useEffect(() => {
-    if (isModalOpen) {
-      // handleCheckAllowance();
-    }
-  }, [tokenValue, step]);
+  // useEffect(() => {
+  //   if (isModalOpen) {
+  //     handleCheckAllowance();
+  //   }
+  // }, [tokenValue, step]);
 
   useEffect(() => {
     if (isModalOpen) {

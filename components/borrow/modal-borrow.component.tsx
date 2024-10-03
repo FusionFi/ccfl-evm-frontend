@@ -195,7 +195,7 @@ export default function ModalBorrowComponent({
           collateral: collateralData.address, //DEFAULT_ADDRESS[collateralKey],
           IsYieldGenerating: isYield,
           IsFiat: IsFiat,
-          provider: provider,
+          provider: connector_provider,
           account: provider?.account,
           contract_address: CONTRACT_ADDRESS,
         });
@@ -607,11 +607,11 @@ export default function ModalBorrowComponent({
     }
   }, [isYield, step]);
 
-  useEffect(() => {
-    if (isModalOpen) {
-      // handleCheckAllowance();
-    }
-  }, [isModalOpen, stableCoinValue, collateralValue, step, isYield, token]);
+  // useEffect(() => {
+  //   if (isModalOpen) {
+  //     handleCheckAllowance();
+  //   }
+  // }, [isModalOpen, stableCoinValue, collateralValue, step, isYield, token]);
 
   useEffect(() => {
     if (isModalOpen) {

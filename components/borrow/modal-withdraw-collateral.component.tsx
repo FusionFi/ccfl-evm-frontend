@@ -270,7 +270,7 @@ export default function ModalWithdrawCollateralComponent({
               errorTx={errorTx}
               handleLoans={handleLoans}
               txLink={txHash}
-              stableCoinAmount={tokenValue}
+              stableCoinAmount={loanItem?.collateral_asset}
             />
           </div>
         )}

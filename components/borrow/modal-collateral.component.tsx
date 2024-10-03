@@ -384,11 +384,11 @@ export default function ModalCollateralComponent({
     price: loanItem && loanItem.collateral_price ? loanItem.collateral_price : 1,
   };
 
-  useEffect(() => {
-    if (isModalOpen) {
-      // handleCheckAllowance();
-    }
-  }, [tokenValue, step]);
+  // useEffect(() => {
+  //   if (isModalOpen) {
+  //     handleCheckAllowance();
+  //   }
+  // }, [tokenValue, step]);
 
   useEffect(() => {
     if (isModalOpen) {
