@@ -69,7 +69,7 @@ export default function BorrowPage() {
     return false
   }, [isConnected, cardanoWalletConnected?.address, networkInfo])
 
-  console.log(cardanoWalletConnected.address, 'cardanoWalletConnected.address')
+  console.log(cardanoWalletConnected, 'cardanoWalletConnected.address')
 
   //connect wallet
   const [showSuccess, showError, showWarning, contextHolder] = useNotification();

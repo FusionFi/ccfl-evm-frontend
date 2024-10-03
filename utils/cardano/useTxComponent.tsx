@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTestTx } from './useTestTx'; // Adjust the import path as needed
 
-function TestTxComponent({ wallet }: { wallet: string }) {
+function TestTxComponent({ wallet }: { wallet: any }) {
   const { createTx, txHash } = useTestTx(wallet);
 
   return (

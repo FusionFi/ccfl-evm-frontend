@@ -3,18 +3,17 @@ import { initLucid } from './blockfrost';
 import { useCardanoWalletConnected } from '@/hooks/cardano-wallet.hook';
 import { useEffect, useState, useCallback } from 'react';
 
-export function useTestTx(wallet: string) {
-  const [cardanoWalletConnected] = useCardanoWalletConnected();
+export function useTestTx(wallet: any) {
   const [lucid, setLucid] = useState<Lucid | null>(null);
   const [txHash, setTxHash] = useState("None");
 
   useEffect(() => {
-    if (!lucid && cardanoWalletConnected) {
+    if (!lucid && wallet) {
       initLucid(wallet).then((Lucid: Lucid) => {
         setLucid(Lucid);
       });
     }
-  }, [lucid, cardanoWalletConnected, wallet]);
+  }, [lucid, wallet]);
 
   const createTx = useCallback(async () => {
     try {

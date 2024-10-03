@@ -5,7 +5,7 @@ import { initLucid } from './blockfrost'
 import { useCardanoWalletConnected } from '@/hooks/cardano-wallet.hook';
 import React, { useEffect, useState } from 'react';
 
-export default function testTx({wallet}: {wallet: string}) {
+export default function testTx({wallet}: {wallet: any}) {
   const [cardanoWalletConnected] = useCardanoWalletConnected();
   const [lucid, setLucid] = useState<Lucid | null>(null);
   const [TxHash, setTxHash] = useState("");
