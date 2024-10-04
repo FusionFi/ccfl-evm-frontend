@@ -657,7 +657,8 @@ export default function ModalBorrowComponent({
                         !loanItem ||
                         !stableCoinData.address ||
                         stableCoinData.balance === 0 ||
-                        (minimum && tokenValue < minimum)
+                        (minimum && tokenValue < minimum) ||
+                        (tokenValue && !(stableCoinData.balance - tokenValue >= 0))
                       }
                       className="w-full"
                       loading={loading}>
@@ -686,7 +687,8 @@ export default function ModalBorrowComponent({
                           !loanItem ||
                           !stableCoinData.address ||
                           stableCoinData.balance === 0 ||
-                          (minimum && tokenValue < minimum)
+                          (minimum && tokenValue < minimum) ||
+                          (tokenValue && !(stableCoinData.balance - tokenValue >= 0))
                         }
                         className="w-full"
                         loading={loading}>

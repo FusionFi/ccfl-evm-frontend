@@ -618,7 +618,8 @@ export default function ModalCollateralComponent({
                         errorEstimate.nonEnoughBalanceWallet ||
                         (errorEstimate.exceedsAllowance && step === 1) ||
                         (minimum && tokenValue < minimum) ||
-                        !stableCoinData.address
+                        !stableCoinData.address ||
+                        (tokenValue && !(stableCoinData.balance - tokenValue >= 0))
                       }
                       className="w-full"
                       loading={loading}>
@@ -645,7 +646,8 @@ export default function ModalCollateralComponent({
                           errorEstimate.nonEnoughBalanceWallet ||
                           (errorEstimate.exceedsAllowance && step === 1) ||
                           (minimum && tokenValue < minimum) ||
-                          !stableCoinData.address
+                          !stableCoinData.address ||
+                          (tokenValue && !(stableCoinData.balance - tokenValue >= 0))
                         }
                         className="w-full"
                         loading={loading}>
