@@ -10,6 +10,7 @@ import * as yup from 'yup';
 import validator from 'validator';
 import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
 import { useAuth } from '@/hooks/auth.hook';
+import service from '@/utils/backend/auth';
 
 interface ModalCollateralProps {}
 
@@ -57,16 +58,20 @@ export default function ModalSignupComponent({}: ModalCollateralProps) {
     },
   });
 
-  const onSubmit: SubmitHandler<IFormInput> = data => {
-    // updateAuth({
-    //   userName: data.userName,
-    //   email: data.email,
-    //   password: data.password,
-    // });
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+  const onSubmit: SubmitHandler<IFormInput> = async data => {
+    setTimeout(async () => {
+      setLoading(true);
+
+      let res = (await service.signUp(data)) as any;
+
+      if (res && res.username) {
+        updateAuth({
+          userName: data.userName,
+          email: data.email,
+        });
+      }
       openSignupCompleteModal(data.email);
+      setLoading(false);
     }, 1000);
   };
 
