@@ -84,6 +84,10 @@ export default function ModalWithdrawComponent({
   const _handleCancel = useCallback(() => {
     _setIsPending(false)
     form.resetFields();
+    form
+      .validateFields()
+      .then(e => { })
+      .catch(e => { });
     handleCancel();
   }, [])
 
@@ -103,7 +107,6 @@ export default function ModalWithdrawComponent({
         form.resetFields();
         _setIsPending(false)
       }
-
     }, 1000);
   };
 
@@ -224,10 +227,9 @@ export default function ModalWithdrawComponent({
                   {t('WITHDRAW_MODAL_OVERVIEW_AMOUNT')}
                 </div>
                 <div className="withdraw-modal-container__input__control">
-                  <Form.Item name="amount" help="" rules={[{ max: max, type: 'number', message: t('WITHDRAW_MODAL_VALIDATE_EXCEED_WITHDRAW_LIMIT') }, {
-                    required: true,
-                    message: t('WITHDRAW_MODAL_VALIDATE_REQUIRE_AMOUNT')
-                  }]} className='w-full'>
+                  <Form.Item name="amount" help="" rules={[
+                    { max: max, type: 'number', message: t('WITHDRAW_MODAL_VALIDATE_EXCEED_WITHDRAW_LIMIT') },
+                  ]} className='w-full'>
                     <InputNumber
                       placeholder={t('WITHDRAW_MODAL_INPUT_AMOUNT')}
                       className="withdraw-modal-container__input__control__amount"
