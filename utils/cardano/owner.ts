@@ -1,11 +1,13 @@
-import { lucid } from "./blockfrost"
+// import { initLucid } from "./blockfrost"
 
-export const ownerPKH = lucid.utils.getAddressDetails(await Deno.readTextFile("owner.addr"))
-  .paymentCredential!.hash;
+// const lucid = initLucid()
 
-export const ownerAddress = await Deno.readTextFile("./owner.addr");
+// export const ownerPKH = lucid.utils.getAddressDetails(process.env.OWNER_ADDR)
+//   .paymentCredential!.hash;
 
-export const interestPayAddr = "addr_test1vr4m7cd94yhymrwcmgs2k6zs00jql9d075ms0dgxjv2tuxqjy82wz"
+// export const ownerAddress = process.env.OWNER_ADDR;
 
-export const interestPKH = lucid.utils.getAddressDetails(interestPayAddr)
-  .paymentCredential!.hash;
+// export const interestPayAddr = "addr_test1vr4m7cd94yhymrwcmgs2k6zs00jql9d075ms0dgxjv2tuxqjy82wz"
+
+// export const interestPKH = lucid.utils.getAddressDetails(interestPayAddr)
+//   .paymentCredential!.hash;

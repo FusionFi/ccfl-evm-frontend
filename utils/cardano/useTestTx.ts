@@ -1,6 +1,5 @@
 import { Lucid } from 'lucid-cardano';
 import { initLucid } from './blockfrost';
-import { useCardanoWalletConnected } from '@/hooks/cardano-wallet.hook';
 import { useEffect, useState, useCallback } from 'react';
 
 export function useTestTx(wallet: any) {
@@ -24,7 +23,7 @@ export function useTestTx(wallet: any) {
 
       const tx = await lucid
         .newTx()
-        .payToAddress(wallet, { lovelace: 10000000n })
+        .payToAddress(wallet.address, { lovelace: 10000000n })
         .complete();
         
       const signedTx = await tx.sign().complete();
@@ -36,7 +35,6 @@ export function useTestTx(wallet: any) {
       return txHash;
     } catch (e: any) {
       console.log(e);
-      // createToaster(e.toString(), "alert");
     }
   }, [lucid, wallet]);
 

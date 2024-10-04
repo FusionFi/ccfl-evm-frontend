@@ -1,67 +1,15 @@
-'use client'
+import React from 'react';
+import { configMintTx } from '../transactions/configMint'; 
 
-import { Lucid, UTxO } from 'lucid-cardano'
-import { initLucid } from './blockfrost'
-import { useCardanoWalletConnected } from '@/hooks/cardano-wallet.hook';
-import React, { useEffect, useState } from 'react';
+function ConfigMintButton({ wallet }: { wallet: any }) {
+  const { createTx, txHash } = configMintTx(wallet);
 
-export default function testTx({wallet}: {wallet: string}) {
-  const [cardanoWalletConnected] = useCardanoWalletConnected();
-  const [lucid, setLucid] = useState<Lucid | null>(null);
-  const [TxHash, setTxHash] = useState("");
-
-  useEffect(() => {
-    if (!lucid && cardanoWalletConnected) {
-      initLucid(wallet).then((lucid: Lucid) => {
-        setLucid(lucid);
-      });
-    }
-  }, [lucid, cardanoWalletConnected, wallet]);
-
-  const createTx = async () => {
-    try {
-      if (!lucid) {
-        throw Error("Lucid not instantiated");
-      }
-      console.log(wallet);
-
-      const utxos: UTxO[] = await lucid.utxosAt(ownerAddress)
-      const utxo: UTxO = utxos[0]
-
-      const tx = await lucid
-        .newTx()
-        .collectFrom([utxo])
-        .mintAssets({
-          [configUnit]: 1n,
-        }, configUpdateAction)
-        .attachMintingPolicy(configMint)
-        .payToContract(
-          configAddr,
-          { inline: configDatum },
-          { [configUnit]: 1n }
-        )
-        .addSignerKey(ownerPKH)
-        .complete()
-        
-      const signedTx = await tx.sign().complete()
-
-      const txHash = await signedTx.submit()
-      
-      console.log(txHash);
-      setTxHash(txHash);
-      return txHash;
-    } catch (e: any) {
-      console.log(e);
-    }
-  }
-
-	return (
-    <>
-      {TxHash !== 'None' ? (
-        <p className="text-sm text-wrap break-words">{TxHash}</p>
-      ) : (
-        <button onClick={() => {createTx}}>Sign & Mint</button>
-      )}
-    </>
+  return (
+    <div className="bg-teal-500 px-6 py-1 text-base border rounded-md right-2 top-2 border-primary/20">
+      <button onClick={createTx}>Config Mint</button>
+      <p>Transaction Hash: {txHash}</p>
+    </div>
   );
-};
+}
+
+export default ConfigMintButton;

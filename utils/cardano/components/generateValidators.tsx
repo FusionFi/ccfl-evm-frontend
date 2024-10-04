@@ -1,8 +1,8 @@
 import React from 'react';
-import { useTestTx } from './useTestTx'; 
+import { makeVariables } from '../transactions/makeVariables'; 
 
-function TestTxComponent({ wallet }: { wallet: any }) {
-  const { createTx, txHash } = useTestTx(wallet);
+function GenerateValidatorsComponent({ wallet }: { wallet: any }) {
+  const { createTx, txHash } = makeVariables(wallet);
 
   return (
     <div className="bg-teal-500 px-6 py-1 text-base border rounded-md right-2 top-2 border-primary/20">
@@ -12,4 +12,4 @@ function TestTxComponent({ wallet }: { wallet: any }) {
   );
 }
 
-export default TestTxComponent;
+export default GenerateValidatorsComponent;

@@ -2,7 +2,6 @@
 
 import { Blockfrost, Lucid, Assets } from "lucid-cardano";
 import { Wallets } from "@/wallets/index.wallet";
-// import { useCardanoWalletConnected } from "@/hooks/cardano-wallet.hook";
 import { useSelector } from "react-redux";
 import { AppState } from "@/store/index.store";
 import { getLucid } from "@/libs/lucid.lib";
@@ -14,7 +13,7 @@ export async function initLucid(wallet: any) {
 		new Blockfrost("https://cardano-preview.blockfrost.io/api/v0", "previewiKYeItqp0rybitGGcRp3csHYRk01p3fd"),
 		"Preview",
 	)
-	const lucid = await getLucid()
+	// const lucid = await getLucid()
 	const _wallet = new Wallets[wallet.metadata.id]();
 	const api = await _wallet.getApi();
 	newlucid.selectWallet(api);
