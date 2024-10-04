@@ -299,7 +299,7 @@ export default function ModalCollateralComponent({
             console.log('getGasFeeApprove error', error);
           }
         } else {
-          setGasFee(0);
+          // setGasFee(0);
         }
       }
     }, 500);
@@ -345,7 +345,7 @@ export default function ModalCollateralComponent({
             setLoadingGasFee(false);
           }
         } else {
-          setGasFee(0);
+          // setGasFee(0);
         }
       }
     }, 500);

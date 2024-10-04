@@ -311,7 +311,7 @@ export default function ModalBorrowComponent({
             console.log('getGasFeeApprove error', error);
           }
         } else {
-          setGasFee(0);
+          // setGasFee(0);
         }
       }
     }, 500);
@@ -360,7 +360,7 @@ export default function ModalBorrowComponent({
             setLoadingGasFee(false);
           }
         } else {
-          setGasFee(0);
+          // setGasFee(0);
         }
       }
     }, 500);

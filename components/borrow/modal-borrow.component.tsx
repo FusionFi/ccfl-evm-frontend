@@ -458,7 +458,7 @@ export default function ModalBorrowComponent({
             setLoadingGasFee(false);
           }
         } else {
-          setGasFee(0);
+          // setGasFee(0);
         }
       }
     }, 500);
@@ -516,7 +516,7 @@ export default function ModalBorrowComponent({
             setLoadingGasFee(false);
           }
         } else {
-          setGasFee(0);
+          // setGasFee(0);
         }
       }
     }, 500);
