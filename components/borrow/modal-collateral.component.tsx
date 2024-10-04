@@ -87,6 +87,7 @@ export default function ModalCollateralComponent({
   const [loading, setLoading] = useState<boolean>(false);
   const [errorTx, setErrorTx] = useState() as any;
   const [txHash, setTxHash] = useState();
+  const [allowanceNumber, setAllowanceNumber] = useState() as any;
 
   //start hook
   const [approveBorrow] = useApprovalBorrow(provider);
@@ -261,13 +262,7 @@ export default function ModalCollateralComponent({
 
   const handleGetGasFeeApprove = async () => {
     if (step === 0) {
-      if (
-        tokenValue &&
-        tokenValue > 0 &&
-        loanItem.collateral_decimals &&
-        stableCoinData.address &&
-        !loadingGasFee
-      ) {
+      if (tokenValue && tokenValue > 0 && loanItem.collateral_decimals && stableCoinData.address) {
         const connector_provider = await connector?.getProvider();
         try {
           setLoadingGasFee(true);
@@ -309,7 +304,8 @@ export default function ModalCollateralComponent({
         stableCoinData.address &&
         loanItem.collateral_decimals &&
         loanItem.loan_id &&
-        !loadingGasFee
+        allowanceNumber &&
+        allowanceNumber >= tokenValue
       ) {
         const connector_provider = await connector?.getProvider();
         try {
@@ -378,6 +374,8 @@ export default function ModalCollateralComponent({
           tokenValue,
           isNotNeedToApprove,
         );
+
+        setAllowanceNumber(toAmountShow(res, loanItem.collateral_decimals));
         if (isNotNeedToApprove) {
           setStep(1);
         } else {

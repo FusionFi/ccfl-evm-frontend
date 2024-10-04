@@ -129,6 +129,7 @@ export default function ModalBorrowComponent({
   });
   const [loadingMinimum, setLoadingMinimum] = useState<boolean>(false);
   const [minimum, setMinimum] = useState() as any;
+  const [allowanceNumber, setAllowanceNumber] = useState() as any;
 
   const onSubmit: SubmitHandler<IFormInput> = async data => {
     const connector_provider = await connector?.getProvider();
@@ -413,7 +414,7 @@ export default function ModalBorrowComponent({
 
   const handleGetFeeApprove = async () => {
     if (step === 0) {
-      if (collateralValue && collateralValue > 0 && collateralData.address && !loadingGasFee) {
+      if (collateralValue && collateralValue > 0 && collateralData.address) {
         const connector_provider = await connector?.getProvider();
         try {
           setLoadingGasFee(true);
@@ -464,7 +465,8 @@ export default function ModalBorrowComponent({
         collateralValue > 0 &&
         stableCoinInfo.address &&
         collateralData.address &&
-        !loadingGasFee
+        allowanceNumber &&
+        allowanceNumber >= collateralValue
       ) {
         const connector_provider = await connector?.getProvider();
         try {
@@ -553,7 +555,7 @@ export default function ModalBorrowComponent({
           collateralValue,
           isNotNeedToApprove,
         );
-
+        setAllowanceNumber(toAmountShow(res, collateralData.decimals));
         if (isNotNeedToApprove) {
           setStep(1);
         } else {
