@@ -27,8 +27,8 @@ export function merge() {
 }
 // merge 2 array by prop
 export function mergeByProperty(arr1, arr2, prop) {
-  each(arr2, function(arr2obj) {
-    var arr1obj = find(arr1, function(arr1obj) {
+  each(arr2, function (arr2obj) {
+    var arr1obj = find(arr1, function (arr1obj) {
       return arr1obj[prop] === arr2obj[prop];
     });
 
@@ -103,13 +103,17 @@ export function toWei(val) {
   return scale(bnum(val.toString()), 18).integerValue().toString();
 }
 
+export function toUnitWithDecimal(val, decimal) {
+  return scale(bnum(val.toString()), decimal).integerValue().toString();
+}
+
 export function toAmountShow(val, decimals = 18, numFixed = 0) {
   if (!val) return 0;
   let tmp = BigNumber(val || 0).div(Math.pow(10, decimals));
   return numFixed ? tmp.toFixed(numFixed) : tmp.toNumber();
 }
 export function guidGenerator() {
-  var S4 = function() {
+  var S4 = function () {
     return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
   };
   return S4() + S4() + '-' + S4() + '-' + S4() + '-' + S4() + '-' + S4() + S4() + S4();
@@ -175,7 +179,7 @@ export const mapMsgSuccess = (content, duration = 5) => {
 };
 
 export const uniqueArr = arr => {
-  let newArr = arr.reduce(function(accumulator, element) {
+  let newArr = arr.reduce(function (accumulator, element) {
     if (accumulator.indexOf(element) === -1) {
       accumulator.push(element);
     }
@@ -213,7 +217,6 @@ export function convertExponentialToDecimal(exponentialNumber) {
   }
 }
 export function toCurrency(value, decimalPlaces = 6) {
-  console.log('value: ', value, decimalPlaces)
   if (!value) return 0;
   // Convert the value to a string
   const valueStr = value.toString();
@@ -237,4 +240,9 @@ export function toCurrency(value, decimalPlaces = 6) {
 
   // If there is no decimal part, return the formatted integer part
   return integerPart;
+}
+export function toLessPart(val, numFloor, isRound) {
+  if (!val) return 0;
+  let finalValue = val ? Math.floor(val * Math.pow(10, numFloor)) / Math.pow(10, numFloor) : val;
+  return isRound ? Math.ceil(finalValue) : finalValue;
 }

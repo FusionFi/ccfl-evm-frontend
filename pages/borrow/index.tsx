@@ -1,33 +1,33 @@
 import cssClass from '@/pages/borrow/index.module.scss';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { useCallback, useEffect, useState, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
-// import SelectComponent from '@/components/common/select.component';
 import AssetComponent from '@/components/borrow/asset.component';
 import LoansComponent from '@/components/borrow/loans.component';
 import ModalBorrowComponent from '@/components/borrow/modal-borrow.component';
 import ModalRepayComponent from '@/components/borrow/modal-repay.component';
 import OverviewComponent from '@/components/common/overview.component';
 import TitleComponent from '@/components/common/title.component';
-import { CHAIN_INFO } from '@/constants/chains.constant';
-import { COLLATERAL_TOKEN, TYPE_COMMON } from '@/constants/common.constant';
-import { NETWORKS, STAKE_DEFAULT_NETWORK } from '@/constants/networks';
+import { CARDANO_NETWORK_ID, SUPPORTED_CHAINS_MAP } from '@/constants/chains.constant';
+import { ASSET_LIST, COLLATERAL_TOKEN, TYPE_COMMON } from '@/constants/common.constant';
+import { NETWORKS } from '@/constants/networks';
 import { useNotification } from '@/hooks/notifications.hook';
 import { CaretDownOutlined } from '@ant-design/icons';
 import type { SelectProps } from 'antd';
 import { Select } from 'antd';
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
-import { useAccount, useSwitchChain } from 'wagmi';
-import { useCardanoWalletConnected } from '@/hooks/cardano-wallet.hook'
-import { useCardanoConnected, useNetworkManager } from '@/hooks/auth.hook';
+import { DataType } from '@/components/borrow/borrow';
+import { useConnectedNetworkManager, useProviderManager } from '@/hooks/auth.hook';
 import eventBus from '@/hooks/eventBus.hook';
-
 import ModalBorrowFiatSuccessComponent from '@/components/borrow/modal-borrow-fiat/modal-borrow-fiat-success.component';
 import ModalBorrowFiatComponent from '@/components/borrow/modal-borrow-fiat/modal-borrow-fiat.component';
 import ModalCollateralComponent from '@/components/borrow/modal-collateral.component';
 import ModalWithdrawCollateralComponent from '@/components/borrow/modal-withdraw-collateral.component';
-import { SUPPORTED_CHAINS } from '@/constants/chains.constant';
+import service from '@/utils/backend/borrow';
+import { useNetworkManager } from '@/hooks/supply.hook';
+import { ProviderType } from '@/providers/index.provider';
+
 type LabelRender = SelectProps['labelRender'];
 enum BorrowModalType {
   Crypto = 'crypto',
@@ -37,82 +37,123 @@ enum BorrowModalType {
 
 export default function BorrowPage() {
   const { t } = useTranslation('common');
-  const { switchChain } = useSwitchChain();
   const [modal, setModal] = useState({} as any);
   const [isModalRepayOpen, setIsModalRepayOpen] = useState(false);
   const [isModalCollateralOpen, setIsModalCollateralOpen] = useState(false);
   const [isModalWithdrawCollateral, setIsModalWithdrawCollateral] = useState(false);
-
   const [currentToken, setCurrentToken] = useState('');
-
   const [collateralToken, setCollateralToken] = useState(COLLATERAL_TOKEN[0].name);
   const [step, setStep] = useState(0);
   const [token, setToken] = useState(COLLATERAL_TOKEN[0].name);
-  const { address, isConnected } = useAccount();
+  const [dataLoan, setDataLoan] = useState<DataType>();
+  const [loading, setLoading] = useState(false);
   const [isFiat, setIsFiat] = useState(false);
-  const [cardanoWalletConnected] = useCardanoWalletConnected();
   const [networkInfo, setNetworkInfo] = useState<any | null>(null);
-  const [isCardanoConnected] = useCardanoConnected();
-
-  const [chainId, updateNetwork] = useNetworkManager();
-
-  const isConnected_ = useMemo(() => {
-    if (!!cardanoWalletConnected?.address) {
-      return true;
-    }
-
-    if (isConnected && networkInfo) {
-      return true;
-    }
-    return false
-  }, [isConnected, cardanoWalletConnected?.address, networkInfo])
-
-  //connect wallet
-  const [showSuccess, showError, showWarning, contextHolder] = useNotification();
+  const { selectedChain, updateNetwork } = useConnectedNetworkManager();
+  const [, updateNetworks] = useNetworkManager();
+  const [provider] = useProviderManager();
 
   const handleNetworkChange = (item: any) => {
     try {
-      console.log(item, 'item')
-      console.log(chainId, 'chainId')
-      const currentTab = chainId == 'ADA' ? 'cardano' : 'evm';
-      const changedTab = item == 'ADA' ? 'cardano' : 'evm';
+      const currentTab =
+        selectedChain?.id == CARDANO_NETWORK_ID ? ProviderType.Cardano : ProviderType.EVM;
+      const changedTab = item == CARDANO_NETWORK_ID ? ProviderType.Cardano : ProviderType.EVM;
       if (currentTab != changedTab) {
         eventBus.emit('openWeb3Modal', {
-          tab: item == 'ADA' ? 'cardano' : 'evm',
-          chainId: item
-        })
+          tab: changedTab,
+          chainId: item,
+        });
       } else {
-        updateNetwork(item)
+        updateNetwork(item);
       }
     } catch (error) {
-      console.error('handle network changing failed: ', error)
+      console.error('handle network changing failed: ', error);
     }
-  }
+  };
 
-  const selectedChain = useMemo(() => {
-    let _chain = CHAIN_INFO.get(chainId);
-    if (!_chain) {
-      if (isCardanoConnected) {
-        _chain = CHAIN_MAP.get('ADA')
-      } else {
-        _chain = CHAIN_MAP.get(11155111)
+  const [tokenList, setTokenList] = useState<any[]>([]);
+  const [loadingAsset, setLoadingAsset] = useState(false);
+  const [price, setPrice] = useState<any>();
+  const [pagination, setPagination] = useState<any>({
+    current: 1,
+    offset: 0,
+    pageSize: 10,
+  });
+  const [loanItem, setLoanItem] = useState<any>(undefined);
 
+  const handlePrice = async () => {
+    try {
+      setLoadingAsset(true);
+      let data = (await service.getPool(selectedChain?.id)) as any;
+      let price = {
+        USDT: null,
+        USDC: null,
+      };
+
+      let priceUSDC = (await service.getPrice(selectedChain?.id, ASSET_LIST.USDC)) as any;
+      let priceUSDT = (await service.getPrice(selectedChain?.id, ASSET_LIST.USDT)) as any;
+      price.USDC = priceUSDC?.price;
+      price.USDT = priceUSDT?.price;
+      setPrice(price);
+
+      if (data && data[0] && priceUSDC) {
+        data[0].usd = data[0].loan_available * priceUSDC.price;
       }
-    }
-    return _chain;
-  }, [chainId, isCardanoConnected]);
+      if (data && data[1] && priceUSDT) {
+        data[1].usd = data[1].loan_available * priceUSDT.price;
+      }
 
-  const showModal = (token: string) => {
+      setTokenList(data);
+    } catch (error) {
+      console.log('error', error);
+    } finally {
+      setLoadingAsset(false);
+    }
+  };
+
+  const handleLoans = async (offset = 0, limit = 10) => {
+    try {
+      setLoading(true);
+      let data = (await service.getLoans(
+        provider?.account,
+        selectedChain?.id,
+        offset,
+        limit,
+      )) as any;
+      if (data) {
+        setDataLoan(data);
+      }
+    } catch (error) {
+      console.log('error', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onChangePagination = (page: any, pageSize: any) => {
+    console.log('onShowSizeChange', page, pageSize);
+    setPagination({
+      current: page,
+      offset: (page - 1) * pageSize,
+      pageSize: pageSize,
+    });
+    handleLoans((page - 1) * pageSize, pageSize);
+  };
+
+  const showModal = (token: string, apr: string, decimals: string) => {
     setModal({
       type: token == BorrowModalType.Fiat ? BorrowModalType.Fiat : BorrowModalType.Crypto,
       token,
+      apr,
+      decimals,
     });
   };
-  const showWithdrawCollateralModal = (token: string) => {
+  const showWithdrawCollateralModal = (token: string, record: any) => {
+    setLoanItem(record);
     setCollateralToken(token);
     setIsModalWithdrawCollateral(true);
   };
-  const showRepayModal = (token: string, repaymentCurrency: string) => {
+  const showRepayModal = (token: string, repaymentCurrency: string, record: any) => {
     if (repaymentCurrency) {
       setIsFiat(true);
       setCurrentToken(repaymentCurrency);
@@ -120,9 +161,11 @@ export default function BorrowPage() {
       setIsFiat(false);
       setCurrentToken(token);
     }
+    setLoanItem(record);
     setIsModalRepayOpen(true);
   };
-  const showCollateralModal = (token: string) => {
+  const showCollateralModal = (token: string, record: any) => {
+    setLoanItem(record);
     setCollateralToken(token);
     setIsModalCollateralOpen(true);
   };
@@ -130,6 +173,9 @@ export default function BorrowPage() {
   const handleCancel = () => {
     setModal({
       type: '',
+      token: '',
+      apr: '',
+      decimals: '',
     });
     setStep(0);
     setToken(COLLATERAL_TOKEN[0].name);
@@ -153,41 +199,34 @@ export default function BorrowPage() {
   const itemLeft = [
     {
       text: t('BORROW_OVERVIEW_BALANCE'),
-      content: ' 1,875.00',
+      content: dataLoan?.total_loan ? dataLoan?.total_loan : 0,
       type: TYPE_COMMON.USD,
     },
     {
       text: t('BORROW_OVERVIEW_COLLATERAL'),
-      content: ' 1,875.00',
+      content: dataLoan?.total_collateral ? dataLoan?.total_collateral : 0,
       type: TYPE_COMMON.USD,
     },
   ];
 
   const itemRight = [
     {
-      text: t('BORROW_APY'),
-      content: '0.07',
+      text: t('BORROW_OVERVIEW_APR'),
+      content: dataLoan?.net_apr ?? '',
       type: TYPE_COMMON.PERCENT,
     },
     {
       text: t('BORROW_OVERVIEW_FINANCE_HEALTH'),
-      content: '1.66',
+      content: dataLoan?.finance_health ?? '',
       type: TYPE_COMMON.FINANCE_HEALTH,
     },
   ];
+
   const labelRender: LabelRender = (props: any) => {
     let { value } = props;
 
-    let _chain: any = CHAIN_MAP.get(value);
-
-    if (!_chain) {
-      if (isCardanoConnected) {
-        _chain = CHAIN_MAP.get('ADA')
-      } else {
-        _chain = CHAIN_MAP.get(11155111)
-
-      }
-    }
+    const _chain: any = SUPPORTED_CHAINS_MAP.get(value);
+    console.log('🚀 ~ SupplyOverviewComponent ~ _chain:', _chain);
 
     return (
       <div className="flex items-center">
@@ -207,29 +246,14 @@ export default function BorrowPage() {
     );
   };
 
-  //connect wallet
-  const switchNetwork = async () => {
+  const fetchNetworkBorrow = async () => {
     try {
-      const rs = await switchChain({ chainId: STAKE_DEFAULT_NETWORK?.chain_id_decimals });
+      const [_networks] = await Promise.all([service.fetchNetworks()]);
+      updateNetworks(_networks);
     } catch (error) {
-      console.log('🚀 ~ switchNetwork ~ error:', error);
-      showError(error);
+      console.error('fetchNetwork failed: ', error);
     }
   };
-
-  const initNetworkInfo = useCallback(() => {
-    if (chainId) {
-      const networkCurrent = NETWORKS.find(item => item.chain_id_decimals === chainId);
-      setNetworkInfo(networkCurrent || null);
-    }
-  }, [chainId]);
-
-  useEffect(() => {
-    if (address) {
-      // getBalance();
-      initNetworkInfo();
-    }
-  }, [address, initNetworkInfo]);
 
   const handleBorrowFiatOk = ({ paymentMethod }: any) => {
     setModal({
@@ -237,7 +261,16 @@ export default function BorrowPage() {
       paymentMethod,
     });
   };
-  const CHAIN_MAP = new Map(SUPPORTED_CHAINS.map(item => [item.id, item]));
+
+  useEffect(() => {
+    handlePrice();
+    handleLoans();
+  }, [selectedChain?.id, provider?.account]);
+
+  useEffect(() => {
+    fetchNetworkBorrow();
+  }, []);
+
   return (
     <div className={twMerge('borrow-page-container', cssClass.borrowPage)}>
       <div className="borrow-header">
@@ -252,11 +285,11 @@ export default function BorrowPage() {
                 value: selectedChain?.id,
               }}
               onChange={handleNetworkChange}
-              options={[...(CHAIN_MAP.values() as any)].map(item => ({
+              options={[...(SUPPORTED_CHAINS_MAP.values() as any)].map(item => ({
                 value: item.id,
               }))}
               optionRender={(option: any) => {
-                const _chain: any = CHAIN_MAP.get(option.value);
+                const _chain: any = SUPPORTED_CHAINS_MAP.get(option.value);
                 return (
                   <div className="chain-dropdown-item-wrapper">
                     <Image
@@ -279,40 +312,53 @@ export default function BorrowPage() {
           </div>
         </TitleComponent>
       </div>
-      {isConnected_ && (
+      {provider?.account && selectedChain?.id == provider?.chainId && !loading && (
         <div className="mb-4">
           <OverviewComponent itemLeft={itemLeft} itemRight={itemRight} />
         </div>
       )}
       <div className="flex gap-4 borrow-inner">
-        {isConnected_ && (
+        {provider?.account && selectedChain?.id == provider?.chainId && (
           <div className="xl:basis-1/2 basis-full">
             <LoansComponent
               showModal={showModal}
               showRepayModal={showRepayModal}
               showCollateralModal={showCollateralModal}
+              dataLoan={dataLoan?.loans?.data}
+              loading={loading}
               showWithdrawCollateralModal={showWithdrawCollateralModal}
+              totalLoan={dataLoan?.loans?.total}
+              onChangePagination={onChangePagination}
+              pagination={pagination}
             />
           </div>
         )}
         <div
-          className={`${isConnected_ ? 'xl:basis-1/2' : 'xl:basis-full'} basis-full`}>
+          className={`${
+            provider?.account && selectedChain?.id == provider?.chainId
+              ? 'xl:basis-1/2'
+              : 'xl:basis-full'
+          } basis-full`}>
           <AssetComponent
             showModal={showModal}
-            isConnected={isConnected_}
-            switchNetwork={switchNetwork}
             networkInfo={networkInfo}
+            tokenList={tokenList}
+            loadingAsset={loadingAsset}
           />
         </div>
       </div>
       <ModalBorrowComponent
         isModalOpen={BorrowModalType.Crypto == modal.type}
         handleCancel={handleCancel}
-        currentToken={modal.token}
+        stableCoin={modal.token}
         step={step}
         setStep={setStep}
         token={token}
         setToken={setToken}
+        apr={modal.apr}
+        decimalStableCoin={modal.decimals}
+        priceStableCoin={price}
+        handleLoans={handleLoans}
       />
       <ModalRepayComponent
         isModalOpen={isModalRepayOpen}
@@ -321,6 +367,9 @@ export default function BorrowPage() {
         step={step}
         setStep={setStep}
         isFiat={isFiat}
+        priceToken={price}
+        loanItem={loanItem}
+        handleLoans={handleLoans}
       />
       <ModalCollateralComponent
         isModalOpen={isModalCollateralOpen}
@@ -328,6 +377,8 @@ export default function BorrowPage() {
         currentToken={collateralToken}
         step={step}
         setStep={setStep}
+        loanItem={loanItem}
+        handleLoans={handleLoans}
       />
       <ModalWithdrawCollateralComponent
         isModalOpen={isModalWithdrawCollateral}
@@ -335,6 +386,8 @@ export default function BorrowPage() {
         currentToken={collateralToken}
         step={step}
         setStep={setStep}
+        loanItem={loanItem}
+        handleLoans={handleLoans}
       />
       <ModalBorrowFiatComponent
         isModalOpen={BorrowModalType.Fiat == modal.type}

@@ -1,56 +1,34 @@
-import cssClass from './supply-overview.component.module.scss';
-
-import { CHAIN_INFO, SUPPORTED_CHAINS } from '@/constants/chains.constant';
-import { useCardanoConnected, useNetworkManager } from '@/hooks/auth.hook';
-import { useCardanoWalletConnected } from '@/hooks/cardano-wallet.hook';
+import { CARDANO_NETWORK_ID, SUPPORTED_CHAINS_MAP } from '@/constants/chains.constant';
+import { useConnectedNetworkManager, useProviderManager } from '@/hooks/auth.hook';
 import eventBus from '@/hooks/eventBus.hook';
+import { useUserManager, useNetworkManager as useSupplyNetworkManager } from '@/hooks/supply.hook';
+import supplyBE from '@/utils/backend/supply';
+import { computeWithMinThreashold } from '@/utils/percent.util';
 import { CaretDownOutlined } from '@ant-design/icons';
 import type { SelectProps } from 'antd';
 import { Select } from 'antd';
+import BigNumber from 'bignumber.js';
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
-import { useMemo } from 'react';
-import { useAccount } from 'wagmi';
+import { useEffect, useMemo } from 'react';
+import cssClass from './supply-overview.component.module.scss';
 
 type LabelRender = SelectProps['labelRender'];
 
-export default function SupplyOverviewComponent({ isModalOpen, handleCancel, message }: any) {
+export default function SupplyOverviewComponent() {
   const { t } = useTranslation('common');
 
-  const { isConnected, address } = useAccount();
-  const [cardanoWalletConnected] = useCardanoWalletConnected();
-  const [isCardanoConnected] = useCardanoConnected();
-  const [chainId, updateNetwork] = useNetworkManager();
-  const CHAIN_MAP = new Map(SUPPORTED_CHAINS.map(item => [item.id, item]));
-  const isConnected_ = useMemo(() => {
-    return isConnected || !!cardanoWalletConnected?.address;
-  }, [isConnected, cardanoWalletConnected?.address]);
+  const { selectedChain, updateNetwork } = useConnectedNetworkManager();
+  const [, updateNetworks] = useSupplyNetworkManager()
+  const [provider] = useProviderManager();
 
-  const selectedChain = useMemo(() => {
-    let _chain = CHAIN_INFO.get(chainId);
-    if (!_chain) {
-      if (isCardanoConnected) {
-        _chain = CHAIN_MAP.get('ADA');
-      } else {
-        _chain = CHAIN_MAP.get(11155111);
-      }
-    }
-    return _chain;
-  }, [chainId, isCardanoConnected]);
+  const [user] = useUserManager();
 
-  console.log('selectedChain: ', selectedChain);
   const labelRender: LabelRender = (props: any) => {
     let { value } = props;
 
-    let _chain: any = CHAIN_MAP.get(value);
-
-    if (!_chain) {
-      if (isCardanoConnected) {
-        _chain = CHAIN_MAP.get('ADA');
-      } else {
-        _chain = CHAIN_MAP.get(11155111);
-      }
-    }
+    const _chain: any = SUPPORTED_CHAINS_MAP.get(value);
+    console.log('🚀 ~ SupplyOverviewComponent ~ _chain:', _chain);
 
     return (
       <div className="flex items-center">
@@ -70,15 +48,21 @@ export default function SupplyOverviewComponent({ isModalOpen, handleCancel, mes
     );
   };
 
+  const totalSupply = useMemo(() => {
+    return new BigNumber(user?.total_supply || 0).toFormat(2);
+  }, [user?.total_supply]);
+
+  const totalEarned = useMemo(() => {
+    return new BigNumber(user?.total_earned || 0).toFormat(2);
+  }, [user?.total_earned]);
+
   const handleNetworkChange = (item: any) => {
     try {
-      console.log(item, 'item');
-      console.log(chainId, 'chainId');
-      const currentTab = chainId == 'ADA' ? 'cardano' : 'evm';
-      const changedTab = item == 'ADA' ? 'cardano' : 'evm';
+      const currentTab = selectedChain?.id == CARDANO_NETWORK_ID ? 'cardano' : 'evm';
+      const changedTab = item == CARDANO_NETWORK_ID ? 'cardano' : 'evm';
       if (currentTab != changedTab) {
         eventBus.emit('openWeb3Modal', {
-          tab: item == 'ADA' ? 'cardano' : 'evm',
+          tab: changedTab,
           chainId: item,
         });
       } else {
@@ -88,6 +72,21 @@ export default function SupplyOverviewComponent({ isModalOpen, handleCancel, mes
       console.error('handle network changing failed: ', error);
     }
   };
+
+
+  const fetchInitiaData = async () => {
+    try {
+      const [_networks] = await Promise.all([supplyBE.fetchNetworks()]);
+      updateNetworks(_networks);
+    } catch (error) {
+      console.error('fetch initial data on SupplyOverviewComponent failed: ', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchInitiaData();
+  }, []);
+
   return (
     <div className={cssClass['supply-overview']}>
       <div className="flex">
@@ -102,11 +101,11 @@ export default function SupplyOverviewComponent({ isModalOpen, handleCancel, mes
               value: selectedChain?.id,
             }}
             onChange={handleNetworkChange}
-            options={[...(CHAIN_MAP.values() as any)].map(item => ({
+            options={[...(SUPPORTED_CHAINS_MAP.values() as any)].map(item => ({
               value: item.id,
             }))}
             optionRender={(option: any) => {
-              const _chain: any = CHAIN_MAP.get(option.value);
+              const _chain: any = SUPPORTED_CHAINS_MAP.get(option.value);
               return (
                 <div className="chain-dropdown-item-wrapper">
                   <Image
@@ -128,7 +127,7 @@ export default function SupplyOverviewComponent({ isModalOpen, handleCancel, mes
           />
         </div>
       </div>
-      {isConnected_ && (
+      {provider?.account && (
         <div className="supply-overview__body">
           <div className="supply-overview__body__wrapper">
             <div className="supply-overview__body__wrapper__item">
@@ -142,7 +141,7 @@ export default function SupplyOverviewComponent({ isModalOpen, handleCancel, mes
                   style={{
                     color: '#F0F0F0',
                   }}>
-                  4,567.87
+                  {totalSupply}
                 </span>
               </div>
             </div>
@@ -156,9 +155,8 @@ export default function SupplyOverviewComponent({ isModalOpen, handleCancel, mes
                   style={{
                     color: '#F0F0F0',
                   }}>
-                  0.07
+                  {computeWithMinThreashold(user?.net_apy)}
                 </span>{' '}
-                %
               </div>
             </div>
             <div className="supply-overview__body__wrapper__item">
@@ -171,7 +169,7 @@ export default function SupplyOverviewComponent({ isModalOpen, handleCancel, mes
                   style={{
                     color: '#52C41A',
                   }}>
-                  +$65.87
+                  +${totalEarned}
                 </span>
               </div>
             </div>

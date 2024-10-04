@@ -3,8 +3,10 @@ import { ExportOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import Link from 'next/link';
 import { useTranslation } from 'next-i18next';
-import { TRANSACTION_STATUS } from '@/constants/common.constant';
-import React from 'react';
+import { TRANSACTION_STATUS, TX_LINK } from '@/constants/common.constant';
+import React, { useMemo } from 'react';
+import { useNetworkManager } from '@/hooks/supply.hook';
+import { useConnectedNetworkManager } from '@/hooks/auth.hook';
 
 interface TransactionSuccessProps {
   handleCancel: any;
@@ -16,6 +18,11 @@ interface TransactionSuccessProps {
   isCollateral?: boolean;
   status?: string;
   isWithdrawCollateral?: boolean;
+  stableCoinAmount?: any;
+  collateralAmount?: any;
+  txLink?: any;
+  errorTx?: any;
+  handleLoans?: any;
 }
 
 export default function TransactionSuccessComponent({
@@ -28,12 +35,26 @@ export default function TransactionSuccessComponent({
   isBorrow = false,
   status = TRANSACTION_STATUS.FAILED,
   isWithdrawCollateral = false,
+  stableCoinAmount,
+  collateralAmount,
+  txLink,
+  errorTx,
+  handleLoans,
 }: TransactionSuccessProps) {
   const { t } = useTranslation('common');
+  const [networks] = useNetworkManager();
+  const { selectedChain } = useConnectedNetworkManager();
+
+  const selectedNetwork = useMemo(() => {
+    return networks?.get(selectedChain?.id) || {};
+  }, [networks, selectedChain]);
 
   const handleFinish = () => {
     setStep(0);
     handleCancel();
+    if (status === TRANSACTION_STATUS.SUCCESS && handleLoans) {
+      handleLoans();
+    }
   };
 
   return (
@@ -52,38 +73,42 @@ export default function TransactionSuccessComponent({
         <div className={`divider-bot content px-4 py-4 ${isRepay ? 'repay' : ''}`}>
           {status === TRANSACTION_STATUS.FAILED ? (
             <div>
-              <div>{t('BORROW_MODAL_ERROR_CODE')}: 503</div>
-              <div>Error message</div>
+              <div>
+                {t('BORROW_MODAL_ERROR_CODE')}: {errorTx?.code}
+              </div>
+              <div>{errorTx?.message}</div>
             </div>
           ) : (
             <React.Fragment>
               {isRepay && (
                 <span>
-                  {t('BORROW_MODAL_SUCCESS_REPAY_TOKEN')} 575 {currentToken?.toUpperCase()}
+                  {t('BORROW_MODAL_SUCCESS_REPAY_TOKEN')} {stableCoinAmount}{' '}
+                  {currentToken?.toUpperCase()}
                 </span>
               )}
               {isBorrow && (
                 <span>
-                  {t('BORROW_MODAL_SUCCESS_BORROW_TOKEN')} 4,000 {currentToken?.toUpperCase()}
+                  {t('BORROW_MODAL_SUCCESS_BORROW_TOKEN')} {stableCoinAmount}{' '}
+                  {currentToken?.toUpperCase()}
                 </span>
               )}
               {isCollateral && (
                 <span>
                   {t('BORROW_MODAL_COLLATERAL_DONE', {
-                    amount: 500,
+                    amount: stableCoinAmount,
                     token: currentToken?.toUpperCase(),
                   })}
                 </span>
               )}
               {isWithdrawCollateral && (
                 <span>
-                  {t('BORROW_MODAL_WITHDRAW_DONE')} 4,000 {currentToken?.toUpperCase()}
+                  {t('BORROW_MODAL_WITHDRAW_DONE')} {stableCoinAmount} {currentToken?.toUpperCase()}
                 </span>
               )}
             </React.Fragment>
           )}
         </div>
-        {isBorrow && (
+        {isBorrow && status === TRANSACTION_STATUS.SUCCESS && (
           <div className="coin">
             <Image
               className="mr-2"
@@ -93,11 +118,11 @@ export default function TransactionSuccessComponent({
               height={24}
             />
             <span className="content">
-              {t('BORROW_MODAL_SUCCESS_BORROW_DEPOSIT')} 0.22 {token?.toUpperCase()}
+              {t('BORROW_MODAL_SUCCESS_BORROW_DEPOSIT')} {collateralAmount} {token?.toUpperCase()}
             </span>
           </div>
         )}
-        {isBorrow && (
+        {/* {isBorrow && (
           <div className="tokens">
             <div className="mb-2">{t('BORROW_MODAL_SUCCESS_BORROW_RECEIVED')}</div>
             <div className="flex justify-between">
@@ -105,11 +130,20 @@ export default function TransactionSuccessComponent({
               <span className="metamask">{t('BORROW_MODAL_SUCCESS_BORROW_METAMASK')}</span>
             </div>
           </div>
+        )} */}
+        {txLink && (
+          <Link
+            href={
+              selectedNetwork && selectedNetwork.txUrl
+                ? `${selectedNetwork?.txUrl}tx/${txLink}`
+                : `${TX_LINK}${txLink}`
+            }
+            className="tx"
+            target="_blank">
+            <ExportOutlined />
+            {t('BORROW_MODAL_SUCCESS_BORROW_REVIEW')}
+          </Link>
         )}
-        <Link href="/" className="tx" target="_blank">
-          <ExportOutlined />
-          {t('BORROW_MODAL_SUCCESS_BORROW_REVIEW')}
-        </Link>
         <div className="px-6 py-4">
           <Button className="w-full" onClick={handleFinish}>
             {t('BORROW_MODAL_SUCCESS_BORROW_OK')}

@@ -12,6 +12,7 @@ const createNoopStorage = () => {
     },
   };
 };
+console.log(typeof window !== 'undefined', 'typteof window')
 const createPrefixedStorage = (prefix: string) => {
   return {
     getItem: (key: string) => localStorage.getItem(`${key}`),
