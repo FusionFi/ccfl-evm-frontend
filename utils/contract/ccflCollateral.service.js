@@ -102,11 +102,11 @@ const approveAddCollateral = async (provider, contract_address, amount, adresss,
 };
 
 const addCollateral = async (
-  amountCollateral,
-  collateral,
   provider,
   account,
   contract_address,
+  amountCollateral,
+  collateral,
   loanId,
 ) => {
   let overwrite = { from: account };
@@ -249,7 +249,7 @@ const getGasFeeAddCollateral = async (
   }
 };
 
-const withdrawAllCollateral = async (provider, account, contract_address, loanId, isETH, isGas) => {
+const withdrawAllCollateral = async (provider, account, contract_address, loanId, isETH) => {
   let overwrite = { from: account };
 
   try {
@@ -261,7 +261,6 @@ const withdrawAllCollateral = async (provider, account, contract_address, loanId
       'withdrawAllCollateral',
       [loanId, isETH],
       overwrite,
-      !!isGas,
     );
 
     // const txReceipt = await txResponse.wait();
@@ -281,7 +280,52 @@ const withdrawAllCollateral = async (provider, account, contract_address, loanId
   }
 };
 
-const service_ccfl_borrow = {
+const getGasFeeWithdrawAllCollateral = async (
+  provider,
+  account,
+  contract_address,
+  loanId,
+  isETH,
+) => {
+  let overwrite = { from: account };
+  try {
+    const balanceCoin = await getBalanceCoin(provider, account);
+    console.log('balanceCoin', balanceCoin);
+
+    const res = await sendRawTx(
+      provider,
+      abi,
+      contract_address,
+      'withdrawAllCollateral',
+      [loanId, isETH],
+      overwrite,
+      true,
+    );
+    if (res && res.gasPrice && res.gasLimit) {
+      let gasFee = new BigNumber(res.gasPrice.toString())
+        .times(res.gasLimit.toString())
+        .dividedBy(10 ** 18)
+        .toString();
+      return {
+        gasPrice: gasFee,
+        nonEnoughMoney: gasFee > balanceCoin ? true : false,
+      };
+    }
+    return {
+      gasPrice: 0,
+      nonEnoughMoney: true,
+    };
+  } catch (error) {
+    console.log('getGasFeeAddCollateral error', error);
+    return {
+      gasPrice: 0,
+      nonEnoughMoney: false,
+      exceedsAllowance: true,
+    };
+  }
+};
+
+const service_ccfl_collateral = {
   approveAddCollateral,
   addCollateral,
   getGasFeeApprove,
@@ -289,5 +333,6 @@ const service_ccfl_borrow = {
   getGasFeeAddCollateral,
   getHealthFactor,
   withdrawAllCollateral,
+  getGasFeeWithdrawAllCollateral,
 };
-export default service_ccfl_borrow;
+export default service_ccfl_collateral;

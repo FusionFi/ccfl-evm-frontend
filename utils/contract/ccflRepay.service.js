@@ -250,7 +250,7 @@ const getGasFeeRepayLoan = async (
   }
 };
 
-const service_ccfl_borrow = {
+const service_ccfl_repay = {
   approveRepay,
   repayLoan,
   getGasFeeApprove,
@@ -259,4 +259,4 @@ const service_ccfl_borrow = {
   getHealthFactor,
   getMinimumRepayment,
 };
-export default service_ccfl_borrow;
+export default service_ccfl_repay;

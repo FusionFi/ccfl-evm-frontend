@@ -20,7 +20,6 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { useAccount } from 'wagmi';
-import service_ccfl_collateral from '@/utils/contract/ccflCollateral.service';
 import service from '@/utils/backend/borrow';
 import { toAmountShow, toLessPart, toUnitWithDecimal } from '@/utils/common';
 import { useConnectedNetworkManager, useProviderManager } from '@/hooks/auth.hook';
@@ -70,7 +69,7 @@ export default function ModalCollateralComponent({
 
   const [tokenValue, setTokenValue] = useState();
   const [loadingMinimum, setLoadingMinimum] = useState<boolean>(false);
-  const [minimum, setMinimum] = useState(0);
+  const [minimum, setMinimum] = useState(undefined);
   const [loadingBalance, setLoadingBalance] = useState<boolean>(false);
   const [stableCoinData, setStableCoinData] = useState({
     balance: 0,
@@ -88,6 +87,7 @@ export default function ModalCollateralComponent({
   const [loading, setLoading] = useState<boolean>(false);
   const [errorTx, setErrorTx] = useState() as any;
   const [txHash, setTxHash] = useState();
+  const [allowanceNumber, setAllowanceNumber] = useState() as any;
 
   //start hook
   const [approveBorrow] = useApprovalBorrow(provider);
@@ -210,7 +210,7 @@ export default function ModalCollateralComponent({
         if (res && res[0]?.value) {
           setMinimum(toLessPart(res[0]?.value / loanItem.collateral_price, 5));
         } else {
-          setMinimum(0);
+          setMinimum(undefined);
         }
         setLoadingMinimum(false);
       } catch (error) {
@@ -261,81 +261,94 @@ export default function ModalCollateralComponent({
   };
 
   const handleGetGasFeeApprove = async () => {
-    if (step === 0) {
-      if (tokenValue && tokenValue > 0 && loanItem.collateral_decimals && stableCoinData.address) {
-        const connector_provider = await connector?.getProvider();
-        try {
-          setLoadingGasFee(true);
-          let res = (await getGasFeeApprove({
-            provider: connector_provider,
-            account: provider?.account,
-            amount: toUnitWithDecimal(tokenValue, loanItem.collateral_decimals),
-            tokenAddress: stableCoinData.address,
-            contract_address: CONTRACT_ADDRESS,
-          })) as any;
-          let res_price = (await service.getPrice(selectedChain?.id, 'ETH')) as any;
+    setTimeout(async () => {
+      if (step === 0) {
+        if (
+          tokenValue &&
+          tokenValue > 0 &&
+          loanItem.collateral_decimals &&
+          stableCoinData.address &&
+          allowanceNumber &&
+          allowanceNumber < tokenValue
+        ) {
+          const connector_provider = await connector?.getProvider();
+          try {
+            setLoadingGasFee(true);
+            let res = (await getGasFeeApprove({
+              provider: connector_provider,
+              account: provider?.account,
+              amount: toUnitWithDecimal(tokenValue, loanItem.collateral_decimals),
+              tokenAddress: stableCoinData.address,
+              contract_address: CONTRACT_ADDRESS,
+            })) as any;
+            let res_price = (await service.getPrice(selectedChain?.id, 'ETH')) as any;
 
-          console.log('gasFee approve', res, res_price);
-          if (res && res.gasPrice && res_price && res_price.price) {
-            let gasFee = res.gasPrice * res_price.price;
-            setGasFee(gasFee);
+            console.log('gasFee approve', res, res_price);
+            if (res && res.gasPrice && res_price && res_price.price) {
+              let gasFee = res.gasPrice * res_price.price;
+              setGasFee(gasFee);
+            }
+
+            setErrorEstimate({
+              nonEnoughBalanceWallet: res?.nonEnoughMoney,
+              exceedsAllowance: res?.exceedsAllowance,
+            });
+            setLoadingGasFee(false);
+          } catch (error) {
+            setLoadingGasFee(false);
+            console.log('getGasFeeApprove error', error);
           }
-
-          setErrorEstimate({
-            nonEnoughBalanceWallet: res?.nonEnoughMoney,
-            exceedsAllowance: res?.exceedsAllowance,
-          });
-          setLoadingGasFee(false);
-        } catch (error) {
-          setLoadingGasFee(false);
-          console.log('getGasFeeApprove error', error);
+        } else {
+          // setGasFee(0);
         }
-      } else {
-        setGasFee(0);
       }
-    }
+    }, 500);
   };
 
   const getGasFeeCollateral = async () => {
-    if (step === 1) {
-      if (
-        tokenValue &&
-        tokenValue > 0 &&
-        stableCoinData.address &&
-        loanItem.collateral_decimals &&
-        loanItem.loan_id
-      ) {
-        const connector_provider = await connector?.getProvider();
-        try {
-          setLoadingGasFee(true);
-          let res = (await addCollateral({
-            provider: connector_provider,
-            account: provider?.account,
-            contract_address: CONTRACT_ADDRESS,
-            amountCollateral: toUnitWithDecimal(tokenValue, loanItem.collateral_decimals),
-            collateral: stableCoinData.address,
-            loanId: loanItem.loan_id,
-            isGas: true,
-          })) as any;
-          let res_price = (await service.getPrice(selectedChain?.id, 'ETH')) as any;
-          console.log('getGasFeeCollateral res', res);
-          if (res && res.gasPrice && res_price && res_price.price) {
-            let gasFee = res.gasPrice * res_price.price;
-            setGasFee(gasFee);
-          }
+    setTimeout(async () => {
+      if (step === 1) {
+        if (
+          tokenValue &&
+          tokenValue > 0 &&
+          stableCoinData.address &&
+          loanItem.collateral_decimals &&
+          loanItem.loan_id &&
+          allowanceNumber &&
+          allowanceNumber >= tokenValue
+        ) {
+          const connector_provider = await connector?.getProvider();
+          try {
+            setLoadingGasFee(true);
+            let res = (await addCollateral({
+              provider: connector_provider,
+              account: provider?.account,
+              contract_address: CONTRACT_ADDRESS,
+              amountCollateral: toUnitWithDecimal(tokenValue, loanItem.collateral_decimals),
+              collateral: stableCoinData.address,
+              loanId: loanItem.loan_id,
+              isGas: true,
+            })) as any;
+            let res_price = (await service.getPrice(selectedChain?.id, 'ETH')) as any;
+            console.log('getGasFeeCollateral res', res);
+            if (res && res.gasPrice && res_price && res_price.price) {
+              let gasFee = res.gasPrice * res_price.price;
+              setGasFee(gasFee);
+            }
 
-          setErrorEstimate({
-            nonEnoughBalanceWallet: res?.nonEnoughMoney,
-            exceedsAllowance: res?.exceedsAllowance,
-          });
-          setLoadingGasFee(false);
-        } catch (error: any) {
-          setLoadingGasFee(false);
+            setErrorEstimate({
+              nonEnoughBalanceWallet: res?.nonEnoughMoney,
+              exceedsAllowance: res?.exceedsAllowance,
+            });
+            setLoadingGasFee(false);
+          } catch (error: any) {
+            setLoadingGasFee(false);
+          }
+        } else {
+          // setGasFee(0);
         }
-      } else {
-        setGasFee(0);
       }
-    }
+    }, 500);
   };
 
   const handleCheckAllowance = async () => {
@@ -365,6 +378,15 @@ export default function ModalCollateralComponent({
           toAmountShow(res, loanItem.collateral_decimals),
         ).isGreaterThanOrEqualTo(tokenValue);
 
+        console.log(
+          'allowance collateral',
+          res,
+          toAmountShow(res, loanItem.collateral_decimals),
+          tokenValue,
+          isNotNeedToApprove,
+        );
+
+        setAllowanceNumber(toAmountShow(res, loanItem.collateral_decimals));
         if (isNotNeedToApprove) {
           setStep(1);
         } else {
@@ -401,6 +423,7 @@ export default function ModalCollateralComponent({
   useEffect(() => {
     if (isModalOpen) {
       getGasFeeCollateral();
+      handleGetGasFeeApprove();
     }
   }, [step]);
 
@@ -476,11 +499,13 @@ export default function ModalCollateralComponent({
                   </div>
                 </div>
                 <div className="modal-borrow-balance">
-                  <span>
-                    {t('FORM_MINIMUM_AMOUNT')}:{' '}
-                    {loadingMinimum ? <LoadingOutlined className="mr-1" /> : minimum}{' '}
-                    {currentToken?.toUpperCase()}
-                  </span>
+                  {minimum !== 0 && (
+                    <span>
+                      {t('FORM_MINIMUM_AMOUNT')}:{' '}
+                      {loadingMinimum ? <LoadingOutlined className="mr-1" /> : minimum}{' '}
+                      {currentToken?.toUpperCase()}
+                    </span>
+                  )}
                   {tokenValue && !(stableCoinData.balance - tokenValue >= 0) && (
                     <span className="insufficient">{t('BORROW_MODAL_INSUFFICIENT_BALANCE')}</span>
                   )}{' '}
@@ -491,7 +516,7 @@ export default function ModalCollateralComponent({
                   {t('BORROW_MODAL_BORROW_COLLATERAL_NON_ENOUGH_GAS')}
                 </div>
               )}
-              {errorEstimate.exceedsAllowance && (
+              {errorEstimate.exceedsAllowance && step === 1 && (
                 <div className="modal-borrow-error">
                   {t('BORROW_MODAL_BORROW_COLLATERAL_EXCEEDS_ALLOWANCE')}
                 </div>
@@ -591,9 +616,10 @@ export default function ModalCollateralComponent({
                         loadingMinimum ||
                         stableCoinData.balance === 0 ||
                         errorEstimate.nonEnoughBalanceWallet ||
-                        errorEstimate.exceedsAllowance ||
-                        tokenValue < minimum ||
-                        !stableCoinData.address
+                        (errorEstimate.exceedsAllowance && step === 1) ||
+                        (minimum && tokenValue < minimum) ||
+                        !stableCoinData.address ||
+                        (tokenValue && !(stableCoinData.balance - tokenValue >= 0))
                       }
                       className="w-full"
                       loading={loading}>
@@ -618,9 +644,10 @@ export default function ModalCollateralComponent({
                           loadingMinimum ||
                           stableCoinData.balance === 0 ||
                           errorEstimate.nonEnoughBalanceWallet ||
-                          errorEstimate.exceedsAllowance ||
-                          tokenValue < minimum ||
-                          !stableCoinData.address
+                          (errorEstimate.exceedsAllowance && step === 1) ||
+                          (minimum && tokenValue < minimum) ||
+                          !stableCoinData.address ||
+                          (tokenValue && !(stableCoinData.balance - tokenValue >= 0))
                         }
                         className="w-full"
                         loading={loading}>

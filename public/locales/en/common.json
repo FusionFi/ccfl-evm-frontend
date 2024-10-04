@@ -355,5 +355,6 @@
   "LANDING_PAGE_WHY_3_TITLE": "Accessibility",
   "LANDING_PAGE_WHY_3_DESCRIPTION": "Convert crypto-backed loans into cash in your local currency without losing your crypto or triggering tax events.",
   "LANDING_PAGE_WHY_4_TITLE": "Compliance",
-  "LANDING_PAGE_WHY_4_DESCRIPTION": "Overcollateralized loans to provide a safe and stable lending environment using crypto collateral."
+  "LANDING_PAGE_WHY_4_DESCRIPTION": "Overcollateralized loans to provide a safe and stable lending environment using crypto collateral.",
+  "BORROW_MININUM": "Minimum borrow"
 }
