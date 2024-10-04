@@ -713,7 +713,7 @@ export default function ModalBorrowComponent({
               <div className="modal-borrow-balance-minimum">
                 {minimum !== 0 && (
                   <span>
-                    {t('BORROW_FIAT_MODAL_TAB_COLLATERAL_MINIMUM_AMOUNT')}:{' '}
+                    {t('BORROW_MININUM')}:{' '}
                     {loadingMinimum ? <LoadingOutlined className="mr-1" /> : minimum}{' '}
                     {stableCoin?.toUpperCase()}
                   </span>

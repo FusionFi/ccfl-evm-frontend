@@ -316,5 +316,6 @@
   "FORM_MINIMUM_AMOUNT": "Minimum add amount",
   "FORM_BALANCE": "Balance",
   "FORM_MINIMUM_REPAYMENT": "Minimum repayment",
-  "BORROW_MODAL_BORROW_COLLATERAL_NON_ENOUGH_GAS": "You don’t have enough gas fee"
+  "BORROW_MODAL_BORROW_COLLATERAL_NON_ENOUGH_GAS": "You don’t have enough gas fee",
+  "BORROW_MININUM": "Minimum borrow"
 }
