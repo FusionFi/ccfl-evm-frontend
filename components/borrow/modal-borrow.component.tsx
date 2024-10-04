@@ -94,6 +94,7 @@ export default function ModalBorrowComponent({
   const [getHealthFactor] = useGetHealthFactor(provider);
   const [getGasFeeApprove] = useGetGasFeeApprove(provider);
   const [allowanceBorrow] = useAllowanceBorrow(provider);
+
   //end hook
 
   const { connector } = useAccount();
@@ -462,7 +463,8 @@ export default function ModalBorrowComponent({
         collateralValue &&
         collateralValue > 0 &&
         stableCoinInfo.address &&
-        collateralData.address
+        collateralData.address &&
+        !loadingGasFee
       ) {
         const connector_provider = await connector?.getProvider();
         try {
@@ -523,20 +525,34 @@ export default function ModalBorrowComponent({
         //   stableCoinInfo.address,
         //   provider?.account,
         //   // CONTRACT_ADDRESS,
-        //   collateralData.address,
+        //   CONTRACT_ADDRESS
         // )) as any;
+        // refetchAllowance({
+        //   network: selectedNetwork,
+        //   chain: selectedChain,
+        //   contractAddress: collateralData.address,
+        //   owner: provider?.account,
+        //   spender: CONTRACT_ADDRESS,
+        //   // TODO: update cardano params
+        // });
         let res = (await allowanceBorrow({
           provider: connector_provider,
-          tokenAddress: stableCoinInfo.address,
+          tokenAddress: collateralData.address,
           account: provider?.account,
-          spender: collateralData.address,
+          spender: CONTRACT_ADDRESS,
         })) as any;
-
-        console.log('allowance', res, toAmountShow(res, collateralData.decimals));
 
         const isNotNeedToApprove = new BigNumber(
           toAmountShow(res, collateralData.decimals),
         ).isGreaterThanOrEqualTo(collateralValue);
+
+        console.log(
+          'allowance',
+          res,
+          toAmountShow(res, collateralData.decimals),
+          collateralValue,
+          isNotNeedToApprove,
+        );
 
         if (isNotNeedToApprove) {
           setStep(1);
@@ -606,11 +622,11 @@ export default function ModalBorrowComponent({
     }
   }, [isYield, step]);
 
-  // useEffect(() => {
-  //   if (isModalOpen) {
-  //     handleCheckAllowance();
-  //   }
-  // }, [isModalOpen, stableCoinValue, collateralValue, step, isYield, token]);
+  useEffect(() => {
+    if (isModalOpen) {
+      handleCheckAllowance();
+    }
+  }, [isModalOpen, stableCoinValue, collateralValue, step, isYield, token]);
 
   useEffect(() => {
     if (isModalOpen) {
