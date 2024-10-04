@@ -413,109 +413,113 @@ export default function ModalBorrowComponent({
   };
 
   const handleGetFeeApprove = async () => {
-    if (step === 0) {
-      if (
-        collateralValue &&
-        collateralValue > 0 &&
-        collateralData.address &&
-        allowanceNumber &&
-        allowanceNumber < collateralValue
-      ) {
-        const connector_provider = await connector?.getProvider();
-        try {
-          setLoadingGasFee(true);
-          // let res = (await service_ccfl_borrow.getGasFeeApprove(
-          //   connector_provider,
-          //   provider?.account,
-          //   toUnitWithDecimal(collateralValue ? collateralValue : 0, collateralData.decimals),
-          //   collateralData.address,
-          //   CONTRACT_ADDRESS,
-          // )) as any;
-          let res = (await getGasFeeApprove({
-            provider: connector_provider,
-            account: provider?.account,
-            amount: toUnitWithDecimal(collateralValue, collateralData.decimals),
-            tokenAddress: collateralData.address,
-            contract_address: CONTRACT_ADDRESS,
-          })) as any;
-          let res_price = (await service.getPrice(selectedChain?.id, 'ETH')) as any;
-          if (res && res.gasPrice && res_price && res_price.price) {
-            let gasFee = res.gasPrice * res_price.price;
-            setGasFee(gasFee);
-            console.log('handleGetFee', res, gasFee);
+    setTimeout(async () => {
+      if (step === 0) {
+        if (
+          collateralValue &&
+          collateralValue > 0 &&
+          collateralData.address &&
+          allowanceNumber &&
+          allowanceNumber < collateralValue
+        ) {
+          const connector_provider = await connector?.getProvider();
+          try {
+            setLoadingGasFee(true);
+            // let res = (await service_ccfl_borrow.getGasFeeApprove(
+            //   connector_provider,
+            //   provider?.account,
+            //   toUnitWithDecimal(collateralValue ? collateralValue : 0, collateralData.decimals),
+            //   collateralData.address,
+            //   CONTRACT_ADDRESS,
+            // )) as any;
+            let res = (await getGasFeeApprove({
+              provider: connector_provider,
+              account: provider?.account,
+              amount: toUnitWithDecimal(collateralValue, collateralData.decimals),
+              tokenAddress: collateralData.address,
+              contract_address: CONTRACT_ADDRESS,
+            })) as any;
+            let res_price = (await service.getPrice(selectedChain?.id, 'ETH')) as any;
+            if (res && res.gasPrice && res_price && res_price.price) {
+              let gasFee = res.gasPrice * res_price.price;
+              setGasFee(gasFee);
+              console.log('handleGetFee', res, gasFee);
+            }
+            // if (res && (res.nonEnoughMoney || res.exceedsAllowance)) {
+            //   setGasFee(0);
+            // }
+            setErrorEstimate({
+              ...errorEstimate,
+              nonEnoughBalanceWallet: res?.nonEnoughMoney,
+              exceedsAllowance: res?.exceedsAllowance,
+            });
+            setLoadingGasFee(false);
+          } catch (error) {
+            setLoadingGasFee(false);
           }
-          // if (res && (res.nonEnoughMoney || res.exceedsAllowance)) {
-          //   setGasFee(0);
-          // }
-          setErrorEstimate({
-            ...errorEstimate,
-            nonEnoughBalanceWallet: res?.nonEnoughMoney,
-            exceedsAllowance: res?.exceedsAllowance,
-          });
-          setLoadingGasFee(false);
-        } catch (error) {
-          setLoadingGasFee(false);
+        } else {
+          setGasFee(0);
         }
-      } else {
-        setGasFee(0);
       }
-    }
+    }, 500);
   };
 
   const handleGetFeeCreateLoan = async () => {
-    if (step === 1) {
-      if (
-        stableCoinValue &&
-        stableCoinValue > 0 &&
-        collateralValue &&
-        collateralValue > 0 &&
-        stableCoinInfo.address &&
-        collateralData.address &&
-        allowanceNumber &&
-        allowanceNumber >= collateralValue
-      ) {
-        const connector_provider = await connector?.getProvider();
-        try {
-          setLoadingGasFee(true);
-          let res = (await createLoan({
-            provider: connector_provider,
-            account: provider?.account,
-            contract_address: CONTRACT_ADDRESS,
-            amount: toUnitWithDecimal(stableCoinValue ? stableCoinValue : 0, decimalStableCoin),
-            stableCoin: stableCoinInfo.address,
-            amountCollateral: toUnitWithDecimal(
-              collateralValue ? collateralValue : 0,
-              collateralData.decimals,
-            ),
-            collateral: collateralData.address,
-            IsYieldGenerating: isYield,
-            isFiat: false,
-            isGas: true,
-          })) as any;
-          let res_price = (await service.getPrice(selectedChain?.id, 'ETH')) as any;
-          console.log('handleGetFeeCreateLoan res', res);
+    setTimeout(async () => {
+      if (step === 1) {
+        if (
+          stableCoinValue &&
+          stableCoinValue > 0 &&
+          collateralValue &&
+          collateralValue > 0 &&
+          stableCoinInfo.address &&
+          collateralData.address &&
+          allowanceNumber &&
+          allowanceNumber >= collateralValue
+        ) {
+          const connector_provider = await connector?.getProvider();
+          try {
+            setLoadingGasFee(true);
+            let res = (await createLoan({
+              provider: connector_provider,
+              account: provider?.account,
+              contract_address: CONTRACT_ADDRESS,
+              amount: toUnitWithDecimal(stableCoinValue ? stableCoinValue : 0, decimalStableCoin),
+              stableCoin: stableCoinInfo.address,
+              amountCollateral: toUnitWithDecimal(
+                collateralValue ? collateralValue : 0,
+                collateralData.decimals,
+              ),
+              collateral: collateralData.address,
+              IsYieldGenerating: isYield,
+              isFiat: false,
+              isGas: true,
+            })) as any;
+            let res_price = (await service.getPrice(selectedChain?.id, 'ETH')) as any;
+            console.log('handleGetFeeCreateLoan res', res);
 
-          if (res && res.gasPrice && res_price && res_price.price) {
-            let gasFee = res.gasPrice * res_price.price;
-            setGasFee(gasFee);
+            if (res && res.gasPrice && res_price && res_price.price) {
+              let gasFee = res.gasPrice * res_price.price;
+              setGasFee(gasFee);
+            }
+
+            // if (res && (res.nonEnoughMoney || res.exceedsAllowance)) {
+            //   setGasFee(0);
+            // }
+            setErrorEstimate({
+              ...errorEstimate,
+              nonEnoughBalanceWallet: res?.nonEnoughMoney,
+              exceedsAllowance: res?.exceedsAllowance,
+            });
+            setLoadingGasFee(false);
+          } catch (error: any) {
+            setLoadingGasFee(false);
           }
-
-          // if (res && (res.nonEnoughMoney || res.exceedsAllowance)) {
-          //   setGasFee(0);
-          // }
-          setErrorEstimate({
-            ...errorEstimate,
-            nonEnoughBalanceWallet: res?.nonEnoughMoney,
-            exceedsAllowance: res?.exceedsAllowance,
-          });
-          setLoadingGasFee(false);
-        } catch (error: any) {
-          setLoadingGasFee(false);
+        } else {
+          setGasFee(0);
         }
-      } else {
-        setGasFee(0);
       }
-    }
+    }, 500);
   };
 
   const handleCheckAllowance = async () => {

@@ -314,7 +314,7 @@ export default function ModalBorrowComponent({
           setGasFee(0);
         }
       }
-    }, 1000);
+    }, 500);
   };
 
   const getGasFeeRepay = async () => {
@@ -363,7 +363,7 @@ export default function ModalBorrowComponent({
           setGasFee(0);
         }
       }
-    }, 1000);
+    }, 500);
   };
 
   const handleMinimumRepayment = async () => {
