@@ -262,7 +262,14 @@ export default function ModalCollateralComponent({
 
   const handleGetGasFeeApprove = async () => {
     if (step === 0) {
-      if (tokenValue && tokenValue > 0 && loanItem.collateral_decimals && stableCoinData.address) {
+      if (
+        tokenValue &&
+        tokenValue > 0 &&
+        loanItem.collateral_decimals &&
+        stableCoinData.address &&
+        allowanceNumber &&
+        allowanceNumber < tokenValue
+      ) {
         const connector_provider = await connector?.getProvider();
         try {
           setLoadingGasFee(true);

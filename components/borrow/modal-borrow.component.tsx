@@ -414,7 +414,13 @@ export default function ModalBorrowComponent({
 
   const handleGetFeeApprove = async () => {
     if (step === 0) {
-      if (collateralValue && collateralValue > 0 && collateralData.address) {
+      if (
+        collateralValue &&
+        collateralValue > 0 &&
+        collateralData.address &&
+        allowanceNumber &&
+        allowanceNumber < collateralValue
+      ) {
         const connector_provider = await connector?.getProvider();
         try {
           setLoadingGasFee(true);
