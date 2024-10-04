@@ -31,6 +31,10 @@
         font-weight: 900;
         line-height: normal;
         margin-bottom: 36px;
+        @media screen and (max-width: 767px) {
+          font-size: 24px;
+          line-height: 32px;
+        }
         span {
           background: #37b4cb;
           background: linear-gradient(to right, #37b4cb 0%, #2e77e3 100%);
@@ -45,6 +49,10 @@
         font-weight: 400;
         line-height: 24px;
         margin-bottom: 32px;
+        @media screen and (max-width: 767px) {
+          font-size: 14px;
+          line-height: 22px;
+        }
       }
       .btn-actions-container {
         display: flex;

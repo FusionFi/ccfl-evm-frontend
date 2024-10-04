@@ -1,0 +1,33 @@
+.landingContent {
+  position: relative;
+  :global {
+    .landing-navigation-links {
+      display: flex;
+      align-items: center;
+      margin-left: -56px;
+      @media screen and (max-width: 767px) {
+        display: none;
+      }
+      .nav-link {
+        font-family: Inter;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 22px;
+        margin-right: 64px;
+        color: $white-color;
+        &:last-child {
+          margin-right: 0;
+        }
+        &:hover,
+        &.active {
+          color: #1890ff;
+        }
+      }
+    }
+    .content-right {
+      position: absolute;
+      right: 0px;
+    }
+  }
+}

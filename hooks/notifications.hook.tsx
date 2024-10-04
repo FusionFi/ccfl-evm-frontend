@@ -13,7 +13,7 @@ export function useNotification() {
   );
   const showError: any = useCallback(
     (error: any) => {
-      let message = error?.message;
+      let message = error?.data?.message || error?.message || error;
       if (error?.message?.includes('insufficient funds')) {
         message = 'Insufficient balance';
       }

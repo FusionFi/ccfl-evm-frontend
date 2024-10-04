@@ -7,7 +7,6 @@ import { twMerge } from 'tailwind-merge';
 // import css
 import header from '@/styles/layout/header.module.scss';
 // imports components
-import { Button } from 'antd';
 import { UserIcon } from '@/components/icons/user.icon';
 import { WagmiButton } from '@/components/wagmi/wagmi.btn.component';
 import { useProviderManager } from '@/hooks/auth.hook';
@@ -17,6 +16,12 @@ import eventBus from '@/hooks/eventBus.hook';
 import { ProviderType } from '@/providers/index.provider';
 import { useDispatch } from 'react-redux';
 
+import { useCardanoConnected } from '@/hooks/auth.hook';
+import { useCardanoWalletConnected } from '@/hooks/cardano-wallet.hook';
+import { Button } from 'antd';
+
+import { useAccount, useConnect } from 'wagmi';
+import HeaderLanding from './header-landing/header-landing.component';
 export const MainHeader = () => {
   /**
    * STATES
@@ -34,8 +39,7 @@ export const MainHeader = () => {
 
   const address_ = useMemo(() => {
     return provider?.account;
-  }, [provider])
-
+  }, [provider]);
 
   /**
    * FUNCTIONS
@@ -79,9 +83,8 @@ export const MainHeader = () => {
     };
   }, []);
 
-
   useEffect(() => {
-    provider.subscribeEvents(dispatch)
+    provider.subscribeEvents(dispatch);
 
     return () => provider.unsubscribeEvents();
   }, [provider]);
@@ -91,7 +94,11 @@ export const MainHeader = () => {
    */
   const HeaderContent = () => {
     if (isLandingPage) {
-      return <></>;
+      return (
+        <>
+          <HeaderLanding />
+        </>
+      );
     } else {
       return (
         <div className="page-header-content flex items-center justify-center w-full">
@@ -120,26 +127,31 @@ export const MainHeader = () => {
               <div className="external-links flex items-center">
                 <Link
                   href="/my-profile"
-                  className={`btn-outline-custom mr-4 ${router?.pathname === '/my-profile' ? 'active' : ''
-                    }`}>
+                  className={`btn-outline-custom mr-4 ${
+                    router?.pathname === '/my-profile' ? 'active' : ''
+                  }`}>
                   <UserIcon className="mr-2" /> {t('LAYOUT_MAIN_HEADER_NAV_MY_PROFILE')}
                 </Link>
               </div>
             )}
             <div className={!address_ ? 'hidden' : 'visible'}>
-              <div className='flex'>
+              <div className="flex">
                 <UserInfoComponent />
                 <Button
                   className={twMerge('btn-default-custom', 'ml-2')}
-                  onClick={() => eventBus.emit('openWeb3Modal', {
-                    tab: provider?.type == ProviderType.Cardano ? ProviderType.EVM : ProviderType.Cardano,
-                  })}
+                  onClick={() =>
+                    eventBus.emit('openWeb3Modal', {
+                      tab:
+                        provider?.type == ProviderType.Cardano
+                          ? ProviderType.EVM
+                          : ProviderType.Cardano,
+                    })
+                  }
                   style={{
-                    flex: '0 1 0'
-                  }}
-                >
+                    flex: '0 1 0',
+                  }}>
                   {t('LAYOUT_MAIN_HEADER_NAV_BTN_TITLE_CONNECT_WALLET_WITH_CHAIN', {
-                    chain: provider?.type == ProviderType.Cardano ? 'EVM' : 'Cardano'
+                    chain: provider?.type == ProviderType.Cardano ? 'EVM' : 'Cardano',
                   })}
                 </Button>
               </div>
@@ -152,7 +164,7 @@ export const MainHeader = () => {
               />
             </div>
           </div>
-        </div >
+        </div>
       );
     }
   };

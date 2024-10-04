@@ -1,0 +1,117 @@
+.formComponent {
+  :global {
+    .form-container {
+      @media screen and (max-width: 767px) {
+        padding: 0px;
+        width: 100%;
+      }
+      &.dark-themes {
+        .submit-form {
+          .ant-form-item-control-input {
+            .ant-form-item-control-input-content {
+              .input-custom {
+                background: rgba(0, 0, 0, 0.6) !important;
+                color: rgba(255, 255, 255, 0.8) !important;
+              }
+            }
+          }
+        }
+      }
+      .message {
+        opacity: 0;
+        transform: translateY(-50%);
+        transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+        font-size: 12px;
+        line-height: 20px;
+        font-weight: 500;
+        position: absolute;
+        left: 32px;
+        bottom: -12px;
+        font-family: Inter;
+        @media screen and (max-width: 767px) {
+          left: 16px;
+        }
+        &.error {
+          color: #f5222d;
+        }
+        &.success {
+          color: #52c41a;
+        }
+        &.fade-in {
+          opacity: 1;
+          transform: translateY(-10px);
+        }
+
+        &.fade-out {
+          opacity: 0;
+          transform: translateY(-50%);
+        }
+      }
+      .submit-form {
+        .ant-form-item-control-input {
+          .ant-form-item-control-input-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            .input-custom {
+              border: none !important;
+              border-radius: 100px;
+              background: rgba(255, 255, 255, 0.8) !important;
+              padding: 16px 220px 16px 32px;
+              color: rgba(0, 0, 0, 0.45);
+              font-family: Raleway;
+              font-size: 16px;
+              font-style: normal;
+              font-weight: 500;
+              line-height: 28px;
+              width: 592px;
+              @media screen and (max-width: 767px) {
+                width: 100%;
+                padding-right: 150px;
+                padding-left: 16px;
+              }
+            }
+            .btn-submit {
+              max-width: 188px;
+              position: absolute;
+              right: 12px;
+              border-radius: 100px;
+              background: linear-gradient(270deg, #2e77e3 0.39%, #37b4cb 99.75%);
+              color: #fff;
+              text-align: center;
+              font-family: Raleway;
+              font-size: 16px;
+              font-style: normal;
+              font-weight: 600;
+              line-height: 32px; /* 200% */
+              letter-spacing: -0.32px;
+              &:hover,
+              &:active,
+              &:focus {
+                background: linear-gradient(270deg, #2e77e3 0.39%, #37b4cb 99.75%) !important;
+                color: #fff !important;
+                border: none !important;
+                opacity: 0.9;
+              }
+              &:disabled {
+                background: linear-gradient(270deg, #2e77e3 0.39%, #37b4cb 99.75%) !important;
+                color: #fff !important;
+                border: none !important;
+                opacity: 0.5;
+              }
+              @media screen and (max-width: 767px) {
+                max-width: 155px;
+                font-size: 14px;
+                line-height: 22px;
+              }
+              .ant-spin {
+                color: #2e77e3;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
