@@ -129,7 +129,7 @@ export default function ModalBorrowComponent({
   });
   const [loadingMinimum, setLoadingMinimum] = useState<boolean>(false);
   const [minimum, setMinimum] = useState() as any;
-  const [allowanceNumber, setAllowanceNumber] = useState() as any;
+  const [allowanceNumber, setAllowanceNumber] = useState(0) as any;
 
   const onSubmit: SubmitHandler<IFormInput> = async data => {
     const connector_provider = await connector?.getProvider();
@@ -419,8 +419,7 @@ export default function ModalBorrowComponent({
           collateralValue &&
           collateralValue > 0 &&
           collateralData.address &&
-          allowanceNumber &&
-          allowanceNumber < collateralValue
+          !!(allowanceNumber == 0 || allowanceNumber < collateralValue)
         ) {
           const connector_provider = await connector?.getProvider();
           try {

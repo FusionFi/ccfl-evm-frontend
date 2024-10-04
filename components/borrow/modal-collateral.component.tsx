@@ -87,7 +87,7 @@ export default function ModalCollateralComponent({
   const [loading, setLoading] = useState<boolean>(false);
   const [errorTx, setErrorTx] = useState() as any;
   const [txHash, setTxHash] = useState();
-  const [allowanceNumber, setAllowanceNumber] = useState() as any;
+  const [allowanceNumber, setAllowanceNumber] = useState(0) as any;
 
   //start hook
   const [approveBorrow] = useApprovalBorrow(provider);
@@ -268,8 +268,7 @@ export default function ModalCollateralComponent({
           tokenValue > 0 &&
           loanItem.collateral_decimals &&
           stableCoinData.address &&
-          allowanceNumber &&
-          allowanceNumber < tokenValue
+          !!(allowanceNumber == 0 || allowanceNumber < tokenValue)
         ) {
           const connector_provider = await connector?.getProvider();
           try {
