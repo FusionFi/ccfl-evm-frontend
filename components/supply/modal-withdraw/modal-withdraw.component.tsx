@@ -15,7 +15,7 @@ import { formatUnits, parseUnits } from 'ethers';
 import { useNetworkManager, useUserManager } from '@/hooks/supply.hook';
 import { useConnectedNetworkManager, useProviderManager } from '@/hooks/auth.hook'
 import supplyBE from '@/utils/backend/supply';
-import { useTxFee } from '@/hooks/provider.hook'
+import { useWithdrawFee } from '@/hooks/provider.hook'
 import { computeWithMinThreashold } from '@/utils/percent.util';
 
 type FieldType = {
@@ -64,7 +64,7 @@ export default function ModalWithdrawComponent({
     return networks?.get(selectedChain?.id) || {}
   }, [networks, selectedChain])
 
-  const [fee, estimateNormalTxFee] = useTxFee(provider);
+  const [fee, estimateGasForWithdraw] = useWithdrawFee(provider);
 
   const feeWithPrice = useMemo(() => {
     const decimals = selectedChain?.nativeCurrency?.decimals || 18
@@ -84,6 +84,10 @@ export default function ModalWithdrawComponent({
   const _handleCancel = useCallback(() => {
     _setIsPending(false)
     form.resetFields();
+    form
+      .validateFields()
+      .then(e => { })
+      .catch(e => { });
     handleCancel();
   }, [])
 
@@ -103,7 +107,6 @@ export default function ModalWithdrawComponent({
         form.resetFields();
         _setIsPending(false)
       }
-
     }, 1000);
   };
 
@@ -119,17 +122,19 @@ export default function ModalWithdrawComponent({
   }
 
   useEffect(() => {
-    estimateNormalTxFee({
+    estimateGasForWithdraw({
       network: selectedNetwork,
       chain: selectedChain,
+      contractAddress: asset?.pool_address,
       // TODO: update cardano params
     });
     fetchNetworkPrice();
 
     const interval_ = setInterval(() => {
-      estimateNormalTxFee({
+      estimateGasForWithdraw({
         network: selectedNetwork,
         chain: selectedChain,
+        contractAddress: asset?.pool_address,
         // TODO: update cardano params
       });
     }, 15000);
@@ -222,10 +227,9 @@ export default function ModalWithdrawComponent({
                   {t('WITHDRAW_MODAL_OVERVIEW_AMOUNT')}
                 </div>
                 <div className="withdraw-modal-container__input__control">
-                  <Form.Item name="amount" help="" rules={[{ max: max, type: 'number', message: t('WITHDRAW_MODAL_VALIDATE_EXCEED_WITHDRAW_LIMIT') }, {
-                    required: true,
-                    message: t('WITHDRAW_MODAL_VALIDATE_REQUIRE_AMOUNT')
-                  }]} className='w-full'>
+                  <Form.Item name="amount" help="" rules={[
+                    { max: max, type: 'number', message: t('WITHDRAW_MODAL_VALIDATE_EXCEED_WITHDRAW_LIMIT') },
+                  ]} className='w-full'>
                     <InputNumber
                       placeholder={t('WITHDRAW_MODAL_INPUT_AMOUNT')}
                       className="withdraw-modal-container__input__control__amount"

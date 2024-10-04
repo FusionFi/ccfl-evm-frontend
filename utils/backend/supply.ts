@@ -60,13 +60,22 @@ const fetchContracts = async (params: any) => {
   return res || [];
 };
 
+const getSetting = async (key: any) => {
+  let res: any = await http.get(`${URL}/setting?key=${key}`);
+  if (res && res.length > 0) {
+    return res[0]
+  }
+  return {};
+};
+
 const service = {
   fetchNetworks,
   fetchAssets,
   fetchUserSupply,
   fetchPools,
   fetchPrice,
-  fetchContracts
+  fetchContracts,
+  getSetting
 };
 
 export default service;

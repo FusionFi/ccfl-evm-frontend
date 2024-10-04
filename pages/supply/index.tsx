@@ -203,7 +203,7 @@ export default function SupplyPage() {
       asset: [item.symbol, item.name, item],
       supply_balance: ['N/A', '0.00', 0],
       earned_reward: ['0.00', '0.00', 0],
-      apy: item?.apy || '0',
+      apy: Number(item?.apy || '0') * 100,
       wallet_balance: ['0.00', '0.00', 0],
     };
     if (provider?.account) {
@@ -220,7 +220,10 @@ export default function SupplyPage() {
           ];
         }
 
-        const earned = new BigNumber(supplied.earned_reward || 0);
+        const earned = new BigNumber(supplied.earned_reward || 0).dividedBy(
+          10 ** supplied.decimals,
+        );
+
         if (earned.isGreaterThan(0)) {
           result.earned_reward = [
             earned.toFormat(2),

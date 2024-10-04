@@ -45,6 +45,44 @@ export function useSupply(provider: any) {
   return [supply];
 }
 
+
+export function useSupplyFee(provider: any) {
+  const [txFee, setTxFee] = useState<any>(0);
+
+  const estimate = useCallback(
+    async (params: any) => {
+      try {
+        const result = await provider.estimateGasForSupply(params);
+        console.log('result: ', result)
+        setTxFee(new BigNumber(result || 0).toString());
+      } catch (error) {
+        console.error('estimate supply fee failed: ', error);
+      }
+    },
+    [provider, setTxFee],
+  );
+
+  return [txFee || 0, estimate];
+}
+
+export function useWithdrawFee(provider: any) {
+  const [txFee, setTxFee] = useState<any>(0);
+
+  const estimate = useCallback(
+    async (params: any) => {
+      try {
+        const result = await provider.estimateGasForSupply(params);
+        setTxFee(new BigNumber(result || 0).toString());
+      } catch (error) {
+        console.error('estimate withdraw fee failed: ', error);
+      }
+    },
+    [provider, setTxFee],
+  );
+
+  return [txFee || 0, estimate];
+}
+
 export function useTxFee(provider: any) {
   const [txFee, setTxFee] = useState<any>(0);
 

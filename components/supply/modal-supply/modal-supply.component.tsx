@@ -15,8 +15,15 @@ import supplyBE from '@/utils/backend/supply';
 import { formatUnits, parseUnits } from 'ethers';
 import { useNetworkManager } from '@/hooks/supply.hook';
 import { useConnectedNetworkManager, useProviderManager } from '@/hooks/auth.hook';
+import {
+  MIN_AMOUNT_KEY,
+} from '@/constants/common.constant';
 
-import { useAllowance, useApproval, useSupply, useTxFee } from '@/hooks/provider.hook';
+import {
+  WalletOutlined,
+} from '@ant-design/icons';
+
+import { useAllowance, useApproval, useSupply, useSupplyFee } from '@/hooks/provider.hook';
 
 type FieldType = {
   amount?: any;
@@ -38,13 +45,15 @@ export default function ModalSupplyComponent({
   const [networks] = useNetworkManager();
   const { selectedChain } = useConnectedNetworkManager();
   const [provider] = useProviderManager();
+  const [minimumInputAmount, setMinimumInputAmount] = useState(0)
 
   const selectedNetwork = useMemo(() => {
     return networks?.get(selectedChain?.id) || {};
   }, [networks, selectedChain]);
 
-  const [fee, estimateNormalTxFee] = useTxFee(provider);
+  const [fee, estimateGasForSupply] = useSupplyFee(provider);
 
+  console.log('fee: ', fee)
   const [allowance, refetchAllowance] = useAllowance(provider);
   const [approve] = useApproval(provider);
 
@@ -85,6 +94,10 @@ export default function ModalSupplyComponent({
   const _handleCancel = useCallback(() => {
     _setIsPending(false);
     form.resetFields();
+    form
+      .validateFields()
+      .then(e => { })
+      .catch(e => { });
     handleCancel();
   }, []);
 
@@ -110,6 +123,7 @@ export default function ModalSupplyComponent({
           message: error?.message,
         });
       } finally {
+        form.resetFields();
         _setIsPending(false);
       }
     }, 1000);
@@ -126,13 +140,22 @@ export default function ModalSupplyComponent({
     }
   };
 
+  const fetchMinimumAmount = async () => {
+    try {
+      const result: any = await supplyBE.getSetting(MIN_AMOUNT_KEY.MIN_AMOUNT_SUPPLY);
+      setMinimumInputAmount(result?.value || 0)
+    } catch (error) {
+      console.error('fetch minimum setting failed: ', error);
+    }
+  };
+
   useEffect(() => {
-    estimateNormalTxFee({
+    estimateGasForSupply({
+      contractAddress: asset?.pool_address,
       network: selectedNetwork,
       chain: selectedChain,
-      // TODO: update cardano params
-    });
-    fetchNetworkPrice();
+    })
+
     refetchAllowance({
       network: selectedNetwork,
       chain: selectedChain,
@@ -143,7 +166,8 @@ export default function ModalSupplyComponent({
     });
 
     const interval_ = setInterval(() => {
-      estimateNormalTxFee({
+      estimateGasForSupply({
+        contractAddress: asset?.pool_address,
         network: selectedNetwork,
         chain: selectedChain,
         // TODO: update cardano params
@@ -154,6 +178,11 @@ export default function ModalSupplyComponent({
       clearInterval(interval_);
     };
   }, [asset?.address, selectedNetwork, selectedChain, provider]);
+
+  useEffect(() => {
+    fetchNetworkPrice();
+    fetchMinimumAmount();
+  }, []);
 
   const feeWithPrice = useMemo(() => {
     const decimals = selectedChain?.nativeCurrency?.decimals || 18;
@@ -182,8 +211,8 @@ export default function ModalSupplyComponent({
             .toNumber();
           const isNotNeedToApprove = amount
             ? new BigNumber(allowance).isGreaterThanOrEqualTo(
-                parseUnits(String(amount), asset?.decimals).toString(),
-              )
+              parseUnits(String(amount), asset?.decimals).toString(),
+            )
             : false;
           const handleMaxInput = () => {
             formInstance.setFields([
@@ -196,8 +225,8 @@ export default function ModalSupplyComponent({
 
             formInstance
               .validateFields()
-              .then(e => {})
-              .catch(e => {});
+              .then(e => { })
+              .catch(e => { });
           };
 
           return (
@@ -205,6 +234,10 @@ export default function ModalSupplyComponent({
               <div className="supply-modal-container__input">
                 <div className="supply-modal-container__input__title">
                   {t('SUPPLY_MODAL_INPUT_AMOUNT')}
+                  <div className="supply-modal-container__input__title__balance">
+                    <WalletOutlined style={{ fontSize: '16px' }} />
+                    <span>{t('SUPPLY_MODAL_WALLET_BALANCE')}: <span className="supply-modal-container__input__title__balance__unit">{asset?.wallet_balance} {asset?.symbol}</span></span>
+                  </div>
                 </div>
                 <div className="supply-modal-container__input__control">
                   <Form.Item
@@ -221,9 +254,10 @@ export default function ModalSupplyComponent({
                         message: t('SUPPLY_MODAL_VALIDATE_INSUFFICIENT_BALANCE'),
                       },
                       {
-                        required: true,
-                        message: t('SUPPLY_MODAL_VALIDATE_REQUIRE_AMOUNT'),
-                      },
+                        min: Number(minimumInputAmount),
+                        type: 'number',
+                        message: t('SUPPLY_MODAL_VALIDATE_MINIMUM_AMOUNT_REQUIRED'),
+                      }
                     ]}>
                     <InputNumber
                       placeholder={t('SUPPLY_MODAL_INPUT_PLACEHOLDER')}
@@ -258,7 +292,7 @@ export default function ModalSupplyComponent({
                 </div>
                 <div className="flex justify-between w-full">
                   <div className="supply-modal-container__input__balance">
-                    {t('SUPPLY_MODAL_WALLET_BALANCE')}: {asset?.wallet_balance} {asset?.symbol}
+                    {t('SUPPLY_MODAL_MINIMUM_AMOUNT')}: {new BigNumber(minimumInputAmount).toFormat(2)} {asset?.symbol}
                   </div>
                   <span className="supply-modal-container__input__error">
                     {formInstance.getFieldError('amount')[0]}

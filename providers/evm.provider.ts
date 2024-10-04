@@ -12,6 +12,8 @@ import {
   getAccount,
   getConnectors,
   readContract,
+  simulateContract,
+  estimateGas,
 } from '@wagmi/core';
 import { config } from '@/libs/wagmi.lib';
 import BaseProvider from './base.provider';
@@ -23,7 +25,7 @@ import service_ccfl_borrow from '@/utils/contract/ccflBorrow.service';
 import service_ccfl_repay from '@/utils/contract/ccflRepay.service';
 import { ACTION_TYPE } from '@/constants/common.constant';
 import service_ccfl_collateral from '@/utils/contract/ccflCollateral.service';
-
+import { encodeFunctionData } from 'viem';
 // TODO: watch chain, account
 
 let events: any = [];
@@ -82,7 +84,57 @@ class EVMProvider extends BaseProvider {
       hash: result,
     });
 
-    return tx;
+    return tx?.transactionHash || result;
+  }
+
+  async estimateGasForSupply({ amount, contractAddress, abi, chain, network }: any) {
+    const config_ = createConfigWithCustomTransports({ chain, rpc: network?.rpcUrl });
+    const gasLimit = await (async () => {
+      try {
+        return await estimateGas(config, {
+          to: contractAddress,
+          data: encodeFunctionData({
+            abi: abi || AbiPool,
+            functionName: 'supply',
+            args: ['1000000'],
+          }),
+        });
+      } catch (error) {
+        return 150000;
+      }
+    })();
+
+    const gasPrice = await getGasPrice(config_);
+    const result = new BigNumber(gasPrice.toString())
+      .times(new BigNumber(gasLimit?.toString() || 0))
+      .toString();
+
+    return result;
+  }
+
+  async estimateGasForWithdraw({ amount, contractAddress, abi, chain, network }: any) {
+    const config_ = createConfigWithCustomTransports({ chain, rpc: network?.rpcUrl });
+    const gasLimit = await (async () => {
+      try {
+        return await estimateGas(config, {
+          to: contractAddress,
+          data: encodeFunctionData({
+            abi: abi || AbiPool,
+            functionName: 'withdraw',
+            args: ['1000000'],
+          }),
+        });
+      } catch (error) {
+        return 150000;
+      }
+    })();
+
+    const gasPrice = await getGasPrice(config_);
+    const result = new BigNumber(gasPrice.toString())
+      .times(new BigNumber(gasLimit?.toString() || 0))
+      .toString();
+
+    return result;
   }
 
   async approve({ abi, value, spender, contractAddress }: any) {
@@ -98,7 +150,7 @@ class EVMProvider extends BaseProvider {
       hash: result,
     });
 
-    return tx;
+    return tx?.transactionHash || result;
   }
 
   async fetchAllowance({ abi, owner, spender, chain, contractAddress, network }: any) {
@@ -163,6 +215,7 @@ class EVMProvider extends BaseProvider {
     });
     events = [];
   }
+
   async withdraw({ amount, contractAddress, abi }: any) {
     const result = await writeContract(config, {
       address: contractAddress,
