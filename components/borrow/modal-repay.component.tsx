@@ -275,7 +275,8 @@ export default function ModalBorrowComponent({
         tokenValue > 0 &&
         loanItem.decimals &&
         loanItem.loan_id &&
-        stableCoinData.address
+        stableCoinData.address &&
+        !loadingGasFee
       ) {
         const connector_provider = await connector?.getProvider();
         try {
@@ -320,7 +321,8 @@ export default function ModalBorrowComponent({
         tokenValue > 0 &&
         stableCoinData.address &&
         loanItem.decimals &&
-        loanItem.loan_id
+        loanItem.loan_id &&
+        !loadingGasFee
       ) {
         const connector_provider = await connector?.getProvider();
         try {
@@ -408,14 +410,20 @@ export default function ModalBorrowComponent({
           provider: connector_provider,
           tokenAddress: stableCoinData.address,
           account: provider?.account,
-          spender: res_pool && res_pool[0] ? res_pool[0].address : CONTRACT_ADDRESS,
+          spender: CONTRACT_ADDRESS,
         })) as any;
-
-        console.log('allowance', res, toAmountShow(res, loanItem.decimals));
 
         const isNotNeedToApprove = new BigNumber(
           toAmountShow(res, loanItem.decimals),
         ).isGreaterThanOrEqualTo(tokenValue);
+
+        console.log(
+          'allowance repay',
+          res,
+          toAmountShow(res, loanItem.decimals),
+          tokenValue,
+          isNotNeedToApprove,
+        );
 
         if (isNotNeedToApprove) {
           setStep(1);
@@ -442,11 +450,11 @@ export default function ModalBorrowComponent({
     setTokenValue(undefined);
   };
 
-  // useEffect(() => {
-  //   if (isModalOpen) {
-  //     handleCheckAllowance();
-  //   }
-  // }, [tokenValue, step]);
+  useEffect(() => {
+    if (isModalOpen) {
+      handleCheckAllowance();
+    }
+  }, [tokenValue, step]);
 
   useEffect(() => {
     if (isModalOpen) {

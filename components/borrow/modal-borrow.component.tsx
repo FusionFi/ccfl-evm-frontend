@@ -413,7 +413,7 @@ export default function ModalBorrowComponent({
 
   const handleGetFeeApprove = async () => {
     if (step === 0) {
-      if (collateralValue && collateralValue > 0 && collateralData.address) {
+      if (collateralValue && collateralValue > 0 && collateralData.address && !loadingGasFee) {
         const connector_provider = await connector?.getProvider();
         try {
           setLoadingGasFee(true);
@@ -547,7 +547,7 @@ export default function ModalBorrowComponent({
         ).isGreaterThanOrEqualTo(collateralValue);
 
         console.log(
-          'allowance',
+          'allowance borrow',
           res,
           toAmountShow(res, collateralData.decimals),
           collateralValue,
