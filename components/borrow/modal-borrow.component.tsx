@@ -630,6 +630,12 @@ export default function ModalBorrowComponent({
 
   useEffect(() => {
     if (isModalOpen) {
+      handleGetFeeApprove();
+    }
+  }, [step]);
+
+  useEffect(() => {
+    if (isModalOpen) {
       handleCollateralBalance();
       getStableCoin();
       handleMinimumRepayment();
@@ -734,7 +740,7 @@ export default function ModalBorrowComponent({
                     {t('BORROW_MODAL_BORROW_COLLATERAL_NON_ENOUGH_GAS')}
                   </div>
                 )}
-                {errorEstimate.exceedsAllowance && (
+                {errorEstimate.exceedsAllowance && step === 1 && (
                   <div className="modal-borrow-error">
                     {t('BORROW_MODAL_BORROW_COLLATERAL_EXCEEDS_ALLOWANCE')}
                   </div>
@@ -888,7 +894,7 @@ export default function ModalBorrowComponent({
                         loadingHealthFactor ||
                         collateralData.balance === 0 ||
                         errorEstimate.nonEnoughBalanceWallet ||
-                        errorEstimate.exceedsAllowance ||
+                        (errorEstimate.exceedsAllowance && step === 1) ||
                         errorEstimate.nonEnoughBalanceCollateral ||
                         stableCoinInfo.loadingStatus ||
                         (minimum && stableCoinValue < minimum)
@@ -917,7 +923,7 @@ export default function ModalBorrowComponent({
                           loadingHealthFactor ||
                           collateralData.balance === 0 ||
                           errorEstimate.nonEnoughBalanceWallet ||
-                          errorEstimate.exceedsAllowance ||
+                          (errorEstimate.exceedsAllowance && step === 1) ||
                           errorEstimate.nonEnoughBalanceCollateral ||
                           stableCoinInfo.loadingStatus ||
                           (minimum && stableCoinValue < minimum)

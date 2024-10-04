@@ -371,6 +371,13 @@ export default function ModalCollateralComponent({
           toAmountShow(res, loanItem.collateral_decimals),
         ).isGreaterThanOrEqualTo(tokenValue);
 
+        console.log(
+          'allowance collateral',
+          res,
+          toAmountShow(res, loanItem.collateral_decimals),
+          tokenValue,
+          isNotNeedToApprove,
+        );
         if (isNotNeedToApprove) {
           setStep(1);
         } else {
@@ -390,11 +397,11 @@ export default function ModalCollateralComponent({
     price: loanItem && loanItem.collateral_price ? loanItem.collateral_price : 1,
   };
 
-  // useEffect(() => {
-  //   if (isModalOpen) {
-  //     handleCheckAllowance();
-  //   }
-  // }, [tokenValue, step]);
+  useEffect(() => {
+    if (isModalOpen) {
+      handleCheckAllowance();
+    }
+  }, [tokenValue, step]);
 
   useEffect(() => {
     if (isModalOpen) {
@@ -407,6 +414,7 @@ export default function ModalCollateralComponent({
   useEffect(() => {
     if (isModalOpen) {
       getGasFeeCollateral();
+      handleGetGasFeeApprove();
     }
   }, [step]);
 
@@ -499,7 +507,7 @@ export default function ModalCollateralComponent({
                   {t('BORROW_MODAL_BORROW_COLLATERAL_NON_ENOUGH_GAS')}
                 </div>
               )}
-              {errorEstimate.exceedsAllowance && (
+              {errorEstimate.exceedsAllowance && step === 1 && (
                 <div className="modal-borrow-error">
                   {t('BORROW_MODAL_BORROW_COLLATERAL_EXCEEDS_ALLOWANCE')}
                 </div>
@@ -599,7 +607,7 @@ export default function ModalCollateralComponent({
                         loadingMinimum ||
                         stableCoinData.balance === 0 ||
                         errorEstimate.nonEnoughBalanceWallet ||
-                        errorEstimate.exceedsAllowance ||
+                        (errorEstimate.exceedsAllowance && step === 1) ||
                         (minimum && tokenValue < minimum) ||
                         !stableCoinData.address
                       }
@@ -626,7 +634,7 @@ export default function ModalCollateralComponent({
                           loadingMinimum ||
                           stableCoinData.balance === 0 ||
                           errorEstimate.nonEnoughBalanceWallet ||
-                          errorEstimate.exceedsAllowance ||
+                          (errorEstimate.exceedsAllowance && step === 1) ||
                           (minimum && tokenValue < minimum) ||
                           !stableCoinData.address
                         }

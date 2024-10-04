@@ -466,6 +466,7 @@ export default function ModalBorrowComponent({
 
   useEffect(() => {
     if (isModalOpen) {
+      handleGetGasFeeApprove();
       getGasFeeRepay();
     }
   }, [step]);
@@ -558,7 +559,7 @@ export default function ModalBorrowComponent({
                   {t('BORROW_MODAL_BORROW_COLLATERAL_NON_ENOUGH_GAS')}
                 </div>
               )}
-              {errorEstimate.exceedsAllowance && (
+              {errorEstimate.exceedsAllowance && step === 1 && (
                 <div className="modal-borrow-error">
                   {t('BORROW_MODAL_BORROW_COLLATERAL_EXCEEDS_ALLOWANCE')}
                 </div>
@@ -643,7 +644,7 @@ export default function ModalBorrowComponent({
                         loading ||
                         loadingGasFee ||
                         errorEstimate.nonEnoughBalanceWallet ||
-                        errorEstimate.exceedsAllowance ||
+                        (errorEstimate.exceedsAllowance && step === 1) ||
                         healthFactor === 0 ||
                         gasFee === 0 ||
                         !loanItem ||
@@ -672,7 +673,7 @@ export default function ModalBorrowComponent({
                           loading ||
                           loadingGasFee ||
                           errorEstimate.nonEnoughBalanceWallet ||
-                          errorEstimate.exceedsAllowance ||
+                          (errorEstimate.exceedsAllowance && step === 1) ||
                           healthFactor === 0 ||
                           gasFee === 0 ||
                           !loanItem ||
