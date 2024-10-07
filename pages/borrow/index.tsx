@@ -215,11 +215,11 @@ export default function BorrowPage() {
       content: dataLoan?.net_apr ?? '',
       type: TYPE_COMMON.PERCENT,
     },
-    {
-      text: t('BORROW_OVERVIEW_FINANCE_HEALTH'),
-      content: dataLoan?.finance_health ?? '',
-      type: TYPE_COMMON.FINANCE_HEALTH,
-    },
+    // {
+    //   text: t('BORROW_OVERVIEW_FINANCE_HEALTH'),
+    //   content: dataLoan?.finance_health ?? '',
+    //   type: TYPE_COMMON.FINANCE_HEALTH,
+    // },
   ];
 
   const labelRender: LabelRender = (props: any) => {
