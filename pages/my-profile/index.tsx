@@ -5,31 +5,44 @@ import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { twMerge } from 'tailwind-merge';
 
-import { ProfileAccount } from '@/components/profile/profile-account.component'
-import { ProfileKycStatus } from '@/components/profile/profile-kyc-status.component'
-import { ProfileSupply } from '@/components/profile/profile-supply.component'
-import { ProfileBorrowed } from '@/components/profile/profile-borrowed.component'
+import { ProfileAccount } from '@/components/profile/profile-account.component';
+import { ProfileKycStatus } from '@/components/profile/profile-kyc-status.component';
+import { ProfileSupply } from '@/components/profile/profile-supply.component';
+import { ProfileBorrowed } from '@/components/profile/profile-borrowed.component';
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation';
 import { useAccount } from 'wagmi';
-import { useCardanoWalletConnected } from '@/hooks/cardano-wallet.hook'
+import { useCardanoWalletConnected } from '@/hooks/cardano-wallet.hook';
+import eventBus from '@/hooks/eventBus.hook';
 
 export default function MyProfilePage() {
   /**
    * HOOKS
    */
   const { t } = useTranslation('common');
-  const router = useRouter()
-  const [auth] = useAuth();
+  const router = useRouter();
+  const [auth, updateAuth] = useAuth();
   console.log('🚀 ~ MyProfilePage ~ auth:', auth);
   const { address } = useAccount();
   const [cardanoWalletConnected] = useCardanoWalletConnected();
 
+  const showActivationCompleted = () => {
+    updateAuth({ isNew: false });
+    eventBus.emit('toggleActivationSuccessModal', true);
+  };
+
   useEffect(() => {
     if (!address && !cardanoWalletConnected?.address) {
-      router.push('/supply')
+      router.push('/supply');
     }
-  }, [address, cardanoWalletConnected])
+  }, [address, cardanoWalletConnected]);
+
+  useEffect(() => {
+    if (auth.isNew) {
+      showActivationCompleted();
+    }
+  }, [auth]);
+
   return (
     <div className={twMerge('my-profile-page-container', cssClass.myProfilePage)}>
       <div className="my-profile-page-wrapper">
