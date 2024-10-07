@@ -527,7 +527,9 @@ export default function ModalBorrowComponent({
       provider?.account &&
       stableCoinInfo?.address &&
       collateralValue &&
-      collateralValue > 0
+      collateralValue > 0 &&
+      !loading &&
+      step != 2
     ) {
       const connector_provider = await connector?.getProvider();
       try {
