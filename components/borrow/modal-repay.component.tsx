@@ -99,7 +99,7 @@ export default function ModalBorrowComponent({
   const [txHash, setTxHash] = useState();
   const [loadingMinimum, setLoadingMinimum] = useState<boolean>(false);
   const [minimum, setMinimum] = useState(undefined) as any;
-  const [allowanceNumber, setAllowanceNumber] = useState() as any;
+  const [allowanceNumber, setAllowanceNumber] = useState(0) as any;
 
   // console.log('loanItem', loanItem);
 
@@ -277,8 +277,7 @@ export default function ModalBorrowComponent({
           loanItem.decimals &&
           loanItem.loan_id &&
           stableCoinData.address &&
-          allowanceNumber &&
-          allowanceNumber < tokenValue
+          !!(allowanceNumber == 0 || allowanceNumber < tokenValue)
         ) {
           const connector_provider = await connector?.getProvider();
           try {
