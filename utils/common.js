@@ -244,5 +244,5 @@ export function toCurrency(value, decimalPlaces = 6) {
 export function toLessPart(val, numFloor, isRound) {
   if (!val) return 0;
   let finalValue = val ? Math.floor(val * Math.pow(10, numFloor)) / Math.pow(10, numFloor) : val;
-  return isRound ? Math.ceil(finalValue) : finalValue;
+  return isRound ? Math.ceil(finalValue * 1000) / 1000 : finalValue;
 }

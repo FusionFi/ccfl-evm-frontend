@@ -31,11 +31,11 @@ export default function assetComponent({
   const { selectedChain, switchNetwork } = useConnectedNetworkManager();
   const [provider] = useProviderManager();
 
-  const handleCheckLogin = (name: string, apr: string, decimals: any) => {
+  const handleCheckLogin = (name: string, apr: string, decimals: any, loan_available: any) => {
     if (!auth?.userName && name === ASSET_TYPE.FIAT) {
       eventBus.emit('toggleKycWarningModal', true);
     } else {
-      showModal(name, apr, decimals);
+      showModal(name, apr, decimals, loan_available);
     }
   };
 
@@ -91,7 +91,14 @@ export default function assetComponent({
                         <div className={` flex justify-end `}>
                           {provider?.account && selectedChain?.id == provider?.chainId ? (
                             <Button
-                              onClick={() => handleCheckLogin(item.asset, item.apr, item.decimals)}>
+                              onClick={() =>
+                                handleCheckLogin(
+                                  item.asset,
+                                  item.apr,
+                                  item.decimals,
+                                  toLessPart(toAmountShow(item.loan_available, item.decimals), 6),
+                                )
+                              }>
                               {t('BORROW_MODAL_BORROW_BORROW')}
                             </Button>
                           ) : (
@@ -118,10 +125,10 @@ export default function assetComponent({
                               {t('BORROW_MODAL_BORROW_BORROW_LOAN_AVAILABLE')}
                             </div>
                             <div>
-                              {toLessPart(toAmountShow(item.loan_available, item.decimals), 2)}
+                              {toLessPart(toAmountShow(item.loan_available, item.decimals), 6)}
                             </div>
                             <div className="usd">
-                              $ {toLessPart(toAmountShow(item.usd, item.decimals), 2)}
+                              $ {toLessPart(toAmountShow(item.usd, item.decimals), 6)}
                             </div>
                           </div>
                         )}

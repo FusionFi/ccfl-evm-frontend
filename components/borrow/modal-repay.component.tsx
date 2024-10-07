@@ -18,7 +18,7 @@ import {
 } from '@ant-design/icons';
 import { Button, InputNumber, Tooltip } from 'antd';
 import { useTranslation } from 'next-i18next';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { useAccount } from 'wagmi';
 import Image from 'next/image';
@@ -550,7 +550,7 @@ export default function ModalBorrowComponent({
                   </div>
                 </div>
                 <div className="modal-borrow-balance">
-                  {minimum !== 0 && (
+                  {minimum !== 0 && deptRemain >= minimum && (
                     <span>
                       {t('FORM_MINIMUM_REPAYMENT')}:{' '}
                       {loadingMinimum ? <LoadingOutlined className="mr-1" /> : minimum}{' '}
@@ -586,7 +586,9 @@ export default function ModalBorrowComponent({
                     {tokenValue && tokenValue > 0 && (
                       <div className="modal-borrow-repay remain">
                         <ArrowRightOutlined className="mx-1" />
-                        <span>{deptRemain - tokenValue}</span>
+                        <span>
+                          {deptRemain - tokenValue === 0 ? 0 : (deptRemain - tokenValue).toFixed(3)}
+                        </span>
                         <span className="ml-1">{isFiat ? 'USD' : currentToken?.toUpperCase()}</span>
                       </div>
                     )}
@@ -658,7 +660,7 @@ export default function ModalBorrowComponent({
                         !loanItem ||
                         !stableCoinData.address ||
                         stableCoinData.balance === 0 ||
-                        (minimum && tokenValue < minimum) ||
+                        (minimum && tokenValue < minimum && deptRemain >= minimum) ||
                         (tokenValue && !(stableCoinData.balance - tokenValue >= 0))
                       }
                       className="w-full"
@@ -688,7 +690,7 @@ export default function ModalBorrowComponent({
                           !loanItem ||
                           !stableCoinData.address ||
                           stableCoinData.balance === 0 ||
-                          (minimum && tokenValue < minimum) ||
+                          (minimum && tokenValue < minimum && deptRemain >= minimum) ||
                           (tokenValue && !(stableCoinData.balance - tokenValue >= 0))
                         }
                         className="w-full"
