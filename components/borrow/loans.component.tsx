@@ -267,7 +267,7 @@ export default function LoansComponent(props: LoansProps) {
           <div className="loans-button">
             {final_status === LOAN_STATUS.REPAID_FULL && (
               <Button
-                disabled={record.collateral_amount > 0}
+                disabled={true}
                 type="primary"
                 className=""
                 onClick={() => handleCheckLogin(ACTION_LOAN.BORROW, record)}>
