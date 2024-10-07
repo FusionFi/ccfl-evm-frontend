@@ -84,8 +84,8 @@
   "SUPPLY_MODAL_APPROVE": "Approve {{token}} to continue",
   "SUPPLY_MODAL_SUPPLY_BUTTON": "Supply {{token}}",
   "SUPPLY_MODAL_VALIDATE_INSUFFICIENT_BALANCE": "Insufficient balance",
-  "SUPPLY_MODAL_VALIDATE_MINIMUM_AMOUNT_REQUIRED":"Minimum amount required",
-  "SUPPLY_MODAL_MINIMUM_AMOUNT":"Minimum Supply",
+  "SUPPLY_MODAL_VALIDATE_MINIMUM_AMOUNT_REQUIRED": "Minimum amount required",
+  "SUPPLY_MODAL_MINIMUM_AMOUNT": "Minimum Supply",
   "SUPPLY_MODAL_VALIDATE_REQUIRE_AMOUNT": "Please enter amount",
   "SUPPLY_SUCCESS_MODAL_MESSAGE": "You supplied {{amount}} {{token}}",
   "WITHDRAW_MODAL_TITLE": "Withdraw supply",
@@ -358,5 +358,6 @@
   "LANDING_PAGE_WHY_3_DESCRIPTION": "Convert crypto-backed loans into cash in your local currency without losing your crypto or triggering tax events.",
   "LANDING_PAGE_WHY_4_TITLE": "Compliance",
   "LANDING_PAGE_WHY_4_DESCRIPTION": "Overcollateralized loans to provide a safe and stable lending environment using crypto collateral.",
-  "BORROW_MININUM": "Minimum borrow"
+  "BORROW_MININUM": "Minimum borrow",
+  "BORROW_MININUM_LOAN": "Please enter an amount lower than the available loan amount"
 }

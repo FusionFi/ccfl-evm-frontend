@@ -51,6 +51,7 @@ interface ModalBorrowProps {
   decimalStableCoin: any;
   priceStableCoin: any;
   handleLoans?: any;
+  loan_available: any;
 }
 
 interface IFormInput {
@@ -70,6 +71,7 @@ export default function ModalBorrowComponent({
   decimalStableCoin,
   priceStableCoin,
   handleLoans,
+  loan_available = 0,
 }: ModalBorrowProps) {
   const { control, handleSubmit, setValue } = useForm({
     defaultValues: {
@@ -743,6 +745,9 @@ export default function ModalBorrowComponent({
                 <div className="modal-borrow-sub-title">
                   {t('BORROW_MODAL_BORROW_COLLATERAL_SETUP')}
                 </div>
+                {stableCoinValue && stableCoinValue > loan_available && (
+                  <div className="modal-borrow-error">{t('BORROW_MININUM_LOAN')}</div>
+                )}
                 {errorEstimate.nonEnoughBalanceCollateral && (
                   <div className="modal-borrow-error">
                     {t('BORROW_MODAL_BORROW_COLLATERAL_NON_ENOUGH')}
@@ -910,7 +915,8 @@ export default function ModalBorrowComponent({
                         (errorEstimate.exceedsAllowance && step === 1) ||
                         errorEstimate.nonEnoughBalanceCollateral ||
                         stableCoinInfo.loadingStatus ||
-                        (minimum && stableCoinValue < minimum)
+                        (minimum && stableCoinValue < minimum) ||
+                        stableCoinValue > loan_available
                       }
                       className="w-full"
                       loading={loading}>
@@ -939,7 +945,8 @@ export default function ModalBorrowComponent({
                           (errorEstimate.exceedsAllowance && step === 1) ||
                           errorEstimate.nonEnoughBalanceCollateral ||
                           stableCoinInfo.loadingStatus ||
-                          (minimum && stableCoinValue < minimum)
+                          (minimum && stableCoinValue < minimum) ||
+                          stableCoinValue > loan_available
                         }
                         className="w-full"
                         loading={loading}>
