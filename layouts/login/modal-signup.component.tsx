@@ -62,7 +62,7 @@ export default function ModalSignupComponent({}: ModalCollateralProps) {
     setTimeout(async () => {
       setLoading(true);
 
-      let res = (await service.signUp(data)) as any;
+      const res = (await service.signUp(data)) as any;
 
       if (res && res.username) {
         updateAuth({

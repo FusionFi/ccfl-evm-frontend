@@ -9,6 +9,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import validator from 'validator';
 import * as yup from 'yup';
 import cssClass from './modal-signin.component.module.scss';
+import service from '@/utils/backend/auth';
 
 interface ModalCollateralProps {}
 
@@ -48,12 +49,18 @@ export default function ModalSigninComponent({}: ModalCollateralProps) {
 
   const onSubmit: SubmitHandler<IFormInput> = data => {
     setLoading(true);
-    setTimeout(() => {
+    setTimeout(async () => {
       setLoading(false);
-      updateAuth({
-        userName: data.email.split('@')[0],
-        email: data.email,
-      });
+
+      const res = (await service.signIn(data)) as any;
+      if (res && res.access_token) {
+        updateAuth({
+          // userName: data.email.split('@')[0],
+          // email: data.email,
+          access_token: res.access_token,
+        });
+      }
+
       reset();
       setIsVisiblePassword(false);
       setIsModalOpen(false);
