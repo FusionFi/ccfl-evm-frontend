@@ -82,6 +82,7 @@ export default function ModalSupplyComponent({
   const _handleOk = useCallback(
     async (amount: any) => {
       const result = await supply({ amount, contractAddress: asset?.pool_address });
+      form.resetFields();
       handleOk({
         amount: formatUnits(amount, asset?.decimals),
         txUrl: `${selectedNetwork?.txUrl}tx/${result}`,
@@ -122,8 +123,8 @@ export default function ModalSupplyComponent({
           code: error?.code,
           message: error?.message,
         });
-      } finally {
         form.resetFields();
+      } finally {
         _setIsPending(false);
       }
     }, 1000);

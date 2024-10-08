@@ -20,6 +20,18 @@ class BaseProvider {
     return 0;
   }
 
+  async estimateGasForSupply(params: any) {
+    // TODO: update here
+    console.log('[estimateGasForSupply] params: ', params);
+    return 0;
+  }
+
+  async estimateGasForWithdraw(params: any) {
+    // TODO: update here
+    console.log('[estimateGasForWithdraw] params: ', params);
+    return 0;
+  }
+
   subscribeEvents(dispatch: any) {
     return true;
   }

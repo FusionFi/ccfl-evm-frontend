@@ -19,6 +19,7 @@ import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { useProviderManager, useConnectedNetworkManager } from '@/hooks/auth.hook';
+import EmptyComponent from '@/components/common/empty.component'
 
 interface DataType {
   key: string;
@@ -363,6 +364,7 @@ export default function SupplyPage() {
             rowExpandable: record => true,
             showExpandColumn: false,
           }}
+          locale={{ emptyText: <EmptyComponent message="There is no asset for supply yet."></EmptyComponent> }}
           virtual
           className="table-wrapper"
           bordered={false}

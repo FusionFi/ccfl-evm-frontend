@@ -16,7 +16,7 @@ const fetchNetworks = async () => {
 };
 
 const fetchAssets = async (params: any) => {
-  const chainId = params?.chainId || DEFAULT_CHAIN_ID
+  const chainId = params?.chainId != null && params?.chainId != undefined ? params?.chainId : DEFAULT_CHAIN_ID
   const res = await http.get(
     `${URL}/asset`, {
     params: {
@@ -30,7 +30,7 @@ const fetchAssets = async (params: any) => {
 };
 
 const fetchUserSupply = async (params: any) => {
-  const chainId = params?.chainId || DEFAULT_CHAIN_ID
+  const chainId = params?.chainId != null && params?.chainId != undefined ? params?.chainId : DEFAULT_CHAIN_ID
   const address = params.address
   const res = await http.get(`${URL}/user/${address}/${chainId}/supply`);
 
@@ -38,14 +38,14 @@ const fetchUserSupply = async (params: any) => {
 };
 
 const fetchPools = async (params: any) => {
-  const chainId = params?.chainId || DEFAULT_CHAIN_ID
+  const chainId = params?.chainId != null && params?.chainId != undefined ? params?.chainId : DEFAULT_CHAIN_ID
   const res = await http.get(`${URL}/pool/all/${chainId}`);
 
   return res || [];
 };
 
 const fetchPrice = async (params: any) => {
-  const chainId = params?.chainId || DEFAULT_CHAIN_ID
+  const chainId = params?.chainId != null && params?.chainId != undefined ? params?.chainId : DEFAULT_CHAIN_ID
   const asset = params?.asset || 'ETH'
   const res = await http.get(`${URL}/price/${chainId}/${asset}`);
 
