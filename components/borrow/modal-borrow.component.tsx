@@ -132,6 +132,10 @@ export default function ModalBorrowComponent({
   const [loadingMinimum, setLoadingMinimum] = useState<boolean>(false);
   const [minimum, setMinimum] = useState() as any;
   const [allowanceNumber, setAllowanceNumber] = useState(0) as any;
+  const [isActive, setActive] = useState(true);
+  const toggleClass = () => {
+    setActive(!isActive);
+  };
 
   const onSubmit: SubmitHandler<IFormInput> = async data => {
     const connector_provider = await connector?.getProvider();
@@ -164,11 +168,14 @@ export default function ModalBorrowComponent({
           setStatus(TRANSACTION_STATUS.SUCCESS);
         }
         if (tx?.error) {
+          setStep(2);
           setStatus(TRANSACTION_STATUS.FAILED);
           setErrorTx(tx.error as any);
         }
         setLoading(false);
       } catch (error) {
+        setStep(2);
+        setErrorTx(error);
         setStatus(TRANSACTION_STATUS.FAILED);
         setLoading(false);
       }
@@ -214,11 +221,14 @@ export default function ModalBorrowComponent({
           setStatus(TRANSACTION_STATUS.SUCCESS);
         }
         if (tx?.error) {
+          setStep(2);
           setStatus(TRANSACTION_STATUS.FAILED);
           setErrorTx(tx.error as any);
         }
         setLoading(false);
       } catch (error) {
+        setStep(2);
+        setErrorTx(error);
         setStatus(TRANSACTION_STATUS.FAILED);
         setLoading(false);
       }
@@ -782,7 +792,12 @@ export default function ModalBorrowComponent({
                       label: item.name,
                     }))}
                     onChange={handleChange}
-                    suffixIcon={<DownOutlined />}
+                    suffixIcon={
+                      <DownOutlined
+                        className={isActive ? 'ant-select-suffix' : ''}
+                        onClick={toggleClass}
+                      />
+                    }
                     popupClassName="modal-borrow-select"
                     value={token}
                     disabled={loading}
