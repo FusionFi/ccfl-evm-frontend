@@ -91,11 +91,14 @@ export default function ModalWithdrawCollateralComponent({
         setStatus(TRANSACTION_STATUS.SUCCESS);
       }
       if (tx?.error) {
+        setStep(1);
         setStatus(TRANSACTION_STATUS.FAILED);
         setErrorTx(tx.error as any);
       }
       setLoading(false);
     } catch (error) {
+      setStep(1);
+      setErrorTx(error);
       setStatus(TRANSACTION_STATUS.FAILED);
       setLoading(false);
     }

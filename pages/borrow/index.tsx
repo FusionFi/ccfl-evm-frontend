@@ -80,6 +80,10 @@ export default function BorrowPage() {
     pageSize: 10,
   });
   const [loanItem, setLoanItem] = useState<any>(undefined);
+  const [isActive, setActive] = useState(true);
+  const toggleClass = () => {
+    setActive(!isActive);
+  };
 
   const handlePrice = async () => {
     try {
@@ -309,7 +313,12 @@ export default function BorrowPage() {
                   </div>
                 );
               }}
-              suffixIcon={<CaretDownOutlined />}
+              suffixIcon={
+                <CaretDownOutlined
+                  className={isActive ? 'ant-select-suffix' : ''}
+                  onClick={toggleClass}
+                />
+              }
             />
           </div>
         </TitleComponent>
