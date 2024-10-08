@@ -68,10 +68,8 @@ export default function ModalSigninComponent({}: ModalCollateralProps) {
               kyc_info: res_profile.kyc_info,
             });
           }
-          reset();
-          setIsVisiblePassword(false);
           setIsModalOpen(false);
-          setLoading(false);
+          resetState();
         }
       } catch (error: any) {
         setError(error);
@@ -100,6 +98,12 @@ export default function ModalSigninComponent({}: ModalCollateralProps) {
     setIsModalOpen(false);
     eventBus.emit('openForgotModal');
   }, []);
+  const resetState = () => {
+    reset();
+    setIsVisiblePassword(false);
+    setLoading(false);
+    setError();
+  };
 
   /**
    * USE EFFECTS
@@ -116,6 +120,12 @@ export default function ModalSigninComponent({}: ModalCollateralProps) {
       eventBus.off('openSignInModal', openSignInModal);
     };
   }, []);
+
+  useEffect(() => {
+    if (isModalOpen) {
+      resetState();
+    }
+  }, [isModalOpen]);
 
   return (
     <Modal
