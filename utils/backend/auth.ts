@@ -22,8 +22,27 @@ const signIn = async (params: any) => {
   return res;
 };
 
+const changePassword = async (params: any) => {
+  const res = await http.post(`${URL}/user/change-password`, {
+    token: params.token,
+    password: params.password,
+  });
+
+  return res;
+};
+
+const getProfile = async (token: any) => {
+  const res = await http.get(`${URL}/user/profile`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  return res;
+};
+
 const service = {
   signUp,
   signIn,
+  changePassword,
+  getProfile,
 };
 export default service;

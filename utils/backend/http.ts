@@ -35,6 +35,8 @@ http.interceptors.request.use(
   error => Promise.reject(error),
 );
 
+let isAlreadyFetchingAccessToken = false;
+
 // Add a response interceptor
 http.interceptors.response.use(
   async response => {
@@ -43,9 +45,25 @@ http.interceptors.response.use(
   },
   async error => {
     const err = (error.response && error.response.data) || error;
-    // if (error.response && error.response.status === 401) {
-    //   store.dispatch(AuthActions.resetState());
-    // }
+    const { config } = error;
+    const originalRequest = config;
+
+    if (error.response && error.response.status === 401) {
+      // store.dispatch(AuthActions.resetState());
+      if (!isAlreadyFetchingAccessToken) {
+        isAlreadyFetchingAccessToken = true;
+        // store
+        //   .dispatch('auth/refreshToken')
+        //   .then(({ access_token }) => {
+        //     isAlreadyFetchingAccessToken = false;
+        //     onAccessTokenFetched(access_token);
+        //   })
+        //   .catch(() => {
+        //     resetStateAndDisconnect();
+        //     return Promise.reject(err);
+        //   });
+      }
+    }
 
     if (error.response && error.response.status) {
       err.status = error.response.status;

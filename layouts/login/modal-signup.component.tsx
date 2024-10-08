@@ -26,6 +26,7 @@ export default function ModalSignupComponent({}: ModalCollateralProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isVisiblePassword, setIsVisiblePassword] = useState(false);
   const [isVisibleRePassword, setIsVisibleRePassword] = useState(false);
+  const [error, setError] = useState() as any;
 
   const {
     handleSubmit,
@@ -60,18 +61,22 @@ export default function ModalSignupComponent({}: ModalCollateralProps) {
 
   const onSubmit: SubmitHandler<IFormInput> = async data => {
     setTimeout(async () => {
-      setLoading(true);
+      try {
+        setLoading(true);
+        const res = (await service.signUp(data)) as any;
 
-      const res = (await service.signUp(data)) as any;
-
-      if (res && res.username) {
-        updateAuth({
-          userName: data.userName,
-          email: data.email,
-        });
+        if (res && res.username) {
+          updateAuth({
+            userName: data.userName,
+            email: data.email,
+          });
+        }
+        openSignupCompleteModal(data.email);
+        setLoading(false);
+      } catch (error: any) {
+        setError(error);
+        setLoading(false);
       }
-      openSignupCompleteModal(data.email);
-      setLoading(false);
     }, 1000);
   };
 
@@ -127,6 +132,7 @@ export default function ModalSignupComponent({}: ModalCollateralProps) {
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="signup-inner">
           <div className="signup-body">
+            {error?.message && <div className="error">{error?.message}</div>}
             <div className="flex justify-between items-center">
               <span>{t('SIGNUP_USERNAME')}:</span>
               <div className="input-warpper">
