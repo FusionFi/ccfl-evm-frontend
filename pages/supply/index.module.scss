@@ -168,6 +168,20 @@
       font-weight: 400;
       line-height: 22px;
 
+      .ant-table-placeholder {
+        background: var(--Conditional-pop-over, #1f1f1f) !important;
+
+        .ant-table-cell {
+          border-bottom: none;
+        }
+
+        &:hover {
+          >td {
+            background: var(--Conditional-pop-over, #1f1f1f) !important;
+          }
+        }
+      }
+
       .ant-table-title {
         color: #FFF;
 
@@ -209,6 +223,7 @@
       }
 
       .ant-table-tbody {
+
         .ant-table-row,
         .ant-table-expanded-row {
           .ant-table-cell {

@@ -1,0 +1,20 @@
+.empty-wrapper {
+    display: flex;
+    padding: 8px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    align-self: stretch;
+    background: var(--Conditional-pop-over, #1f1f1f);
+    color: var(--Neutral-7, #8C8C8C);
+
+    /* Body/regular */
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 22px;
+    border-top: 1px solid var(--Conditional-divider, #303030);
+    border-bottom: 1px solid var(--Conditional-divider, #303030);
+    /* 157.143% */
+}
