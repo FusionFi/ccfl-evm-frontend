@@ -84,6 +84,10 @@ export default function ModalForgotPasswordComponent({}: ModalCollateralProps) {
     setIsModalOpen(false);
     eventBus.emit('openSignInModal');
   };
+  const resetState = () => {
+    reset();
+    setLoading(false);
+  };
 
   /**
    * USE EFFECTS
@@ -100,6 +104,12 @@ export default function ModalForgotPasswordComponent({}: ModalCollateralProps) {
       eventBus.off('openForgotModal', openForgotModal);
     };
   }, []);
+
+  useEffect(() => {
+    if (isModalOpen) {
+      resetState();
+    }
+  }, [isModalOpen]);
 
   return (
     <Modal

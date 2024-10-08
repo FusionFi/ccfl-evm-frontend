@@ -8,9 +8,9 @@ import { useTranslation } from 'next-i18next';
 import { twMerge } from 'tailwind-merge';
 import Image from 'next/image';
 import eventBus from '@/hooks/eventBus.hook';
-import sumsub from '@/utils/backend/sumsub'
+import sumsub from '@/utils/backend/sumsub';
 
-export const ProfileAccount = ({ }: ComponentProps<any>) => {
+export const ProfileAccount = ({}: ComponentProps<any>) => {
   const { t } = useTranslation('common');
   const [auth, updateAuth] = useAuth();
 
@@ -24,23 +24,23 @@ export const ProfileAccount = ({ }: ComponentProps<any>) => {
 
   const handlePasswordChange = () => {
     eventBus.emit('openChangePasswordModal');
-  }
+  };
 
   const handleKycVerify = async () => {
     try {
       const { url }: any = await sumsub.generateExternalLink({
         levelName: 'basic-kyc-level',
         externalUserId: 1,
-      })
+      });
 
       window?.open(url, '_blank')?.focus();
-      updateAuth({ kyc: true })
+      updateAuth({ kyc: true });
     } catch (error) {
-      console.error('handle kyc verifying failed: ', error)
+      console.error('handle kyc verifying failed: ', error);
     }
-  }
+  };
 
-  if (auth && auth.email) {
+  if (auth && auth.access_token) {
     if (auth.kyc) {
       return (
         <div className="my-profile-page-wrapper__account__content--has-account--verified">
@@ -178,7 +178,7 @@ export const ProfileAccount = ({ }: ComponentProps<any>) => {
               <div className="my-profile-page-wrapper__account__content--has-account--no-verified__footer__left__item__wrapper">
                 <div className="my-profile-page-wrapper__account__content--has-account--no-verified__footer__left__item__title">
                   {t('MY_PROFILE_ACCOUNT_STEP', {
-                    number: 1
+                    number: 1,
                   })}
                 </div>
                 {t('MY_PROFILE_ACCOUNT_IDENTITY_DOCUMENT')}
@@ -189,7 +189,7 @@ export const ProfileAccount = ({ }: ComponentProps<any>) => {
               <div className="my-profile-page-wrapper__account__content--has-account--no-verified__footer__left__item__wrapper">
                 <div className="my-profile-page-wrapper__account__content--has-account--no-verified__footer__left__item__title">
                   {t('MY_PROFILE_ACCOUNT_STEP', {
-                    number: 2
+                    number: 2,
                   })}
                 </div>
                 {t('MY_PROFILE_ACCOUNT_FACE_SCAN')}
@@ -205,7 +205,8 @@ export const ProfileAccount = ({ }: ComponentProps<any>) => {
               {t('MY_PROFILE_ACCOUNT_CONTINUE')}
             </Button>
             <div className="my-profile-page-wrapper__account__content--has-account--no-verified__footer__right__powered">
-              {t('MY_PROFILE_ACCOUNT_POWERED_BY')} <Image src="/images/sumsub.png" alt="Sumsub" width={84} height={34} />
+              {t('MY_PROFILE_ACCOUNT_POWERED_BY')}{' '}
+              <Image src="/images/sumsub.png" alt="Sumsub" width={84} height={34} />
             </div>
           </div>
         </div>

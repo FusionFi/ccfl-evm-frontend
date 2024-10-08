@@ -39,10 +39,52 @@ const getProfile = async (token: any) => {
   return res;
 };
 
+const checkUserName = async (username: any) => {
+  const res = await http.post(
+    `${URL}/user/check/username
+`,
+    {
+      username: username,
+    },
+  );
+
+  return res;
+};
+
+const checkEmail = async (email: any) => {
+  const res = await http.post(
+    `${URL}/user/check/email
+
+`,
+    {
+      email: email,
+    },
+  );
+
+  return res;
+};
+
+const checkOldPassword = async (username: any, password: any) => {
+  const res = await http.post(
+    `${URL}/user/check/old-password
+
+`,
+    {
+      username: username,
+      password: password,
+    },
+  );
+
+  return res;
+};
+
 const service = {
   signUp,
   signIn,
   changePassword,
   getProfile,
+  checkUserName,
+  checkEmail,
+  checkOldPassword,
 };
 export default service;

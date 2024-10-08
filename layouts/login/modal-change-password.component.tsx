@@ -31,6 +31,8 @@ export default function ModalChangePasswordComponent({}: ModalCollateralProps) {
   const [isVisibleRePassword, setIsVisibleRePassword] = useState(false);
   const [isVisibleOldPassword, setIsVisibleOldPassword] = useState(false);
   const [error, setError] = useState() as any;
+  const [nonMatch, setNonMatch] = useState(false) as any;
+  const [passwordWrong, setPasswordWrong] = useState(false) as any;
 
   const {
     handleSubmit,
@@ -39,6 +41,7 @@ export default function ModalChangePasswordComponent({}: ModalCollateralProps) {
     register,
     reset,
     getValues,
+    watch,
   } = useForm({
     resolver: yupResolver(
       yup.object({
@@ -47,10 +50,8 @@ export default function ModalChangePasswordComponent({}: ModalCollateralProps) {
           .required()
           .notOneOf([yup.ref('password')], ''),
         password: yup.string().required(),
-        confirmPassword: yup
-          .string()
-          .required()
-          .oneOf([yup.ref('password')], ''),
+        confirmPassword: yup.string().required(),
+        // .oneOf([yup.ref('password')], ''),
       }),
     ),
     defaultValues: {
@@ -69,12 +70,8 @@ export default function ModalChangePasswordComponent({}: ModalCollateralProps) {
           token: auth.access_token,
         })) as any;
         if (res) {
+          resetState();
           setIsSuccess(true);
-          reset();
-          setIsVisibleOldPassword(false);
-          setIsVisiblePassword(false);
-          setIsVisibleRePassword(false);
-          setLoading(false);
         }
       } catch (error: any) {
         setError(error);
@@ -101,6 +98,51 @@ export default function ModalChangePasswordComponent({}: ModalCollateralProps) {
     setIsSuccess(false);
     setIsModalOpen(false);
   }, []);
+  const resetState = () => {
+    reset();
+    setIsVisibleOldPassword(false);
+    setIsVisiblePassword(false);
+    setIsVisibleRePassword(false);
+    setLoading(false);
+    setError();
+    setNonMatch(false);
+    setPasswordWrong(false);
+  };
+
+  const checkOldPassword = async () => {
+    try {
+      const res_password = (await service.checkOldPassword(auth.userName, oldPassword)) as any;
+      console.log(res_password);
+
+      if (res_password == true) {
+        setPasswordWrong(false);
+      } else if (res_password.data == false) {
+        setPasswordWrong(true);
+      }
+      setError();
+    } catch (error) {
+      console.log(error);
+      setError(error);
+    }
+  };
+
+  const checkPassword = async () => {
+    try {
+      if (password !== confirmPassword) {
+        setNonMatch(true);
+      } else {
+        setNonMatch(false);
+      }
+      setError();
+    } catch (error) {
+      console.log(error);
+      setError(error);
+    }
+  };
+
+  const oldPassword = watch('oldPassword');
+  const password = watch('password');
+  const confirmPassword = watch('confirmPassword');
 
   /**
    * USE EFFECTS
@@ -117,6 +159,24 @@ export default function ModalChangePasswordComponent({}: ModalCollateralProps) {
       eventBus.off('openChangePasswordModal', openChangePasswordModal);
     };
   }, []);
+
+  useEffect(() => {
+    if (isModalOpen && oldPassword !== '') {
+      checkOldPassword();
+    }
+  }, [oldPassword]);
+
+  useEffect(() => {
+    if (isModalOpen && password !== '' && confirmPassword !== '') {
+      checkPassword();
+    }
+  }, [password, confirmPassword]);
+
+  useEffect(() => {
+    if (isModalOpen) {
+      resetState();
+    }
+  }, [isModalOpen]);
 
   return (
     <Modal
@@ -176,8 +236,13 @@ export default function ModalChangePasswordComponent({}: ModalCollateralProps) {
                 </div>
               </div>
             </div>
+            {nonMatch && <div className="error-line">{t('SIGNUP_PASSWORD_ERROR')}</div>}
             <div className="signup-footer">
-              <Button htmlType="submit" disabled={!isValid} className="w-full" loading={loading}>
+              <Button
+                htmlType="submit"
+                disabled={!isValid || nonMatch || passwordWrong}
+                className="w-full"
+                loading={loading}>
                 {t('CHANGE_PASSWORD_TITLE')}
               </Button>
             </div>

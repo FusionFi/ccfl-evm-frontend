@@ -359,5 +359,9 @@
   "LANDING_PAGE_WHY_4_TITLE": "Compliance",
   "LANDING_PAGE_WHY_4_DESCRIPTION": "Overcollateralized loans to provide a safe and stable lending environment using crypto collateral.",
   "BORROW_MININUM": "Minimum borrow",
-  "BORROW_MININUM_LOAN": "Please enter an amount lower than the available loan amount"
+  "BORROW_MININUM_LOAN": "Please enter an amount lower than the available loan amount",
+  "SIGNUP_PASSWORD_ERROR": "Passwords don’t match",
+  "SIGNUP_USERNAME_ERROR": "Username existed!",
+  "SIGNUP_EMAIL_ERROR": "Email existed!",
+  "SIGNUP_PASSWORD_OLD_ERROR": "Incorrect password!"
 }
