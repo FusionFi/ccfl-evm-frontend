@@ -356,7 +356,9 @@ export default function ModalCollateralComponent({
       tokenValue > 0 &&
       provider?.account &&
       stableCoinData?.address &&
-      loanItem?.collateral_decimals
+      loanItem?.collateral_decimals &&
+      !loading &&
+      step != 2
     ) {
       const connector_provider = await connector?.getProvider();
       try {

@@ -140,12 +140,13 @@ export default function BorrowPage() {
     handleLoans((page - 1) * pageSize, pageSize);
   };
 
-  const showModal = (token: string, apr: string, decimals: string) => {
+  const showModal = (token: string, apr: string, decimals: string, loan_available: any) => {
     setModal({
       type: token == BorrowModalType.Fiat ? BorrowModalType.Fiat : BorrowModalType.Crypto,
       token,
       apr,
       decimals,
+      loan_available,
     });
   };
   const showWithdrawCollateralModal = (token: string, record: any) => {
@@ -176,6 +177,7 @@ export default function BorrowPage() {
       token: '',
       apr: '',
       decimals: '',
+      loan_available: 0,
     });
     setStep(0);
     setToken(COLLATERAL_TOKEN[0].name);
@@ -215,11 +217,11 @@ export default function BorrowPage() {
       content: dataLoan?.net_apr ?? '',
       type: TYPE_COMMON.PERCENT,
     },
-    {
-      text: t('BORROW_OVERVIEW_FINANCE_HEALTH'),
-      content: dataLoan?.finance_health ?? '',
-      type: TYPE_COMMON.FINANCE_HEALTH,
-    },
+    // {
+    //   text: t('BORROW_OVERVIEW_FINANCE_HEALTH'),
+    //   content: dataLoan?.finance_health ?? '',
+    //   type: TYPE_COMMON.FINANCE_HEALTH,
+    // },
   ];
 
   const labelRender: LabelRender = (props: any) => {
@@ -359,6 +361,7 @@ export default function BorrowPage() {
         decimalStableCoin={modal.decimals}
         priceStableCoin={price}
         handleLoans={handleLoans}
+        loan_available={modal.loan_available}
       />
       <ModalRepayComponent
         isModalOpen={isModalRepayOpen}
