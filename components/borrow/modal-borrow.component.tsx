@@ -164,11 +164,14 @@ export default function ModalBorrowComponent({
           setStatus(TRANSACTION_STATUS.SUCCESS);
         }
         if (tx?.error) {
+          setStep(2);
           setStatus(TRANSACTION_STATUS.FAILED);
           setErrorTx(tx.error as any);
         }
         setLoading(false);
       } catch (error) {
+        setStep(2);
+        setErrorTx(error);
         setStatus(TRANSACTION_STATUS.FAILED);
         setLoading(false);
       }
@@ -214,11 +217,14 @@ export default function ModalBorrowComponent({
           setStatus(TRANSACTION_STATUS.SUCCESS);
         }
         if (tx?.error) {
+          setStep(2);
           setStatus(TRANSACTION_STATUS.FAILED);
           setErrorTx(tx.error as any);
         }
         setLoading(false);
       } catch (error) {
+        setStep(2);
+        setErrorTx(error);
         setStatus(TRANSACTION_STATUS.FAILED);
         setLoading(false);
       }
