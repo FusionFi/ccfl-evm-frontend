@@ -102,7 +102,15 @@ export default function ModalSignupComponent({}: ModalCollateralProps) {
     setIsVisiblePassword(false);
     setIsVisibleRePassword(false);
     setIsModalOpen(false);
+    setError();
     eventBus.emit('toggleSignUpSuccessModal', { isOpen: true, email: email });
+  };
+  const resetState = () => {
+    reset();
+    setIsVisiblePassword(false);
+    setIsVisibleRePassword(false);
+    setLoading(false);
+    setError();
   };
 
   /**
@@ -120,6 +128,12 @@ export default function ModalSignupComponent({}: ModalCollateralProps) {
       eventBus.off('openSignUpModal', openSignUpModal);
     };
   }, []);
+
+  useEffect(() => {
+    if (isModalOpen) {
+      resetState();
+    }
+  }, [isModalOpen]);
 
   return (
     <Modal
