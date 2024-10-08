@@ -123,7 +123,7 @@ export default function SupplyOverviewComponent() {
                 </div>
               );
             }}
-            suffixIcon={<CaretDownOutlined />}
+            suffixIcon={<CaretDownOutlined className='pointer-events-none' />}
           />
         </div>
       </div>

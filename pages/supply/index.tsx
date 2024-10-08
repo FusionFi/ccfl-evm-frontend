@@ -208,6 +208,8 @@ export default function SupplyPage() {
       wallet_balance: ['0.00', '0.00', 0],
     };
     if (provider?.account) {
+      result.supply_balance = ['0.00', '0.00', 0]
+
       const supplied = user.supplyMap.get(item.symbol);
       if (supplied) {
         const supplyBalance = new BigNumber(supplied.supply_balance || 0).dividedBy(
