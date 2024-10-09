@@ -12,6 +12,7 @@ import { useAuth } from '@/hooks/auth.hook';
 import SafeHtmlComponent from '@/components/common/safe-html.component';
 import { twMerge } from 'tailwind-merge';
 import { CloseOutlined } from '@ant-design/icons';
+import service from '@/utils/backend/auth';
 
 interface ModalCollateralProps {}
 
@@ -23,6 +24,7 @@ export default function ModalForgotPasswordComponent({}: ModalCollateralProps) {
   const { t } = useTranslation('common');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isRecover, setIsRecover] = useState(false);
+  const [error, setError] = useState() as any;
 
   const {
     handleSubmit,
@@ -49,10 +51,18 @@ export default function ModalForgotPasswordComponent({}: ModalCollateralProps) {
 
   const onSubmit: SubmitHandler<IFormInput> = data => {
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setIsRecover(true);
-      // setIsModalOpen(false);
+    setTimeout(async () => {
+      try {
+        setLoading(true);
+        const res = (await service.forgotPassword(data.email)) as any;
+        if (res) {
+          setIsRecover(true);
+          setLoading(false);
+        }
+      } catch (error: any) {
+        setError(error);
+        setLoading(false);
+      }
     }, 1000);
   };
 
@@ -74,19 +84,13 @@ export default function ModalForgotPasswordComponent({}: ModalCollateralProps) {
   const _handleOk = useCallback(() => {
     reset();
     setIsRecover(false);
-
     setIsModalOpen(false);
   }, []);
   const openSignInModal = () => {
     reset();
     setIsRecover(false);
-
     setIsModalOpen(false);
     eventBus.emit('openSignInModal');
-  };
-  const resetState = () => {
-    reset();
-    setLoading(false);
   };
 
   /**
@@ -104,12 +108,6 @@ export default function ModalForgotPasswordComponent({}: ModalCollateralProps) {
       eventBus.off('openForgotModal', openForgotModal);
     };
   }, []);
-
-  useEffect(() => {
-    if (isModalOpen) {
-      resetState();
-    }
-  }, [isModalOpen]);
 
   return (
     <Modal

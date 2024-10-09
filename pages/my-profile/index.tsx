@@ -43,6 +43,19 @@ export default function MyProfilePage() {
     }
   }, [auth]);
 
+  useEffect(() => {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const token = urlParams.get('token');
+    const refresh_token = urlParams.get('refresh_token');
+
+    if (token) {
+      updateAuth({ access_token: token, refresh_token: refresh_token });
+      router.push('/my-profile');
+      eventBus.emit('openNewPasswordModal', true);
+    }
+  }, []);
+
   return (
     <div className={twMerge('my-profile-page-container', cssClass.myProfilePage)}>
       <div className="my-profile-page-wrapper">

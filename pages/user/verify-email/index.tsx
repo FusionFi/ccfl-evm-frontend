@@ -17,8 +17,10 @@ export default function MyVerifyPage() {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const token = urlParams.get('token');
+    const refresh_token = urlParams.get('refresh_token');
+
     if (token) {
-      updateAuth({ access_token: token, isNew: true });
+      updateAuth({ access_token: token, isNew: true, refresh_token: refresh_token });
       router.push('/my-profile');
     }
   }, []);

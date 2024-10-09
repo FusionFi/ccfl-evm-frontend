@@ -81,6 +81,18 @@ const checkOldPassword = async (username: any, password: any, token: any) => {
   return res;
 };
 
+const forgotPassword = async (email: any) => {
+  const res = await http.post(
+    `${URL}/user/forgot-password
+`,
+    {
+      email: email,
+    },
+  );
+
+  return res;
+};
+
 const service = {
   signUp,
   signIn,
@@ -89,5 +101,6 @@ const service = {
   checkUserName,
   checkEmail,
   checkOldPassword,
+  forgotPassword,
 };
 export default service;
