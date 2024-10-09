@@ -12,6 +12,7 @@ import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
 import { useEffect, useMemo } from 'react';
 import cssClass from './supply-overview.component.module.scss';
+import { toCurrency } from '@/utils/bignumber.util'
 
 type LabelRender = SelectProps['labelRender'];
 
@@ -49,11 +50,11 @@ export default function SupplyOverviewComponent() {
   };
 
   const totalSupply = useMemo(() => {
-    return new BigNumber(user?.total_supply || 0).toFormat(2);
+    return new BigNumber(user?.total_supply || 0).toString();
   }, [user?.total_supply]);
 
   const totalEarned = useMemo(() => {
-    return new BigNumber(user?.total_earned || 0).toFormat(2);
+    return new BigNumber(user?.total_earned || 0).toString();
   }, [user?.total_earned]);
 
   const handleNetworkChange = (item: any) => {
@@ -135,13 +136,12 @@ export default function SupplyOverviewComponent() {
                 {t('SUPPLY_OVERVIEW_TOTAL_SUPPLY')}
               </span>
               <div className="supply-overview__body__wrapper__item__value">
-                ${' '}
                 <span
                   className="font-bold"
                   style={{
                     color: '#F0F0F0',
                   }}>
-                  {totalSupply}
+                  {toCurrency(totalSupply)}
                 </span>
               </div>
             </div>
@@ -169,7 +169,7 @@ export default function SupplyOverviewComponent() {
                   style={{
                     color: '#52C41A',
                   }}>
-                  +${totalEarned}
+                  {toCurrency(totalEarned)}
                 </span>
               </div>
             </div>
