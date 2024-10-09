@@ -24,3 +24,24 @@ export const getTextMulti = (number, text) => {
   _number = _number && _number != 'NaN' ? _number : number;
   return Number(number) == 1 ? `${_number} ${text}` : `${_number} ${text}s`;
 };
+
+
+export function toCurrency(value, prefix = '$') {
+  const x = new BigNumber(value || 0)
+  if (x.isLessThanOrEqualTo(0)) return `${prefix}0.00`;
+
+  if (x.isLessThan(0.01)) {
+    return `< ${prefix}0.01`
+  }
+
+  return x.toFormat(2, {
+    prefix: prefix,
+    decimalSeparator: '.',
+    groupSeparator: ',',
+    groupSize: 3,
+    secondaryGroupSize: 0,
+    fractionGroupSeparator: ' ',
+    fractionGroupSize: 0,
+    suffix: ''
+  })
+}
