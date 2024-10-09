@@ -64,7 +64,7 @@ const checkEmail = async (email: any) => {
   return res;
 };
 
-const checkOldPassword = async (username: any, password: any) => {
+const checkOldPassword = async (username: any, password: any, token: any) => {
   const res = await http.post(
     `${URL}/user/check/old-password
 
@@ -72,6 +72,9 @@ const checkOldPassword = async (username: any, password: any) => {
     {
       username: username,
       password: password,
+    },
+    {
+      headers: { Authorization: `Bearer ${token}` },
     },
   );
 

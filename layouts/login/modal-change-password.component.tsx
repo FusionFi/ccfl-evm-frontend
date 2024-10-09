@@ -111,7 +111,11 @@ export default function ModalChangePasswordComponent({}: ModalCollateralProps) {
 
   const checkOldPassword = async () => {
     try {
-      const res_password = (await service.checkOldPassword(auth.userName, oldPassword)) as any;
+      const res_password = (await service.checkOldPassword(
+        auth.userName,
+        oldPassword,
+        auth.access_token,
+      )) as any;
       console.log(res_password);
 
       if (res_password == true) {
@@ -207,6 +211,7 @@ export default function ModalChangePasswordComponent({}: ModalCollateralProps) {
                   </div>
                 </div>
               </div>
+              {passwordWrong && <div className="error-line">{t('SIGNUP_PASSWORD_OLD_ERROR')}</div>}
               <div className="flex justify-between items-center">
                 <span>{t('NEW_PASSWORD_CONTENT')}:</span>
                 <div className="input-warpper">
@@ -235,8 +240,8 @@ export default function ModalChangePasswordComponent({}: ModalCollateralProps) {
                   </div>
                 </div>
               </div>
+              {nonMatch && <div className="error-line">{t('SIGNUP_PASSWORD_ERROR')}</div>}
             </div>
-            {nonMatch && <div className="error-line">{t('SIGNUP_PASSWORD_ERROR')}</div>}
             <div className="signup-footer">
               <Button
                 htmlType="submit"

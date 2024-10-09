@@ -1,4 +1,8 @@
+import { store } from '@/store/index.store';
 import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import * as AuthActions from '@/actions/auth.action';
+import eventBus from '@/hooks/eventBus.hook';
 
 export const http = axios.create({
   baseURL: process.env.NEXT_PUBLIC_NEPTURE_API_URL,
@@ -52,16 +56,8 @@ http.interceptors.response.use(
       // store.dispatch(AuthActions.resetState());
       if (!isAlreadyFetchingAccessToken) {
         isAlreadyFetchingAccessToken = true;
-        // store
-        //   .dispatch('auth/refreshToken')
-        //   .then(({ access_token }) => {
-        //     isAlreadyFetchingAccessToken = false;
-        //     onAccessTokenFetched(access_token);
-        //   })
-        //   .catch(() => {
-        //     resetStateAndDisconnect();
-        //     return Promise.reject(err);
-        //   });
+        alert('Session expired');
+        eventBus.emit('openSignInModal');
       }
     }
 
