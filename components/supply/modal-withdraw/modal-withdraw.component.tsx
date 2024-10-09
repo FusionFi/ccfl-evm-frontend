@@ -76,11 +76,10 @@ export default function ModalWithdrawComponent({
     const result = await provider.withdraw({ amount, contractAddress: asset?.pool_address, })
 
     handleOk({
-      amount: formatUnits(amount, asset?.decimals),
       txUrl: `${selectedNetwork?.txUrl}tx/${result}`,
       message: t('WITHDRAW_SUCCESS_MODAL_MESSAGE', {
         token: asset?.symbol,
-        amount: toCurrency(amount, '')
+        amount: toCurrency(formatUnits(amount, asset?.decimals), '')
       })
     });
   }, [provider, asset, selectedNetwork])

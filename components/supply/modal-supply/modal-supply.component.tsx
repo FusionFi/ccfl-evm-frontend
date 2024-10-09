@@ -87,11 +87,10 @@ export default function ModalSupplyComponent({
 
 
       handleOk({
-        amount: formatUnits(amount, asset?.decimals),
         txUrl: `${selectedNetwork?.txUrl}tx/${result}`,
         message: t('SUPPLY_SUCCESS_MODAL_MESSAGE', {
           token: asset?.symbol,
-          amount: toCurrency(amount, '')
+          amount: toCurrency(formatUnits(amount, asset?.decimals), '')
         })
       });
     },
