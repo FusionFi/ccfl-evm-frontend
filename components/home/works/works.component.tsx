@@ -94,7 +94,7 @@ export default function WorksComponent() {
           <div className="steps-container">
             <div className="step step1">
               <div className="step-number"> 01</div>
-              <div className="step-label"> {t('LANDING_PAGE_WORKS_STEP_2')}</div>
+              <div className="step-label"> {t('LANDING_PAGE_WORKS_STEP_1')}</div>
               <div className="arrow arrow-up">
                 <Image
                   src="/images/landing/works/arrow-up.png"
