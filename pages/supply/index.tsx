@@ -329,7 +329,7 @@ export default function SupplyPage() {
     );
   };
 
-  const handleOk = ({ amount, txUrl, token, message }: any) => {
+  const handleOk = ({ txUrl, message }: any) => {
     fetchUserData();
     setModal({
       type: ModalType.Success,
