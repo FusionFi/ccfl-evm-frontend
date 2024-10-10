@@ -53,7 +53,6 @@ class EVMProvider extends BaseProvider {
     const _connector: any = connectors.find(
       item => item.name.toLowerCase() == connector.id.toLowerCase() || connector.id == item.type,
     );
-
     return await connect(config, {
       connector: _connector,
     });
