@@ -317,6 +317,8 @@ export default function BorrowPage() {
         setStep={setStep}
         token={token}
         setToken={setToken}
+        oracleTokenName={oracleTokenName}
+        wallet={cardanoWalletConnected}
       />
       <ModalRepayComponent
         isModalOpen={isModalRepayOpen}
@@ -325,6 +327,8 @@ export default function BorrowPage() {
         step={step}
         setStep={setStep}
         isFiat={isFiat}
+        oracleTokenName={oracleTokenName}
+        wallet={cardanoWalletConnected}
       />
       <ModalCollateralComponent
         isModalOpen={isModalCollateralOpen}
@@ -332,6 +336,8 @@ export default function BorrowPage() {
         currentToken={collateralToken}
         step={step}
         setStep={setStep}
+        oracleTokenName={oracleTokenName}
+        wallet={cardanoWalletConnected}
       />
       <ModalWithdrawCollateralComponent
         isModalOpen={isModalWithdrawCollateral}
@@ -339,6 +345,8 @@ export default function BorrowPage() {
         currentToken={collateralToken}
         step={step}
         setStep={setStep}
+        oracleTokenName={oracleTokenName}
+        wallet={cardanoWalletConnected}
       />
       <ModalBorrowFiatComponent
         isModalOpen={BorrowModalType.Fiat == modal.type}
@@ -349,6 +357,8 @@ export default function BorrowPage() {
         setStep={setStep}
         token={token}
         setToken={setToken}
+        oracleTokenName={oracleTokenName}
+        wallet={cardanoWalletConnected}
       />
 
       <ModalBorrowFiatSuccessComponent

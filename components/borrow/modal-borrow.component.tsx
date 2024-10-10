@@ -16,6 +16,9 @@ import TransactionSuccessComponent from '@/components/borrow/transaction-success
 import { useTranslation } from 'next-i18next';
 import { COLLATERAL_TOKEN } from '@/constants/common.constant';
 import { TRANSACTION_STATUS } from '@/constants/common.constant';
+import { loanMint } from '@/utils/cardano/validators';
+import { loanMintTx } from '@/utils/cardano/transactions/loanMint';
+import { getExchangeRate } from '@/utils/api/getExchangeRate';
 
 interface ModalBorrowProps {
   isModalOpen: boolean;
@@ -25,6 +28,8 @@ interface ModalBorrowProps {
   setStep: any;
   token: any;
   setToken: any;
+  oracleTokenName: string;
+  wallet: any;
 }
 
 interface IFormInput {
@@ -40,6 +45,8 @@ export default function ModalBorrowComponent({
   setStep,
   token,
   setToken,
+  oracleTokenName,
+  wallet,
 }: ModalBorrowProps) {
   const { control, handleSubmit, setValue } = useForm({
     defaultValues: {
@@ -72,9 +79,12 @@ export default function ModalBorrowComponent({
     setYield(e.target.checked);
   };
 
+  
   const [tokenValue, setTokenValue] = useState();
   const [collateralValue, setCollateralValue] = useState();
   const minimumAmount = 2;
+  const exchangeRate = getExchangeRate(currentToken);
+  const { createTx, txHash } = loanMintTx(wallet, tokenValue, oracleTokenName, exchangeRate);
 
   const status = 'SUCCESS';
   const renderTitle = () => {
@@ -268,6 +278,7 @@ export default function ModalBorrowComponent({
                       disabled={!tokenValue || !collateralValue || collateralValue < minimumAmount}
                       className="w-full"
                       loading={loading}>
+                      {createTx()}
                       {t('BORROW_MODAL_BORROW_APPROVE', { currentToken: token })}
                     </Button>
                   </div>

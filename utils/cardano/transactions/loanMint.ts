@@ -6,7 +6,12 @@ import { oracleUpdateAction, mintLoanAction } from '../redeemers';
 import { loanCS, configAddr, oracleAddr, loanMint, loanAddr, collateralAddr, oracleVal } from '../validators';
 import { loanAmt, configUnit, oracleUnit } from '../variables';
 
-export function loanMintTx(wallet: any) {
+export function loanMintTx(
+  wallet: any,
+  loanAmt: number, 
+  oracleTokenName: string, 
+  exchangeRate: number
+) {
   const [lucid, setLucid] = useState<Lucid | null>(null);
   const [txHash, setTxHash] = useState("None");
 
@@ -25,8 +30,8 @@ export function loanMintTx(wallet: any) {
       }
       console.log(wallet);
 
-      const oracleOutDatum = Data.from(oracleDatum1) // Change the oracle datum here
-      const deposit = loanAmt * 1000n / oracleOutDatum.fields[0]
+      
+      const deposit = loanAmt * 1000 / exchangeRate
       const utxos: UTxO[] = await lucid.utxosAt(wallet.address)
       const utxo: UTxO = utxos[0]
       const loanTn = utxo.txHash.slice(0, 30).concat(toHex(utxo.outputIndex))
@@ -39,9 +44,9 @@ export function loanMintTx(wallet: any) {
       console.log(`Loan Unit: 
         ${loanUnit}
         `)
-      console.log(`Collateral Value: `, deposit * 1000000n * 2n, `
+      console.log(`Collateral Value: `, deposit * 1000000 * 2, `
         `)
-      console.log(`Expected Collateral: `, ((loanAmt * 1000n) / oracleOutDatum.fields[0]) * 1000000n * 2n, `
+      console.log(`Expected Collateral: `, ((loanAmt * 1000) / oracleOutDatum.fields[0]) * 1000000 * 2, `
       ` )
 
       const tx = await lucid
@@ -61,7 +66,7 @@ export function loanMintTx(wallet: any) {
         .payToContract(
           collateralAddr,
           { inline: collateralDatum },
-          { lovelace: (deposit * 1000000n * 2n), [loanUnit]: 1n }
+          { lovelace: (BigInt(deposit) * 1000000n * 2n), [loanUnit]: 1n }
         )
         .payToContract(
           oracleAddr,

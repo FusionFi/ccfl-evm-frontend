@@ -7,7 +7,14 @@ import { interestUpdateAction } from '../redeemers';
 import { interestAddr, interestVal } from '../validators';
 import { oracleUnit } from '../variables';
 
-export function interestUpdateTx(wallet: any) {
+export function interestUpdateTx(
+  wallet: any, 
+  oracleTokenName: string, 
+  base: number, 
+  optimal: number, 
+  slope1: number, 
+  slope2: number
+) {
   const [lucid, setLucid] = useState<Lucid | null>(null);
   const [txHash, setTxHash] = useState("None");
 

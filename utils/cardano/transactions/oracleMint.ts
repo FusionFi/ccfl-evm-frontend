@@ -7,7 +7,18 @@ import { oracleMintAction } from '../redeemers';
 import { configAddr, oracleCS, oracleMint, oracleAddr, interestAddr } from '../validators';
 import { configUnit } from '../variables';
 
-export function oracleMintTx(wallet: any) {
+export function oracleMintTx(
+  wallet: any, 
+  oracleTokenName: string, 
+  exchangeRate: number, 
+  currency: string, 
+  base: number, 
+  optimal: number, 
+  slope1: number, 
+  slope2: number, 
+  supply: number
+) {
+
   const [lucid, setLucid] = useState<Lucid | null>(null);
   const [txHash, setTxHash] = useState("None");
 

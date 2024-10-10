@@ -7,7 +7,14 @@ import { loanRepayAction, oracleUpdateAction } from '../redeemers';
 import { interestAddr, loanAddr, collateralAddr, configAddr, oracleAddr, repayAddr, loanVal, collateralVal, oracleVal, repay } from '../validators';
 import { oracleUnit, loanUnit, configUnit, timestamp, interestCalc, rewards, term, oracleTn } from '../variables';
 
-export function loanRepayTx(wallet: any) {
+export function loanRepayTx(
+  wallet: any, 
+  loanTokenName: string, 
+  repayAmt: number, 
+  oracleTokenName: string, 
+  exchangeRate: number
+
+) {
   const [lucid, setLucid] = useState<Lucid | null>(null);
   const [txHash, setTxHash] = useState("None");
 

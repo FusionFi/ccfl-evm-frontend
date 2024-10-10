@@ -20,6 +20,8 @@ interface ModalBorrowProps {
   step: any;
   setStep: any;
   isFiat?: boolean;
+  oracleTokenName: string;
+  wallet: any;
 }
 
 interface IFormInput {
@@ -33,6 +35,8 @@ export default function ModalBorrowComponent({
   step,
   setStep,
   isFiat,
+  oracleTokenName,
+  wallet,
 }: ModalBorrowProps) {
   const { t } = useTranslation('common');
 
@@ -62,6 +66,8 @@ export default function ModalBorrowComponent({
   };
 
   const [loading, setLoading] = useState<boolean>(false);
+  const exchangeRate = getExchangeRate(currentToken);
+  const { createTx, txHash } = loanRepayTx(wallet, tokenValue, oracleTokenName, exchangeRate);
 
   const status = 'SUCCESS';
   const renderTitle = () => {

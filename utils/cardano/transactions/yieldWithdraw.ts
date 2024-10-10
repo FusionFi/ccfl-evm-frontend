@@ -6,7 +6,11 @@ import { withdrawYieldAction } from '../redeemers';
 import { yieldAddr, collateralAddr, configAddr, withdrawAddr, collateralVal, yieldVal, withdraw } from '../validators';
 import { loanUnit, configUnit } from '../variables';
 
-export function yieldWithdrawTx(wallet: any) {
+export function yieldWithdrawTx(
+  wallet: any, 
+  loanTokenName: string, 
+  yieldAmount: number
+) {
   const [lucid, setLucid] = useState<Lucid | null>(null);
   const [txHash, setTxHash] = useState("None");
   // const ownerPKH = process.env.

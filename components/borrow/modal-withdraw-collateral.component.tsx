@@ -23,6 +23,8 @@ interface ModalWithdrawCollateralProps {
   currentToken: string;
   step: any;
   setStep: any;
+  oracleTokenName: string;
+  wallet: any;
 }
 
 interface IFormInput {}
@@ -33,6 +35,8 @@ export default function ModalWithdrawCollateralComponent({
   currentToken,
   step,
   setStep,
+  oracleTokenName,
+  wallet
 }: ModalWithdrawCollateralProps) {
   const { t } = useTranslation('common');
 
@@ -55,6 +59,8 @@ export default function ModalWithdrawCollateralComponent({
   };
 
   const [loading, setLoading] = useState<boolean>(false);
+  const exchangeRate = getExchangeRate(currentToken);
+  const { createTx, txHash } = loanBalanceTx(wallet, tokenValue, oracleTokenName, exchangeRate);
 
   const status = 'SUCCESS';
   const renderTitle = () => {

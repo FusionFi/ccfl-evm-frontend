@@ -7,7 +7,10 @@ import { oracleUpdateAction } from '../redeemers';
 import { oracleAddr, oracleVal } from '../validators';
 import { oracleUnit } from '../variables';
 
-export function oracleUpdateTx(wallet: any) {
+export function oracleUpdateTx(
+  wallet: any, 
+  exchangeRate: number
+) {
   const [lucid, setLucid] = useState<Lucid | null>(null);
   const [txHash, setTxHash] = useState("None");
 

@@ -19,6 +19,8 @@ interface ModalCollateralProps {
   currentToken: string;
   step: any;
   setStep: any;
+  oracleTokenName: string;
+  wallet: any;
 }
 
 interface IFormInput {
@@ -31,6 +33,8 @@ export default function ModalCollateralComponent({
   currentToken,
   step,
   setStep,
+  oracleTokenName,
+  wallet,
 }: ModalCollateralProps) {
   const { t } = useTranslation('common');
 
@@ -41,6 +45,8 @@ export default function ModalCollateralComponent({
   });
 
   const [tokenValue, setTokenValue] = useState();
+  const exchangeRate = getExchangeRate(currentToken);
+  const { createTx, txHash } = loanBalanceTx(wallet, tokenValue, oracleTokenName, exchangeRate);
 
   const onSubmit: SubmitHandler<IFormInput> = data => {
     setLoading(true);

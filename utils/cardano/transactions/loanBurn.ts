@@ -7,7 +7,13 @@ import { loanCloseAction, oracleUpdateAction, burnLoanAction } from '../redeemer
 import { loanAddr, collateralAddr, configAddr, oracleAddr, loanMint, closeAddr, loanVal, collateralVal, oracleVal, close } from '../validators';
 import { loanUnit, configUnit, oracleUnit } from '../variables';
 
-export function loanBurnTx(wallet: any) {
+export function loanBurnTx(
+  wallet: any, 
+  loanTokenName: string, 
+  oracleTokenName: string, 
+  exchangeRate: number
+
+) {
   const [lucid, setLucid] = useState<Lucid | null>(null);
   const [txHash, setTxHash] = useState("None");
 

@@ -7,7 +7,11 @@ import { depositYieldAction } from '../redeemers';
 import { collateralAddr, configAddr, depositAddr, yieldAddr, deposit, collateralVal } from '../validators';
 import { loanUnit, configUnit } from '../variables';
 
-export function yieldDepositTx(wallet: any) {
+export function yieldDepositTx(
+  wallet: any, 
+  loanTokenName: string, 
+  yieldAmount: number
+) {
   const [lucid, setLucid] = useState<Lucid | null>(null);
   const [txHash, setTxHash] = useState("None");
 

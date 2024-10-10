@@ -6,7 +6,12 @@ import { loanBalanceAction, oracleUpdateAction } from '../redeemers';
 import { loanAddr, collateralAddr, configAddr, oracleAddr, balanceAddr, loanVal, collateralVal, oracleVal, balance } from '../validators';
 import { loanAmt, loanUnit, configUnit, oracleUnit } from '../variables';
 
-export function loanBalanceTx(wallet: any) {
+export function loanBalanceTx(
+  wallet: any, 
+  loanTokenName: string, 
+  oracleTokenName: string, 
+  exchangeRate: number
+) {
   const [lucid, setLucid] = useState<Lucid | null>(null);
   const [txHash, setTxHash] = useState("None");
 
