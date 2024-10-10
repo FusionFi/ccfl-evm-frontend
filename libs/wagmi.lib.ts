@@ -31,7 +31,7 @@ export const config = defaultWagmiConfig({
   },
   connectors: [walletConnect({
     projectId
-  })],
+  }), metaMask()],
   ...wagmiOptions, // Optional - override createConfig parameters
 });
 

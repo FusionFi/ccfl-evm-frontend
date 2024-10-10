@@ -1,4 +1,8 @@
 .userInfo {
+  @media screen and (max-width: 767px) {
+    width: 100%;
+  }
+
   :global {
     .user-info-content {
       font-family: Inter;
@@ -7,6 +11,10 @@
       font-weight: 400;
       line-height: 17px;
       color: #fff;
+
+      @media screen and (max-width: 767px) {
+        width: 100%;
+      }
 
       .user-balance {
         position: relative;
@@ -71,6 +79,7 @@
         @media screen and (max-width: 767px) {
           min-width: 80px;
           margin-left: -28px;
+          flex: 1 0 auto;
         }
 
         .user-image {
@@ -91,6 +100,7 @@
         color: #FFF;
         text-align: center;
 
+
         /* Body/regular */
         font-family: Inter;
         font-size: 14px;
@@ -102,6 +112,10 @@
         align-items: center;
         flex: 1 0 auto;
         /* 157.143% */
+
+        @media screen and (max-width: 767px) {
+          flex: 1 0 auto;
+        }
       }
     }
 
