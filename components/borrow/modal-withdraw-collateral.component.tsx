@@ -10,7 +10,7 @@ import { CONTRACT_ADDRESS, TRANSACTION_STATUS } from '@/constants/common.constan
 import { useWithdrawAllCollateral } from '@/hooks/provider.hook';
 import { useConnectedNetworkManager, useProviderManager } from '@/hooks/auth.hook';
 import { useAccount } from 'wagmi';
-import { toAmountShow, toLessPart } from '@/utils/common';
+import { formatNumber, toAmountShow, toLessPart } from '@/utils/common';
 import service from '@/utils/backend/borrow';
 
 interface ModalWithdrawCollateralProps {
@@ -201,7 +201,7 @@ export default function ModalWithdrawCollateralComponent({
                   </div>
                   <div className="flex">
                     <div className="modal-borrow-repay">
-                      <span>{stableCoinValue}</span>
+                      <span>{formatNumber(stableCoinValue)}</span>
                       <span className="ml-1">{currentToken.toUpperCase()}</span>
                     </div>
                   </div>
@@ -213,9 +213,11 @@ export default function ModalWithdrawCollateralComponent({
                       <span>
                         {' '}
                         {loanItem?.yield_earned
-                          ? toLessPart(
-                              toAmountShow(loanItem.yield_earned, loanItem.collateral_decimals),
-                              4,
+                          ? formatNumber(
+                              toLessPart(
+                                toAmountShow(loanItem.yield_earned, loanItem.collateral_decimals),
+                                4,
+                              ),
                             )
                           : 0}
                       </span>
@@ -238,7 +240,7 @@ export default function ModalWithdrawCollateralComponent({
                   {loadingGasFee ? (
                     <LoadingOutlined className="mr-1" />
                   ) : (
-                    <span className="ml-1">{toLessPart(gasFee, 2)}</span>
+                    <span className="ml-1">{formatNumber(toLessPart(gasFee, 2))}</span>
                   )}
                 </div>
               </div>

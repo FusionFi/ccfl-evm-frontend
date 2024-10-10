@@ -4,7 +4,7 @@ import SafeHtmlComponent from '@/components/common/safe-html.component';
 import { ASSET_TYPE } from '@/constants/common.constant';
 import { useAuth, useConnectedNetworkManager, useProviderManager } from '@/hooks/auth.hook';
 import eventBus from '@/hooks/eventBus.hook';
-import { toAmountShow, toLessPart } from '@/utils/common';
+import { formatNumber, toAmountShow, toLessPart } from '@/utils/common';
 import { Button, Skeleton } from 'antd';
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
@@ -125,10 +125,17 @@ export default function assetComponent({
                               {t('BORROW_MODAL_BORROW_BORROW_LOAN_AVAILABLE')}
                             </div>
                             <div>
-                              {toLessPart(toAmountShow(item.loan_available, item.decimals), 6)}
+                              {formatNumber(
+                                toLessPart(toAmountShow(item.loan_available, item.decimals), 6),
+                                true,
+                              )}
                             </div>
                             <div className="usd">
-                              $ {toLessPart(toAmountShow(item.usd, item.decimals), 6)}
+                              ${' '}
+                              {formatNumber(
+                                toLessPart(toAmountShow(item.usd, item.decimals), 6),
+                                true,
+                              )}
                             </div>
                           </div>
                         )}
@@ -136,7 +143,7 @@ export default function assetComponent({
                           <div className="asset-title">
                             {t('BORROW_FIAT_MODAL_TAB_COLLATERAL_APY')}
                           </div>
-                          {toLessPart(item.apr, 2)}%
+                          {formatNumber(toLessPart(item.apr, 2))}%
                         </div>
                       </div>
                     </div>

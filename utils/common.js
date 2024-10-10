@@ -246,3 +246,21 @@ export function toLessPart(val, numFloor, isRound) {
   let finalValue = val ? Math.floor(val * Math.pow(10, numFloor)) / Math.pow(10, numFloor) : val;
   return isRound ? Math.ceil(finalValue * 1000) / 1000 : finalValue;
 }
+
+export function formatNumber(val, isGeneral) {
+  if (!val) return 0;
+
+  let finalValue = new BigNumber(val || 0);
+
+  return isGeneral
+    ? finalValue?.toFormat(3, BigNumber.ROUND_DOWN, {
+        decimalSeparator: '.',
+        groupSeparator: ',',
+        groupSize: 3,
+      })
+    : finalValue?.toFormat({
+        decimalSeparator: '.',
+        groupSeparator: ',',
+        groupSize: 3,
+      });
+}
