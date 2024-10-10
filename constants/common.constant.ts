@@ -61,7 +61,7 @@ export const EVM_WALLETS = [
     iconUrl: '/images/wallet/walletconnect.png',
   },
   {
-    id: 'coinbase',
+    id: 'coinbaseWallet',
     name: 'WEB3_MODAL_COMPONENT_COINBASE',
     iconUrl: '/images/wallet/coinbase.png',
   },
