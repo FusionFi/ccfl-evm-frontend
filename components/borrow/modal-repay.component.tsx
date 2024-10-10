@@ -8,7 +8,7 @@ import {
   ACTION_TYPE,
 } from '@/constants/common.constant';
 import service from '@/utils/backend/borrow';
-import { toAmountShow, toLessPart, toUnitWithDecimal } from '@/utils/common';
+import { formatNumber, toAmountShow, toLessPart, toUnitWithDecimal } from '@/utils/common';
 import {
   ArrowRightOutlined,
   CloseOutlined,
@@ -508,7 +508,11 @@ export default function ModalBorrowComponent({
                   {t('BORROW_MODAL_REPAY_AMOUNT')}
                   <div className="wallet-balance">
                     <WalletIcon className="mr-2" /> <span>{t('FORM_BALANCE')}: </span>{' '}
-                    {loadingBalance ? <LoadingOutlined className="mr-1" /> : stableCoinData.balance}{' '}
+                    {loadingBalance ? (
+                      <LoadingOutlined className="mr-1" />
+                    ) : (
+                      formatNumber(stableCoinData.balance)
+                    )}{' '}
                     {currentToken?.toUpperCase()}{' '}
                   </div>
                 </div>
@@ -543,7 +547,7 @@ export default function ModalBorrowComponent({
                     <span className="modal-borrow-usd">
                       ≈ $
                       {tokenValue && priceToken[currentToken]
-                        ? toLessPart(tokenValue * priceToken[currentToken], 2, true)
+                        ? formatNumber(toLessPart(tokenValue * priceToken[currentToken], 2, true))
                         : 0}
                     </span>
                     <Button
@@ -586,14 +590,16 @@ export default function ModalBorrowComponent({
                   </div>
                   <div className="flex">
                     <div className="modal-borrow-repay">
-                      <span>{deptRemain}</span>
+                      <span>{formatNumber(deptRemain)}</span>
                       <span className="ml-1">{isFiat ? 'USD' : currentToken?.toUpperCase()}</span>
                     </div>
                     {tokenValue && tokenValue > 0 && (
                       <div className="modal-borrow-repay remain">
                         <ArrowRightOutlined className="mx-1" />
                         <span>
-                          {deptRemain - tokenValue === 0 ? 0 : (deptRemain - tokenValue).toFixed(3)}
+                          {deptRemain - tokenValue === 0
+                            ? 0
+                            : formatNumber((deptRemain - tokenValue).toFixed(3))}
                         </span>
                         <span className="ml-1">{isFiat ? 'USD' : currentToken?.toUpperCase()}</span>
                       </div>
@@ -613,7 +619,7 @@ export default function ModalBorrowComponent({
                           <LoadingOutlined className="mr-1" />
                         ) : (
                           <span className="">
-                            {deptRemain - tokenValue === 0 ? '∞' : healthFactor}
+                            {deptRemain - tokenValue === 0 ? '∞' : formatNumber(healthFactor)}
                           </span>
                         )}
                       </div>
@@ -637,7 +643,7 @@ export default function ModalBorrowComponent({
                   {loadingGasFee ? (
                     <LoadingOutlined className="mr-1" />
                   ) : (
-                    <span className="ml-1">{toLessPart(gasFee, 2)}</span>
+                    <span className="ml-1">{formatNumber(toLessPart(gasFee, 2))}</span>
                   )}
                 </div>
               </div>
