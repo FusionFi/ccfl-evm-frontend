@@ -59,12 +59,12 @@
             left: 46%;
             z-index: 1;
             opacity: 0;
-            animation: usdc-blur-fall 0.5s ease-in forwards, float 2s ease-in-out infinite;
+            animation: usdc-blur-fall 0.5s ease-in forwards, float 7s ease-in-out infinite;
             animation-delay: 0s;
             @media screen and (max-width: 767px) {
               width: 40px;
               left: 44%;
-              animation: usdc-blur-fall-mobile 0.5s ease-in forwards, float 2s ease-in-out infinite;
+              animation: usdc-blur-fall-mobile 0.5s ease-in forwards, float 7s ease-in-out infinite;
               animation-delay: 0s;
             }
           }
@@ -76,12 +76,12 @@
             left: 24%;
             z-index: 4;
             opacity: 0;
-            animation: usda-fall 0.5s ease-in forwards, float 2s ease-in-out infinite;
+            animation: usda-fall 0.5s ease-in forwards, float 7s ease-in-out infinite;
             animation-delay: 0.1s;
             @media screen and (max-width: 767px) {
               width: 48px;
               left: 36%;
-              animation: usda-fall-mobile 1s ease-in forwards, float 2s ease-in-out infinite;
+              animation: usda-fall-mobile 1s ease-in forwards, float 7s ease-in-out infinite;
               animation-delay: 0.1s;
             }
           }
@@ -93,12 +93,12 @@
             left: 15%;
             z-index: 4;
             opacity: 0;
-            animation: dollar-fall 0.5s ease-in forwards, float 2s ease-in-out infinite;
+            animation: dollar-fall 0.5s ease-in forwards, float 7s ease-in-out infinite;
             animation-delay: 0.2s;
             @media screen and (max-width: 767px) {
               width: 96px;
               left: 30%;
-              animation: dollar-fall-mobile 1s ease-in forwards, float 2s ease-in-out infinite;
+              animation: dollar-fall-mobile 1s ease-in forwards, float 7s ease-in-out infinite;
               animation-delay: 0.2s;
             }
           }
@@ -110,12 +110,12 @@
             left: 39%;
             z-index: 4;
             opacity: 0;
-            animation: usdc-fall 0.5s ease-in forwards, float 2s ease-in-out infinite;
+            animation: usdc-fall 0.5s ease-in forwards, float 7s ease-in-out infinite;
             animation-delay: 0.3s;
             @media screen and (max-width: 767px) {
               width: 64px;
               left: 45%;
-              animation: usdc-fall-mobile 1s ease-in forwards, float 2s ease-in-out infinite;
+              animation: usdc-fall-mobile 1s ease-in forwards, float 7s ease-in-out infinite;
               animation-delay: 0.3s;
             }
           }
@@ -127,12 +127,12 @@
             left: 40%;
             z-index: 4;
             opacity: 0;
-            animation: usdt-fall 0.5s ease-in forwards, float 2s ease-in-out infinite;
+            animation: usdt-fall 0.5s ease-in forwards, float 7s ease-in-out infinite;
             animation-delay: 0.8s;
             @media screen and (max-width: 767px) {
               width: 80px;
               left: 48%;
-              animation: usdt-fall-mobile 1s ease-in forwards, float 2s ease-in-out infinite;
+              animation: usdt-fall-mobile 1s ease-in forwards, float 7s ease-in-out infinite;
               animation-delay: 0.8s;
             }
           }
@@ -144,12 +144,12 @@
             left: 56%;
             z-index: 4;
             opacity: 0;
-            animation: ada-fall 0.5s ease-in forwards, float 2s ease-in-out infinite;
+            animation: ada-fall 0.5s ease-in forwards, float 7s ease-in-out infinite;
             animation-delay: 0.5s;
             @media screen and (max-width: 767px) {
               width: 100px;
               left: 56%;
-              animation: ada-fall-mobile 1s ease-in forwards, float 2s ease-in-out infinite;
+              animation: ada-fall-mobile 1s ease-in forwards, float 7s ease-in-out infinite;
               animation-delay: 0.5s;
             }
           }

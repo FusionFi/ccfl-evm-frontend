@@ -79,7 +79,7 @@
             left: -60%;
             .why-icon {
               > img {
-                animation: float2 3s ease-in-out infinite;
+                animation: float2 7s ease-in-out infinite;
               }
             }
             @media (min-width: 768px) and (max-width: 1024px) {
@@ -128,7 +128,7 @@
             > img {
               width: 220px;
               height: auto;
-              animation: float 3s ease-in-out infinite;
+              animation: float 7s ease-in-out infinite;
               @media screen and (max-width: 767px) {
                 width: 160px;
               }
