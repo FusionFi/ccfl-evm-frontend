@@ -64,7 +64,11 @@ class EVMProvider extends BaseProvider {
   }
 
   async disconnect() {
-    const { connector } = getAccount(config);
+    const connectors = getConnectors(config);
+    const connector: any = connectors.find(
+      item => item.name.toLowerCase() == this.connector?.id?.toLowerCase() || this?.connector?.id == item.type,
+    );
+
     const result = await disconnect(config, {
       connector,
     });
