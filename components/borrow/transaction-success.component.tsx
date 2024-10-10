@@ -7,6 +7,7 @@ import { TRANSACTION_STATUS, TX_LINK } from '@/constants/common.constant';
 import React, { useMemo } from 'react';
 import { useNetworkManager } from '@/hooks/supply.hook';
 import { useConnectedNetworkManager } from '@/hooks/auth.hook';
+import { formatNumber } from '@/utils/common';
 
 interface TransactionSuccessProps {
   handleCancel: any;
@@ -82,27 +83,28 @@ export default function TransactionSuccessComponent({
             <React.Fragment>
               {isRepay && (
                 <span>
-                  {t('BORROW_MODAL_SUCCESS_REPAY_TOKEN')} {stableCoinAmount}{' '}
+                  {t('BORROW_MODAL_SUCCESS_REPAY_TOKEN')} {formatNumber(stableCoinAmount)}{' '}
                   {currentToken?.toUpperCase()}
                 </span>
               )}
               {isBorrow && (
                 <span>
-                  {t('BORROW_MODAL_SUCCESS_BORROW_TOKEN')} {stableCoinAmount}{' '}
+                  {t('BORROW_MODAL_SUCCESS_BORROW_TOKEN')} {formatNumber(stableCoinAmount)}{' '}
                   {currentToken?.toUpperCase()}
                 </span>
               )}
               {isCollateral && (
                 <span>
                   {t('BORROW_MODAL_COLLATERAL_DONE', {
-                    amount: stableCoinAmount,
+                    amount: formatNumber(stableCoinAmount),
                     token: currentToken?.toUpperCase(),
                   })}
                 </span>
               )}
               {isWithdrawCollateral && (
                 <span>
-                  {t('BORROW_MODAL_WITHDRAW_DONE')} {stableCoinAmount} {currentToken?.toUpperCase()}
+                  {t('BORROW_MODAL_WITHDRAW_DONE')} {formatNumber(stableCoinAmount)}{' '}
+                  {currentToken?.toUpperCase()}
                 </span>
               )}
             </React.Fragment>

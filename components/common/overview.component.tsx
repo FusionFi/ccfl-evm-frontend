@@ -3,7 +3,7 @@ import { twMerge } from 'tailwind-merge';
 import { Tooltip } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { TYPE_COMMON } from '@/constants/common.constant';
-import { toLessPart } from '@/utils/common';
+import { formatNumber, toLessPart } from '@/utils/common';
 
 interface ItemProps {
   text: any;
@@ -27,7 +27,7 @@ export default function OverviewComponent(props: OverviewProps) {
         <div className="overview-title">{item.text}</div>
         <div className="overview-content">
           {item.type === TYPE_COMMON.USD && <span className="overview-symbol mr-1">$</span>}
-          {toLessPart(item.content, 2) ?? 0}
+          {formatNumber(toLessPart(item.content, 2)) ?? 0}
           {item.type === TYPE_COMMON.PERCENT && <span className="overview-symbol ml-1">%</span>}
           {item.type === TYPE_COMMON.FINANCE_HEALTH && (
             <span className="flex">
