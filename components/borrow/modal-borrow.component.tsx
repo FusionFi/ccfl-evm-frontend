@@ -23,7 +23,7 @@ import {
   MIN_AMOUNT_KEY,
   ACTION_TYPE,
 } from '@/constants/common.constant';
-import { toAmountShow, toLessPart, toUnitWithDecimal } from '@/utils/common';
+import { formatNumber, toAmountShow, toLessPart, toUnitWithDecimal } from '@/utils/common';
 import service from '@/utils/backend/borrow';
 import { useAccount, useConfig } from 'wagmi';
 import { debounce } from 'lodash';
@@ -714,7 +714,7 @@ export default function ModalBorrowComponent({
                     <span className="modal-borrow-usd">
                       ≈ $
                       {stableCoinValue && priceStableCoin[stableCoin]
-                        ? toLessPart(stableCoinValue * priceStableCoin[stableCoin], 2)
+                        ? formatNumber(toLessPart(stableCoinValue * priceStableCoin[stableCoin], 2))
                         : 0}
                     </span>
                     {/* <Button disabled={loading} className="modal-borrow-max">
@@ -746,7 +746,7 @@ export default function ModalBorrowComponent({
                     </sup>
                   </span>
                   <div className="modal-borrow-percent">
-                    <span>{toLessPart(apr, 2)}</span>
+                    <span>{formatNumber(toLessPart(apr, 2))}</span>
                     <span>%</span>
                   </div>
                 </div>
@@ -811,10 +811,12 @@ export default function ModalBorrowComponent({
                     {loadingBalanceCollateral ? (
                       <LoadingOutlined className="mr-1" />
                     ) : (
-                      <span>{collateralData.balance}</span>
+                      <span>{formatNumber(collateralData.balance)}</span>
                     )}
                     <span className="ml-1 token">{token}</span>
-                    <div className="modal-borrow-value-usd">${collateralData.balance_usd}</div>
+                    <div className="modal-borrow-value-usd">
+                      ${formatNumber(collateralData.balance_usd)}
+                    </div>
                   </div>
                 </div>
                 <div className="flex justify-between items-start">
@@ -860,7 +862,7 @@ export default function ModalBorrowComponent({
                   {loadingMinimumCollateral ? (
                     <LoadingOutlined className="mr-1" />
                   ) : (
-                    minimalCollateral
+                    formatNumber(minimalCollateral)
                   )}{' '}
                   {token}
                 </div>
@@ -879,7 +881,7 @@ export default function ModalBorrowComponent({
                         {loadingHealthFactor ? (
                           <LoadingOutlined className="mr-1" />
                         ) : (
-                          <span className="">{healthFactor}</span>
+                          <span className="">{formatNumber(healthFactor)}</span>
                         )}
                       </div>
                     ) : (
@@ -902,7 +904,7 @@ export default function ModalBorrowComponent({
                   {loadingGasFee ? (
                     <LoadingOutlined className="mr-1" />
                   ) : (
-                    <span className="ml-1">{toLessPart(gasFee, 2)}</span>
+                    <span className="ml-1">{formatNumber(toLessPart(gasFee, 2))}</span>
                   )}
                 </div>
               </div>
