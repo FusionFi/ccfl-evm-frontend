@@ -31,7 +31,9 @@ export const config = defaultWagmiConfig({
   },
   connectors: [walletConnect({
     projectId
-  }), metaMask()],
+  }), metaMask({
+    useDeeplink: false
+  })],
   ...wagmiOptions, // Optional - override createConfig parameters
 });
 
