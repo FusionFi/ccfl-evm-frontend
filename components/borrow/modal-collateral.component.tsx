@@ -583,7 +583,7 @@ export default function ModalCollateralComponent({
                 <div className="flex justify-between items-center modal-borrow-health">
                   <div className="modal-borrow-sub-content">{t('BORROW_MODAL_BORROW_HEALTH')}</div>
                   <div className="flex">
-                    <span>{loanItem ? loanItem.health : 0}</span>
+                    <span>{loanItem ? formatNumber(loanItem.health) : 0}</span>
                     {tokenValue && tokenValue > 0 && (
                       <div className="flex">
                         {(healthFactor || loadingHealthFactor) && (

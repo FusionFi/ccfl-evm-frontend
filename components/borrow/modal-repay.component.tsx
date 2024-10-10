@@ -560,15 +560,19 @@ export default function ModalBorrowComponent({
                   </div>
                 </div>
                 <div className="modal-borrow-balance">
-                  {minimum !== 0 && deptRemain >= minimum && (
+                  {minimum !== 0 && deptRemain >= minimum ? (
                     <span>
                       {t('FORM_MINIMUM_REPAYMENT')}:{' '}
                       {loadingMinimum ? <LoadingOutlined className="mr-1" /> : minimum}{' '}
                       {currentToken?.toUpperCase()}
                     </span>
+                  ) : (
+                    <span></span>
                   )}
-                  {tokenValue && !(stableCoinData.balance - tokenValue >= 0) && (
+                  {tokenValue && !(stableCoinData.balance - tokenValue >= 0) ? (
                     <span className="insufficient">{t('BORROW_MODAL_INSUFFICIENT_BALANCE')}</span>
+                  ) : (
+                    <span></span>
                   )}
                 </div>
               </div>
@@ -609,7 +613,7 @@ export default function ModalBorrowComponent({
                 <div className="flex justify-between items-center modal-borrow-health">
                   <div className="modal-borrow-sub-content">{t('BORROW_MODAL_BORROW_HEALTH')}</div>
                   <div className="flex">
-                    <span>{loanItem?.health}</span>
+                    <span>{formatNumber(loanItem?.health)}</span>
                     {tokenValue && tokenValue > 0 ? (
                       <div className="flex">
                         {(healthFactor || loadingHealthFactor) && (
