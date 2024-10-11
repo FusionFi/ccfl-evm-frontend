@@ -19,6 +19,8 @@ import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { useProviderManager, useConnectedNetworkManager } from '@/hooks/auth.hook';
+import EmptyComponent from '@/components/common/empty.component'
+import { toCurrency } from '@/utils/bignumber.util'
 
 interface DataType {
   key: string;
@@ -143,7 +145,7 @@ export default function SupplyPage() {
         return (
           <div className="table-wrapper__supply-balance">
             {value}
-            <span className="table-wrapper__supply-balance__price">$ {valueWithPrice}</span>
+            <span className="table-wrapper__supply-balance__price">{valueWithPrice}</span>
           </div>
         );
       },
@@ -157,7 +159,7 @@ export default function SupplyPage() {
         return (
           <div className="table-wrapper__earned-reward">
             {value}
-            <span className="table-wrapper__supply-balance__price">$ {valueWithPrice}</span>
+            <span className="table-wrapper__supply-balance__price">{valueWithPrice}</span>
           </div>
         );
       },
@@ -190,7 +192,7 @@ export default function SupplyPage() {
         return (
           <div className="table-wrapper__supply-balance">
             {value}
-            <span className="table-wrapper__supply-balance__price">$ {valueWithPrice}</span>
+            <span className="table-wrapper__supply-balance__price">{valueWithPrice}</span>
           </div>
         );
       },
@@ -207,6 +209,8 @@ export default function SupplyPage() {
       wallet_balance: ['0.00', '0.00', 0],
     };
     if (provider?.account) {
+      result.supply_balance = ['0.00', '0.00', 0]
+
       const supplied = user.supplyMap.get(item.symbol);
       if (supplied) {
         const supplyBalance = new BigNumber(supplied.supply_balance || 0).dividedBy(
@@ -214,8 +218,8 @@ export default function SupplyPage() {
         );
         if (supplyBalance.isGreaterThan(0)) {
           result.supply_balance = [
-            supplyBalance.toFormat(2),
-            supplyBalance.times(supplied.asset_price).toFormat(2),
+            toCurrency(supplyBalance.toString(), ''),
+            toCurrency(supplyBalance.times(supplied.asset_price).toString()),
             supplied.supply_balance,
           ];
         }
@@ -226,8 +230,8 @@ export default function SupplyPage() {
 
         if (earned.isGreaterThan(0)) {
           result.earned_reward = [
-            earned.toFormat(2),
-            earned.times(supplied.asset_price).toFormat(2),
+            toCurrency(earned.toString(), ''),
+            toCurrency(earned.times(supplied.asset_price).toString()),
             earned.toString(),
           ];
         }
@@ -237,8 +241,8 @@ export default function SupplyPage() {
         );
         if (walletBalance.isGreaterThan(0)) {
           result.wallet_balance = [
-            walletBalance.toFormat(2),
-            walletBalance.times(supplied.asset_price).toFormat(2),
+            toCurrency(walletBalance.toString(), ''),
+            toCurrency(walletBalance.times(supplied.asset_price).toString()),
             supplied.wallet_balance,
           ];
         }
@@ -325,15 +329,12 @@ export default function SupplyPage() {
     );
   };
 
-  const handleOk = ({ amount, txUrl, token }: any) => {
+  const handleOk = ({ txUrl, message }: any) => {
     fetchUserData();
     setModal({
       type: ModalType.Success,
       txUrl,
-      message: t('SUPPLY_SUCCESS_MODAL_MESSAGE', {
-        token,
-        amount,
-      }),
+      message,
     });
   };
 
@@ -363,6 +364,7 @@ export default function SupplyPage() {
             rowExpandable: record => true,
             showExpandColumn: false,
           }}
+          locale={{ emptyText: <EmptyComponent message="There is no asset for supply yet."></EmptyComponent> }}
           virtual
           className="table-wrapper"
           bordered={false}

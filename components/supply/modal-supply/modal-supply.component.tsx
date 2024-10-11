@@ -10,6 +10,7 @@ import type { FormProps } from 'antd';
 import { InfoCircleIcon } from '@/components/icons/info-circle.icon';
 import { QuestionCircleIcon } from '@/components/icons/question-circle.icon';
 import { computeWithMinThreashold } from '@/utils/percent.util';
+import { toCurrency } from '@/utils/bignumber.util';
 import BigNumber from 'bignumber.js';
 import supplyBE from '@/utils/backend/supply';
 import { formatUnits, parseUnits } from 'ethers';
@@ -82,10 +83,15 @@ export default function ModalSupplyComponent({
   const _handleOk = useCallback(
     async (amount: any) => {
       const result = await supply({ amount, contractAddress: asset?.pool_address });
+      form.resetFields();
+
+
       handleOk({
-        amount: formatUnits(amount, asset?.decimals),
         txUrl: `${selectedNetwork?.txUrl}tx/${result}`,
-        token: asset?.symbol,
+        message: t('SUPPLY_SUCCESS_MODAL_MESSAGE', {
+          token: asset?.symbol,
+          amount: toCurrency(formatUnits(amount, asset?.decimals), '')
+        })
       });
     },
     [asset, selectedNetwork, supply],
@@ -122,8 +128,8 @@ export default function ModalSupplyComponent({
           code: error?.code,
           message: error?.message,
         });
-      } finally {
         form.resetFields();
+      } finally {
         _setIsPending(false);
       }
     }, 1000);
@@ -189,7 +195,7 @@ export default function ModalSupplyComponent({
     return new BigNumber(fee)
       .multipliedBy(networkPrice)
       .dividedBy(10 ** decimals)
-      .toFormat(2);
+      .toString();
   }, [fee, networkPrice, selectedChain]);
 
   return (
@@ -332,7 +338,7 @@ export default function ModalSupplyComponent({
                   </div>
                   {fee != 0 && amount > 0 ? (
                     <span className="supply-modal-container__overview__apy__value text-sm">
-                      $<span className="text-white">{feeWithPrice}</span>
+                      <span className="text-white">{toCurrency(feeWithPrice)}</span>
                     </span>
                   ) : (
                     <span className="supply-modal-container__overview__apy__value text-sm">--</span>

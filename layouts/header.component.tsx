@@ -135,10 +135,10 @@ export const MainHeader = () => {
               </div>
             )}
             <div className={!address_ ? 'hidden' : 'visible'}>
-              <div className="flex">
+              <div className="flex user-info-wrapper">
                 <UserInfoComponent />
                 <Button
-                  className={twMerge('btn-default-custom', 'ml-2')}
+                  className={twMerge('btn-default-custom', 'ml-2 user-inf-btn-wrapper')}
                   onClick={() =>
                     eventBus.emit('openWeb3Modal', {
                       tab:

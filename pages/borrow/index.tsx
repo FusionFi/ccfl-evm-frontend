@@ -10,8 +10,6 @@ import OverviewComponent from '@/components/common/overview.component';
 import TitleComponent from '@/components/common/title.component';
 import { CARDANO_NETWORK_ID, SUPPORTED_CHAINS_MAP } from '@/constants/chains.constant';
 import { ASSET_LIST, COLLATERAL_TOKEN, TYPE_COMMON } from '@/constants/common.constant';
-import { NETWORKS } from '@/constants/networks';
-import { useNotification } from '@/hooks/notifications.hook';
 import { CaretDownOutlined } from '@ant-design/icons';
 import type { SelectProps } from 'antd';
 import { Select } from 'antd';
@@ -80,6 +78,10 @@ export default function BorrowPage() {
     pageSize: 10,
   });
   const [loanItem, setLoanItem] = useState<any>(undefined);
+  const [isActive, setActive] = useState(true);
+  const toggleClass = () => {
+    setActive(!isActive);
+  };
 
   const handlePrice = async () => {
     try {
@@ -309,7 +311,12 @@ export default function BorrowPage() {
                   </div>
                 );
               }}
-              suffixIcon={<CaretDownOutlined />}
+              suffixIcon={
+                <CaretDownOutlined
+                  className={isActive ? 'ant-select-suffix' : ''}
+                  onClick={toggleClass}
+                />
+              }
             />
           </div>
         </TitleComponent>
@@ -336,11 +343,10 @@ export default function BorrowPage() {
           </div>
         )}
         <div
-          className={`${
-            provider?.account && selectedChain?.id == provider?.chainId
+          className={`${provider?.account && selectedChain?.id == provider?.chainId
               ? 'xl:basis-1/2'
               : 'xl:basis-full'
-          } basis-full`}>
+            } basis-full`}>
           <AssetComponent
             showModal={showModal}
             networkInfo={networkInfo}

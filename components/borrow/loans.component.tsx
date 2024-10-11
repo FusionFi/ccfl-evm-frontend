@@ -3,7 +3,7 @@ import cssClass from '@/components/borrow/loans.component.module.scss';
 import { ASSET_TYPE, LOAN_STATUS } from '@/constants/common.constant';
 import { useAuth } from '@/hooks/auth.hook';
 import eventBus from '@/hooks/eventBus.hook';
-import { toAmountShow, toLessPart } from '@/utils/common';
+import { formatNumber, toAmountShow, toLessPart } from '@/utils/common';
 import { CheckOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import type { PaginationProps, TableProps } from 'antd';
 import { Button, Pagination, Skeleton, Table, Tooltip } from 'antd';
@@ -105,11 +105,14 @@ export default function LoansComponent(props: LoansProps) {
         return (
           <div className="loans-size basis-1/7">
             <h5>
-              {toLessPart(toAmountShow(value, record.decimals), 2)}{' '}
+              {formatNumber(toLessPart(toAmountShow(value, record.decimals), 2))}{' '}
               {record.asset !== 'USD' ? record.asset : record.currency}
             </h5>
             <div className="usd">
-              $ {toLessPart(toAmountShow(value * record.asset_price, record.decimals), 2)}
+              ${' '}
+              {formatNumber(
+                toLessPart(toAmountShow(value * record.asset_price, record.decimals), 2),
+              )}
             </div>
           </div>
         );
@@ -120,7 +123,11 @@ export default function LoansComponent(props: LoansProps) {
       dataIndex: 'apr',
       key: 'apr',
       render: value => {
-        return <div className="loans-apr basis-1/7 flex items-center">{toLessPart(value, 2)}%</div>;
+        return (
+          <div className="loans-apr basis-1/7 flex items-center">
+            {formatNumber(toLessPart(value, 2))}%
+          </div>
+        );
       },
     },
     {
@@ -163,7 +170,7 @@ export default function LoansComponent(props: LoansProps) {
             className={`loans-health basis-1/7 flex items-center ${
               record.status === LOAN_STATUS.LIQUIDATION_APPROACHING ? 'warning' : ''
             }`}>
-            {value}
+            {value && formatNumber(value)}
           </div>
         );
       },
@@ -175,17 +182,21 @@ export default function LoansComponent(props: LoansProps) {
       render: (value, record) => {
         return (
           <div className="loans-collateral basis-1/7 justify-center items-center">
-            {toLessPart(toAmountShow(record.collateral_amount, record.collateral_decimals), 4)}{' '}
+            {formatNumber(
+              toLessPart(toAmountShow(record.collateral_amount, record.collateral_decimals), 4),
+            )}{' '}
             {record.collateral_asset}
             <div>
               <span className="">
                 $
-                {toLessPart(
-                  toAmountShow(
-                    record.collateral_amount * record.collateral_price,
-                    record.collateral_decimals,
+                {formatNumber(
+                  toLessPart(
+                    toAmountShow(
+                      record.collateral_amount * record.collateral_price,
+                      record.collateral_decimals,
+                    ),
+                    2,
                   ),
-                  2,
                 )}
               </span>
             </div>
@@ -201,15 +212,17 @@ export default function LoansComponent(props: LoansProps) {
         return (
           <div className="loans-status basis-1/7 ">
             <div className="highlight ml-1">
-              {toLessPart(toAmountShow(record.debt_remain, record.decimals), 6, true)}{' '}
+              {formatNumber(toLessPart(toAmountShow(record.debt_remain, record.decimals), 6, true))}{' '}
               {record.asset !== 'USD' ? record.asset : record.repayment_currency}
             </div>
             <div className="ml-1">
               ${' '}
-              {toLessPart(
-                toAmountShow(record.debt_remain * record.asset_price, record.decimals),
-                6,
-                true,
+              {formatNumber(
+                toLessPart(
+                  toAmountShow(record.debt_remain * record.asset_price, record.decimals),
+                  6,
+                  true,
+                ),
               )}
             </div>
           </div>
@@ -238,7 +251,9 @@ export default function LoansComponent(props: LoansProps) {
             <div>
               {t('BORROW_MODAL_BORROW_YIELD_EARNED')}:{' '}
               <span className="ml-1">
-                {toLessPart(toAmountShow(record.yield_earned, record.collateral_decimals), 4)}{' '}
+                {formatNumber(
+                  toLessPart(toAmountShow(record.yield_earned, record.collateral_decimals), 4),
+                )}{' '}
                 {record.collateral_asset}
               </span>
             </div>

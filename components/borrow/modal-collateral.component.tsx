@@ -21,7 +21,7 @@ import { useEffect, useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { useAccount } from 'wagmi';
 import service from '@/utils/backend/borrow';
-import { toAmountShow, toLessPart, toUnitWithDecimal } from '@/utils/common';
+import { formatNumber, toAmountShow, toLessPart, toUnitWithDecimal } from '@/utils/common';
 import { useConnectedNetworkManager, useProviderManager } from '@/hooks/auth.hook';
 import {
   useApprovalBorrow,
@@ -120,11 +120,14 @@ export default function ModalCollateralComponent({
           setStatus(TRANSACTION_STATUS.SUCCESS);
         }
         if (tx?.error) {
+          setStep(2);
           setStatus(TRANSACTION_STATUS.FAILED);
           setErrorTx(tx.error as any);
         }
         setLoading(false);
       } catch (error) {
+        setStep(2);
+        setErrorTx(error);
         setStatus(TRANSACTION_STATUS.FAILED);
         setLoading(false);
       }
@@ -152,11 +155,14 @@ export default function ModalCollateralComponent({
           setStatus(TRANSACTION_STATUS.SUCCESS);
         }
         if (tx?.error) {
+          setStep(2);
           setStatus(TRANSACTION_STATUS.FAILED);
           setErrorTx(tx.error as any);
         }
         setLoading(false);
       } catch (error) {
+        setStep(2);
+        setErrorTx(error);
         setStatus(TRANSACTION_STATUS.FAILED);
         setLoading(false);
       }
@@ -453,7 +459,11 @@ export default function ModalCollateralComponent({
                   {t('BORROW_MODAL_COLLATERAL_AMOUNT')}
                   <div className="wallet-balance">
                     <WalletIcon className="mr-2" /> <span>{t('FORM_BALANCE')}: </span>{' '}
-                    {loadingBalance ? <LoadingOutlined className="mr-1" /> : stableCoinData.balance}{' '}
+                    {loadingBalance ? (
+                      <LoadingOutlined className="mr-1" />
+                    ) : (
+                      formatNumber(stableCoinData.balance)
+                    )}{' '}
                     {currentToken?.toUpperCase()}{' '}
                   </div>
                 </div>
@@ -488,7 +498,7 @@ export default function ModalCollateralComponent({
                     <span className="modal-borrow-usd">
                       ≈ ${' '}
                       {tokenValue && collateralData?.price
-                        ? toLessPart(tokenValue * collateralData?.price, 2, true)
+                        ? formatNumber(toLessPart(tokenValue * collateralData?.price, 2, true))
                         : 0}
                     </span>
                     <Button
@@ -503,7 +513,11 @@ export default function ModalCollateralComponent({
                   {minimum !== 0 && (
                     <span>
                       {t('FORM_MINIMUM_AMOUNT')}:{' '}
-                      {loadingMinimum ? <LoadingOutlined className="mr-1" /> : minimum}{' '}
+                      {loadingMinimum ? (
+                        <LoadingOutlined className="mr-1" />
+                      ) : (
+                        formatNumber(minimum)
+                      )}{' '}
                       {currentToken?.toUpperCase()}
                     </span>
                   )}
@@ -538,7 +552,9 @@ export default function ModalCollateralComponent({
                     {tokenValue && tokenValue > 0 && (
                       <div className="modal-borrow-repay remain">
                         <ArrowRightOutlined className="mx-1" />
-                        <span>{toLessPart(collateralData.amount + tokenValue, 4)}</span>
+                        <span>
+                          {formatNumber(toLessPart(collateralData.amount + tokenValue, 4))}
+                        </span>
                         <span className="ml-1">{currentToken.toUpperCase()}</span>
                       </div>
                     )}
@@ -550,11 +566,16 @@ export default function ModalCollateralComponent({
                       <span>
                         $
                         {tokenValue && tokenValue > 0
-                          ? toLessPart(
-                              parseFloat(tokenValue + collateralData.amount) * collateralData.price,
-                              2,
+                          ? formatNumber(
+                              toLessPart(
+                                parseFloat(tokenValue + collateralData.amount) *
+                                  collateralData.price,
+                                2,
+                              ),
                             )
-                          : toLessPart(collateralData.amount * collateralData.price, 2)}
+                          : formatNumber(
+                              toLessPart(collateralData.amount * collateralData.price, 2),
+                            )}
                       </span>
                     </div>
                   </div>
@@ -562,7 +583,7 @@ export default function ModalCollateralComponent({
                 <div className="flex justify-between items-center modal-borrow-health">
                   <div className="modal-borrow-sub-content">{t('BORROW_MODAL_BORROW_HEALTH')}</div>
                   <div className="flex">
-                    <span>{loanItem ? loanItem.health : 0}</span>
+                    <span>{loanItem ? formatNumber(loanItem.health) : 0}</span>
                     {tokenValue && tokenValue > 0 && (
                       <div className="flex">
                         {(healthFactor || loadingHealthFactor) && (
@@ -571,7 +592,7 @@ export default function ModalCollateralComponent({
                         {loadingHealthFactor ? (
                           <LoadingOutlined className="mr-1" />
                         ) : (
-                          <span className="">{healthFactor}</span>
+                          <span className="">{formatNumber(healthFactor)}</span>
                         )}
                       </div>
                     )}
@@ -592,7 +613,7 @@ export default function ModalCollateralComponent({
                   {loadingGasFee ? (
                     <LoadingOutlined className="mr-1" />
                   ) : (
-                    <span className="ml-1">{toLessPart(gasFee, 2)}</span>
+                    <span className="ml-1">{formatNumber(toLessPart(gasFee, 2))}</span>
                   )}
                 </div>
               </div>

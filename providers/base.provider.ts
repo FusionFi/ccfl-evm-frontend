@@ -8,6 +8,7 @@ class BaseProvider {
     this.type = type;
     this.account = account || '';
     this.chainId = chainId || '';
+    this.connector = connector;
   }
 
   async fetchAllowance(params: any): Promise<any> {
@@ -17,6 +18,18 @@ class BaseProvider {
 
   async estimateNormalTxFee(params: any): Promise<any> {
     console.log('[estimateNormalTxFee]  params: ', params);
+    return 0;
+  }
+
+  async estimateGasForSupply(params: any): Promise<any> {
+    // TODO: update here
+    console.log('[estimateGasForSupply] params: ', params);
+    return 0;
+  }
+
+  async estimateGasForWithdraw(params: any): Promise<any> {
+    // TODO: update here
+    console.log('[estimateGasForWithdraw] params: ', params);
     return 0;
   }
 

@@ -17,6 +17,7 @@ import { useConnectedNetworkManager, useProviderManager } from '@/hooks/auth.hoo
 import supplyBE from '@/utils/backend/supply';
 import { useWithdrawFee } from '@/hooks/provider.hook'
 import { computeWithMinThreashold } from '@/utils/percent.util';
+import { toCurrency } from '@/utils/bignumber.util'
 
 type FieldType = {
   amount?: any;
@@ -75,9 +76,11 @@ export default function ModalWithdrawComponent({
     const result = await provider.withdraw({ amount, contractAddress: asset?.pool_address, })
 
     handleOk({
-      amount: formatUnits(amount, asset?.decimals),
       txUrl: `${selectedNetwork?.txUrl}tx/${result}`,
-      token: asset?.symbol
+      message: t('WITHDRAW_SUCCESS_MODAL_MESSAGE', {
+        token: asset?.symbol,
+        amount: toCurrency(formatUnits(amount, asset?.decimals), '')
+      })
     });
   }, [provider, asset, selectedNetwork])
 
@@ -159,11 +162,8 @@ export default function ModalWithdrawComponent({
 
           const max = withdrawAvailable.toNumber()
           const remainingSupply = useMemo(() => {
-            const result = new BigNumber(asset?.supply_balance || 0).minus(amount || 0);
-            if (result.isGreaterThan(0)) {
-              return result.toFormat(2)
-            }
-            return '0.00'
+            const result = new BigNumber(asset?.supply_balance_in_wei || 0).dividedBy(10 ** asset?.decimals).minus(new BigNumber(amount || 0));
+            return toCurrency(result.toString(), '')
           }, [amount, asset?.supply_balance])
 
           const handleMaxInput = () => {
@@ -213,7 +213,7 @@ export default function ModalWithdrawComponent({
                     <div className="withdraw-modal-container__supply-overview__container__values__item">
                       <span>{t('WITHDRAW_MODAL_OVERVIEW_AVAILABLE_TO_WITHDRAW')}</span>
                       <span className="withdraw-modal-container__supply-overview__container__values__item__value">
-                        {withdrawAvailable.toFormat(2)}
+                        {toCurrency(withdrawAvailable.toString(), '')}
                         <span className="withdraw-modal-container__supply-overview__container__values__item__value__unit">
                           {asset?.symbol}
                         </span>

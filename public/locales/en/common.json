@@ -330,8 +330,8 @@
   "LANDING_PAGE_FORM_BTN_TITLE": "Get Early Access",
   "EMAIL_VALIDATION": "Please enter a valid email address",
   "EMAIL_REQUIRED": "Please enter an email address",
-  "LANDING_PAGE_BANNER_TITLE_NEW": "UNLOCK THE FUTURE OF <span class=\"highlight\"> CRYPTO LENDING </span>",
-  "LANDING_PAGE_BANNER_DESCRIPTION_NEW": "Leverage your crypto for fiat loans",
+  "LANDING_PAGE_BANNER_TITLE_NEW": "UNLOCK THE FUTURE OF <span class=\"highlight\"> LENDING & BORROWING </span>",
+  "LANDING_PAGE_BANNER_DESCRIPTION_NEW": "Access Fiat or Stablecoin loans and keep your crypto",
   "LANDING_PAGE_BANNER_ABOUT_TITLE": "About",
   "LANDING_PAGE_BANNER_ABOUT_DESCRIPTION": "FusionFi lets you unlock the full potential of your crypto without parting with it. Secure fiat and stablecoin loans using your crypto as collateral. Enjoy seamless multi-chain support and flexible, tailored repayment options to fit your needs.",
   "LANDING_PAGE_BANNER_PARTNERS": "Our close partners",
@@ -359,9 +359,9 @@
   "LANDING_PAGE_WHY_4_TITLE": "Compliance",
   "LANDING_PAGE_WHY_4_DESCRIPTION": "Overcollateralized loans to provide a safe and stable lending environment using crypto collateral.",
   "BORROW_MININUM": "Minimum borrow",
-  "BORROW_MININUM_LOAN": "Please enter an amount lower than the available loan amount",
   "SIGNUP_PASSWORD_ERROR": "Passwords don’t match",
   "SIGNUP_USERNAME_ERROR": "Username existed!",
   "SIGNUP_EMAIL_ERROR": "Email existed!",
-  "SIGNUP_PASSWORD_OLD_ERROR": "Incorrect password!"
+  "SIGNUP_PASSWORD_OLD_ERROR": "Incorrect password!",
+  "BORROW_MININUM_LOAN": "Loan is not available, please lower the amount"
 }
