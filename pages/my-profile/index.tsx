@@ -31,6 +31,11 @@ export default function MyProfilePage() {
     eventBus.emit('toggleActivationSuccessModal', true);
   };
 
+  const showSetNewPassword = () => {
+    updateAuth({ isNewPassword: false });
+    eventBus.emit('openNewPasswordModal', true);
+  };
+
   useEffect(() => {
     if (!address && !cardanoWalletConnected?.address) {
       router.push('/supply');
@@ -41,18 +46,20 @@ export default function MyProfilePage() {
     if (auth.isNew) {
       showActivationCompleted();
     }
+    if (auth.isNewPassword) {
+      showSetNewPassword();
+    }
   }, [auth]);
 
   useEffect(() => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
-    const token = urlParams.get('token');
+    const token = urlParams.get('access_token');
     const refresh_token = urlParams.get('refresh_token');
-
+    console.log('queryString', queryString, urlParams);
     if (token) {
-      updateAuth({ access_token: token, refresh_token: refresh_token });
+      updateAuth({ access_token: token, refresh_token: refresh_token, isNewPassword: true });
       router.push('/my-profile');
-      eventBus.emit('openNewPasswordModal', true);
     }
   }, []);
 

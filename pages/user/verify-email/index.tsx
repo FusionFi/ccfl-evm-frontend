@@ -16,7 +16,7 @@ export default function MyVerifyPage() {
   useEffect(() => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
-    const token = urlParams.get('token');
+    const token = urlParams.get('access_token');
     const refresh_token = urlParams.get('refresh_token');
 
     if (token) {
