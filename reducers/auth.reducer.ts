@@ -54,5 +54,6 @@ export default createReducer(initialState, builder =>
       // state.auth.access_token = access_token;
       // state.auth.refresh_token = refresh_token;
       state.auth = { ...state.auth, access_token: access_token, refresh_token: refresh_token };
+      console.log('🚀 ~ .refreshToken ~ auth:2', state.auth);
     }),
 );

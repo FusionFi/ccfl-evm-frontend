@@ -60,33 +60,38 @@ export default function ModalChangePasswordComponent({}: ModalCollateralProps) {
       confirmPassword: '',
     },
   });
+  const [auth, updateAuth] = useAuth();
+  console.log('auth checkOldPassword1111', auth.access_token);
 
-  const onSubmit: SubmitHandler<IFormInput> = data => {
-    setLoading(true);
-    setTimeout(async () => {
-      try {
-        const res = (await service.changePassword({
-          password: data.password,
-          token: auth.access_token,
-        })) as any;
-        if (res) {
-          resetState();
-          setIsSuccess(true);
+  const onSubmit: SubmitHandler<IFormInput> = useCallback(
+    data => {
+      setLoading(true);
+      console.log('auth', auth);
+
+      setTimeout(async () => {
+        try {
+          const res = (await service.changePassword({
+            password: data.password,
+            token: auth.access_token,
+          })) as any;
+          if (res) {
+            resetState();
+            setIsSuccess(true);
+          }
+        } catch (error: any) {
+          setError(error);
+          setLoading(false);
         }
-      } catch (error: any) {
-        setError(error);
-        setLoading(false);
-      }
-    }, 1000);
-  };
+      }, 1000);
+    },
+    [auth],
+  );
 
   const [loading, setLoading] = useState<boolean>(false);
 
   /**
    * HOOKS
    */
-  const [auth, updateAuth] = useAuth();
-  console.log('auth', auth);
 
   /**
    * FUNCTIONS
@@ -110,8 +115,14 @@ export default function ModalChangePasswordComponent({}: ModalCollateralProps) {
     setPasswordWrong(false);
   };
 
-  const checkOldPassword = async () => {
+  const oldPassword = watch('oldPassword');
+  const password = watch('password');
+  const confirmPassword = watch('confirmPassword');
+
+  const checkOldPassword = useCallback(async () => {
     try {
+      console.log('auth checkOldPassword', auth.access_token);
+
       const res_password = (await service.checkOldPassword(
         auth.userName,
         oldPassword,
@@ -129,7 +140,7 @@ export default function ModalChangePasswordComponent({}: ModalCollateralProps) {
       console.log(error);
       setError(error);
     }
-  };
+  }, [auth.userName, oldPassword, auth.access_token]);
 
   const checkPassword = async () => {
     try {
@@ -144,10 +155,6 @@ export default function ModalChangePasswordComponent({}: ModalCollateralProps) {
       setError(error);
     }
   };
-
-  const oldPassword = watch('oldPassword');
-  const password = watch('password');
-  const confirmPassword = watch('confirmPassword');
 
   /**
    * USE EFFECTS

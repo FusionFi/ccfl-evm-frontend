@@ -24,7 +24,7 @@ interface IFormInput {
 
 export default function ModalNewPasswordComponent({}: ModalCollateralProps) {
   const { t } = useTranslation('common');
-  const [isModalOpen, setIsModalOpen] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isVisiblePassword, setIsVisiblePassword] = useState(false);
   const [isVisibleRePassword, setIsVisibleRePassword] = useState(false);
@@ -167,6 +167,7 @@ export default function ModalNewPasswordComponent({}: ModalCollateralProps) {
         {!isSuccess ? (
           <div className="signup-inner">
             <div className="signup-body">
+              {error?.message && <div className="error">{error?.message}</div>}
               <div className="flex justify-between items-center">
                 <span>{t('NEW_PASSWORD_CONTENT')}:</span>
                 <div className="input-warpper">
