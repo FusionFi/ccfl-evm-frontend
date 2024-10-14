@@ -1,4 +1,8 @@
+import { store } from '@/store/index.store';
 import axios from 'axios';
+import * as AuthActions from '@/actions/auth.action';
+import eventBus from '@/hooks/eventBus.hook';
+import service from '@/utils/backend/auth';
 
 export const http = axios.create({
   baseURL: process.env.NEXT_PUBLIC_NEPTURE_API_URL,
@@ -35,6 +39,8 @@ http.interceptors.request.use(
   error => Promise.reject(error),
 );
 
+let isAlreadyFetchingAccessToken = false;
+
 // Add a response interceptor
 http.interceptors.response.use(
   async response => {
@@ -43,9 +49,36 @@ http.interceptors.response.use(
   },
   async error => {
     const err = (error.response && error.response.data) || error;
-    // if (error.response && error.response.status === 401) {
-    //   store.dispatch(AuthActions.resetState());
-    // }
+    const { config } = error;
+    const originalRequest = config;
+
+    if (error.response && error.response.status === 401) {
+      const state = store.getState() as any;
+      const refresh_token = state?.auth?.auth?.refresh_token;
+
+      if (!isAlreadyFetchingAccessToken && refresh_token) {
+        isAlreadyFetchingAccessToken = true;
+
+        try {
+          const res = (await service.refreshToken(refresh_token)) as any;
+          if (res.access_token && res.refresh_token) {
+            store.dispatch(
+              AuthActions.refreshToken({
+                access_token: res.access_token,
+                refresh_token: res.refresh_token,
+              }),
+            );
+            originalRequest.headers['Authorization'] = `Bearer ${res.access_token}`;
+          }
+
+          return http(originalRequest);
+        } catch (err) {
+          console.log(err);
+          eventBus.emit('openSignInModal');
+          // store.dispatch(AuthActions.resetState());
+        }
+      }
+    }
 
     if (error.response && error.response.status) {
       err.status = error.response.status;

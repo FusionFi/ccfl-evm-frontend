@@ -7,7 +7,7 @@ import { createReducer } from '@reduxjs/toolkit';
 // Define an async thunk for API call
 
 export interface AuthState {
-  auth: object;
+  auth: any;
   isCardanoConnected?: boolean;
   loading: boolean | null;
   error: any;
@@ -28,7 +28,7 @@ export default createReducer(initialState, builder =>
   builder
     .addCase(AuthActions.resetState, state => {
       console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>resetState', initialState);
-      state.auth = {}
+      state.auth = {};
       state.loading = false;
       state.error = null;
       state.provider = {};
@@ -48,5 +48,10 @@ export default createReducer(initialState, builder =>
     .addCase(AuthActions.updateCardanoConnected, (state, { payload: { isCardanoConnected } }) => {
       console.log('🚀 ~ .addCase ~ isCardanoConnected:', isCardanoConnected);
       state.isCardanoConnected = !!isCardanoConnected || false;
+    })
+    .addCase(AuthActions.refreshToken, (state, { payload: { access_token, refresh_token } }) => {
+      console.log('🚀 ~ .refreshToken ~ auth:', access_token, refresh_token);
+      state.auth.access_token = access_token;
+      state.auth.refresh_token = refresh_token;
     }),
 );

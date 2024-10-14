@@ -13,6 +13,7 @@ import { twMerge } from 'tailwind-merge';
 import { CloseOutlined } from '@ant-design/icons';
 import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
 import Image from 'next/image';
+import service from '@/utils/backend/auth';
 
 interface ModalCollateralProps {}
 
@@ -29,6 +30,9 @@ export default function ModalChangePasswordComponent({}: ModalCollateralProps) {
   const [isVisiblePassword, setIsVisiblePassword] = useState(false);
   const [isVisibleRePassword, setIsVisibleRePassword] = useState(false);
   const [isVisibleOldPassword, setIsVisibleOldPassword] = useState(false);
+  const [error, setError] = useState() as any;
+  const [nonMatch, setNonMatch] = useState(false) as any;
+  const [passwordWrong, setPasswordWrong] = useState(false) as any;
 
   const {
     handleSubmit,
@@ -37,6 +41,7 @@ export default function ModalChangePasswordComponent({}: ModalCollateralProps) {
     register,
     reset,
     getValues,
+    watch,
   } = useForm({
     resolver: yupResolver(
       yup.object({
@@ -45,10 +50,8 @@ export default function ModalChangePasswordComponent({}: ModalCollateralProps) {
           .required()
           .notOneOf([yup.ref('password')], ''),
         password: yup.string().required(),
-        confirmPassword: yup
-          .string()
-          .required()
-          .oneOf([yup.ref('password')], ''),
+        confirmPassword: yup.string().required(),
+        // .oneOf([yup.ref('password')], ''),
       }),
     ),
     defaultValues: {
@@ -59,15 +62,21 @@ export default function ModalChangePasswordComponent({}: ModalCollateralProps) {
   });
 
   const onSubmit: SubmitHandler<IFormInput> = data => {
-    updateAuth({ password: data.password });
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setIsSuccess(true);
-      reset();
-      setIsVisibleOldPassword(false);
-      setIsVisiblePassword(false);
-      setIsVisibleRePassword(false);
+    setTimeout(async () => {
+      try {
+        const res = (await service.changePassword({
+          password: data.password,
+          token: auth.access_token,
+        })) as any;
+        if (res) {
+          resetState();
+          setIsSuccess(true);
+        }
+      } catch (error: any) {
+        setError(error);
+        setLoading(false);
+      }
     }, 1000);
   };
 
@@ -89,6 +98,55 @@ export default function ModalChangePasswordComponent({}: ModalCollateralProps) {
     setIsSuccess(false);
     setIsModalOpen(false);
   }, []);
+  const resetState = () => {
+    reset();
+    setIsVisibleOldPassword(false);
+    setIsVisiblePassword(false);
+    setIsVisibleRePassword(false);
+    setLoading(false);
+    setError();
+    setNonMatch(false);
+    setPasswordWrong(false);
+  };
+
+  const checkOldPassword = async () => {
+    try {
+      const res_password = (await service.checkOldPassword(
+        auth.userName,
+        oldPassword,
+        auth.access_token,
+      )) as any;
+      console.log(res_password);
+
+      if (res_password == true) {
+        setPasswordWrong(false);
+      } else if (res_password.data == false) {
+        setPasswordWrong(true);
+      }
+      setError();
+    } catch (error) {
+      console.log(error);
+      setError(error);
+    }
+  };
+
+  const checkPassword = async () => {
+    try {
+      if (password !== confirmPassword) {
+        setNonMatch(true);
+      } else {
+        setNonMatch(false);
+      }
+      setError();
+    } catch (error) {
+      console.log(error);
+      setError(error);
+    }
+  };
+
+  const oldPassword = watch('oldPassword');
+  const password = watch('password');
+  const confirmPassword = watch('confirmPassword');
 
   /**
    * USE EFFECTS
@@ -106,6 +164,24 @@ export default function ModalChangePasswordComponent({}: ModalCollateralProps) {
     };
   }, []);
 
+  useEffect(() => {
+    if (isModalOpen && oldPassword !== '') {
+      checkOldPassword();
+    }
+  }, [oldPassword]);
+
+  useEffect(() => {
+    if (isModalOpen && password !== '' && confirmPassword !== '') {
+      checkPassword();
+    }
+  }, [password, confirmPassword]);
+
+  useEffect(() => {
+    if (isModalOpen) {
+      resetState();
+    }
+  }, [isModalOpen]);
+
   return (
     <Modal
       wrapClassName={cssClass[`change-password-wrapper`]}
@@ -120,6 +196,7 @@ export default function ModalChangePasswordComponent({}: ModalCollateralProps) {
         {!isSuccess ? (
           <div className="signup-inner">
             <div className="signup-body">
+              {error?.message && <div className="error">{error?.message}</div>}
               <div className="flex justify-between items-center">
                 <span>{t('CHANGE_PASSWORD_OLD')}:</span>
                 <div className="input-warpper">
@@ -134,6 +211,7 @@ export default function ModalChangePasswordComponent({}: ModalCollateralProps) {
                   </div>
                 </div>
               </div>
+              {passwordWrong && <div className="error-line">{t('SIGNUP_PASSWORD_OLD_ERROR')}</div>}
               <div className="flex justify-between items-center">
                 <span>{t('NEW_PASSWORD_CONTENT')}:</span>
                 <div className="input-warpper">
@@ -162,9 +240,14 @@ export default function ModalChangePasswordComponent({}: ModalCollateralProps) {
                   </div>
                 </div>
               </div>
+              {nonMatch && <div className="error-line">{t('SIGNUP_PASSWORD_ERROR')}</div>}
             </div>
             <div className="signup-footer">
-              <Button htmlType="submit" disabled={!isValid} className="w-full" loading={loading}>
+              <Button
+                htmlType="submit"
+                disabled={!isValid || nonMatch || passwordWrong}
+                className="w-full"
+                loading={loading}>
                 {t('CHANGE_PASSWORD_TITLE')}
               </Button>
             </div>

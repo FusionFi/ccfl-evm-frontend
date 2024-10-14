@@ -18,6 +18,10 @@ export default function ModalActivationSuccessComponent({}: any) {
   const _handleOk = useCallback(() => {
     setIsModalOpen(false);
   }, []);
+  const handleSignin = () => {
+    _handleCancel();
+    eventBus.emit('openSignInModal');
+  };
   /**
    * EFFECTS
    */
@@ -56,7 +60,7 @@ export default function ModalActivationSuccessComponent({}: any) {
         </div>
         <div className="modal-success-container__action">
           <Button
-            onClick={_handleCancel}
+            onClick={handleSignin}
             type="primary"
             className={twMerge('btn-primary-custom')}
             block>
