@@ -86,6 +86,7 @@ export default function ModalChangePasswordComponent({}: ModalCollateralProps) {
    * HOOKS
    */
   const [auth, updateAuth] = useAuth();
+  console.log('auth', auth);
 
   /**
    * FUNCTIONS

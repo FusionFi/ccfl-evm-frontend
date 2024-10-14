@@ -51,7 +51,8 @@ export default createReducer(initialState, builder =>
     })
     .addCase(AuthActions.refreshToken, (state, { payload: { access_token, refresh_token } }) => {
       console.log('🚀 ~ .refreshToken ~ auth:', access_token, refresh_token);
-      state.auth.access_token = access_token;
-      state.auth.refresh_token = refresh_token;
+      // state.auth.access_token = access_token;
+      // state.auth.refresh_token = refresh_token;
+      state.auth = { ...state.auth, access_token: access_token, refresh_token: refresh_token };
     }),
 );

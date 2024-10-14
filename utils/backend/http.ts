@@ -55,6 +55,7 @@ http.interceptors.response.use(
     if (error.response && error.response.status === 401) {
       const state = store.getState() as any;
       const refresh_token = state?.auth?.auth?.refresh_token;
+      console.log('refresh token', state, refresh_token);
 
       if (!isAlreadyFetchingAccessToken && refresh_token) {
         isAlreadyFetchingAccessToken = true;
@@ -68,6 +69,8 @@ http.interceptors.response.use(
                 refresh_token: res.refresh_token,
               }),
             );
+            isAlreadyFetchingAccessToken = false;
+            console.log('new token', res.access_token, res.refresh_token);
             originalRequest.headers['Authorization'] = `Bearer ${res.access_token}`;
           }
 
