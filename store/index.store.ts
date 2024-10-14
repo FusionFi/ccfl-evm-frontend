@@ -10,6 +10,7 @@ import supply from '@/reducers/supply.reducer';
 import storage from '@/store/sync-storage.store';
 import borrow from '@/reducers/borrow.reducer';
 
+let storeInstance: any = {};
 const rootReducer = combineReducers({
   global,
   auth,
@@ -48,6 +49,7 @@ const makeStore = ({ isServer }: { isServer: boolean }) => {
     const persistedReducer = persistReducer(persistConfig, rootReducer);
 
     const store = createStore(persistedReducer, enhancer); // Use enhancer here
+    storeInstance = store;
     store.__persistor = persistStore(store); // This creates a persistor object
     console.log('🚀 ~ makeStore ~ store:', store);
     return store;
@@ -60,4 +62,7 @@ export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, AppState, unkn
 
 export const wrapper = createWrapper<AppStore>(makeStore);
 
-export const store = makeStore({ isServer: false });
+export const store = makeStore({ isServer: false }); // TODO not work
+
+// Export store để các file khác có thể truy cập
+export const getStore = () => storeInstance;

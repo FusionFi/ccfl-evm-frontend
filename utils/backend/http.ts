@@ -1,11 +1,10 @@
-import { store } from '@/store/index.store';
 import axios from 'axios';
 import * as AuthActions from '@/actions/auth.action';
 import eventBus from '@/hooks/eventBus.hook';
 import service from '@/utils/backend/auth';
 import { useDispatch } from 'react-redux';
 import { useCallback } from 'react';
-
+import { getStore } from '@/store/index.store';
 export const http = axios.create({
   baseURL: process.env.NEXT_PUBLIC_NEPTURE_API_URL,
   timeout: 60000,
@@ -14,6 +13,7 @@ export const http = axios.create({
 // Add a request interceptor
 http.interceptors.request.use(
   config => {
+    const store = getStore();
     let state = store.getState() as any;
     const access_token = state?.auth?.auth?.access_token;
     console.log(' request refresh token', access_token);
@@ -68,7 +68,7 @@ http.interceptors.response.use(
     const err = (error.response && error.response.data) || error;
     const { config } = error;
     const originalRequest = config;
-
+    const store = getStore();
     if (error.response && error.response.status === 401) {
       let state = store.getState() as any;
       const refresh_token = state?.auth?.auth?.refresh_token;
