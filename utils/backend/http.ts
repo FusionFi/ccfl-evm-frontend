@@ -57,7 +57,7 @@ http.interceptors.response.use(
     const { config } = error;
     const originalRequest = config;
     const store = getStore();
-    if (error.response && error.response.status === 401) {
+    if (error.response && error.response.statusCode === 401) {
       let state = store.getState() as any;
       const refresh_token = state?.auth?.auth?.refresh_token;
       console.log('access_token 401', state?.auth?.auth?.access_token);
