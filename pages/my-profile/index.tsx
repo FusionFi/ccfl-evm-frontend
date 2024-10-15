@@ -32,7 +32,7 @@ export default function MyProfilePage() {
   };
 
   const showSetNewPassword = () => {
-    updateAuth({ isNewPassword: false });
+    updateAuth({ isForgot: false });
     eventBus.emit('openNewPasswordModal', true);
   };
 
@@ -46,7 +46,7 @@ export default function MyProfilePage() {
     if (auth.isNew) {
       showActivationCompleted();
     }
-    if (auth.isNewPassword) {
+    if (auth.isForgot) {
       showSetNewPassword();
     }
   }, [auth]);
@@ -56,9 +56,17 @@ export default function MyProfilePage() {
     const urlParams = new URLSearchParams(queryString);
     const token = urlParams.get('access_token');
     const refresh_token = urlParams.get('refresh_token');
+    const isNew = urlParams.get('isNew');
+    const isForgot = urlParams.get('isForgot');
+
     console.log('queryString', queryString, urlParams);
     if (token) {
-      updateAuth({ access_token: token, refresh_token: refresh_token, isNewPassword: true });
+      updateAuth({
+        access_token: token,
+        refresh_token: refresh_token,
+        isNew: isNew,
+        isForgot: isForgot,
+      });
       router.push('/my-profile');
     }
   }, []);
