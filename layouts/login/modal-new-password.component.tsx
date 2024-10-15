@@ -29,6 +29,7 @@ export default function ModalNewPasswordComponent({}: ModalCollateralProps) {
   const [isVisiblePassword, setIsVisiblePassword] = useState(false);
   const [isVisibleRePassword, setIsVisibleRePassword] = useState(false);
   const [error, setError] = useState() as any;
+  const [nonMatch, setNonMatch] = useState(false) as any;
 
   const {
     handleSubmit,
@@ -37,14 +38,13 @@ export default function ModalNewPasswordComponent({}: ModalCollateralProps) {
     register,
     reset,
     getValues,
+    watch,
   } = useForm({
     resolver: yupResolver(
       yup.object({
         password: yup.string().required(),
-        confirmPassword: yup
-          .string()
-          .required()
-          .oneOf([yup.ref('password')], ''),
+        confirmPassword: yup.string().required(),
+        // .oneOf([yup.ref('password')], ''),
       }),
     ),
     defaultValues: {
@@ -57,12 +57,11 @@ export default function ModalNewPasswordComponent({}: ModalCollateralProps) {
     setLoading(true);
     setTimeout(async () => {
       setLoading(false);
-
       try {
         setLoading(true);
         const res = (await service.changePassword({
-          token: auth.access_token,
           password: data.password,
+          token: auth.access_token,
         })) as any;
         if (res) {
           setIsSuccess(true);
@@ -99,18 +98,48 @@ export default function ModalNewPasswordComponent({}: ModalCollateralProps) {
     eventBus.emit('openSignInModal');
   };
 
+  const checkPassword = async () => {
+    try {
+      if (password !== confirmPassword) {
+        setNonMatch(true);
+      } else {
+        setNonMatch(false);
+      }
+      setError();
+    } catch (error) {
+      console.log(error);
+      setError(error);
+    }
+  };
+
   const resetState = () => {
-    setIsSuccess(true);
     reset();
     setIsVisiblePassword(false);
     setIsVisibleRePassword(false);
     setError();
     setLoading(false);
+    setNonMatch(false);
   };
+
+  const password = watch('password');
+  const confirmPassword = watch('confirmPassword');
 
   /**
    * USE EFFECTS
    */
+
+  useEffect(() => {
+    if (isModalOpen && password !== '' && confirmPassword !== '') {
+      checkPassword();
+    }
+  }, [password, confirmPassword]);
+
+  useEffect(() => {
+    if (isModalOpen) {
+      resetState();
+    }
+  }, [isModalOpen]);
+
   useEffect(() => {
     const openNewPasswordModal = () => {
       setIsModalOpen(true);
@@ -138,6 +167,7 @@ export default function ModalNewPasswordComponent({}: ModalCollateralProps) {
         {!isSuccess ? (
           <div className="signup-inner">
             <div className="signup-body">
+              {error?.message && <div className="error">{error?.message}</div>}
               <div className="flex justify-between items-center">
                 <span>{t('NEW_PASSWORD_CONTENT')}:</span>
                 <div className="input-warpper">
@@ -166,9 +196,14 @@ export default function ModalNewPasswordComponent({}: ModalCollateralProps) {
                   </div>
                 </div>
               </div>
+              {nonMatch && <div className="error-line">{t('SIGNUP_PASSWORD_ERROR')}</div>}
             </div>
             <div className="signup-footer">
-              <Button htmlType="submit" disabled={!isValid} className="w-full" loading={loading}>
+              <Button
+                htmlType="submit"
+                disabled={!isValid || nonMatch}
+                className="w-full"
+                loading={loading}>
                 {t('NEW_PASSWORD_BUTTON')}
               </Button>
             </div>

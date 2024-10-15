@@ -50,8 +50,8 @@ export default createReducer(initialState, builder =>
       state.isCardanoConnected = !!isCardanoConnected || false;
     })
     .addCase(AuthActions.refreshToken, (state, { payload: { access_token, refresh_token } }) => {
-      console.log('🚀 ~ .refreshToken ~ auth:', access_token, refresh_token);
-      state.auth.access_token = access_token;
-      state.auth.refresh_token = refresh_token;
+      console.log('🚀 ~ addCase .access_token ~ auth:', access_token);
+      state.auth = { ...state.auth, access_token: access_token, refresh_token: refresh_token };
+      console.log('🚀 ~ addCase .refreshToken ~ auth: final', state.auth);
     }),
 );

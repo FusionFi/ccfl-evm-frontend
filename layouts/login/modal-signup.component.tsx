@@ -115,38 +115,49 @@ export default function ModalSignupComponent({}: ModalCollateralProps) {
     setUsernameWrong(false);
   };
 
-  const checkUserName = async () => {
-    try {
-      const res_name = (await service.checkUserName(name)) as any;
-      console.log(res_name);
-      if (res_name == true) {
-        setUsernameWrong(true);
-      } else if (res_name.data == false) {
-        setUsernameWrong(false);
-      }
-      setError();
-    } catch (error) {
-      console.log(error);
-      setError(error);
-    }
-  };
+  const name = watch('userName');
+  const email = watch('email');
+  const password = watch('password');
+  const confirmPassword = watch('confirmPassword');
 
-  const checkEmail = async () => {
-    try {
-      const res_email = (await service.checkEmail(email)) as any;
-      console.log(res_email);
-
-      if (res_email == true) {
-        setEmailWrong(true);
-      } else if (res_email.data == false) {
-        setEmailWrong(false);
+  const checkUserName = useCallback(
+    debounce(async () => {
+      try {
+        const res_name = (await service.checkUserName(name)) as any;
+        console.log(res_name);
+        if (res_name == true) {
+          setUsernameWrong(true);
+        } else if (res_name.data == false) {
+          setUsernameWrong(false);
+        }
+        setError();
+      } catch (error) {
+        console.log(error);
+        setError(error);
       }
-      setError();
-    } catch (error) {
-      console.log(error);
-      setError(error);
-    }
-  };
+    }, 500),
+    [name],
+  );
+
+  const checkEmail = useCallback(
+    debounce(async () => {
+      try {
+        const res_email = (await service.checkEmail(email)) as any;
+        console.log(res_email);
+
+        if (res_email == true) {
+          setEmailWrong(true);
+        } else if (res_email.data == false) {
+          setEmailWrong(false);
+        }
+        setError();
+      } catch (error) {
+        console.log(error);
+        setError(error);
+      }
+    }, 500),
+    [email],
+  );
 
   const checkPassword = async () => {
     try {
@@ -161,11 +172,6 @@ export default function ModalSignupComponent({}: ModalCollateralProps) {
       setError(error);
     }
   };
-
-  const name = watch('userName');
-  const email = watch('email');
-  const password = watch('password');
-  const confirmPassword = watch('confirmPassword');
 
   /**
    * USE EFFECTS

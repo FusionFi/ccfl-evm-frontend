@@ -14,6 +14,7 @@ import { CloseOutlined } from '@ant-design/icons';
 import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
 import Image from 'next/image';
 import service from '@/utils/backend/auth';
+import { debounce } from 'lodash';
 
 interface ModalCollateralProps {}
 
@@ -61,6 +62,8 @@ export default function ModalChangePasswordComponent({}: ModalCollateralProps) {
     },
   });
 
+  const [auth] = useAuth();
+
   const onSubmit: SubmitHandler<IFormInput> = data => {
     setLoading(true);
     setTimeout(async () => {
@@ -85,7 +88,6 @@ export default function ModalChangePasswordComponent({}: ModalCollateralProps) {
   /**
    * HOOKS
    */
-  const [auth, updateAuth] = useAuth();
 
   /**
    * FUNCTIONS
@@ -109,26 +111,33 @@ export default function ModalChangePasswordComponent({}: ModalCollateralProps) {
     setPasswordWrong(false);
   };
 
-  const checkOldPassword = async () => {
-    try {
-      const res_password = (await service.checkOldPassword(
-        auth.userName,
-        oldPassword,
-        auth.access_token,
-      )) as any;
-      console.log(res_password);
+  const oldPassword = watch('oldPassword');
+  const password = watch('password');
+  const confirmPassword = watch('confirmPassword');
 
-      if (res_password == true) {
-        setPasswordWrong(false);
-      } else if (res_password.data == false) {
-        setPasswordWrong(true);
+  const checkOldPassword = useCallback(
+    debounce(async () => {
+      try {
+        const res_password = (await service.checkOldPassword(
+          auth.userName,
+          oldPassword,
+          auth.access_token,
+        )) as any;
+        console.log(res_password);
+
+        if (res_password == true) {
+          setPasswordWrong(false);
+        } else if (res_password.data == false) {
+          setPasswordWrong(true);
+        }
+        setError();
+      } catch (error) {
+        console.log(error);
+        setError(error);
       }
-      setError();
-    } catch (error) {
-      console.log(error);
-      setError(error);
-    }
-  };
+    }, 500),
+    [oldPassword, auth.userName, auth.access_token],
+  );
 
   const checkPassword = async () => {
     try {
@@ -143,10 +152,6 @@ export default function ModalChangePasswordComponent({}: ModalCollateralProps) {
       setError(error);
     }
   };
-
-  const oldPassword = watch('oldPassword');
-  const password = watch('password');
-  const confirmPassword = watch('confirmPassword');
 
   /**
    * USE EFFECTS

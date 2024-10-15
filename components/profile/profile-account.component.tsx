@@ -40,7 +40,7 @@ export const ProfileAccount = ({}: ComponentProps<any>) => {
     }
   };
 
-  if (auth && auth.access_token) {
+  if (auth && auth.access_token && auth.userName) {
     if (auth.kyc) {
       return (
         <div className="my-profile-page-wrapper__account__content--has-account--verified">
