@@ -9,6 +9,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import validator from 'validator';
 import * as yup from 'yup';
 import cssClass from './modal-signin.component.module.scss';
+import service from '@/utils/backend/auth';
 
 interface ModalCollateralProps {}
 
@@ -21,6 +22,7 @@ export default function ModalSigninComponent({}: ModalCollateralProps) {
   const { t } = useTranslation('common');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isVisiblePassword, setIsVisiblePassword] = useState(false);
+  const [error, setError] = useState() as any;
 
   const {
     handleSubmit,
@@ -48,16 +50,31 @@ export default function ModalSigninComponent({}: ModalCollateralProps) {
 
   const onSubmit: SubmitHandler<IFormInput> = data => {
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      updateAuth({
-        userName: data.email.split('@')[0],
-        email: data.email,
-      });
-      reset();
-      setIsVisiblePassword(false);
-      setIsModalOpen(false);
-      // openSignupCompleteModal(data.email);
+    setTimeout(async () => {
+      try {
+        const res = (await service.signIn(data)) as any;
+        if (res && res.access_token) {
+          updateAuth({
+            access_token: res.access_token,
+            refresh_token: res.refresh_token,
+          });
+          let res_profile = (await service.getProfile(res.access_token)) as any;
+          if (res_profile) {
+            updateAuth({
+              userName: res_profile.username,
+              email: res_profile.email,
+              role: res_profile.role,
+              encryptus_id: res_profile.encryptus_id,
+              kyc_info: res_profile.kyc_info,
+            });
+          }
+          setIsModalOpen(false);
+          resetState();
+        }
+      } catch (error: any) {
+        setError(error);
+        setLoading(false);
+      }
     }, 1000);
   };
 
@@ -81,6 +98,12 @@ export default function ModalSigninComponent({}: ModalCollateralProps) {
     setIsModalOpen(false);
     eventBus.emit('openForgotModal');
   }, []);
+  const resetState = () => {
+    reset();
+    setIsVisiblePassword(false);
+    setLoading(false);
+    setError();
+  };
 
   /**
    * USE EFFECTS
@@ -98,6 +121,12 @@ export default function ModalSigninComponent({}: ModalCollateralProps) {
     };
   }, []);
 
+  useEffect(() => {
+    if (isModalOpen) {
+      resetState();
+    }
+  }, [isModalOpen]);
+
   return (
     <Modal
       wrapClassName={cssClass['signin-wrapper']}
@@ -109,6 +138,7 @@ export default function ModalSigninComponent({}: ModalCollateralProps) {
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="signup-inner">
           <div className="signup-body">
+            {error?.message && <div className="error">{error?.message}</div>}
             <div className="flex justify-between items-center">
               <span>{t('SIGNUP_EMAIL')}:</span>
               <div className="input-warpper">

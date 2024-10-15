@@ -10,6 +10,8 @@ import * as yup from 'yup';
 import validator from 'validator';
 import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
 import { useAuth } from '@/hooks/auth.hook';
+import service from '@/utils/backend/auth';
+import { debounce } from 'lodash';
 
 interface ModalCollateralProps {}
 
@@ -25,6 +27,10 @@ export default function ModalSignupComponent({}: ModalCollateralProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isVisiblePassword, setIsVisiblePassword] = useState(false);
   const [isVisibleRePassword, setIsVisibleRePassword] = useState(false);
+  const [error, setError] = useState() as any;
+  const [nonMatch, setNonMatch] = useState(false) as any;
+  const [usernameWrong, setUsernameWrong] = useState(false) as any;
+  const [emailWrong, setEmailWrong] = useState(false) as any;
 
   const {
     handleSubmit,
@@ -32,6 +38,8 @@ export default function ModalSignupComponent({}: ModalCollateralProps) {
     formState: { errors, isValid },
     register,
     reset,
+    getValues,
+    watch,
   } = useForm({
     resolver: yupResolver(
       yup.object({
@@ -43,10 +51,8 @@ export default function ModalSignupComponent({}: ModalCollateralProps) {
             test: value => validator.isEmail(value),
           }),
         password: yup.string().required(),
-        confirmPassword: yup
-          .string()
-          .required()
-          .oneOf([yup.ref('password')], ''),
+        confirmPassword: yup.string().required(),
+        // .oneOf([yup.ref('password')], ''),
       }),
     ),
     defaultValues: {
@@ -57,16 +63,19 @@ export default function ModalSignupComponent({}: ModalCollateralProps) {
     },
   });
 
-  const onSubmit: SubmitHandler<IFormInput> = data => {
-    // updateAuth({
-    //   userName: data.userName,
-    //   email: data.email,
-    //   password: data.password,
-    // });
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      openSignupCompleteModal(data.email);
+  const onSubmit: SubmitHandler<IFormInput> = async data => {
+    setTimeout(async () => {
+      try {
+        setLoading(true);
+        const res = (await service.signUp(data)) as any;
+        if (res) {
+          openSignupCompleteModal(data.email);
+          resetState();
+        }
+      } catch (error: any) {
+        setError(error);
+        setLoading(false);
+      }
     }, 1000);
   };
 
@@ -92,7 +101,76 @@ export default function ModalSignupComponent({}: ModalCollateralProps) {
     setIsVisiblePassword(false);
     setIsVisibleRePassword(false);
     setIsModalOpen(false);
+    setError();
     eventBus.emit('toggleSignUpSuccessModal', { isOpen: true, email: email });
+  };
+  const resetState = () => {
+    reset();
+    setIsVisiblePassword(false);
+    setIsVisibleRePassword(false);
+    setLoading(false);
+    setError();
+    setNonMatch(false);
+    setEmailWrong(false);
+    setUsernameWrong(false);
+  };
+
+  const name = watch('userName');
+  const email = watch('email');
+  const password = watch('password');
+  const confirmPassword = watch('confirmPassword');
+
+  const checkUserName = useCallback(
+    debounce(async () => {
+      try {
+        const res_name = (await service.checkUserName(name)) as any;
+        console.log(res_name);
+        if (res_name == true) {
+          setUsernameWrong(true);
+        } else if (res_name.data == false) {
+          setUsernameWrong(false);
+        }
+        setError();
+      } catch (error) {
+        console.log(error);
+        setError(error);
+      }
+    }, 500),
+    [name],
+  );
+
+  const checkEmail = useCallback(
+    debounce(async () => {
+      try {
+        const res_email = (await service.checkEmail(email)) as any;
+        console.log(res_email);
+
+        if (res_email == true) {
+          setEmailWrong(true);
+        } else if (res_email.data == false) {
+          setEmailWrong(false);
+        }
+        setError();
+      } catch (error) {
+        console.log(error);
+        setError(error);
+      }
+    }, 500),
+    [email],
+  );
+
+  const checkPassword = async () => {
+    try {
+      if (password !== confirmPassword) {
+        setNonMatch(true);
+      } else {
+        setNonMatch(false);
+      }
+      setError();
+    } catch (error) {
+      console.log(error);
+      setError(error);
+    }
   };
 
   /**
@@ -111,6 +189,30 @@ export default function ModalSignupComponent({}: ModalCollateralProps) {
     };
   }, []);
 
+  useEffect(() => {
+    if (isModalOpen && name !== '') {
+      checkUserName();
+    }
+  }, [name]);
+
+  useEffect(() => {
+    if (isModalOpen && email !== '') {
+      checkEmail();
+    }
+  }, [email]);
+
+  useEffect(() => {
+    if (isModalOpen && password !== '' && confirmPassword !== '') {
+      checkPassword();
+    }
+  }, [password, confirmPassword]);
+
+  useEffect(() => {
+    if (isModalOpen) {
+      resetState();
+    }
+  }, [isModalOpen]);
+
   return (
     <Modal
       wrapClassName={cssClass['signup-wrapper']}
@@ -122,6 +224,7 @@ export default function ModalSignupComponent({}: ModalCollateralProps) {
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="signup-inner">
           <div className="signup-body">
+            {error?.message && <div className="error">{error?.message}</div>}
             <div className="flex justify-between items-center">
               <span>{t('SIGNUP_USERNAME')}:</span>
               <div className="input-warpper">
@@ -133,6 +236,7 @@ export default function ModalSignupComponent({}: ModalCollateralProps) {
                 />
               </div>
             </div>
+            {usernameWrong && <div className="error-line">{t('SIGNUP_USERNAME_ERROR')}</div>}
             <div className="flex justify-between items-center">
               <span>{t('SIGNUP_EMAIL')}:</span>
               <div className="input-warpper">
@@ -144,6 +248,7 @@ export default function ModalSignupComponent({}: ModalCollateralProps) {
                 />
               </div>
             </div>
+            {emailWrong && <div className="error-line">{t('SIGNUP_EMAIL_ERROR')}</div>}
             <div className="flex justify-between items-center">
               <span>{t('SIGNUP_PASSWORD')}:</span>
               <div className="input-warpper">
@@ -172,9 +277,14 @@ export default function ModalSignupComponent({}: ModalCollateralProps) {
                 </div>
               </div>
             </div>
+            {nonMatch && <div className="error-line">{t('SIGNUP_PASSWORD_ERROR')}</div>}
           </div>
           <div className="signup-footer">
-            <Button htmlType="submit" disabled={!isValid} className="w-full" loading={loading}>
+            <Button
+              htmlType="submit"
+              disabled={!isValid || nonMatch || usernameWrong || emailWrong}
+              className="w-full"
+              loading={loading}>
               {t('SIGNUP_BUTTON')}
             </Button>
           </div>
