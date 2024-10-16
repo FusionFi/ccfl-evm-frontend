@@ -32,6 +32,9 @@ export function loanBurnTx(
       }
       console.log(wallet);
 
+      const oracleUnit = toUnit(oracleCS, oracleTokenName)
+      const loanUnit = toUnit(loanCS, loanTokenName)
+
       const oracleDatum = Data.from(oracleDatum1)
       const lUtxos: UTxO[] = await lucid.utxosAtWithUnit(loanAddr, loanUnit)
       const lUtxo: UTxO = lUtxos[0]
@@ -41,7 +44,7 @@ export function loanBurnTx(
       const configIn = configUtxos[0]
       const oracleUtxos: UTxO[] = await lucid.utxosAtWithUnit(oracleAddr, oracleUnit)
       const oracleUtxo: UTxO = oracleUtxos[0]
-      const exchange = oracleDatum[0]
+      const exchange = exchangeRate
       const inDatum = Data.from(lUtxo.datum)
 
       const withdrawRedeemer = Data.to(

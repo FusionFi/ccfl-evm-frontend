@@ -2,6 +2,8 @@ import TransactionSuccessComponent from '@/components/borrow/transaction-success
 import ModalComponent from '@/components/common/modal.component';
 import { WalletIcon } from '@/components/icons/wallet.icon';
 import { TRANSACTION_STATUS } from '@/constants/common.constant';
+import { getExchangeRate } from '@/utils/api/getExchangeRate';
+import { loanBalanceTx } from '@/utils/cardano/transactions/loanBalance';
 import {
   ArrowRightOutlined,
   CloseOutlined,
@@ -13,6 +15,7 @@ import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+
 interface ModalCollateralProps {
   isModalOpen: boolean;
   handleCancel: any;
@@ -20,6 +23,7 @@ interface ModalCollateralProps {
   step: any;
   setStep: any;
   oracleTokenName: string;
+  loanTokenName: string;
   wallet: any;
 }
 
@@ -34,6 +38,7 @@ export default function ModalCollateralComponent({
   step,
   setStep,
   oracleTokenName,
+  loanTokenName,
   wallet,
 }: ModalCollateralProps) {
   const { t } = useTranslation('common');
@@ -44,16 +49,16 @@ export default function ModalCollateralComponent({
     },
   });
 
-  const [tokenValue, setTokenValue] = useState();
-  const exchangeRate = getExchangeRate(currentToken);
-  const { createTx, txHash } = loanBalanceTx(wallet, tokenValue, oracleTokenName, exchangeRate);
+  const [tokenValue, setTokenValue] = useState(0);
+  const exchangeRate = 1000 // getExchangeRate(currentToken);
+  const { createTx, txHash } = loanBalanceTx(wallet, loanTokenName, tokenValue, oracleTokenName, exchangeRate);
 
   const onSubmit: SubmitHandler<IFormInput> = data => {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
       if (step == 1) {
-        setTokenValue(undefined);
+        setTokenValue(0);
       }
       setStep(step + 1);
     }, 1000);
@@ -74,9 +79,15 @@ export default function ModalCollateralComponent({
 
   useEffect(() => {
     if (isModalOpen) {
-      setTokenValue(undefined);
+      setTokenValue(0);
     }
   }, [isModalOpen]);
+
+  const handleApprove = async () => {
+    if (!tokenValue) return;
+    // await createTx();
+    console.log('AddingCollateral: ', tokenValue);
+  };
 
   return (
     <div>
@@ -167,7 +178,7 @@ export default function ModalCollateralComponent({
                       <span>5,000.00 </span>
                       {!tokenValue && <span className="ml-1">{currentToken.toUpperCase()}</span>}
                     </div>
-                    {tokenValue > 0 && (
+                    {tokenValue! > 0 && (
                       <div className="modal-borrow-repay remain">
                         <ArrowRightOutlined className="mx-1" />
                         <span>4,999.00</span>
@@ -187,7 +198,7 @@ export default function ModalCollateralComponent({
                   <div className="modal-borrow-sub-content">{t('BORROW_MODAL_BORROW_HEALTH')}</div>
                   <div className="flex">
                     <span>3.31B</span>
-                    {tokenValue > 0 && (
+                    {tokenValue! > 0 && (
                       <div className="flex">
                         <ArrowRightOutlined className="mx-1" />
                         <span className="">3.33B</span>
@@ -224,7 +235,8 @@ export default function ModalCollateralComponent({
                       type="primary"
                       disabled={!tokenValue}
                       className="w-full"
-                      loading={loading}>
+                      loading={loading}
+                      onClick={handleApprove}>
                       {t('BORROW_MODAL_BORROW_APPROVE', {
                         currentToken: currentToken.toUpperCase(),
                       })}

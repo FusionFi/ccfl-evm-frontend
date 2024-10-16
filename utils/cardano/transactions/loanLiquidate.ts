@@ -1,10 +1,10 @@
-import { Constr, Data, Lucid, UTxO } from 'lucid-cardano';
+import { Constr, Data, Lucid, toUnit, UTxO } from 'lucid-cardano';
 import { initLucid } from '../blockfrost';
 import { useEffect, useState, useCallback } from 'react';
 import { oracleDatum7 } from '../datums';
 import { ownerPKH } from '../owner';
 import { loanLiquidateAction, oracleUpdateAction } from '../redeemers';
-import { loanAddr, collateralAddr, configAddr, oracleAddr, oracleVal, loanVal, collateralVal, liquidateAddr, liquidate } from '../validators';
+import { loanAddr, collateralAddr, configAddr, oracleAddr, oracleVal, loanVal, collateralVal, liquidateAddr, liquidate, loanCS, oracleCS } from '../validators';
 import { loanUnit, configUnit, oracleUnit, timestamp, oracleTn } from '../variables';
 
 export function loanLiquidateTx(
@@ -31,6 +31,9 @@ export function loanLiquidateTx(
         throw Error("Lucid not instantiated");
       }
       console.log(wallet);
+
+      const oracleUnit = toUnit(oracleCS, oracleTokenName)
+      const loanUnit = toUnit(loanCS, loanTokenName)
 
       const oracleDatum = Data.from(oracleDatum7)
       const newLoanValue = 0n

@@ -3,7 +3,7 @@ import { initLucid } from '../blockfrost';
 import { useEffect, useState, useCallback } from 'react';
 import { oracleDatum1, loanDatum, collateralDatum } from '../datums';
 import { oracleUpdateAction, mintLoanAction } from '../redeemers';
-import { loanCS, configAddr, oracleAddr, loanMint, loanAddr, collateralAddr, oracleVal } from '../validators';
+import { loanCS, configAddr, oracleAddr, loanMint, loanAddr, collateralAddr, oracleVal, oracleCS } from '../validators';
 import { loanAmt, configUnit, oracleUnit } from '../variables';
 
 export function loanMintTx(
@@ -30,6 +30,7 @@ export function loanMintTx(
       }
       console.log(wallet);
 
+      const oracleUnit = toUnit(oracleCS, oracleTokenName)
       
       const deposit = loanAmt * 1000 / exchangeRate
       const utxos: UTxO[] = await lucid.utxosAt(wallet.address)

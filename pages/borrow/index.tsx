@@ -30,7 +30,9 @@ import ModalBorrowFiatComponent from '@/components/borrow/modal-borrow-fiat/moda
 import ModalCollateralComponent from '@/components/borrow/modal-collateral.component';
 import ModalWithdrawCollateralComponent from '@/components/borrow/modal-withdraw-collateral.component';
 import { SUPPORTED_CHAINS } from '@/constants/chains.constant';
+
 type LabelRender = SelectProps['labelRender'];
+
 enum BorrowModalType {
   Crypto = 'crypto',
   Fiat = 'FIAT',
@@ -38,6 +40,8 @@ enum BorrowModalType {
 }
 
 export default function BorrowPage() {
+  const oracleTokenName = 'oracle';
+
   const { t } = useTranslation('common');
   const { switchChain } = useSwitchChain();
   const [modal, setModal] = useState({} as any);
@@ -112,10 +116,12 @@ export default function BorrowPage() {
       token,
     });
   };
+
   const showWithdrawCollateralModal = (token: string) => {
     setCollateralToken(token);
     setIsModalWithdrawCollateral(true);
   };
+
   const showRepayModal = (token: string, repaymentCurrency: string) => {
     if (repaymentCurrency) {
       setIsFiat(true);
@@ -126,6 +132,7 @@ export default function BorrowPage() {
     }
     setIsModalRepayOpen(true);
   };
+
   const showCollateralModal = (token: string) => {
     setCollateralToken(token);
     setIsModalCollateralOpen(true);
@@ -138,16 +145,19 @@ export default function BorrowPage() {
     setStep(0);
     setToken(COLLATERAL_TOKEN[0].name);
   };
+
   const handleRepayCancel = () => {
     setCurrentToken('');
     setIsModalRepayOpen(false);
     setStep(0);
   };
+
   const handleCollateralCancel = () => {
     setCollateralToken('');
     setIsModalCollateralOpen(false);
     setStep(0);
   };
+
   const handleWithdrawCollateralCancel = () => {
     setCollateralToken('');
     setIsModalWithdrawCollateral(false);
@@ -179,6 +189,7 @@ export default function BorrowPage() {
       type: TYPE_COMMON.FINANCE_HEALTH,
     },
   ];
+
   const labelRender: LabelRender = (props: any) => {
     let { value } = props;
 
@@ -241,7 +252,9 @@ export default function BorrowPage() {
       paymentMethod,
     });
   };
+
   const CHAIN_MAP = new Map(SUPPORTED_CHAINS.map(item => [item.id, item]));
+
   return (
     <div className={twMerge('borrow-page-container', cssClass.borrowPage)}>
       <div className="borrow-header">
@@ -328,6 +341,7 @@ export default function BorrowPage() {
         setStep={setStep}
         isFiat={isFiat}
         oracleTokenName={oracleTokenName}
+        loanTokenName={loanTokenName}
         wallet={cardanoWalletConnected}
       />
       <ModalCollateralComponent
@@ -337,6 +351,7 @@ export default function BorrowPage() {
         step={step}
         setStep={setStep}
         oracleTokenName={oracleTokenName}
+        loanTokenName={loanTokenName}
         wallet={cardanoWalletConnected}
       />
       <ModalWithdrawCollateralComponent
@@ -346,6 +361,7 @@ export default function BorrowPage() {
         step={step}
         setStep={setStep}
         oracleTokenName={oracleTokenName}
+        loanTokenName={loanTokenName}
         wallet={cardanoWalletConnected}
       />
       <ModalBorrowFiatComponent
@@ -369,6 +385,7 @@ export default function BorrowPage() {
     </div>
   );
 }
+
 export const getStaticProps = async ({ locale }: any) => ({
   props: {
     ...(await serverSideTranslations(locale, ['common'])),

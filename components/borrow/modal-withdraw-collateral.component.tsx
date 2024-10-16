@@ -16,6 +16,8 @@ import TransactionSuccessComponent from '@/components/borrow/transaction-success
 import { useTranslation } from 'next-i18next';
 import { COLLATERAL_TOKEN } from '@/constants/common.constant';
 import { TRANSACTION_STATUS } from '@/constants/common.constant';
+import { getExchangeRate } from '@/utils/api/getExchangeRate';
+import { loanBalanceTx } from '@/utils/cardano/transactions/loanBalance';
 
 interface ModalWithdrawCollateralProps {
   isModalOpen: boolean;
@@ -24,6 +26,7 @@ interface ModalWithdrawCollateralProps {
   step: any;
   setStep: any;
   oracleTokenName: string;
+  loanTokenName: string;
   wallet: any;
 }
 
@@ -36,6 +39,7 @@ export default function ModalWithdrawCollateralComponent({
   step,
   setStep,
   oracleTokenName,
+  loanTokenName,
   wallet
 }: ModalWithdrawCollateralProps) {
   const { t } = useTranslation('common');
@@ -59,8 +63,9 @@ export default function ModalWithdrawCollateralComponent({
   };
 
   const [loading, setLoading] = useState<boolean>(false);
-  const exchangeRate = getExchangeRate(currentToken);
-  const { createTx, txHash } = loanBalanceTx(wallet, tokenValue, oracleTokenName, exchangeRate);
+  const exchangeRate = 1000 // getExchangeRate(currentToken);
+  const [tokenValue, setTokenValue] = useState<number>(0);
+  const { createTx, txHash } = loanBalanceTx(wallet, loanTokenName, tokenValue, oracleTokenName, exchangeRate);
 
   const status = 'SUCCESS';
   const renderTitle = () => {
@@ -71,6 +76,12 @@ export default function ModalWithdrawCollateralComponent({
       return `${t('BORROW_MODAL_BORROW_ALL_DONE')}`;
     }
     return `${t('BORROW_MODAL_WITHDRAW_COLLATERAL')}`;
+  };
+
+  const handleApprove = async () => {
+    if (!tokenValue) return;
+    // await createTx();
+    console.log('AddingCollateral: ', tokenValue);
   };
 
   return (
@@ -130,7 +141,8 @@ export default function ModalWithdrawCollateralComponent({
                       type="primary"
                       disabled={false}
                       className="w-full"
-                      loading={loading}>
+                      loading={loading}
+                      onClick={handleApprove}>
                       {t('BORROW_MODAL_WITHDRAW_MY_COLLATERAL')}
                     </Button>
                   </div>

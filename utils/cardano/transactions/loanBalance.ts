@@ -1,14 +1,15 @@
-import { Constr, Data, Lucid, UTxO } from 'lucid-cardano';
+import { Constr, Data, Lucid, toUnit, UTxO } from 'lucid-cardano';
 import { initLucid } from '../blockfrost';
 import { useEffect, useState, useCallback } from 'react';
 import { oracleDatum1, loanDatum, collateralDatum } from '../datums';
 import { loanBalanceAction, oracleUpdateAction } from '../redeemers';
-import { loanAddr, collateralAddr, configAddr, oracleAddr, balanceAddr, loanVal, collateralVal, oracleVal, balance } from '../validators';
+import { loanAddr, collateralAddr, configAddr, oracleAddr, balanceAddr, loanVal, collateralVal, oracleVal, balance, oracleCS, loanCS } from '../validators';
 import { loanAmt, loanUnit, configUnit, oracleUnit } from '../variables';
 
 export function loanBalanceTx(
   wallet: any, 
   loanTokenName: string, 
+  loanAmt: number,
   oracleTokenName: string, 
   exchangeRate: number
 ) {
@@ -30,10 +31,13 @@ export function loanBalanceTx(
       }
       console.log(wallet);
 
+      const oracleUnit = toUnit(oracleCS, oracleTokenName)
+      const loanUnit = toUnit(loanCS, loanTokenName)
+
       const oracleDatum = Data.from(oracleDatum1) // set to oracleDatum1 by default
-      const oracleExchangeRate = oracleDatum.fields[0]
-      const adaValue = loanAmt * 1000n / oracleExchangeRate
-      const deposit = adaValue * 1000000n
+      const oracleExchangeRate = exchangeRate
+      const adaValue = loanAmt * 1000 / oracleExchangeRate
+      const deposit = adaValue * 1000000
       const lUtxos: UTxO[] = await lucid.utxosAtWithUnit(loanAddr, loanUnit)
       const lUtxo: UTxO = lUtxos[0]
       const cUtxos: UTxO[] = await lucid.utxosAtWithUnit(collateralAddr, loanUnit)
@@ -43,22 +47,13 @@ export function loanBalanceTx(
       const configIn = configUtxos[0]
       const oracleUtxos: UTxO[] = await lucid.utxosAtWithUnit(oracleAddr, oracleUnit)
       const oracleUtxo: UTxO = oracleUtxos[0]
-      const minValue = (deposit * 2n) - inDatum.fields[2]
+      const minValue = (deposit * 2) - inDatum.fields[2]
 
       const withdrawRedeemer = Data.to(
         new Constr(0, [
           [1n]
         ])
       )
-
-      // console.log(inDatum)
-      // console.log(Data.from(loanDatum))
-
-      // console.log(Data.from(cUtxo.datum))
-      // console.log(Data.from(collateralDatum))
-
-      // console.log(lUtxo)
-      // console.log(cUtxo)
 
       const tx = await lucid
         .newTx()
@@ -76,7 +71,7 @@ export function loanBalanceTx(
           collateralAddr,
           { inline: collateralDatum },
           {
-            lovelace: minValue,
+            lovelace: BigInt(minValue),
             [loanUnit]: 1n,
           }
         )

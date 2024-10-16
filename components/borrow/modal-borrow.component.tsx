@@ -61,8 +61,8 @@ export default function ModalBorrowComponent({
     setTimeout(() => {
       setLoading(false);
       if (step == 1) {
-        setTokenValue(undefined);
-        setCollateralValue(undefined);
+        setTokenValue(0);
+        setCollateralValue(0);
       }
       setStep(step + 1);
     }, 1000);
@@ -78,13 +78,12 @@ export default function ModalBorrowComponent({
   const handleYield = (e: any) => {
     setYield(e.target.checked);
   };
-
   
-  const [tokenValue, setTokenValue] = useState();
-  const [collateralValue, setCollateralValue] = useState();
+  const [tokenValue, setTokenValue] = useState(0);
+  const [collateralValue, setCollateralValue] = useState(0);
   const minimumAmount = 2;
-  const exchangeRate = getExchangeRate(currentToken);
-  const { createTx, txHash } = loanMintTx(wallet, tokenValue, oracleTokenName, exchangeRate);
+  const exchangeRate = 1000 // getExchangeRate(currentToken);
+  const { createTx, txHash } = loanMintTx(wallet, tokenValue!, oracleTokenName, exchangeRate);
 
   const status = 'SUCCESS';
   const renderTitle = () => {
@@ -99,10 +98,16 @@ export default function ModalBorrowComponent({
 
   useEffect(() => {
     if (isModalOpen) {
-      setTokenValue(undefined);
-      setCollateralValue(undefined);
+      setTokenValue(0);
+      setCollateralValue(0);
     }
   }, [isModalOpen]);
+
+  const handleApprove = async () => {
+    if (!tokenValue || !collateralValue || collateralValue < minimumAmount) return;
+    // await createTx();
+    console.log('Approve: ', tokenValue);
+  };
 
   return (
     <div>
@@ -277,8 +282,8 @@ export default function ModalBorrowComponent({
                       type="primary"
                       disabled={!tokenValue || !collateralValue || collateralValue < minimumAmount}
                       className="w-full"
-                      loading={loading}>
-                      {createTx()}
+                      loading={loading}
+                      onClick={handleApprove}>
                       {t('BORROW_MODAL_BORROW_APPROVE', { currentToken: token })}
                     </Button>
                   </div>

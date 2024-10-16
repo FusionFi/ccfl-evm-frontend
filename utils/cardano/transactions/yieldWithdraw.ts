@@ -1,9 +1,9 @@
-import { Constr, Data, Lucid, UTxO } from 'lucid-cardano';
+import { Constr, Data, Lucid, toUnit, UTxO } from 'lucid-cardano';
 import { initLucid } from '../blockfrost';
 import { useEffect, useState, useCallback } from 'react';
 import { ownerPKH } from '../owner';
 import { withdrawYieldAction } from '../redeemers';
-import { yieldAddr, collateralAddr, configAddr, withdrawAddr, collateralVal, yieldVal, withdraw } from '../validators';
+import { yieldAddr, collateralAddr, configAddr, withdrawAddr, collateralVal, yieldVal, withdraw, loanCS } from '../validators';
 import { loanUnit, configUnit } from '../variables';
 
 export function yieldWithdrawTx(
@@ -29,6 +29,8 @@ export function yieldWithdrawTx(
         throw Error("Lucid not instantiated");
       }
       console.log(wallet);
+
+      const loanUnit = toUnit(loanCS, loanTokenName)
 
       const yieldUtxos: UTxO[] = await lucid.utxosAt(yieldAddr)
       const cUtxos: UTxO[] = await lucid.utxosAtWithUnit(collateralAddr, loanUnit)

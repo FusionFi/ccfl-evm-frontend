@@ -1,10 +1,10 @@
-import { Constr, Data, Lucid, UTxO } from 'lucid-cardano';
+import { Constr, Data, Lucid, toUnit, UTxO } from 'lucid-cardano';
 import { initLucid } from '../blockfrost';
 import { useEffect, useState, useCallback } from 'react';
 import { oracleDatum1 } from '../datums';
 import { interestPayAddr, ownerPKH } from '../owner';
 import { loanRepayAction, oracleUpdateAction } from '../redeemers';
-import { interestAddr, loanAddr, collateralAddr, configAddr, oracleAddr, repayAddr, loanVal, collateralVal, oracleVal, repay } from '../validators';
+import { interestAddr, loanAddr, collateralAddr, configAddr, oracleAddr, repayAddr, loanVal, collateralVal, oracleVal, repay, loanCS, oracleCS } from '../validators';
 import { oracleUnit, loanUnit, configUnit, timestamp, interestCalc, rewards, term, oracleTn } from '../variables';
 
 export function loanRepayTx(
@@ -32,6 +32,9 @@ export function loanRepayTx(
         throw Error("Lucid not instantiated");
       }
       console.log(wallet);
+
+      const oracleUnit = toUnit(oracleCS, oracleTokenName)
+      const loanUnit = toUnit(loanCS, loanTokenName)
 
       const oracleDatum = Data.from(oracleDatum1)
       const interestUtxos = await lucid.utxosAtWithUnit(interestAddr, oracleUnit)

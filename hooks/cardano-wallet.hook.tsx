@@ -6,7 +6,7 @@ import Networks from '@/constants/cardano-network.constant'
 import * as Actions from "@/actions/cardano-wallet.action";
 import * as AuthActions from "@/actions/auth.action";
 
-const CARDANO_NETWORK_ID: any = process.env.NEXT_PUBLIC_CARDANO_NETWORK_ID
+const CARDANO_NETWORK_ID: any = 0// process.env.NEXT_PUBLIC_CARDANO_NETWORK_ID
 
 export function useCardanoWalletConnect(): [(wallet: Object) => void] {
   const dispatch = useDispatch();

@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { oracleDatum1 } from '../datums';
 import { ownerPKH } from '../owner';
 import { loanCloseAction, oracleUpdateAction, burnLoanAction, rewardsMintAction } from '../redeemers';
-import { loanAddr, collateralAddr, configAddr, oracleAddr, rewardsCS, loanMint, rewardsMint, closeAddr, loanVal, collateralVal, oracleVal, close } from '../validators';
+import { loanAddr, collateralAddr, configAddr, oracleAddr, rewardsCS, loanMint, rewardsMint, closeAddr, loanVal, collateralVal, oracleVal, close, loanCS, oracleCS } from '../validators';
 import { loanUnit, configUnit, oracleUnit } from '../variables';
 
 export function loanCloseTx(
@@ -30,6 +30,9 @@ export function loanCloseTx(
         throw Error("Lucid not instantiated");
       }
       console.log(wallet);
+
+      const oracleUnit = toUnit(oracleCS, oracleTokenName)
+      const loanUnit = toUnit(loanCS, loanTokenName)
 
       const oracleDatum = Data.from(oracleDatum1)
       const lUtxos: UTxO[] = await lucid.utxosAtWithUnit(loanAddr, loanUnit)
