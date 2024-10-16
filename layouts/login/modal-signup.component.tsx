@@ -156,6 +156,7 @@ export default function ModalSignupComponent({}: ModalCollateralProps) {
       } catch (error) {
         console.log(error);
         setErrorEmail(error);
+        setEmailWrong(false);
       }
     }, 500),
     [email],
