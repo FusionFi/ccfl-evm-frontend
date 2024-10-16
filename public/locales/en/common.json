@@ -363,5 +363,10 @@
   "SIGNUP_USERNAME_ERROR": "Username existed!",
   "SIGNUP_EMAIL_ERROR": "Email existed!",
   "SIGNUP_PASSWORD_OLD_ERROR": "Incorrect password!",
-  "BORROW_MININUM_LOAN": "Loan is not available, please lower the amount"
+  "BORROW_MININUM_LOAN": "Loan is not available, please lower the amount",
+  "KYC_WARNING_EMAIL_MODAL_TITLE": "KYC Email Notice",
+  "KYC_WARNING_EMAIL_MODAL_DESCRIPTION_1": "Same email that was used to registered for FusionFi is required for KYC. Make sure to enter",
+  "KYC_WARNING_EMAIL_MODAL_DESCRIPTION_2": "to complete the KYC.",
+  "KYC_WARNING_EMAIL_MODAL_BTN_CONTINUE": "Continue",
+  "KYC_WARNING_EMAIL_MODAL_BTN_GO_BACK": "Go back"
 }
