@@ -363,5 +363,6 @@
   "SIGNUP_USERNAME_ERROR": "Username existed!",
   "SIGNUP_EMAIL_ERROR": "Email existed!",
   "SIGNUP_PASSWORD_OLD_ERROR": "Incorrect password!",
-  "BORROW_MININUM_LOAN": "Loan is not available, please lower the amount"
+  "BORROW_MININUM_LOAN": "Loan is not available, please lower the amount",
+  "SIGNUP_RECOVER_PASSWORD": "Recover password"
 }
