@@ -31,6 +31,8 @@ export default function ModalSignupComponent({}: ModalCollateralProps) {
   const [nonMatch, setNonMatch] = useState(false) as any;
   const [usernameWrong, setUsernameWrong] = useState(false) as any;
   const [emailWrong, setEmailWrong] = useState(false) as any;
+  const [errorUserName, setErrorUserName] = useState() as any;
+  const [errorEmail, setErrorEmail] = useState() as any;
 
   const {
     handleSubmit,
@@ -130,10 +132,10 @@ export default function ModalSignupComponent({}: ModalCollateralProps) {
         } else if (res_name.data == false) {
           setUsernameWrong(false);
         }
-        setError();
+        setErrorUserName();
       } catch (error) {
         console.log(error);
-        setError(error);
+        setErrorUserName(error);
       }
     }, 500),
     [name],
@@ -150,10 +152,10 @@ export default function ModalSignupComponent({}: ModalCollateralProps) {
         } else if (res_email.data == false) {
           setEmailWrong(false);
         }
-        setError();
+        setErrorEmail();
       } catch (error) {
         console.log(error);
-        setError(error);
+        setErrorEmail(error);
       }
     }, 500),
     [email],
@@ -225,6 +227,8 @@ export default function ModalSignupComponent({}: ModalCollateralProps) {
         <div className="signup-inner">
           <div className="signup-body">
             {error?.message && <div className="error">{error?.message}</div>}
+            {errorEmail?.message && <div className="error">{errorEmail?.message}</div>}
+            {errorUserName?.message && <div className="error">{errorUserName?.message}</div>}
             <div className="flex justify-between items-center">
               <span>{t('SIGNUP_USERNAME')}:</span>
               <div className="input-warpper">
@@ -282,7 +286,9 @@ export default function ModalSignupComponent({}: ModalCollateralProps) {
           <div className="signup-footer">
             <Button
               htmlType="submit"
-              disabled={!isValid || nonMatch || usernameWrong || emailWrong}
+              disabled={
+                !isValid || nonMatch || usernameWrong || emailWrong || errorEmail || errorUserName
+              }
               className="w-full"
               loading={loading}>
               {t('SIGNUP_BUTTON')}
