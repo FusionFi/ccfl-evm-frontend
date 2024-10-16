@@ -136,6 +136,7 @@ export default function ModalSignupComponent({}: ModalCollateralProps) {
       } catch (error) {
         console.log(error);
         setErrorUserName(error);
+        setUsernameWrong(false);
       }
     }, 500),
     [name],
