@@ -9,10 +9,11 @@ import { twMerge } from 'tailwind-merge';
 import Image from 'next/image';
 import eventBus from '@/hooks/eventBus.hook';
 import sumsub from '@/utils/backend/sumsub';
-
+import ModalKycWarningEmailComponent from '@/layouts/modal-kyc-warning-email/modal-kyc-warning-email.component';
 export const ProfileAccount = ({}: ComponentProps<any>) => {
   const { t } = useTranslation('common');
   const [auth, updateAuth] = useAuth();
+  console.log('🚀 ~ ProfileAccount ~ auth:', auth);
 
   const handleSignin = () => {
     eventBus.emit('openSignInModal');
@@ -28,20 +29,22 @@ export const ProfileAccount = ({}: ComponentProps<any>) => {
 
   const handleKycVerify = async () => {
     try {
-      const { url }: any = await sumsub.generateExternalLink({
-        levelName: 'basic-kyc-level',
-        externalUserId: 1,
-      });
+      console.error('handle kyc verifying failed:');
 
-      window?.open(url, '_blank')?.focus();
-      updateAuth({ kyc: true });
+      eventBus.emit('toggleKycWarningEmailModal', true);
+      // const { url }: any = await sumsub.generateExternalLink({
+      //   levelName: 'basic-kyc-level',
+      //   externalUserId: 1,
+      // });
+      // window?.open(url, '_blank')?.focus();
+      // updateAuth({ kyc: true });
     } catch (error) {
       console.error('handle kyc verifying failed: ', error);
     }
   };
 
   if (auth && auth.access_token && auth.userName) {
-    if (auth.kyc) {
+    if (auth.kyc_info) {
       return (
         <div className="my-profile-page-wrapper__account__content--has-account--verified">
           <div className="my-profile-page-wrapper__account__content--has-account--verified__content">
@@ -86,7 +89,7 @@ export const ProfileAccount = ({}: ComponentProps<any>) => {
                   {t('MY_PROFILE_ACCOUNT_PERSONAL_FULL_NAME')}
                 </span>
                 <span className="my-profile-page-wrapper__account__content--has-account--verified__content__body__item__value">
-                  James E. Hart
+                  {auth.kyc_info.firstName} {auth.kyc_info.lastName}
                 </span>
               </div>
               <div className="my-profile-page-wrapper__account__content--has-account--verified__content__body__item">
@@ -94,7 +97,7 @@ export const ProfileAccount = ({}: ComponentProps<any>) => {
                   {t('MY_PROFILE_ACCOUNT_PERSONAL_DATE_BIRTH')}
                 </span>
                 <span className="my-profile-page-wrapper__account__content--has-account--verified__content__body__item__value">
-                  12/12/2001
+                  {auth.kyc_info.dob}
                 </span>
               </div>
               <div className="my-profile-page-wrapper__account__content--has-account--verified__content__body__item">
@@ -102,7 +105,9 @@ export const ProfileAccount = ({}: ComponentProps<any>) => {
                   {t('MY_PROFILE_ACCOUNT_PERSONAL_SSN')}
                 </span>
                 <div className="my-profile-page-wrapper__account__content--has-account--verified__content__body__item__value">
-                  84753293465
+                  {auth.kyc_info.document_info &&
+                    auth.kyc_info.document_info.length >= 2 &&
+                    auth.kyc_info.document_info[1].value}
                 </div>
               </div>
               <div className="my-profile-page-wrapper__account__content--has-account--verified__content__body__item">
@@ -110,7 +115,7 @@ export const ProfileAccount = ({}: ComponentProps<any>) => {
                   {t('MY_PROFILE_ACCOUNT_PERSONAL_PHONE_NUMBER')}
                 </span>
                 <span className="my-profile-page-wrapper__account__content--has-account--verified__content__body__item__value">
-                  303-956-4577
+                  {auth.kyc_info.phone}
                 </span>
               </div>
               <div className="my-profile-page-wrapper__account__content--has-account--verified__content__body__item">
@@ -118,17 +123,17 @@ export const ProfileAccount = ({}: ComponentProps<any>) => {
                   {t('MY_PROFILE_ACCOUNT_PERSONAL_ADDRESS')}
                 </span>
                 <span className="my-profile-page-wrapper__account__content--has-account--verified__content__body__item__value">
-                  1023 Roy Alley, Empire, Colorado, 80438
+                  {auth.kyc_info.addresses && auth.kyc_info.addresses[0]?.formattedAddress}
                 </span>
               </div>
-              <div className="my-profile-page-wrapper__account__content--has-account--verified__content__body__item">
+              {/* <div className="my-profile-page-wrapper__account__content--has-account--verified__content__body__item">
                 <span className="my-profile-page-wrapper__account__content--has-account--verified__content__body__item__title">
                   {t('MY_PROFILE_ACCOUNT_PERSONAL_EMAIL_ADDRESS')}
                 </span>
                 <span className="my-profile-page-wrapper__account__content--has-account--verified__content__body__item__value">
                   {auth?.email}
                 </span>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
@@ -210,6 +215,7 @@ export const ProfileAccount = ({}: ComponentProps<any>) => {
             </div>
           </div>
         </div>
+        <ModalKycWarningEmailComponent />
       </div>
     );
   }
