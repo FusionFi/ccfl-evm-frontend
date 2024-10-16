@@ -31,6 +31,8 @@ export default function ModalSignupComponent({}: ModalCollateralProps) {
   const [nonMatch, setNonMatch] = useState(false) as any;
   const [usernameWrong, setUsernameWrong] = useState(false) as any;
   const [emailWrong, setEmailWrong] = useState(false) as any;
+  const [errorUserName, setErrorUserName] = useState() as any;
+  const [errorEmail, setErrorEmail] = useState() as any;
 
   const {
     handleSubmit,
@@ -130,10 +132,11 @@ export default function ModalSignupComponent({}: ModalCollateralProps) {
         } else if (res_name.data == false) {
           setUsernameWrong(false);
         }
-        setError();
+        setErrorUserName();
       } catch (error) {
         console.log(error);
-        setError(error);
+        setErrorUserName(error);
+        setUsernameWrong(false);
       }
     }, 500),
     [name],
@@ -150,10 +153,11 @@ export default function ModalSignupComponent({}: ModalCollateralProps) {
         } else if (res_email.data == false) {
           setEmailWrong(false);
         }
-        setError();
+        setErrorEmail();
       } catch (error) {
         console.log(error);
-        setError(error);
+        setErrorEmail(error);
+        setEmailWrong(false);
       }
     }, 500),
     [email],
@@ -236,6 +240,7 @@ export default function ModalSignupComponent({}: ModalCollateralProps) {
                 />
               </div>
             </div>
+            {errorUserName?.message && <div className="error-line">{errorUserName?.message}</div>}
             {usernameWrong && <div className="error-line">{t('SIGNUP_USERNAME_ERROR')}</div>}
             <div className="flex justify-between items-center">
               <span>{t('SIGNUP_EMAIL')}:</span>
@@ -248,6 +253,7 @@ export default function ModalSignupComponent({}: ModalCollateralProps) {
                 />
               </div>
             </div>
+            {errorEmail?.message && <div className="error-line">{errorEmail?.message}</div>}
             {emailWrong && <div className="error-line">{t('SIGNUP_EMAIL_ERROR')}</div>}
             <div className="flex justify-between items-center">
               <span>{t('SIGNUP_PASSWORD')}:</span>
@@ -282,7 +288,9 @@ export default function ModalSignupComponent({}: ModalCollateralProps) {
           <div className="signup-footer">
             <Button
               htmlType="submit"
-              disabled={!isValid || nonMatch || usernameWrong || emailWrong}
+              disabled={
+                !isValid || nonMatch || usernameWrong || emailWrong || errorEmail || errorUserName
+              }
               className="w-full"
               loading={loading}>
               {t('SIGNUP_BUTTON')}

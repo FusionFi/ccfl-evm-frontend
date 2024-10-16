@@ -140,7 +140,7 @@ export default function ModalForgotPasswordComponent({}: ModalCollateralProps) {
             </div>
             <div className="signup-footer">
               <Button htmlType="submit" disabled={!isValid} className="w-full" loading={loading}>
-                {t('SIGNUP_SUCCESS_MODAL_BTN_SIGNIN')}
+                {t('SIGNUP_RECOVER_PASSWORD')}
               </Button>
             </div>
           </div>
