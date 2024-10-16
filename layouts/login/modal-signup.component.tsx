@@ -228,8 +228,6 @@ export default function ModalSignupComponent({}: ModalCollateralProps) {
         <div className="signup-inner">
           <div className="signup-body">
             {error?.message && <div className="error">{error?.message}</div>}
-            {errorEmail?.message && <div className="error">{errorEmail?.message}</div>}
-            {errorUserName?.message && <div className="error">{errorUserName?.message}</div>}
             <div className="flex justify-between items-center">
               <span>{t('SIGNUP_USERNAME')}:</span>
               <div className="input-warpper">
@@ -241,6 +239,7 @@ export default function ModalSignupComponent({}: ModalCollateralProps) {
                 />
               </div>
             </div>
+            {errorUserName?.message && <div className="error-line">{errorUserName?.message}</div>}
             {usernameWrong && <div className="error-line">{t('SIGNUP_USERNAME_ERROR')}</div>}
             <div className="flex justify-between items-center">
               <span>{t('SIGNUP_EMAIL')}:</span>
@@ -253,6 +252,7 @@ export default function ModalSignupComponent({}: ModalCollateralProps) {
                 />
               </div>
             </div>
+            {errorEmail?.message && <div className="error-line">{errorEmail?.message}</div>}
             {emailWrong && <div className="error-line">{t('SIGNUP_EMAIL_ERROR')}</div>}
             <div className="flex justify-between items-center">
               <span>{t('SIGNUP_PASSWORD')}:</span>
