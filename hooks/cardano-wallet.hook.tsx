@@ -5,6 +5,7 @@ import { Wallets } from "@/wallets/index.wallet";
 import Networks from '@/constants/cardano-network.constant'
 import * as Actions from "@/actions/cardano-wallet.action";
 import * as AuthActions from "@/actions/auth.action";
+import { getBalance } from "@/utils/cardano/blockfrost";
 
 const CARDANO_NETWORK_ID: any = 0// process.env.NEXT_PUBLIC_CARDANO_NETWORK_ID
 

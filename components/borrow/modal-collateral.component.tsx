@@ -25,6 +25,7 @@ interface ModalCollateralProps {
   oracleTokenName: string;
   loanTokenName: string;
   wallet: any;
+  balance: number;
 }
 
 interface IFormInput {
@@ -40,6 +41,7 @@ export default function ModalCollateralComponent({
   oracleTokenName,
   loanTokenName,
   wallet,
+  balance,
 }: ModalCollateralProps) {
   const { t } = useTranslation('common');
 

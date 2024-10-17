@@ -2,6 +2,7 @@ import { NamiIcon } from "@/components/icons/nami.icon";
 import { getAddressDetails } from "lucid-cardano";
 import BaseWallet from "./base.wallet";
 import * as Actions from "@/actions/cardano-wallet.action";
+import { getBalance } from "@/utils/cardano/blockfrost";
 
 let events: any = [];
 

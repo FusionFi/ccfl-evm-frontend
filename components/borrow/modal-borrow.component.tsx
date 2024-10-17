@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 import ModalComponent from '@/components/common/modal.component';
 import { InputNumber } from 'antd';
@@ -19,6 +19,9 @@ import { TRANSACTION_STATUS } from '@/constants/common.constant';
 import { loanMint } from '@/utils/cardano/validators';
 import { loanMintTx } from '@/utils/cardano/transactions/loanMint';
 import { getExchangeRate } from '@/utils/api/getExchangeRate';
+import { initLucid } from '@/utils/cardano/blockfrost';
+import { Lucid } from 'lucid-cardano';
+
 
 interface ModalBorrowProps {
   isModalOpen: boolean;
@@ -30,6 +33,7 @@ interface ModalBorrowProps {
   setToken: any;
   oracleTokenName: string;
   wallet: any;
+  balance: number;
 }
 
 interface IFormInput {
@@ -47,6 +51,7 @@ export default function ModalBorrowComponent({
   setToken,
   oracleTokenName,
   wallet,
+  balance,
 }: ModalBorrowProps) {
   const { control, handleSubmit, setValue } = useForm({
     defaultValues: {
@@ -70,6 +75,8 @@ export default function ModalBorrowComponent({
 
   const [loading, setLoading] = useState<boolean>(false);
   const [isYield, setYield] = useState(false);
+  const [walletBalance, setWalletBalance] = useState(balance);
+  const [lucid, setLucid] = useState<Lucid | null>(null);
 
   const handleChange = (value: any) => {
     setToken(value);
@@ -96,8 +103,15 @@ export default function ModalBorrowComponent({
     return `${t('BORROW_MODAL_BORROW_BORROW')} ${currentToken?.toUpperCase()}`;
   };
 
+  
+
   useEffect(() => {
     if (isModalOpen) {
+      if (!lucid && wallet) {
+        initLucid(wallet).then((Lucid: Lucid) => {
+          setLucid(Lucid);
+        });
+      }
       setTokenValue(0);
       setCollateralValue(0);
     }
@@ -108,6 +122,7 @@ export default function ModalBorrowComponent({
     // await createTx();
     console.log('Approve: ', tokenValue);
     console.log('OracleTokenName: ', oracleTokenName);
+    console.log(walletBalance);
   };
 
   return (
@@ -211,7 +226,7 @@ export default function ModalBorrowComponent({
                     <WalletOutlined className="wallet-icon" /> {token} {t('BORROW_MODAL_BALANCE')}
                   </div>
                   <div className="modal-borrow-value">
-                    <span>0.00</span>
+                    <span>{walletBalance}</span>
                     <span className="ml-1 token">{token}</span>
                     <div className="modal-borrow-value-usd">$0.00</div>
                   </div>

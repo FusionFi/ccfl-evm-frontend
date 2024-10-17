@@ -26,6 +26,7 @@ interface ModalBorrowProps {
   oracleTokenName: string;
   loanTokenName: string;
   wallet: any;
+  balance: number;
 }
 
 interface IFormInput {
@@ -42,6 +43,7 @@ export default function ModalBorrowComponent({
   oracleTokenName,
   loanTokenName,
   wallet,
+  balance,
 }: ModalBorrowProps) {
   const { t } = useTranslation('common');
 

@@ -33,6 +33,7 @@ export const ASSET_TYPE = {
   USDT: 'USDT',
   USDC: 'USDC',
 };
+
 export const EVM_WALLETS = [
   {
     id: 'metamask',

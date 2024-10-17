@@ -4,6 +4,9 @@ import defiIcon from '@/public/images/stake/networks/defi.png';
 import oasIcon from '@/public/images/stake/networks/oas.png';
 import polygonIcon from '@/public/images/stake/networks/polygon.png';
 import oasTokenIcon from '@/public/images/stake/tokens/oas.png';
+import ADA from '@/public/images/common/ADA.png';
+import { chain } from 'lodash';
+
 export const NETWORKS_MAINNET = [
   {
     id: 248,
@@ -40,6 +43,22 @@ export const NETWORKS_MAINNET = [
 ];
 
 export const NETWORKS_TESTNET = [
+  {
+    id: 100,
+    chain_id: '1',
+    chain_id_decimals: 6,
+    img_url: ADA,
+    name: 'Cardano Preview Testnet',
+    gasPrice: null,
+    explorer: 'https:preview.cardanoscan.io/',
+    rpc: '',
+    nativeCurrency: {
+      name: 'ADA',
+      symbol: 'ADA',
+      decimals: 6,
+      img_url: ADA,
+    },
+  },
   {
     id: 11155111,
     chain_id: '0xF8',
@@ -124,3 +143,4 @@ export const NETWORKS_TESTNET = [
 ];
 export const NETWORKS = process.env.NEXT_PUBLIC_IS_TESTNET ? NETWORKS_TESTNET : NETWORKS_MAINNET;
 export const STAKE_DEFAULT_NETWORK = NETWORKS[0]; // OASYS or OASYS Testnet
+export const CARDANO_NETWORK = NETWORKS_TESTNET[0]; // Cardano Preview Testnet

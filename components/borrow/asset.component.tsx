@@ -1,7 +1,7 @@
 import cssClass from '@/components/borrow/asset.component.module.scss';
 import SafeHtmlComponent from '@/components/common/safe-html.component';
 import { ASSET_TYPE } from '@/constants/common.constant';
-import { STAKE_DEFAULT_NETWORK } from '@/constants/networks';
+import { STAKE_DEFAULT_NETWORK, CARDANO_NETWORK } from '@/constants/networks';
 import { useAuth } from '@/hooks/auth.hook';
 import eventBus from '@/hooks/eventBus.hook';
 import { Button } from 'antd';
@@ -107,12 +107,15 @@ export default function assetComponent({
                   ) : (
                     <React.Fragment>
                       {isConnected ? (
-                        <Button onClick={() => switchNetwork()} className={'guest'}>
-                          <SafeHtmlComponent
-                            htmlContent={t('BORROW_SWITCH_NETWORK', {
-                              networkName: STAKE_DEFAULT_NETWORK?.name,
-                            })}
-                          />
+                        // <Button onClick={() => switchNetwork()} className={'guest'}>
+                        //   <SafeHtmlComponent
+                        //     htmlContent={t('BORROW_SWITCH_NETWORK', {
+                        //       networkName: CARDANO_NETWORK?.name,
+                        //     })}
+                        //   />
+                        // </Button>
+                        <Button onClick={() => showModal(item.name)} className={'guest'}>
+                          {t('BORROW_MODAL_BORROW_BORROW')}
                         </Button>
                       ) : (
                         <Button

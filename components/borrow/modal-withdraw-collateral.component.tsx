@@ -28,6 +28,7 @@ interface ModalWithdrawCollateralProps {
   oracleTokenName: string;
   loanTokenName: string;
   wallet: any;
+  balance: number;
 }
 
 interface IFormInput {}
@@ -40,7 +41,8 @@ export default function ModalWithdrawCollateralComponent({
   setStep,
   oracleTokenName,
   loanTokenName,
-  wallet
+  wallet,
+  balance,
 }: ModalWithdrawCollateralProps) {
   const { t } = useTranslation('common');
 

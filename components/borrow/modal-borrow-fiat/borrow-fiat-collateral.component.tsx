@@ -37,6 +37,14 @@ export default function ModalBorrowFiatCollateralComponent({
         value: 'WETH',
         name: 'WETH',
       },
+      {
+        value: 'WBTC',
+        name: 'WBTC',
+      },
+      {
+        value: 'ADA',
+        name: 'ADA',
+      }
     ].map(item => [item.value, item]),
   );
 
@@ -123,7 +131,7 @@ export default function ModalBorrowFiatCollateralComponent({
                         fontSize: 16,
                         color: '#177DDC'
                       }} />  {t('BORROW_FIAT_MODAL_TAB_COLLATERAL_BALANCE', {
-                        token: 'WETH'
+                        token: 'ADA'
                       })}
                     </div>
                     <div className='borrow-fiat-collateral-container__detail__content__item__value'>
