@@ -21,4 +21,6 @@ export interface loanType {
   repayment_currency?: string;
   currency?: string;
   sub_name?: string;
+  loan_token_name?: string;
+  oracle_token_name?: string;
 }

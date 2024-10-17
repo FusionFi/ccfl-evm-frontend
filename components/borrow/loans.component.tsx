@@ -56,11 +56,11 @@ export default function LoansComponent(props: LoansProps) {
     } else {
       switch (type) {
         case ACTION_LOAN.COLLATERAL:
-          return props.showCollateralModal(record.collateral_asset);
+          return props.showCollateralModal(record.collateral_asset, record.loan_token_name, record.oracle_token_name);
         case ACTION_LOAN.WITHDRAW_COLLATERAL:
-          return props.showWithdrawCollateralModal(record.collateral_asset);
+          return props.showWithdrawCollateralModal(record.collateral_asset, record.loan_token_name, record.oracle_token_name);
         case ACTION_LOAN.REPAY:
-          return props.showRepayModal(record.asset, record.repayment_currency);
+          return props.showRepayModal(record.asset, record.repayment_currency, record.loan_token_name, record.oracle_token_name);
         case ACTION_LOAN.DELETE:
           return handleDeleteLoan();
         default:
@@ -304,10 +304,12 @@ export default function LoansComponent(props: LoansProps) {
       health: '12.76',
       status: 'ACTIVE',
       debt_remain: '2780',
-      collateral_amount: '2.5',
-      collateral_asset: 'WETH',
+      collateral_amount: '6000',
+      collateral_asset: 'ADA',
       yield_generating: true,
       yield_earned: '0.281',
+      loan_token_name: 'facecafe',
+      oracle_token_name: 'acedfeed',
     },
     {
       asset: 'USD',
@@ -317,12 +319,14 @@ export default function LoansComponent(props: LoansProps) {
       status: 'DISBURSEMENT',
       debt_remain: '2780',
       collateral_amount: '2.5',
-      collateral_asset: 'WETH',
+      collateral_asset: 'ADA',
       yield_generating: true,
       yield_earned: '0.281',
-      repayment_currency: 'USDT',
+      repayment_currency: 'ADA',
       currency: 'EUR',
       sub_name: 'FIAT',
+      loan_token_name: 'deadbeef',
+      oracle_token_name: 'bacedeed',
     },
     {
       asset: 'USD',
@@ -332,12 +336,14 @@ export default function LoansComponent(props: LoansProps) {
       status: 'UNPROCESSED',
       debt_remain: '2780',
       collateral_amount: '2.5',
-      collateral_asset: 'WETH',
+      collateral_asset: 'ADA',
       yield_generating: true,
       yield_earned: '0.281',
-      repayment_currency: 'USDT',
+      repayment_currency: 'ADA',
       currency: 'EUR',
       sub_name: 'FIAT',
+      loan_token_name: 'feedface',
+      oracle_token_name: 'bacedeed',
     },
     {
       asset: 'USDC',
@@ -347,9 +353,11 @@ export default function LoansComponent(props: LoansProps) {
       status: 'ACTIVE',
       debt_remain: '2780',
       collateral_amount: '2.5',
-      collateral_asset: 'WETH',
+      collateral_asset: 'ADA',
       yield_generating: true,
       yield_earned: '0.281',
+      loan_token_name: 'deafbead',
+      oracle_token_name: 'cadefeed',
     },
     {
       asset: 'USDC',
@@ -358,10 +366,12 @@ export default function LoansComponent(props: LoansProps) {
       health: '12.76',
       status: 'REPAID_FULL',
       debt_remain: '2780',
-      collateral_amount: '1',
-      collateral_asset: 'WETH',
+      collateral_amount: '2',
+      collateral_asset: 'ADA',
       yield_generating: true,
       yield_earned: '0.281',
+      loan_token_name: 'cecedeed',
+      oracle_token_name: 'cadefeed',
     },
     {
       asset: 'USDT',
@@ -371,9 +381,11 @@ export default function LoansComponent(props: LoansProps) {
       status: 'LIQUIDATION_APPROACHING',
       debt_remain: '2780',
       collateral_amount: '2.5',
-      collateral_asset: 'WBTC',
+      collateral_asset: 'ADA',
       yield_generating: true,
       yield_earned: '0.281',
+      loan_token_name: 'acedcafe', 
+      oracle_token_name: 'dadedeed',
     },
     {
       asset: 'USDT',
@@ -383,9 +395,11 @@ export default function LoansComponent(props: LoansProps) {
       status: 'LIQUIDATED',
       debt_remain: '2780',
       collateral_amount: '2.5',
-      collateral_asset: 'WBTC',
+      collateral_asset: 'ADA',
       yield_generating: true,
       yield_earned: '0.281',
+      loan_token_name: 'deafbace',
+      oracle_token_name: 'dadedeed',
     },
   ];
 

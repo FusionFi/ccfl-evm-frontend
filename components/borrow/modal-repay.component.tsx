@@ -95,6 +95,8 @@ export default function ModalBorrowComponent({
     if (!tokenValue) return;
     // await createTx();
     console.log('RepayingCollateral: ', tokenValue);
+    console.log('LoanTokenName: ', loanTokenName);
+    console.log('OracleTokenName: ', oracleTokenName);
   };
 
   return (

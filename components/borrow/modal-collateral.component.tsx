@@ -87,6 +87,8 @@ export default function ModalCollateralComponent({
     if (!tokenValue) return;
     // await createTx();
     console.log('AddingCollateral: ', tokenValue);
+    console.log('LoanTokenName: ', loanTokenName);
+    console.log('OracleTokenName: ', oracleTokenName);
   };
 
   return (

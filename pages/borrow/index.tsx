@@ -40,8 +40,6 @@ enum BorrowModalType {
 }
 
 export default function BorrowPage() {
-  const oracleTokenName = 'oracle';
-
   const { t } = useTranslation('common');
   const { switchChain } = useSwitchChain();
   const [modal, setModal] = useState({} as any);
@@ -59,6 +57,8 @@ export default function BorrowPage() {
   const [cardanoWalletConnected] = useCardanoWalletConnected();
   const [networkInfo, setNetworkInfo] = useState<any | null>(null);
   const [isCardanoConnected] = useCardanoConnected();
+  const [loanTokenName, setLoanTokenName] = useState('');
+  const [oracleTokenName, setOracleTokenName] = useState('');
 
   const [chainId, updateNetwork] = useNetworkManager();
 
@@ -117,24 +117,32 @@ export default function BorrowPage() {
     });
   };
 
-  const showWithdrawCollateralModal = (token: string) => {
+  const showWithdrawCollateralModal = (token: string, loanTokenName: string, oracleTokenName: string) => {
     setCollateralToken(token);
+    setLoanTokenName(loanTokenName);
+    setOracleTokenName(oracleTokenName);
     setIsModalWithdrawCollateral(true);
   };
 
-  const showRepayModal = (token: string, repaymentCurrency: string) => {
+  const showRepayModal = (token: string, repaymentCurrency: string, loanTokenName: string, oracleTokenName: string) => {
     if (repaymentCurrency) {
       setIsFiat(true);
       setCurrentToken(repaymentCurrency);
+      setLoanTokenName(loanTokenName);
+      setOracleTokenName(oracleTokenName);
     } else {
       setIsFiat(false);
       setCurrentToken(token);
+      setLoanTokenName(loanTokenName);
+      setOracleTokenName(oracleTokenName);
     }
     setIsModalRepayOpen(true);
   };
 
-  const showCollateralModal = (token: string) => {
+  const showCollateralModal = (token: string, loanTokenName: string, oracleTokenName: string) => {
     setCollateralToken(token);
+    setLoanTokenName(loanTokenName);
+    setOracleTokenName(oracleTokenName);
     setIsModalCollateralOpen(true);
   };
 

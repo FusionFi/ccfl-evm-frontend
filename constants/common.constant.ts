@@ -11,6 +11,9 @@ export const COLLATERAL_TOKEN = [
   {
     name: 'WBTC',
   },
+  {
+    name: 'ADA',
+  }
 ];
 export const LOAN_STATUS = {
   ACTIVE: 'ACTIVE',

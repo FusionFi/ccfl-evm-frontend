@@ -107,6 +107,7 @@ export default function ModalBorrowComponent({
     if (!tokenValue || !collateralValue || collateralValue < minimumAmount) return;
     // await createTx();
     console.log('Approve: ', tokenValue);
+    console.log('OracleTokenName: ', oracleTokenName);
   };
 
   return (
