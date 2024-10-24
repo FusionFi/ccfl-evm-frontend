@@ -25,6 +25,7 @@ interface ModalBorrowProps {
   isFiat?: boolean;
   oracleTokenName: string;
   loanTokenName: string;
+  loanAmount: number;
   wallet: any;
   balance: number;
 }
@@ -42,6 +43,7 @@ export default function ModalBorrowComponent({
   isFiat,
   oracleTokenName,
   loanTokenName,
+  loanAmount,
   wallet,
   balance,
 }: ModalBorrowProps) {
@@ -73,7 +75,7 @@ export default function ModalBorrowComponent({
   };
 
   const [loading, setLoading] = useState<boolean>(false);
-  const exchangeRate = 1000 // getExchangeRate(currentToken);
+  const [exchangeRate, setExchange] = useState(0);
   const { createTx, txHash } = loanRepayTx(wallet, loanTokenName, tokenValue, oracleTokenName, exchangeRate);
 
   const status = 'SUCCESS';
@@ -87,9 +89,20 @@ export default function ModalBorrowComponent({
     return `${t('BORROW_MODAL_BORROW_REPAY')} ${currentToken?.toUpperCase()}`;
   };
 
+  const exchangeApi = async () => {
+    try {
+      const res = await getExchangeRate('cardano');
+      console.log(res);
+      return setExchange(res * 1000);
+    } catch (error) {
+      console.error('Error fetching exchange rate:', error);
+    }
+  };
+
   useEffect(() => {
     if (isModalOpen) {
       setTokenValue(0);
+      exchangeApi();
     }
   }, [isModalOpen]);
 
@@ -99,6 +112,7 @@ export default function ModalBorrowComponent({
     console.log('RepayingCollateral: ', tokenValue);
     console.log('LoanTokenName: ', loanTokenName);
     console.log('OracleTokenName: ', oracleTokenName);
+    console.log('ExchangeRate: ', exchangeRate);
   };
 
   return (

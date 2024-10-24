@@ -3,7 +3,7 @@
 import { useCardanoConnected } from "@/hooks/auth.hook";
 import { useCardanoWalletConnected } from "@/hooks/cardano-wallet.hook";
 import { useNotification } from "@/hooks/notifications.hook";
-import cardanoWalletReducer from "@/reducers/cardano-wallet.reducer";
+import cardanoWalletReducer from "@/store/reducers/cardano-wallet.reducer";
 import { AppState, AppStore } from "@/store/index.store";
 import ConfigBurnButton from "@/utils/cardano/components/configBurn";
 import ConfigMintButton from "@/utils/cardano/components/configMint";
@@ -25,6 +25,7 @@ import testTx from "@/utils/cardano/testTx";
 import TestTxComponent from "@/utils/cardano/useTxComponent";
 import { useState, useMemo } from "react";
 import { useAccount } from "wagmi";
+import { ClickApi } from "@/utils/cardano/components/clickApi";
 
 export default function Lucid() {
   const { address, isConnected } = useAccount();
@@ -70,6 +71,7 @@ export default function Lucid() {
               testTx(cardanoWalletConnected)
             }}>Connect Wallet</button>
           </div>
+          <ClickApi />
           <TestTxComponent wallet={cardanoWalletConnected} />
           <GenerateValidatorsComponent wallet={cardanoWalletConnected} />
           <ConfigBurnButton wallet={cardanoWalletConnected} />

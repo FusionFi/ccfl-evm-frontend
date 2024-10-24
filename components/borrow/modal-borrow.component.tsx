@@ -88,10 +88,10 @@ export default function ModalBorrowComponent({
   
   const [tokenValue, setTokenValue] = useState(0);
   const [collateralValue, setCollateralValue] = useState(0);
+  const [exchange, setExchange] = useState(0);
   const minimumAmount = 2;
-  const exchangeRate = 1000 // getExchangeRate(currentToken);
-  const { createTx, txHash } = loanMintTx(wallet, tokenValue!, oracleTokenName, exchangeRate);
-
+  const { createTx, txHash } = loanMintTx(wallet, tokenValue!, oracleTokenName, exchange);
+  
   const status = 'SUCCESS';
   const renderTitle = () => {
     if (step === 2) {
@@ -102,8 +102,16 @@ export default function ModalBorrowComponent({
     }
     return `${t('BORROW_MODAL_BORROW_BORROW')} ${currentToken?.toUpperCase()}`;
   };
-
   
+  const exchangeApi = async () => {
+    try {
+      const res = await getExchangeRate('cardano');
+      console.log(res);
+      return setExchange(res * 1000);
+    } catch (error) {
+      console.error('Error fetching exchange rate:', error);
+    }
+  };
 
   useEffect(() => {
     if (isModalOpen) {
@@ -114,6 +122,7 @@ export default function ModalBorrowComponent({
       }
       setTokenValue(0);
       setCollateralValue(0);
+      exchangeApi();
     }
   }, [isModalOpen]);
 

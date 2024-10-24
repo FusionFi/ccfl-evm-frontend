@@ -52,7 +52,7 @@ export default function ModalCollateralComponent({
   });
 
   const [tokenValue, setTokenValue] = useState(0);
-  const exchangeRate = 1000 // getExchangeRate(currentToken);
+  const [exchangeRate, setExchange] = useState(0);
   const { createTx, txHash } = loanBalanceTx(wallet, loanTokenName, tokenValue, oracleTokenName, exchangeRate);
 
   const onSubmit: SubmitHandler<IFormInput> = data => {
@@ -79,9 +79,20 @@ export default function ModalCollateralComponent({
     return `${t('BORROW_MODAL_COLLATERAL_TITLE')}`;
   };
 
+  const exchangeApi = async () => {
+    try {
+      const res = await getExchangeRate('cardano');
+      console.log(res);
+      return setExchange(res * 1000);
+    } catch (error) {
+      console.error('Error fetching exchange rate:', error);
+    }
+  };
+
   useEffect(() => {
     if (isModalOpen) {
       setTokenValue(0);
+      exchangeApi();
     }
   }, [isModalOpen]);
 
@@ -91,6 +102,7 @@ export default function ModalCollateralComponent({
     console.log('AddingCollateral: ', tokenValue);
     console.log('LoanTokenName: ', loanTokenName);
     console.log('OracleTokenName: ', oracleTokenName);
+    console.log('ExchangeRate: ', exchangeRate);
   };
 
   return (

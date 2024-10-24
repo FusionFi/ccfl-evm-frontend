@@ -3,9 +3,9 @@ import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import { getPersistConfig } from 'redux-deep-persist';
 import thunkMiddleware from 'redux-thunk';
 
-import auth from '@/reducers/auth.reducer';
-import global from '@/reducers/global.reducer';
-import cardanoWallet from '@/reducers/cardano-wallet.reducer';
+import auth from '@/store/reducers/auth.reducer';
+import global from '@/store/reducers/global.reducer';
+import cardanoWallet from '@/store/reducers/cardano-wallet.reducer';
 import storage from '@/store/sync-storage.store';
 
 

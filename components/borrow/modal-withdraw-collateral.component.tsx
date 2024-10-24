@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 import ModalComponent from '@/components/common/modal.component';
 import { InputNumber } from 'antd';
@@ -27,6 +27,7 @@ interface ModalWithdrawCollateralProps {
   setStep: any;
   oracleTokenName: string;
   loanTokenName: string;
+  loanAmount: number;
   wallet: any;
   balance: number;
 }
@@ -41,6 +42,7 @@ export default function ModalWithdrawCollateralComponent({
   setStep,
   oracleTokenName,
   loanTokenName,
+  loanAmount,
   wallet,
   balance,
 }: ModalWithdrawCollateralProps) {
@@ -65,9 +67,12 @@ export default function ModalWithdrawCollateralComponent({
   };
 
   const [loading, setLoading] = useState<boolean>(false);
-  const exchangeRate = 1000 // getExchangeRate(currentToken);
+  const [exchangeRate, setExchange] = useState(0);
   const [tokenValue, setTokenValue] = useState<number>(0);
   const { createTx, txHash } = loanBalanceTx(wallet, loanTokenName, tokenValue, oracleTokenName, exchangeRate);
+
+  const minCollateral = (loanAmount / exchangeRate) * 2
+  console.log('minCollateral: ', minCollateral);
 
   const status = 'SUCCESS';
   const renderTitle = () => {
@@ -80,12 +85,30 @@ export default function ModalWithdrawCollateralComponent({
     return `${t('BORROW_MODAL_WITHDRAW_COLLATERAL')}`;
   };
 
+  const exchangeApi = async () => {
+    try {
+      const res = await getExchangeRate('cardano');
+      console.log(res);
+      return setExchange(res * 1000);
+    } catch (error) {
+      console.error('Error fetching exchange rate:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (isModalOpen) {
+      setTokenValue(0);
+      exchangeApi();
+    }
+  }, [isModalOpen]);
+
   const handleApprove = async () => {
     if (!tokenValue) return;
     // await createTx();
     console.log('AddingCollateral: ', tokenValue);
     console.log('LoanTokenName: ', loanTokenName);
     console.log('OracleTokenName: ', oracleTokenName);
+    console.log('ExchangeRate: ', exchangeRate);
   };
 
   return (
