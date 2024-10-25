@@ -45,6 +45,7 @@
     "postcss": "8.4.29",
     "react": "18.2.0",
     "react-animated-number": "^0.4.4",
+    "react-circle-flags": "^0.0.20",
     "react-copy-to-clipboard": "^5.1.0",
     "react-dayjs": "^0.3.2",
     "react-dom": "18.2.0",

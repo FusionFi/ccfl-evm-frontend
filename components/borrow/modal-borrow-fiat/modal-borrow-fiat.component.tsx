@@ -1,22 +1,36 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import cssClass from './modal-borrow-fiat.component.module.scss';
 import { useTranslation } from 'next-i18next';
 import { Modal, Tabs } from 'antd';
 import type { TabsProps } from 'antd';
 import type { SelectProps } from 'antd';
 import { RightOutlined, CheckOutlined } from '@ant-design/icons';
-import ModalBorrowFiatMethodComponent from './borrow-fiat-method.component'
-import ModalBorrowFiatPaymentComponent from './borrow-fiat-payment.component'
-import ModalBorrowFiatCollateralComponent from './borrow-fiat-collateral.component'
-import ModalBorrowFiatConfirmComponent from './borrow-fiat-confirm.component'
+import ModalBorrowFiatMethodComponent from './borrow-fiat-method.component';
+import ModalBorrowFiatPaymentComponent from './borrow-fiat-payment.component';
+import ModalBorrowFiatCollateralComponent from './borrow-fiat-collateral.component';
+import ModalBorrowFiatConfirmComponent from './borrow-fiat-confirm.component';
+import service from '@/utils/backend/encryptus';
 
 export default function ModalBorrowFiatComponent({ isModalOpen, handleCancel, handleOk }: any) {
   const { t } = useTranslation('common');
 
   const [_isApproved, _setIsApproved] = useState(false);
   const [_isPending, _setIsPending] = useState(false);
+  const [bankWire, setBankWire] = useState({
+    accountNumber: '',
+    accountOwner: '',
+    amount: 0,
+    bank: '',
+    description: undefined,
+    purposePayment: '',
+    sourceIncome: '',
+  });
+  const [countryList, setCountryList] = useState();
+
+  const fiatTransactionFee = 4;
+
   const [tab, setTab] = useState({
-    active: '1'
+    active: '1',
   });
 
   const _handleOk = useCallback((params: any) => {
@@ -32,68 +46,69 @@ export default function ModalBorrowFiatComponent({ isModalOpen, handleCancel, ha
 
   const onChange = (key: string) => {
     setTab({
-      active: key
-    })
-
+      active: key,
+    });
   };
 
   const renderTabBar: TabsProps['renderTabBar'] = (props, DefaultTabBar) => (
-    <DefaultTabBar {...props} className='modal-borrow-fiat__tabbar' />
+    <DefaultTabBar {...props} className="modal-borrow-fiat__tabbar" />
   );
 
-  const TabbarLabelRender = ({
-    key,
-    title
-  }: any) => {
-    let style = {}
+  const TabbarLabelRender = ({ key, title }: any) => {
+    let style = {};
 
     if (key == tab.active) {
       style = {
         background: '#1890FF',
-        border: "1px solid #1890FF",
+        border: '1px solid #1890FF',
         fontFamily: 'Inter',
-        color: 'white'
-      }
+        color: 'white',
+      };
     } else if (key < tab.active) {
       style = {
         background: 'transparent',
-        border: "1px solid #1890FF",
-        color: '#1890FF'
-      }
+        border: '1px solid #1890FF',
+        color: '#1890FF',
+      };
     }
 
     return (
-      <div className='modal-borrow-fiat__tabbar__label'>
-        <div className='modal-borrow-fiat__tabbar__label__wrapper'>
-          <div className='modal-borrow-fiat__tabbar__label__wrapper__key' style={{
-            ...style
-          }}>
+      <div className="modal-borrow-fiat__tabbar__label">
+        <div className="modal-borrow-fiat__tabbar__label__wrapper">
+          <div
+            className="modal-borrow-fiat__tabbar__label__wrapper__key"
+            style={{
+              ...style,
+            }}>
             {key < tab.active ? <CheckOutlined /> : key}
           </div>
           {title}
-          {key != 4 && <RightOutlined className='modal-borrow-fiat__tabbar__label__wrapper__arrow' />}
+          {key != 4 && (
+            <RightOutlined className="modal-borrow-fiat__tabbar__label__wrapper__arrow" />
+          )}
         </div>
       </div>
-    )
-  }
+    );
+  };
 
   const items: TabsProps['items'] = [
     {
       key: '1',
       label: TabbarLabelRender({
         key: '1',
-        title: t('BORROW_FIAT_MODAL_TAB_SELECT_METHOD_TITLE')
+        title: t('BORROW_FIAT_MODAL_TAB_SELECT_METHOD_TITLE'),
       }),
       disabled: true,
       children: ModalBorrowFiatMethodComponent({
         next: (data: any) => {
-          console.log('ModalBorrowFiatMethodComponent: ', data)
+          console.log('ModalBorrowFiatMethodComponent: ', data);
           setTab({
             ...tab,
             ...data,
-            active: '2'
-          })
-        }
+            active: '2',
+          });
+        },
+        countryList,
       }),
     },
     {
@@ -101,19 +116,25 @@ export default function ModalBorrowFiatComponent({ isModalOpen, handleCancel, ha
       disabled: true,
       label: TabbarLabelRender({
         key: '2',
-        title: t('BORROW_FIAT_MODAL_TAB_SETUP_PAYMENT_TITLE')
+        title: t('BORROW_FIAT_MODAL_TAB_SETUP_PAYMENT_TITLE'),
       }),
       children: ModalBorrowFiatPaymentComponent({
         detail: tab,
-        next: (data: any) => setTab({
-          ...tab,
-          ...data,
-          active: '3'
-        }),
-        back: () => setTab({
-          ...tab,
-          active: '1'
-        })
+        next: (data: any) => {
+          setBankWire(data);
+          setTab({
+            ...tab,
+            ...data,
+            active: '3',
+          });
+        },
+        back: () =>
+          setTab({
+            ...tab,
+            active: '1',
+          }),
+        fiatTransactionFee,
+        tab,
       }),
     },
     {
@@ -121,19 +142,21 @@ export default function ModalBorrowFiatComponent({ isModalOpen, handleCancel, ha
       disabled: true,
       label: TabbarLabelRender({
         key: '3',
-        title: t('BORROW_FIAT_MODAL_TAB_SETUP_COLLATERAL_TITLE')
+        title: t('BORROW_FIAT_MODAL_TAB_SETUP_COLLATERAL_TITLE'),
       }),
       children: ModalBorrowFiatCollateralComponent({
         detail: tab,
-        next: (data: any) => setTab({
-          ...tab,
-          ...data,
-          active: '4'
-        }),
-        back: () => setTab({
-          ...tab,
-          active: '2'
-        })
+        next: (data: any) =>
+          setTab({
+            ...tab,
+            ...data,
+            active: '4',
+          }),
+        back: () =>
+          setTab({
+            ...tab,
+            active: '2',
+          }),
       }),
     },
     {
@@ -141,25 +164,41 @@ export default function ModalBorrowFiatComponent({ isModalOpen, handleCancel, ha
       disabled: true,
       label: TabbarLabelRender({
         key: '4',
-        title: t('BORROW_FIAT_MODAL_TAB_SETUP_CONFIRM_TITLE')
+        title: t('BORROW_FIAT_MODAL_TAB_SETUP_CONFIRM_TITLE'),
       }),
       children: ModalBorrowFiatConfirmComponent({
         detail: tab,
         next: () => {
           _handleOk(tab);
           setTab({
-            active: '1'
-          })
+            active: '1',
+          });
         },
-        back: () => setTab({
-          ...tab,
-          active: '3'
-        })
+        back: () =>
+          setTab({
+            ...tab,
+            active: '3',
+          }),
       }),
     },
   ];
 
-  console.log('tab: ', tab)
+  const getInitData = async () => {
+    try {
+      const res = (await service.getCountries()) as any;
+      if (res) {
+        setCountryList(res);
+      }
+    } catch (error) {
+      console.log('error', error);
+    }
+  };
+
+  useEffect(() => {
+    getInitData();
+  }, []);
+
+  console.log('tab: ', tab);
   return (
     <Modal
       wrapClassName={cssClass['modal-borrow-fiat-wrapper']}
@@ -169,7 +208,6 @@ export default function ModalBorrowFiatComponent({ isModalOpen, handleCancel, ha
       onCancel={_handleCancel}
       width={1018}
       footer={null}>
-
       <Tabs activeKey={tab.active} items={items} onChange={onChange} renderTabBar={renderTabBar} />
     </Modal>
   );

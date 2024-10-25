@@ -88,7 +88,7 @@
                   /* 133.333% */
                 }
 
-                color: var(--character-primary-inverse, #FFF);
+                color: var(--character-primary-inverse, #fff);
 
                 /* H3/medium */
                 font-family: Inter;
@@ -108,7 +108,7 @@
               align-items: center;
               gap: 8px;
 
-              color: var(--character-primary-inverse, #FFF) !important;
+              color: var(--character-primary-inverse, #fff) !important;
 
               /* SubTitle/H2_16px_Medium */
               font-family: Inter;
@@ -157,7 +157,7 @@
             align-items: center;
             align-self: stretch;
 
-            color: var(--Neutral-7, #8C8C8C);
+            color: var(--Neutral-7, #8c8c8c);
 
             /* Footnote/description */
             font-family: Inter;
@@ -192,7 +192,6 @@
                 line-height: 22px;
 
                 .ant-select-selection-placeholder {
-
                   color: var(--character-secondary-45, rgba(255, 255, 255, 0.45));
                   font-family: Inter;
                   font-size: 14px;
@@ -235,10 +234,7 @@
               font-style: normal;
               font-weight: 400;
               line-height: 22px;
-
-
             }
-
 
             input {
               &::placeholder {
@@ -265,7 +261,7 @@
           display: flex;
           align-items: flex-start;
           gap: 4px;
-          color: var(--Neutral-7, #8C8C8C);
+          color: var(--Neutral-7, #8c8c8c);
 
           /* Footnote/description */
           font-family: Inter;
@@ -280,7 +276,7 @@
           display: flex;
           align-items: center;
           gap: 4px;
-          color: var(--Neutral-1, #FFF);
+          color: var(--Neutral-1, #fff);
 
           /* Body/regular */
           font-family: Inter;
@@ -290,7 +286,7 @@
           line-height: 22px;
 
           &__uint {
-            color: var(--Neutral-7, #8C8C8C);
+            color: var(--Neutral-7, #8c8c8c);
 
             /* Body/regular */
             font-family: Inter;
@@ -313,7 +309,7 @@
         border-top: 1px solid var(--Conditional-divider, #303030);
 
         a {
-          color: var(--Primary-6, #1890FF);
+          color: var(--Primary-6, #1890ff);
 
           /* Body/regular */
           font-family: Inter;
@@ -339,7 +335,7 @@
           &:hover {
             .ant-checkbox {
               .ant-checkbox-inner {
-                background: var(--Primary-6, #1890FF);
+                background: var(--Primary-6, #1890ff);
               }
             }
           }
@@ -347,10 +343,10 @@
           .ant-checkbox {
             .ant-checkbox-inner {
               border-radius: 2px;
-              background: var(--Primary-6, #1890FF);
+              background: var(--Primary-6, #1890ff);
               width: 16px;
               height: 16px;
-              border: 1px solid rgba(24, 144, 255, 0.00);
+              border: 1px solid rgba(24, 144, 255, 0);
 
               &::after {
                 width: 6.142857px;
@@ -409,11 +405,23 @@
         .btn-primary-custom {
           &:disabled {
             border-radius: 2px;
-            border: 1px solid var(--Neutral-5, #434343)!important;
-            background: var(--Neutral-3, #1F1F1F)!important;
+            border: 1px solid var(--Neutral-5, #434343) !important;
+            background: var(--Neutral-3, #1f1f1f) !important;
             opacity: 0.8 !important;
           }
         }
+      }
+
+      .ant-form-item-control-input {
+        min-height: 24px;
+      }
+
+      .ant-form-item {
+        margin-bottom: 0;
+      }
+
+      .ant-input-number-input {
+        padding: 0;
       }
     }
   }

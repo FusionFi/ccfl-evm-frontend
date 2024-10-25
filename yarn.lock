@@ -6923,6 +6923,11 @@ react-animated-number@^0.4.4:
     prop-types "^15.5.8"
     raf "^3.2.0"
 
+react-circle-flags@^0.0.20:
+  version "0.0.20"
+  resolved "https://registry.yarnpkg.com/react-circle-flags/-/react-circle-flags-0.0.20.tgz#6aeffa5a74b435eb18ce3afa9f73115a7f2ccfdb"
+  integrity sha512-/Q18+veXCSA0lQWbnRo/AtR4G/NDRrukKyU6Cl7iLLXAG9KywjgFdPqHD2YJklicjfALXm2wLdbONRs0QKDITA==
+
 react-copy-to-clipboard@^5.1.0:
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/react-copy-to-clipboard/-/react-copy-to-clipboard-5.1.0.tgz#09aae5ec4c62750ccb2e6421a58725eabc41255c"

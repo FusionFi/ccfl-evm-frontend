@@ -21,7 +21,7 @@ interface AssetProps {
 export default function assetComponent({
   showModal,
   networkInfo,
-  tokenList,
+  // tokenList,
   loadingAsset,
 }: AssetProps) {
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -39,26 +39,26 @@ export default function assetComponent({
     }
   };
 
-  // const tokenList = [
-  //   {
-  //     asset: 'USDA',
-  //     value: '10,000.00',
-  //     usd: '4,000.00',
-  //     percent: '0.07',
-  //   },
-  //   {
-  //     asset: 'USDT',
-  //     value: '10,000.00',
-  //     usd: '4,000.00',
-  //     percent: '0.07',
-  //   },
-  //   {
-  //     asset: 'FIAT',
-  //     value: '10,000.00',
-  //     usd: '4,000.00',
-  //     percent: '0.07',
-  //   },
-  // ];
+  const tokenList = [
+    {
+      asset: 'USDA',
+      value: '10,000.00',
+      usd: '4,000.00',
+      percent: '0.07',
+    },
+    {
+      asset: 'USDT',
+      value: '10,000.00',
+      usd: '4,000.00',
+      percent: '0.07',
+    },
+    {
+      asset: 'FIAT',
+      value: '10,000.00',
+      usd: '4,000.00',
+      percent: '0.07',
+    },
+  ];
 
   console.log('networkInfo', networkInfo);
 
