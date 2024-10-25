@@ -30,8 +30,9 @@ import ModalBorrowFiatComponent from '@/components/borrow/modal-borrow-fiat/moda
 import ModalCollateralComponent from '@/components/borrow/modal-collateral.component';
 import ModalWithdrawCollateralComponent from '@/components/borrow/modal-withdraw-collateral.component';
 import { SUPPORTED_CHAINS } from '@/constants/chains.constant';
-import { initLucid, getBalance } from '@/utils/cardano/blockfrost';
+import { initLucid, getBalance, getPkh } from '@/utils/cardano/blockfrost';
 import { Lucid } from 'lucid-cardano';
+import { getLoans } from '@/utils/api/cardanoApi';
 
 type LabelRender = SelectProps['labelRender'];
 
@@ -62,6 +63,9 @@ export default function BorrowPage() {
   const [loanTokenName, setLoanTokenName] = useState('');
   const [oracleTokenName, setOracleTokenName] = useState('');
   const [walletBalance, setWalletBalance] = useState(0);
+
+  const [loans, setLoans] = useState<any[]>([]);
+  const [pkh, setPkh] = useState<string | null>(null);
 
   const [chainId, updateNetwork] = useNetworkManager();
 
@@ -267,6 +271,19 @@ export default function BorrowPage() {
     }
   }, [chainId]);
 
+  const getLoanData = useCallback(async () => {
+    if (isCardanoConnected && lucid) {
+      const pkh = getPkh(lucid, cardanoWalletConnected.address);
+      if (!pkh) {
+        return console.log('pkh not found')
+      }
+      setPkh(pkh)
+      const loans = await getLoans(pkh);
+      console.log(loans, 'loans')
+      setLoans(loans)
+    }
+  }, [cardanoWalletConnected, isCardanoConnected]);
+
   useEffect(() => {
     if (address) {
       // getBalance();
@@ -371,6 +388,7 @@ export default function BorrowPage() {
         isFiat={isFiat}
         oracleTokenName={oracleTokenName}
         loanTokenName={loanTokenName}
+        loanAmount={loanAmount}
         wallet={cardanoWalletConnected}
         balance={walletBalance}
       />
