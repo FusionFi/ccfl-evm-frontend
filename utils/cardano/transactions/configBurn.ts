@@ -1,8 +1,7 @@
-import { Lucid, UTxO } from 'lucid-cardano';
+import { Lucid, UTxO } from '@lucid-evolution/lucid';
 import { initLucid } from '../blockfrost';
 import { useEffect, useState, useCallback } from 'react';
 import { configDatum } from '../datums';
-import { ownerAddress, ownerPKH } from '../owner';
 import { configCloseAction, configUpdateAction } from '../redeemers';
 import { configMint, configAddr, configVal } from '../validators';
 import { configUnit } from '../variables';
@@ -13,8 +12,8 @@ export function configBurnTx(wallet: any) {
 
   useEffect(() => {
     if (!lucid && wallet) {
-      initLucid(wallet).then((Lucid: Lucid) => {
-        setLucid(Lucid);
+      initLucid(wallet).then((lucid: Lucid) => {
+        setLucid(lucid);
       });
     }
   }, [lucid, wallet]);
@@ -35,15 +34,15 @@ export function configBurnTx(wallet: any) {
         .mintAssets({
           [configUnit]: -1n,
         }, configCloseAction)
-        .attachMintingPolicy(configMint)
-        .attachSpendingValidator(configVal)
+        .attach.MintingPolicy(configMint)
+        .attach.SpendingValidator(configVal)
         .addSignerKey(process.env.NEXT_PUBLIC_OWNER_PKH!)
         .complete()
       
       const txString = await tx.toString()
 
-      const infraSign = await lucid.fromTx(txString).partialSignWithPrivateKey(process.env.NEXT_PUBLIC_OWNER_SKEY!)
-      const partialSign = await lucid.fromTx(txString).partialSign()
+      const infraSign = await lucid.fromTx(txString).partialSign.withPrivateKey(process.env.NEXT_PUBLIC_OWNER_SKEY!)
+      const partialSign = await lucid.fromTx(txString).partialSign.withWallet()
       
       const assembledTx = await lucid.fromTx(txString).assemble([infraSign, partialSign]).complete();
 

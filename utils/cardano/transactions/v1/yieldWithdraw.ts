@@ -1,4 +1,4 @@
-import { Constr, Data, Lucid, toUnit, UTxO } from '@lucid-evolution/lucid';
+import { Constr, Data, Lucid, toUnit, UTxO } from 'lucid-cardano';
 import { initLucid } from '../blockfrost';
 import { useEffect, useState, useCallback } from 'react';
 import { ownerPKH } from '../owner';
@@ -68,24 +68,24 @@ export function yieldWithdrawTx(
         )
         .readFrom([configIn])
         .withdraw(withdrawAddr, 0n, withdrawRedeemer)
-        .pay.ToContract(
+        .payToContract(
           collateralAddr,
-          { kind: "inline", value: newDatum },
+          { inline: newDatum },
           {
             lovelace: (collateralIn + inYield),
             [loanUnit]: 1n
           }
         )
-        .attach.SpendingValidator(collateralVal)
-        .attach.SpendingValidator(yieldVal)
-        .attach.WithdrawalValidator(withdraw)
+        .attachSpendingValidator(collateralVal)
+        .attachSpendingValidator(yieldVal)
+        .attachWithdrawalValidator(withdraw)
         .addSignerKey(process.env.NEXT_PUBLIC_OWNER_PKH!)
         .complete()
       
       const txString = await tx.toString()
 
-      const infraSign = await lucid.fromTx(txString).partialSign.withPrivateKey(process.env.NEXT_PUBLIC_OWNER_SKEY!)
-      const partialSign = await lucid.fromTx(txString).partialSign.withWallet()
+      const infraSign = await lucid.fromTx(txString).partialSignWithPrivateKey(process.env.NEXT_PUBLIC_OWNER_SKEY!)
+      const partialSign = await lucid.fromTx(txString).partialSign()
       
       const assembledTx = await lucid.fromTx(txString).assemble([infraSign, partialSign]).complete();
 

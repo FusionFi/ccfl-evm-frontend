@@ -1,17 +1,18 @@
-import { Constr, Data, fromText, Lucid, toUnit, UTxO } from '@lucid-evolution/lucid';
+import { Constr, Data, Lucid, UTxO } from 'lucid-cardano';
 import { initLucid } from '../blockfrost';
 import { useEffect, useState, useCallback } from 'react';
 import { oracleDatum1 } from '../datums';
 import { ownerPKH } from '../owner';
-import { loanCloseAction, oracleUpdateAction, burnLoanAction, rewardsMintAction } from '../redeemers';
-import { loanAddr, collateralAddr, configAddr, oracleAddr, rewardsCS, loanMint, rewardsMint, closeAddr, loanVal, collateralVal, oracleVal, close, loanCS, oracleCS } from '../validators';
+import { loanCloseAction, oracleUpdateAction, burnLoanAction } from '../redeemers';
+import { loanAddr, collateralAddr, configAddr, oracleAddr, loanMint, closeAddr, loanVal, collateralVal, oracleVal, close } from '../validators';
 import { loanUnit, configUnit, oracleUnit } from '../variables';
 
-export function loanCloseTx(
+export function loanBurnTx(
   wallet: any, 
   loanTokenName: string, 
   oracleTokenName: string, 
   exchangeRate: number
+
 ) {
   const [lucid, setLucid] = useState<Lucid | null>(null);
   const [txHash, setTxHash] = useState("None");
@@ -43,11 +44,8 @@ export function loanCloseTx(
       const configIn = configUtxos[0]
       const oracleUtxos: UTxO[] = await lucid.utxosAtWithUnit(oracleAddr, oracleUnit)
       const oracleUtxo: UTxO = oracleUtxos[0]
-      const exchange = oracleDatum[0]
+      const exchange = exchangeRate
       const inDatum = Data.from(lUtxo.datum)
-      const rewardsQty = inDatum.fields[1]
-      const rewardsTn = fromText("")
-      const rewardsUnit = toUnit(rewardsCS, rewardsTn)
 
       const withdrawRedeemer = Data.to(
         new Constr(0, [
@@ -67,27 +65,23 @@ export function loanCloseTx(
         .mintAssets({
           [loanUnit]: -2n,
         }, burnLoanAction)
-        .mintAssets({
-          [rewardsUnit]: rewardsQty,
-        }, rewardsMintAction)
-        .attach.MintingPolicy(loanMint)
-        .attach.MintingPolicy(rewardsMint)
-        .pay.ToContract(oracleAddr,
-          { kind: "inline", value: Data.to(oracleDatum) },
+        .attachMintingPolicy(loanMint)
+        .payToContract(oracleAddr,
+          { inline: Data.to(oracleDatum) },
           { [oracleUnit]: 1n }
         )
         .withdraw(closeAddr, 0n, withdrawRedeemer)
-        .attach.SpendingValidator(loanVal)
-        .attach.SpendingValidator(collateralVal)
-        .attach.SpendingValidator(oracleVal)
-        .attach.WithdrawalValidator(close)
+        .attachSpendingValidator(loanVal)
+        .attachSpendingValidator(collateralVal)
+        .attachSpendingValidator(oracleVal)
+        .attachWithdrawalValidator(close)
         .addSignerKey(process.env.NEXT_PUBLIC_OWNER_PKH!)
         .complete()
       
       const txString = await tx.toString()
 
-      const infraSign = await lucid.fromTx(txString).partialSign.withPrivateKey(process.env.NEXT_PUBLIC_OWNER_SKEY!)
-      const partialSign = await lucid.fromTx(txString).partialSign.withWallet()
+      const infraSign = await lucid.fromTx(txString).partialSignWithPrivateKey(process.env.NEXT_PUBLIC_OWNER_SKEY!)
+      const partialSign = await lucid.fromTx(txString).partialSign()
       
       const assembledTx = await lucid.fromTx(txString).assemble([infraSign, partialSign]).complete();
 

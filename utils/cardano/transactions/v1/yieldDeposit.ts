@@ -1,19 +1,19 @@
-import { Constr, Data, Lucid, toUnit, UTxO } from '@lucid-evolution/lucid';
+import { Constr, Data, Lucid, toUnit, UTxO } from 'lucid-cardano';
 import { initLucid } from '../blockfrost';
 import { useEffect, useState, useCallback } from 'react';
+import { yieldDatum } from '../datums';
 import { ownerPKH } from '../owner';
-import { withdrawYieldAction } from '../redeemers';
-import { yieldAddr, collateralAddr, configAddr, withdrawAddr, collateralVal, yieldVal, withdraw, loanCS } from '../validators';
+import { depositYieldAction } from '../redeemers';
+import { collateralAddr, configAddr, depositAddr, yieldAddr, deposit, collateralVal, loanCS } from '../validators';
 import { loanUnit, configUnit } from '../variables';
 
-export function yieldWithdrawTx(
+export function yieldDepositTx(
   wallet: any, 
   loanTokenName: string, 
   yieldAmount: number
 ) {
   const [lucid, setLucid] = useState<Lucid | null>(null);
   const [txHash, setTxHash] = useState("None");
-  // const ownerPKH = process.env.
 
   useEffect(() => {
     if (!lucid && wallet) {
@@ -32,15 +32,18 @@ export function yieldWithdrawTx(
 
       const loanUnit = toUnit(loanCS, loanTokenName)
 
-      const yieldUtxos: UTxO[] = await lucid.utxosAt(yieldAddr)
+      const yieldAmt = 1000000n
       const cUtxos: UTxO[] = await lucid.utxosAtWithUnit(collateralAddr, loanUnit)
       const cUtxo: UTxO = cUtxos[0]
-      const collateralIn = cUtxo.assets.lovelace
       const configUtxos = await lucid.utxosAtWithUnit(configAddr, configUnit)
       const configIn = configUtxos[0]
       const inDatum = Data.from(cUtxo.datum)
       const inYield = inDatum.fields[2]
-      const outYield = 0n
+      const outYield = inYield + yieldAmt
+      const inCollateral = cUtxo.assets.lovelace
+      console.log(inCollateral)
+
+      console.log(inDatum)
 
       const newDatum = Data.to(
         new Constr(0, [
@@ -49,6 +52,8 @@ export function yieldWithdrawTx(
           outYield
         ])
       )
+
+      console.log(Data.from(newDatum))
 
       const withdrawRedeemer = Data.to(
         new Constr(0, [
@@ -60,32 +65,32 @@ export function yieldWithdrawTx(
         .newTx()
         .collectFrom(
           [cUtxo],
-          withdrawYieldAction
-        )
-        .collectFrom(
-          yieldUtxos,
-          withdrawYieldAction
+          depositYieldAction
         )
         .readFrom([configIn])
-        .withdraw(withdrawAddr, 0n, withdrawRedeemer)
-        .pay.ToContract(
+        .withdraw(depositAddr, 0n, withdrawRedeemer)
+        .payToContract(
           collateralAddr,
-          { kind: "inline", value: newDatum },
+          { inline: newDatum },
           {
-            lovelace: (collateralIn + inYield),
+            lovelace: (inCollateral - outYield),
             [loanUnit]: 1n
           }
         )
-        .attach.SpendingValidator(collateralVal)
-        .attach.SpendingValidator(yieldVal)
-        .attach.WithdrawalValidator(withdraw)
+        .payToContract(
+          yieldAddr,
+          { inline: yieldDatum },
+          { lovelace: yieldAmt }
+        )
+        .attachWithdrawalValidator(deposit)
+        .attachSpendingValidator(collateralVal)
         .addSignerKey(process.env.NEXT_PUBLIC_OWNER_PKH!)
         .complete()
       
       const txString = await tx.toString()
 
-      const infraSign = await lucid.fromTx(txString).partialSign.withPrivateKey(process.env.NEXT_PUBLIC_OWNER_SKEY!)
-      const partialSign = await lucid.fromTx(txString).partialSign.withWallet()
+      const infraSign = await lucid.fromTx(txString).partialSignWithPrivateKey(process.env.NEXT_PUBLIC_OWNER_SKEY!)
+      const partialSign = await lucid.fromTx(txString).partialSign()
       
       const assembledTx = await lucid.fromTx(txString).assemble([infraSign, partialSign]).complete();
 

@@ -1,4 +1,4 @@
-import { Data, Lucid, toHex, toUnit, UTxO } from '@lucid-evolution/lucid';
+import { Data, Lucid, toHex, toUnit, UTxO } from 'lucid-cardano';
 import { initLucid } from '../blockfrost';
 import { useEffect, useState, useCallback } from 'react';
 import { oracleDatum1, loanDatum, collateralDatum } from '../datums';
@@ -58,30 +58,30 @@ export function loanMintTx(
         .mintAssets({
           [loanUnit]: 2n,
         }, mintLoanAction)
-        .attach.MintingPolicy(loanMint)
+        .attachMintingPolicy(loanMint)
         .payToContract(
           loanAddr,
-          { kind: "inline", value: loanDatum },
+          { inline: loanDatum },
           { [loanUnit]: 1n }
         )
         .payToContract(
           collateralAddr,
-          { kind: "inline", value: collateralDatum },
+          { inline: collateralDatum },
           { lovelace: (BigInt(deposit) * 1000000n * 2n), [loanUnit]: 1n }
         )
         .payToContract(
           oracleAddr,
-          { kind: "inline", value: Data.to(oracleOutDatum) },
+          { inline: Data.to(oracleOutDatum) },
           { [oracleUnit]: 1n }
         )
-        .attach.SpendingValidator(oracleVal)
+        .attachSpendingValidator(oracleVal)
         .addSignerKey(process.env.NEXT_PUBLIC_OWNER_PKH!)
         .complete()
       
       const txString = await tx.toString()
 
-      const infraSign = await lucid.fromTx(txString).partialSign.withPrivateKey(process.env.NEXT_PUBLIC_OWNER_SKEY!)
-      const partialSign = await lucid.fromTx(txString).partialSign.withWallet()
+      const infraSign = await lucid.fromTx(txString).partialSignWithPrivateKey(process.env.NEXT_PUBLIC_OWNER_SKEY!)
+      const partialSign = await lucid.fromTx(txString).partialSign()
       
       const assembledTx = await lucid.fromTx(txString).assemble([infraSign, partialSign]).complete();
 

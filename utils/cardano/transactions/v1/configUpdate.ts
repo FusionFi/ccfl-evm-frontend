@@ -1,20 +1,12 @@
-import { Lucid, UTxO } from '@lucid-evolution/lucid';
+import { Data, Lucid, UTxO } from 'lucid-cardano';
 import { initLucid } from '../blockfrost';
 import { useEffect, useState, useCallback } from 'react';
-import { interestDatum } from '../datums';
-import { ownerPKH } from '../owner';
-import { interestUpdateAction } from '../redeemers';
-import { interestAddr, interestVal } from '../validators';
-import { oracleUnit } from '../variables';
+import { configDatum } from '../datums';
+import { configUpdateAction } from '../redeemers';
+import { configAddr, configVal } from '../validators';
+import { configUnit } from '../variables';
 
-export function interestUpdateTx(
-  wallet: any, 
-  oracleTokenName: string, 
-  base: number, 
-  optimal: number, 
-  slope1: number, 
-  slope2: number
-) {
+export function configUpdateTx(wallet: any) {
   const [lucid, setLucid] = useState<Lucid | null>(null);
   const [txHash, setTxHash] = useState("None");
 
@@ -33,32 +25,37 @@ export function interestUpdateTx(
       }
       console.log(wallet);
 
-      const utxos: UTxO[] = await lucid.utxosAtWithUnit(interestAddr, oracleUnit)
+      const utxos: UTxO[] = await lucid.utxosAtWithUnit(configAddr, configUnit)
       const utxo: UTxO = utxos[0]
+      const configDatum = utxo.datum!
+      const configDatumFields = Data.from(configDatum).fields
 
-      // const interestDatum = interestDatum2
+      console.log(`Config Datum: 
+        `, configDatumFields, `
+      `)
 
       const tx = await lucid
         .newTx()
-        .collectFrom([utxo], interestUpdateAction)
-        .attach.SpendingValidator(interestVal)
-        .pay.toContract(
-          interestAddr,
-          { kind: "inline", value: interestDatum },
-          { [oracleUnit]: 1n },
+        .collectFrom([utxo], configUpdateAction)
+        .attachSpendingValidator(configVal)
+        .payToContract(
+          configAddr,
+          { inline: configDatum },
+          { [configUnit]: 1n }
         )
         .addSignerKey(process.env.NEXT_PUBLIC_OWNER_PKH!)
         .complete()
       
       const txString = await tx.toString()
 
-      const infraSign = await lucid.fromTx(txString).partialSign.withPrivateKey(process.env.NEXT_PUBLIC_OWNER_SKEY!)
-      const partialSign = await lucid.fromTx(txString).partialSign.withWallet()
+      const infraSign = await lucid.fromTx(txString).partialSignWithPrivateKey(process.env.NEXT_PUBLIC_OWNER_SKEY!)
+      const partialSign = await lucid.fromTx(txString).partialSign()
       
       const assembledTx = await lucid.fromTx(txString).assemble([infraSign, partialSign]).complete();
 
       const txHash = await assembledTx.submit();
-      
+      // const txHash = configDatum
+
       console.log(txHash);
       setTxHash(txHash);
       return txHash;

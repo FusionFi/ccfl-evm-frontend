@@ -1,4 +1,4 @@
-import { Data, Lucid, UTxO } from 'lucid-cardano';
+import { Data, Lucid, UTxO } from '@lucid-evolution/lucid';
 import { initLucid } from '../blockfrost';
 import { useEffect, useState, useCallback } from 'react';
 import { configDatum } from '../datums';
@@ -37,10 +37,10 @@ export function configUpdateTx(wallet: any) {
       const tx = await lucid
         .newTx()
         .collectFrom([utxo], configUpdateAction)
-        .attachSpendingValidator(configVal)
-        .payToContract(
+        .attach.SpendingValidator(configVal)
+        .pay.ToContract(
           configAddr,
-          { inline: configDatum },
+          { kind: "inline", value: configDatum },
           { [configUnit]: 1n }
         )
         .addSignerKey(process.env.NEXT_PUBLIC_OWNER_PKH!)
@@ -48,8 +48,8 @@ export function configUpdateTx(wallet: any) {
       
       const txString = await tx.toString()
 
-      const infraSign = await lucid.fromTx(txString).partialSignWithPrivateKey(process.env.NEXT_PUBLIC_OWNER_SKEY!)
-      const partialSign = await lucid.fromTx(txString).partialSign()
+      const infraSign = await lucid.fromTx(txString).partialSign.withPrivateKey(process.env.NEXT_PUBLIC_OWNER_SKEY!)
+      const partialSign = await lucid.fromTx(txString).partialSign.withWallet()
       
       const assembledTx = await lucid.fromTx(txString).assemble([infraSign, partialSign]).complete();
 

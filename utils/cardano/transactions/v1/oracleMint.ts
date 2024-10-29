@@ -1,4 +1,4 @@
-import { Lucid, toHex, toUnit, UTxO } from '@lucid-evolution/lucid';
+import { Lucid, toHex, toUnit, UTxO } from 'lucid-cardano';
 import { initLucid } from '../blockfrost';
 import { useEffect, useState, useCallback } from 'react';
 import { oracleDatum1, interestDatum } from '../datums';
@@ -52,15 +52,15 @@ export function oracleMintTx(
         .mintAssets({
           [oracleUnit]: 2n,
         }, oracleMintAction)
-        .attach.MintingPolicy(oracleMint)
-        .pay.ToContract(
+        .attachMintingPolicy(oracleMint)
+        .payToContract(
           oracleAddr,
-          { kind: "inline", value: oracleDatum },
+          { inline: oracleDatum },
           { [oracleUnit]: 1n }
         )
-        .pay.ToContract(
+        .payToContract(
           interestAddr,
-          { kind: "inline", value: interestDatum },
+          { inline: interestDatum },
           { [oracleUnit]: 1n }
         )
         .addSignerKey(process.env.NEXT_PUBLIC_OWNER_PKH!)
@@ -68,8 +68,8 @@ export function oracleMintTx(
       
       const txString = await tx.toString()
 
-      const infraSign = await lucid.fromTx(txString).partialSign.withPrivateKey(process.env.NEXT_PUBLIC_OWNER_SKEY!)
-      const partialSign = await lucid.fromTx(txString).partialSign.withWallet()
+      const infraSign = await lucid.fromTx(txString).partialSignWithPrivateKey(process.env.NEXT_PUBLIC_OWNER_SKEY!)
+      const partialSign = await lucid.fromTx(txString).partialSign()
       
       const assembledTx = await lucid.fromTx(txString).assemble([infraSign, partialSign]).complete();
 

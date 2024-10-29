@@ -1,4 +1,4 @@
-import { Constr, Data, Lucid, toUnit, UTxO } from 'lucid-cardano';
+import { Constr, Data, Lucid, toUnit, UTxO } from '@lucid-evolution/lucid';
 import { initLucid } from '../blockfrost';
 import { useEffect, useState, useCallback } from 'react';
 import { oracleDatum7 } from '../datums';
@@ -78,33 +78,33 @@ export function loanLiquidateTx(
         .collectFrom([cUtxo], loanLiquidateAction)
         .collectFrom([oracleUtxo], oracleUpdateAction)
         .readFrom([configIn])
-        .payToContract(
+        .pay.ToContract(
           loanAddr,
-          { inline: liquidateDatum },
+          { kind: "inline", value: liquidateDatum },
           { [loanUnit]: 1n }
         )
-        .payToContract(
+        .pay.ToContract(
           collateralAddr,
-          { inline: liquidCollateralDatum },
+          { kind: "inline", value: liquidCollateralDatum },
           { lovelace: 2000000n, [loanUnit]: 1n }
         )
-        .payToContract(
+        .pay.ToContract(
           oracleAddr,
-          { inline: Data.to(oracleDatum) },
+          { kind: "inline", value: Data.to(oracleDatum) },
           { [oracleUnit]: 1n }
         )
-        .attachSpendingValidator(oracleVal)
-        .attachSpendingValidator(loanVal)
-        .attachSpendingValidator(collateralVal)
+        .attach.SpendingValidator(oracleVal)
+        .attach.SpendingValidator(loanVal)
+        .attach.SpendingValidator(collateralVal)
         .withdraw(liquidateAddr, 0n, withdrawRedeemer)
-        .attachWithdrawalValidator(liquidate)
+        .attach.WithdrawalValidator(liquidate)
         .addSignerKey(process.env.NEXT_PUBLIC_OWNER_PKH!)
         .complete()
       
       const txString = await tx.toString()
 
-      const infraSign = await lucid.fromTx(txString).partialSignWithPrivateKey(process.env.NEXT_PUBLIC_OWNER_SKEY!)
-      const partialSign = await lucid.fromTx(txString).partialSign()
+      const infraSign = await lucid.fromTx(txString).partialSign.withPrivateKey(process.env.NEXT_PUBLIC_OWNER_SKEY!)
+      const partialSign = await lucid.fromTx(txString).partialSign.withWallet()
       
       const assembledTx = await lucid.fromTx(txString).assemble([infraSign, partialSign]).complete();
 

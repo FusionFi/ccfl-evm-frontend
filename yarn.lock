@@ -25,6 +25,16 @@
     "@jridgewell/gen-mapping" "^0.3.5"
     "@jridgewell/trace-mapping" "^0.3.24"
 
+"@anastasia-labs/cardano-multiplatform-lib-browser@6.0.2-2":
+  version "6.0.2-2"
+  resolved "https://registry.npmjs.org/@anastasia-labs/cardano-multiplatform-lib-browser/-/cardano-multiplatform-lib-browser-6.0.2-2.tgz"
+  integrity sha512-sSPPjO1Zye82YVqrUGIKrli/Zt2pPkZkQd/jv9k6AzjIZdNPD3hvuB2yH6RHeZUO8+K57bu9r7Rlyf7VGbhhTQ==
+
+"@anastasia-labs/cardano-multiplatform-lib-nodejs@6.0.2-2":
+  version "6.0.2-2"
+  resolved "https://registry.npmjs.org/@anastasia-labs/cardano-multiplatform-lib-nodejs/-/cardano-multiplatform-lib-nodejs-6.0.2-2.tgz"
+  integrity sha512-KLYHyJWtFsTUUbIVz9dn5GiCbI4Mrx5mRpDWXa3lVLWFKok6AkvYlyHk4OH4NNa4JBerrHTB6ZJrk75UgKAaMA==
+
 "@ant-design/colors@^7.0.0", "@ant-design/colors@^7.1.0":
   version "7.1.0"
   resolved "https://registry.npmjs.org/@ant-design/colors/-/colors-7.1.0.tgz"
@@ -1189,6 +1199,33 @@
   resolved "https://registry.npmjs.org/@ctrl/tinycolor/-/tinycolor-3.6.1.tgz"
   integrity sha512-SITSV6aIXsuVNV3f3O0f2n/cgyEDWoSqtZMYiAmcsYHydcKrOz3gUxB/iXd/Qf08+IZX4KpgNbvUdMBmWz+kcA==
 
+"@effect/platform@^0.59.2":
+  version "0.59.3"
+  resolved "https://registry.npmjs.org/@effect/platform/-/platform-0.59.3.tgz"
+  integrity sha512-DHR4Hl+hhTCzjs1ykRIyzwaala4JMtPVnReLea29hn+M3fKzloic7UpyCkTO7aJdFjthUtAKcW2mr2lDtuqlDA==
+  dependencies:
+    find-my-way-ts "^0.1.5"
+    multipasta "^0.2.2"
+
+"@effect/schema@^0.66.14":
+  version "0.66.16"
+  resolved "https://registry.npmjs.org/@effect/schema/-/schema-0.66.16.tgz"
+  integrity sha512-sT/k5NOgKslGPzs3DUaCFuM6g2JQoIIT8jpwEorAZooplPIMK2xIspr7ECz6pp6Dc7Wz/ppXGk7HVyGZQsIYEQ==
+
+"@effect/schema@^0.68.16":
+  version "0.68.27"
+  resolved "https://registry.npmjs.org/@effect/schema/-/schema-0.68.27.tgz"
+  integrity sha512-/rmIb+4QaQTecdTfeYSZtNikIV+BeIbYDl/hpgBTaS96en7pKNW5hcygFQhdocjKguIL7Y/be+oUrVafWV60ew==
+  dependencies:
+    fast-check "^3.20.0"
+
+"@effect/schema@^0.68.26", "@effect/schema@^0.68.27":
+  version "0.68.27"
+  resolved "https://registry.npmjs.org/@effect/schema/-/schema-0.68.27.tgz"
+  integrity sha512-/rmIb+4QaQTecdTfeYSZtNikIV+BeIbYDl/hpgBTaS96en7pKNW5hcygFQhdocjKguIL7Y/be+oUrVafWV60ew==
+  dependencies:
+    fast-check "^3.20.0"
+
 "@emotion/hash@^0.8.0":
   version "0.8.0"
   resolved "https://registry.npmjs.org/@emotion/hash/-/hash-0.8.0.tgz"
@@ -1198,6 +1235,16 @@
   version "0.7.5"
   resolved "https://registry.npmjs.org/@emotion/unitless/-/unitless-0.7.5.tgz"
   integrity sha512-OWORNpfjMsSSUBVrRBVGECkhWcULOAJz9ZW8uK9qgxD+87M7jHRcvh/A96XXNhXTLmKcoYSQtBEX7lHMO7YRwg==
+
+"@emurgo/cardano-message-signing-browser@^1.0.1":
+  version "1.1.0"
+  resolved "https://registry.npmjs.org/@emurgo/cardano-message-signing-browser/-/cardano-message-signing-browser-1.1.0.tgz"
+  integrity sha512-LyeiGIqCyZu9DZnKsi4wlBjZA1MN+uy3Cqpb5J6RZWvFXDJnCoxrYB/EixUiGRD/la4WsldBgtPsrIHyGsVkpg==
+
+"@emurgo/cardano-message-signing-nodejs@^1.0.1":
+  version "1.1.0"
+  resolved "https://registry.npmjs.org/@emurgo/cardano-message-signing-nodejs/-/cardano-message-signing-nodejs-1.1.0.tgz"
+  integrity sha512-PQRc8K8wZshEdmQenNUzVtiI8oJNF/1uAnBhidee5C4o1l2mDLOW+ur46HWHIFKQ6x8mSJTllcjMscHgzju0gQ==
 
 "@eslint-community/eslint-utils@^4.2.0":
   version "4.4.0"
@@ -1483,6 +1530,82 @@
   dependencies:
     "@hapi/hoek" "^9.0.0"
 
+"@harmoniclabs/bigint-utils@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@harmoniclabs/bigint-utils/-/bigint-utils-1.0.0.tgz"
+  integrity sha512-OhZMHcdtH2hHKMlxWFHf71PmKHdoi9ARpjS9mUu0/cd8VWDDjT7VQoQwC5NN/68iyO4O5Dojrvrp9tjG5BDABA==
+  dependencies:
+    "@harmoniclabs/uint8array-utils" "^1.0.0"
+
+"@harmoniclabs/biguint@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@harmoniclabs/biguint/-/biguint-1.0.0.tgz"
+  integrity sha512-5DyCIBDL4W+7ffR1IJSbGrCG4xEYxAlFH5gCNF42qtyL5ltwZ92Ae1MyXpHM2TUPy7ocSTqlLUsOdy+SvqVVPw==
+
+"@harmoniclabs/bitstream@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@harmoniclabs/bitstream/-/bitstream-1.0.0.tgz"
+  integrity sha512-Ed/I46IuCiytE5QiMmmUo9kPJcypM7OuUqoRaAXUALL5C6LKLpT6kYE1qeuhLkx2/WvkHT18jcOX6jhM/nmqoA==
+  dependencies:
+    "@harmoniclabs/uint8array-utils" "^1.0.0"
+
+"@harmoniclabs/bytestring@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@harmoniclabs/bytestring/-/bytestring-1.0.0.tgz"
+  integrity sha512-d5m10O0okKc6QNX0pSRriFTkk/kNMnMBGbo5X3kEZwKaXTI4tDVoTZBL7bwbYHwOEdSxWJjVtlO9xtB7ZrYZNg==
+  dependencies:
+    "@harmoniclabs/uint8array-utils" "^1.0.0"
+
+"@harmoniclabs/cbor@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.npmjs.org/@harmoniclabs/cbor/-/cbor-1.3.0.tgz"
+  integrity sha512-gzRqqcJL8sulc2/6iqRXZdWUCEeK3A+jwJ88sbVNzgk4IeMFQLSFg4Ck8ZBETu/W/q1zdknjNfJYyH1OxVriQA==
+  dependencies:
+    "@harmoniclabs/bytestring" "^1.0.0"
+    "@harmoniclabs/obj-utils" "^1.0.0"
+    "@harmoniclabs/uint8array-utils" "^1.0.0"
+
+"@harmoniclabs/crypto@^0.2.4":
+  version "0.2.4"
+  resolved "https://registry.npmjs.org/@harmoniclabs/crypto/-/crypto-0.2.4.tgz"
+  integrity sha512-aVehpKFvgbzFn2qCoRHnrUHAB6XxU1YN61+2Tygo7T6oY3zubI0CI8Ydn2ELp2gidUaFzkICOKFZnAfq6Hxa3w==
+  dependencies:
+    "@harmoniclabs/bitstream" "^1.0.0"
+    "@harmoniclabs/uint8array-utils" "^1.0.0"
+
+"@harmoniclabs/obj-utils@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@harmoniclabs/obj-utils/-/obj-utils-1.0.0.tgz"
+  integrity sha512-EO1bQBZAORrutcP+leP5YNDwNd/9TOE23VEvs3ktniXg6w0knUrLjUIl2Pkcbs/D1VQxqmsNpXho+vaMj00qxA==
+
+"@harmoniclabs/pair@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@harmoniclabs/pair/-/pair-1.0.0.tgz"
+  integrity sha512-D9OBowsUsy1LctHxWzd9AngTzoo5x3rBiJ0gu579t41Q23pb+VNx1euEfluUEiaYbgljcl1lb/4D1fFTZd1tRQ==
+
+"@harmoniclabs/plutus-data@^1.2.4":
+  version "1.2.4"
+  resolved "https://registry.npmjs.org/@harmoniclabs/plutus-data/-/plutus-data-1.2.4.tgz"
+  integrity sha512-cpr6AnJRultH6PJRDriewHEgNLQs2IGLampZrLjmK5shzTsHICD0yD0Zig9eKdcS7dmY6mlzvSpAJWPGeTxbCA==
+  dependencies:
+    "@harmoniclabs/biguint" "^1.0.0"
+    "@harmoniclabs/crypto" "^0.2.4"
+    "@harmoniclabs/uint8array-utils" "^1.0.0"
+
+"@harmoniclabs/uint8array-utils@^1.0.0":
+  version "1.0.1"
+  resolved "https://registry.npmjs.org/@harmoniclabs/uint8array-utils/-/uint8array-utils-1.0.1.tgz"
+  integrity sha512-q0H+Iuk2e7ps72vN75MmGO+Fez+yvk3kFk+5E2LD4d3t//0ZbKuHMtpHK44ziTcDqxnKU/0KINwBdsYp7vyQzg==
+
+"@harmoniclabs/uplc@^1.2.4":
+  version "1.2.4"
+  resolved "https://registry.npmjs.org/@harmoniclabs/uplc/-/uplc-1.2.4.tgz"
+  integrity sha512-Px6utj94cO/hQd9NJgVQI8zycsbgh3rAzDeLdZ1m52bo++EuU1GL+arWX3JYso3/3uNrnUFuizjrAIISwQe3Fg==
+  dependencies:
+    "@harmoniclabs/bigint-utils" "^1.0.0"
+    "@harmoniclabs/bitstream" "^1.0.0"
+    "@harmoniclabs/uint8array-utils" "^1.0.0"
+
 "@hookform/resolvers@^3.9.0":
   version "3.9.0"
   resolved "https://registry.npmjs.org/@hookform/resolvers/-/resolvers-3.9.0.tgz"
@@ -1629,6 +1752,121 @@
   integrity sha512-GFn91inaUa2oHLak8awSIigYz0cU0Payr1rcFsrkf5OJ5eSPxElyZfKh0f2p9FsTiZWXQdWGJeXZICEfXXYSXQ==
   dependencies:
     "@lit-labs/ssr-dom-shim" "^1.2.0"
+
+"@lucid-evolution/core-types@0.1.21":
+  version "0.1.21"
+  resolved "https://registry.npmjs.org/@lucid-evolution/core-types/-/core-types-0.1.21.tgz"
+  integrity sha512-HPTU7eaWUNp1mmbbF46dyh6CLZNH8kLWyD1yu2OrPDWo5KfeF2EAXcnS3VsyjhjyFtzBLbsoQxjuy1j4jBY0zg==
+  dependencies:
+    "@anastasia-labs/cardano-multiplatform-lib-browser" "6.0.2-2"
+    "@anastasia-labs/cardano-multiplatform-lib-nodejs" "6.0.2-2"
+
+"@lucid-evolution/core-utils@0.1.16":
+  version "0.1.16"
+  resolved "https://registry.npmjs.org/@lucid-evolution/core-utils/-/core-utils-0.1.16.tgz"
+  integrity sha512-fNKZiGl1h6tf48bji067uxHZpDlhkrIDrwhZLt5DQC/c6GVdZb4TSvqgs7MOmMqp1dj9dy6NDYWnCHeTqZAhJw==
+  dependencies:
+    "@anastasia-labs/cardano-multiplatform-lib-browser" "6.0.2-2"
+    "@anastasia-labs/cardano-multiplatform-lib-nodejs" "6.0.2-2"
+
+"@lucid-evolution/crc8@0.1.8":
+  version "0.1.8"
+  resolved "https://registry.npmjs.org/@lucid-evolution/crc8/-/crc8-0.1.8.tgz"
+  integrity sha512-88+/S6n+sPgxYtG05rvbJDVb8MoFGzckkR3p26uGrzngYzlJGfxBWIzNhVwfI2mgINPo2C5lkZW3GYnfY0MjuA==
+
+"@lucid-evolution/lucid@^0.3.53":
+  version "0.3.53"
+  resolved "https://registry.npmjs.org/@lucid-evolution/lucid/-/lucid-0.3.53.tgz"
+  integrity sha512-ZB/hrlCQpt/+/Lk6YeV6R4rZfSfeuzEVAJKTlMPh8yWMSx99AW4zBi9edGxZqFxp4WmU4P7oW8vVsiZhgknFyw==
+  dependencies:
+    "@anastasia-labs/cardano-multiplatform-lib-browser" "6.0.2-2"
+    "@anastasia-labs/cardano-multiplatform-lib-nodejs" "6.0.2-2"
+    "@effect/schema" "^0.66.14"
+    "@emurgo/cardano-message-signing-nodejs" "^1.0.1"
+    "@lucid-evolution/core-types" "0.1.21"
+    "@lucid-evolution/core-utils" "0.1.16"
+    "@lucid-evolution/plutus" "0.1.28"
+    "@lucid-evolution/provider" "0.1.70"
+    "@lucid-evolution/sign_data" "0.1.24"
+    "@lucid-evolution/uplc" "0.2.17"
+    "@lucid-evolution/utils" "0.1.52"
+    "@lucid-evolution/wallet" "0.1.58"
+    effect "^3.5.6"
+
+"@lucid-evolution/plutus@0.1.28":
+  version "0.1.28"
+  resolved "https://registry.npmjs.org/@lucid-evolution/plutus/-/plutus-0.1.28.tgz"
+  integrity sha512-O8vOsed+U3dda32Y5iyvmnPUwuNR0K64RMow/fT+SUAcgDmTNVmXr63YG7lLrY165eC0DB/K6hsHMyqIF5DpBA==
+  dependencies:
+    "@anastasia-labs/cardano-multiplatform-lib-browser" "6.0.2-2"
+    "@anastasia-labs/cardano-multiplatform-lib-nodejs" "6.0.2-2"
+    "@lucid-evolution/core-types" "0.1.21"
+    "@lucid-evolution/core-utils" "0.1.16"
+    "@sinclair/typebox" "^0.32.28"
+
+"@lucid-evolution/provider@0.1.70":
+  version "0.1.70"
+  resolved "https://registry.npmjs.org/@lucid-evolution/provider/-/provider-0.1.70.tgz"
+  integrity sha512-Iydq/kkOEFzW6vJQKk4MfTE2cjrkmhvCZhDsOXoI7wcOAb6lzyI2bRl5tbwvUeFevZMbrnj22s3STXfQTE/gjA==
+  dependencies:
+    "@anastasia-labs/cardano-multiplatform-lib-browser" "6.0.2-2"
+    "@anastasia-labs/cardano-multiplatform-lib-nodejs" "6.0.2-2"
+    "@effect/platform" "^0.59.2"
+    "@effect/schema" "^0.68.26"
+    "@lucid-evolution/core-types" "0.1.21"
+    "@lucid-evolution/core-utils" "0.1.16"
+    "@lucid-evolution/utils" "0.1.52"
+    "@lucid-evolution/wallet" "0.1.58"
+    effect "^3.5.6"
+
+"@lucid-evolution/sign_data@0.1.24":
+  version "0.1.24"
+  resolved "https://registry.npmjs.org/@lucid-evolution/sign_data/-/sign_data-0.1.24.tgz"
+  integrity sha512-8K/FuSUYAffRB4JjjjAzjOUqUXDI+r3HyJIAETlJ8Kbo7SZe1IrX6bo82qjaK/WGK4w4kBcoheceWnnsiYPfrQ==
+  dependencies:
+    "@anastasia-labs/cardano-multiplatform-lib-browser" "6.0.2-2"
+    "@anastasia-labs/cardano-multiplatform-lib-nodejs" "6.0.2-2"
+    "@emurgo/cardano-message-signing-browser" "^1.0.1"
+    "@emurgo/cardano-message-signing-nodejs" "^1.0.1"
+    "@lucid-evolution/core-types" "0.1.21"
+    "@lucid-evolution/core-utils" "0.1.16"
+
+"@lucid-evolution/uplc@0.2.17":
+  version "0.2.17"
+  resolved "https://registry.npmjs.org/@lucid-evolution/uplc/-/uplc-0.2.17.tgz"
+  integrity sha512-Bc9SM7EF9B9hdXfDKQLyeqT3s7MiNzO3qXNydUN+gZ3lcwCSMHDVW138cL9/5u/rUz8enD8oR/Tz2FHlYkOq+Q==
+
+"@lucid-evolution/utils@0.1.52":
+  version "0.1.52"
+  resolved "https://registry.npmjs.org/@lucid-evolution/utils/-/utils-0.1.52.tgz"
+  integrity sha512-39L/WdzbWqkDAffBJKWslzRdDO3QdQGC50lL8w7Mcqow/ebrb6sCRxxnbO9CCnEwH/CzLcKdFFxOnfuIfK5vsw==
+  dependencies:
+    "@anastasia-labs/cardano-multiplatform-lib-browser" "6.0.2-2"
+    "@anastasia-labs/cardano-multiplatform-lib-nodejs" "6.0.2-2"
+    "@effect/schema" "^0.68.16"
+    "@harmoniclabs/plutus-data" "^1.2.4"
+    "@harmoniclabs/uplc" "^1.2.4"
+    "@lucid-evolution/core-types" "0.1.21"
+    "@lucid-evolution/core-utils" "0.1.16"
+    "@lucid-evolution/crc8" "0.1.8"
+    "@lucid-evolution/plutus" "0.1.28"
+    "@lucid-evolution/uplc" "0.2.17"
+    bip39 "^3.1.0"
+    cborg "^4.2.0"
+    effect "^3.1.2"
+
+"@lucid-evolution/wallet@0.1.58":
+  version "0.1.58"
+  resolved "https://registry.npmjs.org/@lucid-evolution/wallet/-/wallet-0.1.58.tgz"
+  integrity sha512-edt7d7kTD/l1jjluomX0ytOHc27F4ZpW+J+R3GaZuupW+I/0Gs4MV/yhLGaGuZV52I5xjHOc+qd+pg5WHOPhgw==
+  dependencies:
+    "@anastasia-labs/cardano-multiplatform-lib-browser" "6.0.2-2"
+    "@anastasia-labs/cardano-multiplatform-lib-nodejs" "6.0.2-2"
+    "@lucid-evolution/core-types" "0.1.21"
+    "@lucid-evolution/core-utils" "0.1.16"
+    "@lucid-evolution/sign_data" "0.1.24"
+    "@lucid-evolution/utils" "0.1.52"
+    bip39 "^3.1.0"
 
 "@metamask/eth-json-rpc-provider@^1.0.0":
   version "1.0.1"
@@ -1962,7 +2200,7 @@
   dependencies:
     "@noble/hashes" "1.4.0"
 
-"@noble/hashes@^1.3.1", "@noble/hashes@^1.4.0", "@noble/hashes@~1.4.0", "@noble/hashes@1.4.0":
+"@noble/hashes@^1.2.0", "@noble/hashes@^1.3.1", "@noble/hashes@^1.4.0", "@noble/hashes@~1.4.0", "@noble/hashes@1.4.0":
   version "1.4.0"
   resolved "https://registry.npmjs.org/@noble/hashes/-/hashes-1.4.0.tgz"
   integrity sha512-V1JJ1WTRUqHHrOSh597hURcMqVKVGL/ea3kv0gSnEdsEZ0/+VyPghM1lMNGc00z7CIQorSvbKpuJkxvuHbvdbg==
@@ -2518,6 +2756,11 @@
   version "0.27.8"
   resolved "https://registry.npmjs.org/@sinclair/typebox/-/typebox-0.27.8.tgz"
   integrity sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==
+
+"@sinclair/typebox@^0.32.28":
+  version "0.32.35"
+  resolved "https://registry.npmjs.org/@sinclair/typebox/-/typebox-0.32.35.tgz"
+  integrity sha512-Ul3YyOTU++to8cgNkttakC0dWvpERr6RYoHO2W47DLbFvrwBDJUY31B1sImH6JZSYc4Kt4PyHtoPNu+vL2r2dA==
 
 "@sindresorhus/is@^0.14.0":
   version "0.14.0"
@@ -4127,6 +4370,13 @@ binary-extensions@^2.0.0:
   resolved "https://registry.npmjs.org/binary-extensions/-/binary-extensions-2.2.0.tgz"
   integrity sha512-jDctJ/IVQbZoJykoeHbhXpOlNBqGNcwXJKJog42E5HDPUwQTSdjCHdihjj0DlnheQ7blbT6dHOafNAiS8ooQKA==
 
+bip39@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.npmjs.org/bip39/-/bip39-3.1.0.tgz"
+  integrity sha512-c9kiwdk45Do5GL0vJMe7tS95VjCii65mYAH7DfWl3uW8AVzXKQVUm64i3hzVybBDMp9r7j9iNxR85+ul8MdN/A==
+  dependencies:
+    "@noble/hashes" "^1.2.0"
+
 bl@^4.1.0:
   version "4.1.0"
   resolved "https://registry.npmjs.org/bl/-/bl-4.1.0.tgz"
@@ -4473,6 +4723,11 @@ caseless@~0.12.0:
   version "0.12.0"
   resolved "https://registry.npmjs.org/caseless/-/caseless-0.12.0.tgz"
   integrity sha512-4tYFyifaFfGacoiObjJegolkwSU4xQNGbVgUiNYVUxbQ2x2lUsFvY4hVgVzGiIe6WLOPqycWXA40l+PWsxthUw==
+
+cborg@^4.2.0:
+  version "4.2.6"
+  resolved "https://registry.npmjs.org/cborg/-/cborg-4.2.6.tgz"
+  integrity sha512-77vo4KlSwfjCIXcyZUVei4l2gdjesSCeYSx4U/Upwix7pcWZq8uw21sVRpjwn7mjEi//ieJPTj1MRWDHmud1Rg==
 
 "cbw-sdk@npm:@coinbase/wallet-sdk@3.9.3":
   version "3.9.3"
@@ -5275,6 +5530,13 @@ ee-first@1.1.1:
   resolved "https://registry.npmjs.org/ee-first/-/ee-first-1.1.1.tgz"
   integrity sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==
 
+effect@^3.1.2, effect@^3.1.3, effect@^3.5.6, effect@^3.5.7:
+  version "3.10.5"
+  resolved "https://registry.npmjs.org/effect/-/effect-3.10.5.tgz"
+  integrity sha512-Um6eCaBAXqNLO+lQy3t7fop+OX3+r5JqfCTwW/nD7mce7K0Crdpwf/k74ScD5ONg4yRit6xqUkRhR9ubPcPAtg==
+  dependencies:
+    fast-check "^3.21.0"
+
 electron-to-chromium@^1.5.28:
   version "1.5.30"
   resolved "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.5.30.tgz"
@@ -6040,6 +6302,13 @@ extsprintf@^1.2.0, extsprintf@1.3.0:
   resolved "https://registry.npmjs.org/extsprintf/-/extsprintf-1.3.0.tgz"
   integrity sha512-11Ndz7Nv+mvAC1j0ktTa7fAb0vLyGGX+rMHNBYQviQDGU0Hw7lhctJANqbPhu9nV9/izT/IntTgZ7Im/9LJs9g==
 
+fast-check@^3.13.2, fast-check@^3.20.0, fast-check@^3.21.0:
+  version "3.22.0"
+  resolved "https://registry.npmjs.org/fast-check/-/fast-check-3.22.0.tgz"
+  integrity sha512-8HKz3qXqnHYp/VCNn2qfjHdAdcI8zcSqOyX64GOMukp7SL2bfzfeDKjSd+UyECtejccaZv3LcvZTm9YDD22iCQ==
+  dependencies:
+    pure-rand "^6.1.0"
+
 fast-deep-equal@^3.1.1, fast-deep-equal@^3.1.3:
   version "3.1.3"
   resolved "https://registry.npmjs.org/fast-deep-equal/-/fast-deep-equal-3.1.3.tgz"
@@ -6158,6 +6427,11 @@ find-cache-dir@^2.0.0:
     commondir "^1.0.1"
     make-dir "^2.0.0"
     pkg-dir "^3.0.0"
+
+find-my-way-ts@^0.1.5:
+  version "0.1.5"
+  resolved "https://registry.npmjs.org/find-my-way-ts/-/find-my-way-ts-0.1.5.tgz"
+  integrity sha512-4GOTMrpGQVzsCH2ruUn2vmwzV/02zF4q+ybhCIrw/Rkt3L8KWcycdC6aJMctJzwN4fXD4SD5F/4B9Sksh5rE0A==
 
 find-up@^3.0.0:
   version "3.0.0"
@@ -8206,6 +8480,11 @@ multihashes@^0.4.15, multihashes@~0.4.15:
     multibase "^0.7.0"
     varint "^5.0.0"
 
+multipasta@^0.2.2:
+  version "0.2.5"
+  resolved "https://registry.npmjs.org/multipasta/-/multipasta-0.2.5.tgz"
+  integrity sha512-c8eMDb1WwZcE02WVjHoOmUVk7fnKU/RmUcosHACglrWAuPQsEJv+E8430sXj6jNc1jHw0zrS16aCjQh4BcEb4A==
+
 mz@^2.7.0:
   version "2.7.0"
   resolved "https://registry.npmjs.org/mz/-/mz-2.7.0.tgz"
@@ -9079,6 +9358,11 @@ punycode@2.1.0:
   version "2.1.0"
   resolved "https://registry.npmjs.org/punycode/-/punycode-2.1.0.tgz"
   integrity sha512-Yxz2kRwT90aPiWEMHVYnEf4+rhwF1tBmmZ4KepCP+Wkium9JxtWnUm1nqGwpiAHr/tnTSeHqr3wb++jgSkXjhA==
+
+pure-rand@^6.1.0:
+  version "6.1.0"
+  resolved "https://registry.npmjs.org/pure-rand/-/pure-rand-6.1.0.tgz"
+  integrity sha512-bVWawvoZoBYpp6yIoQtQXHZjmz35RSVHnUOTefl8Vcjr8snTPY1wnpSPMWekcFwbxI6gtmT7rSYPFvz71ldiOA==
 
 pvtsutils@^1.3.2:
   version "1.3.5"

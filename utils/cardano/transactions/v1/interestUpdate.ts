@@ -1,4 +1,4 @@
-import { Lucid, UTxO } from '@lucid-evolution/lucid';
+import { Lucid, UTxO } from 'lucid-cardano';
 import { initLucid } from '../blockfrost';
 import { useEffect, useState, useCallback } from 'react';
 import { interestDatum } from '../datums';
@@ -41,10 +41,10 @@ export function interestUpdateTx(
       const tx = await lucid
         .newTx()
         .collectFrom([utxo], interestUpdateAction)
-        .attach.SpendingValidator(interestVal)
-        .pay.toContract(
+        .attachSpendingValidator(interestVal)
+        .payToContract(
           interestAddr,
-          { kind: "inline", value: interestDatum },
+          { inline: interestDatum },
           { [oracleUnit]: 1n },
         )
         .addSignerKey(process.env.NEXT_PUBLIC_OWNER_PKH!)
@@ -52,8 +52,8 @@ export function interestUpdateTx(
       
       const txString = await tx.toString()
 
-      const infraSign = await lucid.fromTx(txString).partialSign.withPrivateKey(process.env.NEXT_PUBLIC_OWNER_SKEY!)
-      const partialSign = await lucid.fromTx(txString).partialSign.withWallet()
+      const infraSign = await lucid.fromTx(txString).partialSignWithPrivateKey(process.env.NEXT_PUBLIC_OWNER_SKEY!)
+      const partialSign = await lucid.fromTx(txString).partialSign()
       
       const assembledTx = await lucid.fromTx(txString).assemble([infraSign, partialSign]).complete();
 

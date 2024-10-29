@@ -1,4 +1,4 @@
-import { Lucid, UTxO } from 'lucid-cardano';
+import { Lucid, UTxO } from '@lucid-evolution/lucid';
 import { initLucid } from '../blockfrost';
 import { useEffect, useState, useCallback } from 'react';
 import { ownerPKH } from '../owner';
@@ -36,19 +36,19 @@ export function oracleCloseTx(wallet: any) {
         .newTx()
         .collectFrom([utxo], oracleCloseAction)
         .collectFrom([interestUtxo], oracleCloseAction)
-        .attachSpendingValidator(oracleVal)
-        .attachSpendingValidator(interestVal)
+        .attach.SpendingValidator(oracleVal)
+        .attach.SpendingValidator(interestVal)
         .mintAssets({
           [oracleUnit]: -2n,
         }, oracleBurnAction)
-        .attachMintingPolicy(oracleMint)
+        .attach.MintingPolicy(oracleMint)
         .addSignerKey(process.env.NEXT_PUBLIC_OWNER_PKH!)
         .complete()
       
       const txString = await tx.toString()
 
-      const infraSign = await lucid.fromTx(txString).partialSignWithPrivateKey(process.env.NEXT_PUBLIC_OWNER_SKEY!)
-      const partialSign = await lucid.fromTx(txString).partialSign()
+      const infraSign = await lucid.fromTx(txString).partialSign.withPrivateKey(process.env.NEXT_PUBLIC_OWNER_SKEY!)
+      const partialSign = await lucid.fromTx(txString).partialSign.withWallet()
       
       const assembledTx = await lucid.fromTx(txString).assemble([infraSign, partialSign]).complete();
 
