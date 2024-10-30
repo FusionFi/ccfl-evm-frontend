@@ -8,6 +8,7 @@ import { InfoCircleIcon } from '@/components/icons/info-circle.icon';
 import service_setting from '@/utils/backend/borrow';
 import { MIN_AMOUNT_KEY } from '@/constants/common.constant';
 import { LoadingOutlined } from '@ant-design/icons';
+import service from '@/utils/backend/encryptus';
 
 type FieldType = {
   amount?: any;
@@ -75,6 +76,14 @@ const PaymentDetail = ({
   amount,
   minimum,
   loadingMinimum,
+  amountError,
+  accountNumberError,
+  accountOwnerError,
+  purpose,
+  source,
+  loadingPurpose,
+  loadingSource,
+  countryInfo,
 }: any) => {
   const { t } = useTranslation('common');
 
@@ -141,25 +150,28 @@ const PaymentDetail = ({
               {
                 required: true,
                 type: 'number',
+                message: t('FIAT_REQUIRED'),
               },
             ]}>
             <InputNumber
               controls={false}
               placeholder={t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_BORROW_AMOUNT_PLACEHOLDER')}
-              suffix="USD"
+              suffix={countryInfo?.currency}
               className="borrow-fiat-payment-container__input__control__amount"
             />
           </Form.Item>
-          <div className="modal-borrow-balance-minimum">
-            {minimum !== 0 && (
-              <span>
-                {t('BORROW_MININUM')}:{' '}
-                {loadingMinimum ? <LoadingOutlined className="mr-1" /> : minimum}
-                {/* {dadat} */}
-              </span>
-            )}
-          </div>
         </div>
+        <div className="borrow-fiat-payment-container_minimum">
+          <span>
+            {t('BORROW_MININUM')}: {loadingMinimum ? <LoadingOutlined className="mr-1" /> : minimum}{' '}
+            {countryInfo?.currency}
+          </span>
+        </div>
+        {amountError?.length > 0 ? (
+          <div className="borrow-fiat-payment-container_error">{t('FIAT_REQUIRED')}</div>
+        ) : (
+          <div></div>
+        )}
       </div>
       <div className="borrow-fiat-payment-container__detail">
         <div className="borrow-fiat-payment-container__detail__title">
@@ -175,6 +187,7 @@ const PaymentDetail = ({
               rules={[
                 {
                   required: true,
+                  message: t('FIAT_REQUIRED'),
                 },
               ]}>
               <Select
@@ -190,39 +203,55 @@ const PaymentDetail = ({
           </div>
           <div className="borrow-fiat-payment-container__detail__content__item">
             {t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_ACCOUNT_NUMBER')}:
-            <Form.Item
-              name="accountNumber"
-              help=""
-              validateFirst
-              rules={[
-                {
-                  required: true,
-                  type: 'number',
-                },
-              ]}>
-              <InputNumber
-                controls={false}
-                placeholder={t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_ACCOUNT_NUMBER_PLACEHOLDER')}
-                className="borrow-fiat-payment-container__detail__content__item__control-input"
-              />
-            </Form.Item>
+            <div>
+              <Form.Item
+                name="accountNumber"
+                help=""
+                validateFirst
+                rules={[
+                  {
+                    required: true,
+                    type: 'number',
+                    message: t('FIAT_REQUIRED'),
+                  },
+                ]}>
+                <InputNumber
+                  controls={false}
+                  placeholder={t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_ACCOUNT_NUMBER_PLACEHOLDER')}
+                  className="borrow-fiat-payment-container__detail__content__item__control-input"
+                />
+              </Form.Item>
+              {accountNumberError?.length > 0 ? (
+                <div className="borrow-fiat-payment-container_error">{t('FIAT_REQUIRED')}</div>
+              ) : (
+                <div></div>
+              )}
+            </div>
           </div>
           <div className="borrow-fiat-payment-container__detail__content__item">
             {t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_ACCOUNT_OWNER')}:
-            <Form.Item
-              name="accountOwner"
-              help=""
-              validateFirst
-              rules={[
-                {
-                  required: true,
-                },
-              ]}>
-              <Input
-                placeholder={t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_ACCOUNT_OWNER_PLACEHOLDER')}
-                className="borrow-fiat-payment-container__detail__content__item__control-input"
-              />
-            </Form.Item>
+            <div>
+              <Form.Item
+                name="accountOwner"
+                help=""
+                validateFirst
+                rules={[
+                  {
+                    required: true,
+                    message: t('FIAT_REQUIRED'),
+                  },
+                ]}>
+                <Input
+                  placeholder={t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_ACCOUNT_OWNER_PLACEHOLDER')}
+                  className="borrow-fiat-payment-container__detail__content__item__control-input"
+                />
+              </Form.Item>
+              {accountOwnerError?.length > 0 ? (
+                <div className="borrow-fiat-payment-container_error">{t('FIAT_REQUIRED')}</div>
+              ) : (
+                <div></div>
+              )}
+            </div>
           </div>
           <div className="borrow-fiat-payment-container__detail__content__item">
             {t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_PURPOSE_OF_PAYMENT')}:
@@ -233,19 +262,24 @@ const PaymentDetail = ({
               rules={[
                 {
                   required: true,
+                  message: t('FIAT_REQUIRED'),
                 },
               ]}>
-              <Select
-                placeholder={t(
-                  'BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_PURPOSE_OF_PAYMENT_PLACEHOLDER',
-                )}
-                className="borrow-fiat-payment-container__detail__content__item__control-select"
-                popupClassName={cssClass['borrow-fiat-payment-select']}
-                options={[...(PurposeMap.values() as any)].map(item => ({
-                  value: item.value,
-                  lable: item.name,
-                }))}
-              />
+              {loadingPurpose ? (
+                <LoadingOutlined className="mr-1" />
+              ) : (
+                <Select
+                  placeholder={t(
+                    'BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_PURPOSE_OF_PAYMENT_PLACEHOLDER',
+                  )}
+                  className="borrow-fiat-payment-container__detail__content__item__control-select"
+                  popupClassName={cssClass['borrow-fiat-payment-select']}
+                  options={[...(purpose as any)].map(item => ({
+                    value: item,
+                    lable: item,
+                  }))}
+                />
+              )}
             </Form.Item>
           </div>
           <div className="borrow-fiat-payment-container__detail__content__item">
@@ -257,17 +291,24 @@ const PaymentDetail = ({
               rules={[
                 {
                   required: true,
+                  message: t('FIAT_REQUIRED'),
                 },
               ]}>
-              <Select
-                placeholder={t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_SOURCE_OF_INCOME_PLACEHOLDER')}
-                className="borrow-fiat-payment-container__detail__content__item__control-select"
-                popupClassName={cssClass['borrow-fiat-payment-select']}
-                options={[...(IncomeMap.values() as any)].map(item => ({
-                  value: item.value,
-                  lable: item.name,
-                }))}
-              />
+              {loadingSource ? (
+                <LoadingOutlined className="mr-1" />
+              ) : (
+                <Select
+                  placeholder={t(
+                    'BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_SOURCE_OF_INCOME_PLACEHOLDER',
+                  )}
+                  className="borrow-fiat-payment-container__detail__content__item__control-select"
+                  popupClassName={cssClass['borrow-fiat-payment-select']}
+                  options={[...(source.values() as any)].map(item => ({
+                    value: item,
+                    lable: item,
+                  }))}
+                />
+              )}
             </Form.Item>
           </div>
           <div className="borrow-fiat-payment-container__detail__content__item">
@@ -308,16 +349,22 @@ export default function ModalBorrowFiatPaymentComponent({
   back,
   detail,
   fiatTransactionFee,
-  tab,
 }: any) {
-  const { paymentMethod } = detail;
+  const { paymentMethod, countryInfo } = detail;
   const { t } = useTranslation('common');
   const [_isPending, _setIsPending] = useState(false);
-  const [minimum, setMinimum] = useState() as any;
+  const [minimum, setMinimum] = useState(0) as any;
   const [loadingMinimum, setLoadingMinimum] = useState<boolean>(false);
-  console.log('tabtab', tab);
+
+  const [purpose, setPurpose] = useState([]) as any;
+  const [loadingPurpose, setLoadingPurpose] = useState<boolean>(false);
+
+  const [source, setSource] = useState() as any;
+  const [loadingSource, setLoadingSource] = useState<boolean>(false);
+  const [agree, setAgree] = useState<boolean>(false);
+
   const handleReceiveEmailCheck: CheckboxProps['onChange'] = e => {
-    console.log(`checked = ${e.target.checked}`);
+    setAgree(e.target.checked);
   };
 
   const onFinish: FormProps<FieldType>['onFinish'] = data => {
@@ -344,8 +391,38 @@ export default function ModalBorrowFiatPaymentComponent({
     }
   };
 
+  const handleGetPurpose = async () => {
+    try {
+      setLoadingPurpose(true);
+      const res_purpose = (await service.getPurpose()) as any;
+
+      if (res_purpose) {
+        setPurpose(res_purpose);
+      }
+      setLoadingPurpose(false);
+    } catch (error) {
+      setLoadingPurpose(false);
+    }
+  };
+
+  const handleGetSource = async () => {
+    try {
+      setLoadingSource(true);
+      const res_source = (await service.getSource()) as any;
+
+      if (res_source) {
+        setSource(res_source);
+      }
+      setLoadingSource(false);
+    } catch (error) {
+      setLoadingSource(false);
+    }
+  };
+
   useEffect(() => {
     handleMinimumRepayment();
+    handleGetPurpose();
+    handleGetSource();
   }, []);
 
   return (
@@ -358,17 +435,12 @@ export default function ModalBorrowFiatPaymentComponent({
         const accountOwner = formInstance.getFieldValue('accountOwner');
         const purposePayment = formInstance.getFieldValue('purposePayment');
         const sourceIncome = formInstance.getFieldValue('sourceIncome');
-        console.log(
-          'bank',
-          formInstance.getFieldsError(),
-          isNotValidForm,
-          amount,
-          bank,
-          accountNumber,
-          accountOwner,
-          purposePayment,
-          sourceIncome,
-        );
+        const amountError = formInstance.getFieldError('amount');
+        const accountNumberError = formInstance.getFieldError('accountNumber');
+        const accountOwnerError = formInstance.getFieldError('accountOwner');
+        const isNotValidForm1 = formInstance.getFieldsError();
+
+        console.log('isNotValidForm', isNotValidForm1, isNotValidForm);
         return (
           <div className={cssClass['borrow-fiat-payment-wrapper']}>
             <div className={'borrow-fiat-payment-container'}>
@@ -378,6 +450,14 @@ export default function ModalBorrowFiatPaymentComponent({
                 amount={amount}
                 minimum={minimum}
                 loadingMinimum={loadingMinimum}
+                amountError={amountError}
+                accountNumberError={accountNumberError}
+                accountOwnerError={accountOwnerError}
+                purpose={purpose}
+                source={source}
+                loadingPurpose={loadingPurpose}
+                loadingSource={loadingSource}
+                countryInfo={countryInfo}
               />
               <div className="borrow-fiat-payment-container__term-condition">
                 <Checkbox onChange={handleReceiveEmailCheck}>
@@ -401,11 +481,13 @@ export default function ModalBorrowFiatPaymentComponent({
                     disabled={
                       isNotValidForm ||
                       !amount ||
+                      (amount && amount < minimum) ||
                       !bank ||
                       !accountNumber ||
                       !accountOwner ||
                       !purposePayment ||
-                      !sourceIncome
+                      !sourceIncome ||
+                      !agree
                     }
                     loading={_isPending}
                     type="primary"

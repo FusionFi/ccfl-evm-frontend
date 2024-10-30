@@ -10,22 +10,17 @@ import ModalBorrowFiatPaymentComponent from './borrow-fiat-payment.component';
 import ModalBorrowFiatCollateralComponent from './borrow-fiat-collateral.component';
 import ModalBorrowFiatConfirmComponent from './borrow-fiat-confirm.component';
 import service from '@/utils/backend/encryptus';
+import { useConnectedNetworkManager, useProviderManager } from '@/hooks/auth.hook';
 
 export default function ModalBorrowFiatComponent({ isModalOpen, handleCancel, handleOk }: any) {
   const { t } = useTranslation('common');
+  const [provider] = useProviderManager();
+  const { selectedChain } = useConnectedNetworkManager();
 
   const [_isApproved, _setIsApproved] = useState(false);
   const [_isPending, _setIsPending] = useState(false);
-  const [bankWire, setBankWire] = useState({
-    accountNumber: '',
-    accountOwner: '',
-    amount: 0,
-    bank: '',
-    description: undefined,
-    purposePayment: '',
-    sourceIncome: '',
-  });
-  const [countryList, setCountryList] = useState();
+
+  const [countryList, setCountryList] = useState([]);
 
   const fiatTransactionFee = 4;
 
@@ -121,7 +116,6 @@ export default function ModalBorrowFiatComponent({ isModalOpen, handleCancel, ha
       children: ModalBorrowFiatPaymentComponent({
         detail: tab,
         next: (data: any) => {
-          setBankWire(data);
           setTab({
             ...tab,
             ...data,
@@ -134,7 +128,6 @@ export default function ModalBorrowFiatComponent({ isModalOpen, handleCancel, ha
             active: '1',
           }),
         fiatTransactionFee,
-        tab,
       }),
     },
     {
@@ -145,7 +138,7 @@ export default function ModalBorrowFiatComponent({ isModalOpen, handleCancel, ha
         title: t('BORROW_FIAT_MODAL_TAB_SETUP_COLLATERAL_TITLE'),
       }),
       children: ModalBorrowFiatCollateralComponent({
-        detail: tab,
+        detail: { ...tab, fiatTransactionFee },
         next: (data: any) =>
           setTab({
             ...tab,
@@ -157,6 +150,8 @@ export default function ModalBorrowFiatComponent({ isModalOpen, handleCancel, ha
             ...tab,
             active: '2',
           }),
+        provider,
+        selectedChain,
       }),
     },
     {
@@ -185,7 +180,15 @@ export default function ModalBorrowFiatComponent({ isModalOpen, handleCancel, ha
 
   const getInitData = async () => {
     try {
-      const res = (await service.getCountries()) as any;
+      // const res = (await service.getCountries()) as any;
+      const res = [
+        {
+          countryCode: 'es',
+          countrySupportByProduct: ['giftcard', 'bankwire'],
+          countryName: 'US',
+          currency: 'EUR',
+        },
+      ];
       if (res) {
         setCountryList(res);
       }

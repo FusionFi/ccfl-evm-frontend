@@ -19,7 +19,7 @@
             display: flex;
             align-items: flex-start;
             gap: 4px;
-            color: var(--Neutral-7, #8C8C8C);
+            color: var(--Neutral-7, #8c8c8c);
 
             /* Footnote/description */
             font-family: Inter;
@@ -34,7 +34,7 @@
             display: flex;
             align-items: flex-end;
             gap: 4px;
-            color: var(--Neutral-1, #FFF);
+            color: var(--Neutral-1, #fff);
 
             /* Body/regular */
             font-family: Inter;
@@ -44,7 +44,7 @@
             line-height: 22px;
 
             &__unit {
-              color: var(--Neutral-7, #8C8C8C);
+              color: var(--Neutral-7, #8c8c8c);
 
               /* Body/regular */
               font-family: Inter;
@@ -105,7 +105,7 @@
             align-items: center;
             align-self: stretch;
 
-            color: var(--Neutral-7, #8C8C8C);
+            color: var(--Neutral-7, #8c8c8c);
 
             /* Footnote/description */
             font-family: Inter;
@@ -125,7 +125,7 @@
               justify-content: flex-end;
               align-items: flex-end;
               gap: 8px;
-              color: var(--Neutral-13, #FFF);
+              color: var(--Neutral-13, #fff);
 
               /* Body/medium */
               font-family: Inter;
@@ -136,7 +136,7 @@
               /* 157.143% */
 
               &__unit {
-                color: var(--Neutral-7, #8C8C8C);
+                color: var(--Neutral-7, #8c8c8c);
 
                 /* Body/medium */
                 font-family: Inter;
@@ -167,7 +167,7 @@
               }
 
               &__note {
-                color: var(--Neutral-7, #8C8C8C);
+                color: var(--Neutral-7, #8c8c8c);
 
                 /* Footnote/description */
                 font-family: Inter;
@@ -204,7 +204,6 @@
                 line-height: 22px;
 
                 .ant-select-selection-placeholder {
-
                   color: var(--character-secondary-45, rgba(255, 255, 255, 0.45));
                   font-family: Inter;
                   font-size: 14px;
@@ -245,8 +244,6 @@
               font-style: normal;
               font-weight: 400;
               line-height: 22px;
-
-
             }
 
             &.ant-input-number-status-error {
@@ -316,7 +313,7 @@
             display: flex;
             align-items: flex-start;
             gap: 4px;
-            color: var(--Neutral-7, #8C8C8C);
+            color: var(--Neutral-7, #8c8c8c);
 
             /* Footnote/description */
             font-family: Inter;
@@ -331,7 +328,7 @@
             display: flex;
             align-items: flex-end;
             gap: 4px;
-            color: var(--Neutral-1, #FFF);
+            color: var(--Neutral-1, #fff);
 
             /* Body/regular */
             font-family: Inter;
@@ -341,7 +338,7 @@
             line-height: 22px;
 
             &__unit {
-              color: var(--Neutral-7, #8C8C8C);
+              color: var(--Neutral-7, #8c8c8c);
 
               /* Body/regular */
               font-family: Inter;
@@ -353,7 +350,6 @@
             }
           }
         }
-
       }
 
       &__action {
@@ -404,11 +400,20 @@
         .btn-primary-custom {
           &:disabled {
             border-radius: 2px;
-            border: 1px solid var(--Neutral-5, #434343)!important;
-            background: var(--Neutral-3, #1F1F1F)!important;
+            border: 1px solid var(--Neutral-5, #434343) !important;
+            background: var(--Neutral-3, #1f1f1f) !important;
             opacity: 0.8 !important;
           }
         }
+      }
+      .ant-form-item-control-input {
+        min-height: 24px;
+      }
+      .ant-form-item {
+        margin-bottom: 8px;
+      }
+      .ant-select-selection-item {
+        color: var(--character-title-85, rgba(255, 255, 255, 0.85));
       }
     }
   }

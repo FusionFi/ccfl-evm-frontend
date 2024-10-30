@@ -423,6 +423,88 @@
       .ant-input-number-input {
         padding: 0;
       }
+
+      &_minimum {
+        color: var(--Text-sub_text, #808089);
+
+        /* Body/B3_14px_Regular */
+        font-family: Inter;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 20px; /* 142.857% */
+      }
+
+      .ant-input-number-input-wrap {
+        width: 100%;
+      }
+
+      .ant-input,
+      input {
+        color: var(--character-title-85, rgba(255, 255, 255, 0.85)) !important;
+
+        /* Body/regular */
+        font-family: Inter;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 22px; /* 157.143% */
+      }
+
+      &_error {
+        color: var(--Dust-Red-5, #ff4d4f);
+        text-align: right;
+
+        /* Footnote/description */
+        font-family: Inter;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 20px; /* 166.667% */
+      }
+      input:-internal-autofill-selected {
+        &:hover,
+        &:focus {
+          color: var(--character-title-85, rgba(255, 255, 255, 0.85)) !important;
+        }
+        color: var(--character-title-85, rgba(255, 255, 255, 0.85)) !important;
+      }
+
+      .ant-input,
+      .ant-input:focus,
+      .ant-input:hover {
+        color: var(--character-title-85, rgba(255, 255, 255, 0.85)) !important;
+      }
+      input:-webkit-autofill,
+      input:-webkit-autofill:hover,
+      input:-webkit-autofill:focus,
+      input:-webkit-autofill:focus-within,
+      input:-webkit-autofill:active,
+      input:-webkit-autofill:target,
+      input:focus-visible:-webkit-autofill {
+        transition: background-color 600000000s ease-in-out 0s;
+        -webkit-text-fill-color: var(--character-title-85, rgba(255, 255, 255, 0.85)) !important;
+      }
+      .ant-input-number-status-error,
+      .ant-input-status-error,
+      .ant-input-outlined {
+        background-color: var(--Neutral-1, #141414) !important;
+        &:hover,
+        &:focus,
+        &:focus-within {
+          background-color: var(--Neutral-1, #141414) !important;
+        }
+        .ant-input-number-input-wrap {
+          &:hover,
+          &:focus,
+          &:focus-within {
+            background-color: var(--Neutral-1, #141414) !important;
+          }
+        }
+      }
+      .ant-select-selection-item {
+        color: var(--character-title-85, rgba(255, 255, 255, 0.85));
+      }
     }
   }
 }

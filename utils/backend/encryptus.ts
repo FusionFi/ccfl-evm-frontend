@@ -29,10 +29,24 @@ const getSource = async () => {
   return res;
 };
 
+const getPrice = async (currency: any) => {
+  const res = await http.get(`${URL}/fiat/price/${currency}`);
+
+  return res;
+};
+
+const createFiatLoan = async (params: any) => {
+  const res = await http.post(`${URL}/user/fiat/loan/create`, params);
+
+  return res;
+};
+
 const service = {
   getKycLink,
   getCountries,
   getPurpose,
   getSource,
+  getPrice,
+  createFiatLoan,
 };
 export default service;

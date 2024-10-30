@@ -19,9 +19,10 @@ export default function ModalBorrowFiatMethodComponent({ next, countryList }: an
   const [repaymentCurrency, setRepaymentCurrency] = useState(0);
   const [country, setCountry] = useState('');
   const [_isPending, _setIsPending] = useState(false);
+  const [receiveEmail, setReceiveEmail] = useState(false);
 
   const handleReceiveEmailCheck: CheckboxProps['onChange'] = e => {
-    console.log(`checked = ${e.target.checked}`);
+    setReceiveEmail(e.target.checked);
   };
 
   const SelectLableCountry: LabelRender = (props: any) => {
@@ -80,13 +81,14 @@ export default function ModalBorrowFiatMethodComponent({ next, countryList }: an
     _setIsPending(true);
     console.log('onFinish ModalBorrowFiatMethodComponent', data);
     let countryInfo =
-      countryList && country && countryList.find((e: any) => e.countryCode === country)?.currency;
+      countryList && country && countryList.find((e: any) => e.countryCode === country);
     setTimeout(() => {
       next({
         ...data,
         countryInfo: countryInfo,
         repaymentCurrency: repaymentCurrency,
         paymentMethod: payoutMethod,
+        receiveEmail: receiveEmail,
       });
       _setIsPending(false);
     }, 1000);

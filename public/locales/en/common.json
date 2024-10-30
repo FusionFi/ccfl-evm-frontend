@@ -369,5 +369,6 @@
   "KYC_WARNING_EMAIL_MODAL_DESCRIPTION_2": "to complete the KYC.",
   "KYC_WARNING_EMAIL_MODAL_BTN_CONTINUE": "Continue",
   "KYC_WARNING_EMAIL_MODAL_BTN_GO_BACK": "Go back",
-  "SIGNUP_RECOVER_PASSWORD": "Recover password"
+  "SIGNUP_RECOVER_PASSWORD": "Recover password",
+  "FIAT_REQUIRED": "This field is required"
 }
