@@ -1,11 +1,11 @@
 import { useDispatch, useSelector } from "react-redux";
-import { Lucid } from "lucid-cardano";
+import { Blockfrost, Lucid } from "@lucid-evolution/lucid";
 import { useCallback } from "react";
 import { Wallets } from "@/wallets/index.wallet";
 import Networks from '@/constants/cardano-network.constant'
 import * as Actions from "@/actions/cardano-wallet.action";
 import * as AuthActions from "@/actions/auth.action";
-import { getBalance } from "@/utils/cardano/blockfrost";
+import { initLucid } from "@/utils/cardano/blockfrost";
 
 const CARDANO_NETWORK_ID: any = 0// process.env.NEXT_PUBLIC_CARDANO_NETWORK_ID
 
@@ -28,7 +28,8 @@ export function useCardanoWalletConnect(): [(wallet: Object) => void] {
         );
       }
 
-      const lucid = await Lucid.new();
+
+      const lucid = await initLucid(item);
       lucid.selectWallet(api);
 
       const address = await lucid.wallet.address();

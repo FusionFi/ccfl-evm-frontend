@@ -27,7 +27,7 @@ import { useState, useMemo } from "react";
 import { useAccount } from "wagmi";
 import { ClickApi } from "@/utils/cardano/components/clickApi";
 
-export default function Lucid() {
+export default function LucidTest() {
   const { address, isConnected } = useAccount();
   const [cardanoWalletConnected] = useCardanoWalletConnected();
   const [networkInfo, setNetworkInfo] = useState<any | null>(null);

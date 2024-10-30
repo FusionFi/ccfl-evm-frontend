@@ -129,3 +129,4 @@ export const yieldHash = "278a2c9f7e8edf9564b05efcccc400faf90530e8d83f2b1408de5a
 
 export const loanHashz = [balanceHash]
 export const collateralHashz = [balanceHash, liquidateHash, closeHash, repayHash, depositHash, withdrawHash]
+
