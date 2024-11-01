@@ -477,11 +477,7 @@
       }
       input:-webkit-autofill,
       input:-webkit-autofill:hover,
-      input:-webkit-autofill:focus,
-      input:-webkit-autofill:focus-within,
-      input:-webkit-autofill:active,
-      input:-webkit-autofill:target,
-      input:focus-visible:-webkit-autofill {
+      input:-webkit-autofill:focus {
         transition: background-color 600000000s ease-in-out 0s;
         -webkit-text-fill-color: var(--character-title-85, rgba(255, 255, 255, 0.85)) !important;
       }

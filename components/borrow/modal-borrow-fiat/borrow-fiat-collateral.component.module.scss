@@ -415,6 +415,19 @@
       .ant-select-selection-item {
         color: var(--character-title-85, rgba(255, 255, 255, 0.85));
       }
+      &-error {
+        color: var(--Dust-Red-6, #f5222d);
+        text-align: center;
+
+        /* Body/B3_14px_Regular */
+        font-family: Inter;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 20px; /* 142.857% */
+        margin-bottom: 8px;
+        width: 100%;
+      }
     }
   }
 }

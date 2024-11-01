@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { Form, Select, Checkbox, Input, Radio, Button } from 'antd';
 import type { SelectProps, CheckboxProps, FormProps } from 'antd';
 import { CircleFlag } from 'react-circle-flags';
+import { SUPPORTED_CHAINS_MAP } from '@/constants/chains.constant';
 
 type FieldType = {
   amount?: any;
@@ -13,13 +14,21 @@ type FieldType = {
 
 type LabelRender = SelectProps['labelRender'];
 
-export default function ModalBorrowFiatMethodComponent({ next, countryList }: any) {
+export default function ModalBorrowFiatMethodComponent({
+  next,
+  countryList,
+  tokenList,
+  selectedChain,
+}: any) {
   const { t } = useTranslation('common');
   const [payoutMethod, setPayoutMethod] = useState(0);
   const [repaymentCurrency, setRepaymentCurrency] = useState(0);
   const [country, setCountry] = useState('');
   const [_isPending, _setIsPending] = useState(false);
   const [receiveEmail, setReceiveEmail] = useState(false);
+
+  console.log('SUPPORTED_CHAINS_MAP', SUPPORTED_CHAINS_MAP);
+  const _chain: any = SUPPORTED_CHAINS_MAP.get(selectedChain.id);
 
   const handleReceiveEmailCheck: CheckboxProps['onChange'] = e => {
     setReceiveEmail(e.target.checked);
@@ -31,7 +40,7 @@ export default function ModalBorrowFiatMethodComponent({ next, countryList }: an
     return (
       <div className="flex items-center">
         <CircleFlag
-          countryCode={value.toLowerCase()}
+          countryCode={value?.toLowerCase()}
           className="mr-2"
           style={{
             height: 16,
@@ -89,6 +98,8 @@ export default function ModalBorrowFiatMethodComponent({ next, countryList }: an
         repaymentCurrency: repaymentCurrency,
         paymentMethod: payoutMethod,
         receiveEmail: receiveEmail,
+        chainName: _chain?.name,
+        assetName: tokenList[repaymentCurrency].asset,
       });
       _setIsPending(false);
     }, 1000);
@@ -219,14 +230,20 @@ export default function ModalBorrowFiatMethodComponent({ next, countryList }: an
                 <div className="borrow-fiat-method-container__repayment__title">
                   {t('BORROW_FIAT_MODAL_TAB_SELECT_METHOD_REPAYMENT_TITLE')}
                 </div>
-                <Radio.Group onChange={handleRepaymentCurrencySelect} value={repaymentCurrency}>
-                  <Radio disabled={!country} value={1}>
-                    USDT (Avalanche)
-                  </Radio>
-                  <Radio disabled={!country} value={2}>
-                    USDC (Avalanche)
-                  </Radio>
-                </Radio.Group>
+                {tokenList && (
+                  <Radio.Group onChange={handleRepaymentCurrencySelect} value={repaymentCurrency}>
+                    {tokenList[1] && (
+                      <Radio disabled={!country || tokenList[1].loan_available == 0} value={2}>
+                        {tokenList[1].asset} {_chain?.name && `(${_chain?.name})`}
+                      </Radio>
+                    )}
+                    {tokenList[0] && (
+                      <Radio disabled={!country || tokenList[0].loan_available == 0} value={1}>
+                        {tokenList[0].asset} {_chain?.name && `(${_chain?.name})`}
+                      </Radio>
+                    )}
+                  </Radio.Group>
+                )}
               </div>
               <div className="borrow-fiat-method-container__email">
                 <div className="borrow-fiat-method-container__email__control">

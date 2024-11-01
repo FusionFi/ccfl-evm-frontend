@@ -343,10 +343,11 @@ export default function BorrowPage() {
           </div>
         )}
         <div
-          className={`${provider?.account && selectedChain?.id == provider?.chainId
+          className={`${
+            provider?.account && selectedChain?.id == provider?.chainId
               ? 'xl:basis-1/2'
               : 'xl:basis-full'
-            } basis-full`}>
+          } basis-full`}>
           <AssetComponent
             showModal={showModal}
             networkInfo={networkInfo}
@@ -407,6 +408,8 @@ export default function BorrowPage() {
         setStep={setStep}
         token={token}
         setToken={setToken}
+        tokenList={tokenList}
+        price={price}
       />
 
       <ModalBorrowFiatSuccessComponent

@@ -12,10 +12,17 @@ import ModalBorrowFiatConfirmComponent from './borrow-fiat-confirm.component';
 import service from '@/utils/backend/encryptus';
 import { useConnectedNetworkManager, useProviderManager } from '@/hooks/auth.hook';
 
-export default function ModalBorrowFiatComponent({ isModalOpen, handleCancel, handleOk }: any) {
+export default function ModalBorrowFiatComponent({
+  isModalOpen,
+  handleCancel,
+  handleOk,
+  tokenList,
+  price,
+}: any) {
   const { t } = useTranslation('common');
   const [provider] = useProviderManager();
   const { selectedChain } = useConnectedNetworkManager();
+  console.log('provider', provider, selectedChain);
 
   const [_isApproved, _setIsApproved] = useState(false);
   const [_isPending, _setIsPending] = useState(false);
@@ -104,6 +111,8 @@ export default function ModalBorrowFiatComponent({ isModalOpen, handleCancel, ha
           });
         },
         countryList,
+        tokenList,
+        selectedChain,
       }),
     },
     {
@@ -152,6 +161,8 @@ export default function ModalBorrowFiatComponent({ isModalOpen, handleCancel, ha
           }),
         provider,
         selectedChain,
+        tokenList,
+        price,
       }),
     },
     {

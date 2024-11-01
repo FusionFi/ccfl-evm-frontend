@@ -98,3 +98,5 @@ export const ACTION_TYPE = {
   COLLATERAL: 'COLLATERAL',
   WITHDRAW: 'WITHDRAW',
 };
+
+export const FIAT_METHOD = ['Bank Wire', 'Gift Card'];

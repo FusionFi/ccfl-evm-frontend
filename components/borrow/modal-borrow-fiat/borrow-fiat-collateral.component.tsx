@@ -14,10 +14,14 @@ import {
 import { InfoCircleIcon } from '@/components/icons/info-circle.icon';
 import service from '@/utils/backend/encryptus';
 import { formatNumber, toAmountShow, toLessPart, toUnitWithDecimal } from '@/utils/common';
-import { COLLATERAL_TOKEN, CONTRACT_ADDRESS } from '@/constants/common.constant';
+import { ACTION_TYPE, COLLATERAL_TOKEN, CONTRACT_ADDRESS } from '@/constants/common.constant';
 import service_borrow from '@/utils/backend/borrow';
 import { useAccount } from 'wagmi';
-import { useGetCollateralMinimum } from '@/hooks/provider.hook';
+import {
+  useGetCollateralMinimum,
+  useGetGasFeeApprove,
+  useGetHealthFactor,
+} from '@/hooks/provider.hook';
 
 type FieldType = {
   amount?: any;
@@ -29,6 +33,8 @@ export default function ModalBorrowFiatCollateralComponent({
   detail,
   provider,
   selectedChain,
+  tokenList,
+  price,
 }: any) {
   const {
     paymentMethod,
@@ -36,14 +42,17 @@ export default function ModalBorrowFiatCollateralComponent({
     fiatTransactionFee,
     countryInfo,
     active,
+    repaymentCurrency,
   } = detail;
   const { t } = useTranslation('common');
   const { connector } = useAccount();
   const [getCollateralMinimum] = useGetCollateralMinimum(provider);
+  const [getHealthFactor] = useGetHealthFactor(provider);
+  const [getGasFeeApprove] = useGetGasFeeApprove(provider);
 
   const [_isPending, _setIsPending] = useState(false);
   const [loadingPrice, setLoadingPrice] = useState(false);
-  const [price, setPrice] = useState();
+  const [priceFiat, setPriceFiat] = useState();
   const [isActive, setActive] = useState(true);
   const [collateralToken, setCollateralToken] = useState(COLLATERAL_TOKEN[0].name);
   const [collateralData, setCollateralData] = useState({
@@ -56,13 +65,26 @@ export default function ModalBorrowFiatCollateralComponent({
   const [loadingBalanceCollateral, setLoadingBalanceCollateral] = useState<boolean>(false);
   const [minimalCollateral, setMinimalCollateral] = useState(0);
   const [loadingMinimumCollateral, setLoadingMinimumCollateral] = useState<boolean>(false);
+  const [stableCoinAddress, setStableCoinAddresso] = useState();
+  const [healthFactor, setHealthFactor] = useState();
+  const [loadingHealthFactor, setLoadingHealthFactor] = useState<boolean>(false);
+  const [loadingGasFee, setLoadingGasFee] = useState<boolean>(false);
+  const [gasFee, setGasFee] = useState(0);
+  const [errorEstimate, setErrorEstimate] = useState({
+    nonEnoughBalanceWallet: false,
+    exceedsAllowance: false,
+    nonEnoughBalanceCollateral: false,
+  }) as any;
 
+  console.log('price', price);
   const [form] = Form.useForm();
 
   const onFinish: FormProps<FieldType>['onFinish'] = data => {
     _setIsPending(true);
     setTimeout(() => {
-      next();
+      next({
+        amountUSD: priceFiat ? formatNumber(amountStableCoin * priceFiat, true) : 0,
+      });
       _setIsPending(false);
     }, 1000);
   };
@@ -84,7 +106,7 @@ export default function ModalBorrowFiatCollateralComponent({
       const res = (await service.getPrice(countryInfo?.currency)) as any;
 
       if (res && res.price) {
-        setPrice(res.price);
+        setPriceFiat(res.price);
       }
       setLoadingPrice(false);
     } catch (error) {
@@ -133,7 +155,12 @@ export default function ModalBorrowFiatCollateralComponent({
   };
 
   const handleGetCollateralMinimum = async () => {
-    if (collateralAmount && collateralAmount > 0 && collateralData.address) {
+    if (amountStableCoin && amountStableCoin > 0 && collateralData.address && stableCoinAddress) {
+      let finalAmount =
+        tokenList[repaymentCurrency - 1]?.asset && priceFiat
+          ? (amountStableCoin * price[tokenList[repaymentCurrency - 1]?.asset]) / priceFiat
+          : 0;
+
       try {
         setLoadingMinimumCollateral(true);
         let res_collateral = (await service_borrow.getCollateralInfo(
@@ -145,8 +172,8 @@ export default function ModalBorrowFiatCollateralComponent({
         let minimalCollateral = (await getCollateralMinimum({
           provider: connector_provider,
           contract_address: CONTRACT_ADDRESS,
-          amount: toUnitWithDecimal(collateralAmount, 6),
-          stableCoin: stableCoinInfo.address,
+          amount: toUnitWithDecimal(finalAmount, tokenList[repaymentCurrency - 1]?.decimals ?? 6),
+          stableCoin: stableCoinAddress,
           collateral: collateralData.address,
         })) as any;
         console.log('minimum', minimalCollateral);
@@ -156,6 +183,8 @@ export default function ModalBorrowFiatCollateralComponent({
             toAmountShow(minimalCollateral, res_collateral[0].decimals),
             8,
           ) as any;
+          console.log('minimum2', minimum);
+
           setMinimalCollateral(minimum);
         } else {
           setMinimalCollateral(0);
@@ -171,14 +200,131 @@ export default function ModalBorrowFiatCollateralComponent({
     }
   };
 
+  const getStableCoin = async () => {
+    try {
+      let res_token = (await service_borrow.getTokenInfo(
+        tokenList[repaymentCurrency - 1]?.asset,
+        selectedChain?.id,
+      )) as any;
+      console.log('getStableCoin', res_token);
+      if (res_token && res_token[0]) {
+        setStableCoinAddresso(res_token[0].address);
+      }
+    } catch (error) {
+      console.log('error', error);
+    }
+  };
+
+  const handleGetHealthFactor = async () => {
+    if (
+      amountStableCoin &&
+      amountStableCoin > 0 &&
+      collateralAmount &&
+      collateralAmount > 0 &&
+      stableCoinAddress &&
+      collateralData.address
+    ) {
+      let finalAmount =
+        tokenList[repaymentCurrency - 1]?.asset && priceFiat
+          ? (amountStableCoin * price[tokenList[repaymentCurrency - 1]?.asset]) / priceFiat
+          : 0;
+
+      try {
+        const connector_provider = await connector?.getProvider();
+        try {
+          setLoadingHealthFactor(true);
+          let healthFactor = (await getHealthFactor({
+            type: ACTION_TYPE.BORROW,
+            provider: connector_provider,
+            contract_address: CONTRACT_ADDRESS,
+            amount: toUnitWithDecimal(finalAmount, tokenList[repaymentCurrency - 1]?.decimals ?? 6),
+            stableCoin: stableCoinAddress,
+            collateral: collateralData.address,
+            amountCollateral: toUnitWithDecimal(collateralAmount, collateralData.decimals),
+          })) as any;
+          if (healthFactor) {
+            setHealthFactor(healthFactor);
+          } else {
+            setHealthFactor(undefined);
+          }
+          setLoadingHealthFactor(false);
+        } catch (error) {
+          setHealthFactor(undefined);
+          setLoadingHealthFactor(false);
+        }
+      } catch (error) {
+        console.log('handleGetHealthFactor error', error);
+      }
+    } else {
+      setHealthFactor(undefined);
+    }
+  };
+
+  const handleGetFeeApprove = async () => {
+    setTimeout(async () => {
+      if (collateralAmount && collateralAmount > 0 && collateralData.address) {
+        const connector_provider = await connector?.getProvider();
+        try {
+          setLoadingGasFee(true);
+
+          let res = (await getGasFeeApprove({
+            provider: connector_provider,
+            account: provider?.account,
+            amount: toUnitWithDecimal(collateralAmount, collateralData.decimals),
+            tokenAddress: collateralData.address,
+            contract_address: CONTRACT_ADDRESS,
+          })) as any;
+          let res_price = (await service_borrow.getPrice(selectedChain?.id, 'ETH')) as any;
+          if (res && res.gasPrice && res_price && res_price.price) {
+            let gasFee = res.gasPrice * res_price.price;
+            setGasFee(gasFee);
+            console.log('handleGetFee', res, gasFee);
+          }
+          setErrorEstimate({
+            ...errorEstimate,
+            nonEnoughBalanceWallet: res?.nonEnoughMoney,
+            exceedsAllowance: res?.exceedsAllowance,
+          });
+          setLoadingGasFee(false);
+        } catch (error) {
+          setLoadingGasFee(false);
+        }
+      }
+    }, 500);
+  };
+
+  useEffect(() => {
+    if (active == 3) {
+      handleGetCollateralMinimum();
+      handleGetHealthFactor();
+      handleGetFeeApprove();
+    }
+  }, [collateralData]);
+
+  useEffect(() => {
+    if (active == 3) {
+      handleGetHealthFactor();
+      handleGetFeeApprove();
+    }
+  }, [collateralAmount]);
+
+  useEffect(() => {
+    if (active == 3) {
+      handleGetCollateralMinimum();
+      handleGetHealthFactor();
+    }
+  }, [amountStableCoin]);
+
   useEffect(() => {
     if (active == 3) {
       handleCollateralBalance();
+      handleGetCollateralMinimum();
     }
   }, [collateralToken]);
 
   useEffect(() => {
     if (countryInfo?.currency && active == 3) {
+      getStableCoin();
       handleGetPrice();
       handleCollateralBalance();
       handleGetCollateralMinimum();
@@ -191,9 +337,6 @@ export default function ModalBorrowFiatCollateralComponent({
     <Form form={form} onFinish={onFinish}>
       {(_, formInstance) => {
         const isNotValidForm = formInstance.getFieldsError().some(item => item.errors.length > 0);
-        // const collateralAmount = formInstance.getFieldValue('collateralAmount');
-        // const collateralToken =
-        //   formInstance.getFieldValue('collateralToken') ?? COLLATERAL_TOKEN[0].name;
 
         return (
           <div className={cssClass['borrow-fiat-collateral-wrapper']}>
@@ -208,9 +351,9 @@ export default function ModalBorrowFiatCollateralComponent({
                     <span className="borrow-fiat-collateral-container__loan__item__value__unit">
                       {countryInfo?.currency}
                     </span>
-                    {price && amountStableCoin && (
+                    {priceFiat && amountStableCoin && (
                       <span className="borrow-fiat-collateral-container__loan__item__value__price">
-                        ${formatNumber(amountStableCoin * price, true)}
+                        ${formatNumber(amountStableCoin * priceFiat, true)}
                       </span>
                     )}
                   </div>
@@ -249,13 +392,13 @@ export default function ModalBorrowFiatCollateralComponent({
                       <LoadingOutlined className="mr-1" />
                     ) : (
                       <>
-                        {price && amountStableCoin && fiatTransactionFee && (
+                        {priceFiat && amountStableCoin && fiatTransactionFee && (
                           <div className="borrow-fiat-collateral-container__loan__item__value">
                             <span className="borrow-fiat-collateral-container__loan__item__value__unit">
                               $
                             </span>
                             {formatNumber(
-                              (amountStableCoin * price * fiatTransactionFee) / 100,
+                              (amountStableCoin * priceFiat * fiatTransactionFee) / 100,
                               true,
                             )}
                           </div>
@@ -269,6 +412,16 @@ export default function ModalBorrowFiatCollateralComponent({
                 <div className="borrow-fiat-collateral-container__detail__title">
                   {t('BORROW_FIAT_MODAL_TAB_COLLATERAL_DETAIL_TITLE')}
                 </div>
+                {errorEstimate.nonEnoughBalanceCollateral && (
+                  <div className="borrow-fiat-collateral-container-error">
+                    {t('BORROW_MODAL_BORROW_COLLATERAL_NON_ENOUGH')}
+                  </div>
+                )}
+                {errorEstimate.nonEnoughBalanceWallet && (
+                  <div className="borrow-fiat-collateral-container-error">
+                    {t('BORROW_MODAL_BORROW_COLLATERAL_NON_ENOUGH_GAS')}
+                  </div>
+                )}
                 <div className="borrow-fiat-collateral-container__detail__content">
                   <div className="borrow-fiat-collateral-container__detail__content__item">
                     <div className="borrow-fiat-collateral-container__detail__content__item__title">
@@ -335,7 +488,19 @@ export default function ModalBorrowFiatCollateralComponent({
                         <InputNumber
                           disabled={_isPending}
                           onChange={(value: any) => {
-                            setCollateralAmount(value);
+                            if (collateralData.balance > 0 && value > collateralData.balance) {
+                              setErrorEstimate({
+                                ...errorEstimate,
+                                nonEnoughBalanceCollateral: true,
+                              });
+                              setCollateralAmount(undefined);
+                            } else {
+                              setErrorEstimate({
+                                ...errorEstimate,
+                                nonEnoughBalanceCollateral: false,
+                              });
+                              setCollateralAmount(value);
+                            }
                           }}
                           value={collateralAmount}
                           controls={false}
@@ -363,18 +528,24 @@ export default function ModalBorrowFiatCollateralComponent({
                       style={{
                         alignItems: 'center',
                       }}>
-                      <span className="font-bold text-base">3.31B</span>
-                      {collateralAmount && collateralAmount > 0 && (
+                      <span className="font-bold text-base">∞</span>
+                      {collateralAmount && collateralAmount > 0 ? (
                         <>
-                          <ArrowRightOutlined />
-                          <span
-                            className="font-bold text-base"
-                            style={{
-                              color: '#52C41A',
-                            }}>
-                            3.33B
-                          </span>
+                          {(loadingHealthFactor || healthFactor) && <ArrowRightOutlined />}
+                          {loadingHealthFactor ? (
+                            <LoadingOutlined className="mr-1" />
+                          ) : (
+                            <span
+                              className="font-bold text-base"
+                              style={{
+                                color: '#52C41A',
+                              }}>
+                              {formatNumber(healthFactor)}
+                            </span>
+                          )}
                         </>
+                      ) : (
+                        <></>
                       )}
                     </div>
                   </div>
@@ -394,7 +565,11 @@ export default function ModalBorrowFiatCollateralComponent({
                     <span className="borrow-fiat-collateral-container__tx__item__value__unit">
                       $
                     </span>
-                    2.00
+                    {loadingGasFee ? (
+                      <LoadingOutlined className="mr-1" />
+                    ) : (
+                      formatNumber(toLessPart(gasFee, 2))
+                    )}
                   </div>
                 </div>
               </div>
@@ -408,7 +583,19 @@ export default function ModalBorrowFiatCollateralComponent({
                 </div>
                 <div className="borrow-fiat-collateral-container__action__item">
                   <Button
-                    loading={_isPending}
+                    loading={
+                      _isPending ||
+                      errorEstimate.nonEnoughBalanceWallet ||
+                      errorEstimate.exceedsAllowance ||
+                      errorEstimate.nonEnoughBalanceCollateral ||
+                      loadingGasFee ||
+                      loadingHealthFactor ||
+                      loadingMinimumCollateral ||
+                      loadingBalanceCollateral ||
+                      (collateralAmount && collateralAmount > 0) ||
+                      collateralData.balance > 0 ||
+                      loadingPrice
+                    }
                     type="primary"
                     htmlType="submit"
                     disabled={isNotValidForm || !collateralAmount}
