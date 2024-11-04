@@ -24,6 +24,7 @@ interface ModalCollateralProps {
   setStep: any;
   oracleTokenName: string;
   loanTokenName: string;
+  loanValue: number;
   wallet: any;
   balance: number;
 }
@@ -40,6 +41,7 @@ export default function ModalCollateralComponent({
   setStep,
   oracleTokenName,
   loanTokenName,
+  loanValue,
   wallet,
   balance,
 }: ModalCollateralProps) {
@@ -53,7 +55,7 @@ export default function ModalCollateralComponent({
 
   const [tokenValue, setTokenValue] = useState(0);
   const [exchangeRate, setExchange] = useState(0);
-  const { createTx, txHash } = loanBalanceTx(wallet, loanTokenName, tokenValue, oracleTokenName, exchangeRate);
+  const { createTx, txHash } = loanBalanceTx(wallet, loanTokenName, loanValue, tokenValue, oracleTokenName, exchangeRate);
 
   const onSubmit: SubmitHandler<IFormInput> = data => {
     setLoading(true);
@@ -101,6 +103,7 @@ export default function ModalCollateralComponent({
     // await createTx();
     console.log('AddingCollateral: ', tokenValue);
     console.log('LoanTokenName: ', loanTokenName);
+    console.log('LoanAmount: ', loanValue);
     console.log('OracleTokenName: ', oracleTokenName);
     console.log('ExchangeRate: ', exchangeRate);
   };

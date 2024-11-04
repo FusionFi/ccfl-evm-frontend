@@ -6,6 +6,7 @@ import { ownerPKH } from '../owner';
 import { loanCloseAction, oracleUpdateAction, burnLoanAction, rewardsMintAction } from '../redeemers';
 import { loanAddr, collateralAddr, configAddr, oracleAddr, rewardsCS, loanMint, rewardsMint, closeAddr, loanVal, collateralVal, oracleVal, close, loanCS, oracleCS } from '../validators';
 import { loanUnit, configUnit, oracleUnit } from '../variables';
+import { makeOracleDatum } from '../evoDatums';
 
 export function loanCloseTx(
   wallet: any, 
@@ -30,21 +31,30 @@ export function loanCloseTx(
         throw Error("Lucid not instantiated");
       }
       console.log(wallet);
+      const timestamp = Date.now()
 
+      const configUtxos = await lucid.utxosAtWithUnit(configAddr, configUnit)
+      const configIn = configUtxos[0]
       const oracleUnit = toUnit(oracleCS, oracleTokenName)
       const loanUnit = toUnit(loanCS, loanTokenName)
 
-      const oracleDatum = Data.from(oracleDatum1)
+      const oracleUtxos: UTxO[] = await lucid.utxosAtWithUnit(oracleAddr, oracleUnit)
+      const oracleUtxo: UTxO = oracleUtxos[0]
+      const oracleInDatum = Data.from(oracleUtxo.datum!)
+      const oracleExchangeRate = exchangeRate * 1000
+      const oracleDatum = makeOracleDatum(
+        oracleExchangeRate, 
+        timestamp, 
+        oracleInDatum.fields[2], 
+        oracleInDatum.fields[3], 
+        oracleInDatum.fields[4]
+      )
+      
       const lUtxos: UTxO[] = await lucid.utxosAtWithUnit(loanAddr, loanUnit)
       const lUtxo: UTxO = lUtxos[0]
       const cUtxos: UTxO[] = await lucid.utxosAtWithUnit(collateralAddr, loanUnit)
       const cUtxo: UTxO = cUtxos[0]
-      const configUtxos = await lucid.utxosAtWithUnit(configAddr, configUnit)
-      const configIn = configUtxos[0]
-      const oracleUtxos: UTxO[] = await lucid.utxosAtWithUnit(oracleAddr, oracleUnit)
-      const oracleUtxo: UTxO = oracleUtxos[0]
-      const exchange = oracleDatum[0]
-      const inDatum = Data.from(lUtxo.datum)
+      const inDatum = Data.from(lUtxo.datum!)
       const rewardsQty = inDatum.fields[1]
       const rewardsTn = fromText("")
       const rewardsUnit = toUnit(rewardsCS, rewardsTn)

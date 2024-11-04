@@ -29,7 +29,7 @@ export function yieldWithdrawTx(
         throw Error("Lucid not instantiated");
       }
       console.log(wallet);
-
+      const timestamp = Date.now()
       const loanUnit = toUnit(loanCS, loanTokenName)
 
       const yieldUtxos: UTxO[] = await lucid.utxosAt(yieldAddr)
@@ -38,9 +38,9 @@ export function yieldWithdrawTx(
       const collateralIn = cUtxo.assets.lovelace
       const configUtxos = await lucid.utxosAtWithUnit(configAddr, configUnit)
       const configIn = configUtxos[0]
-      const inDatum = Data.from(cUtxo.datum)
+      const inDatum = Data.from(cUtxo.datum!)
       const inYield = inDatum.fields[2]
-      const outYield = 0n
+      const outYield = inYield - BigInt(yieldAmount)
 
       const newDatum = Data.to(
         new Constr(0, [
@@ -72,7 +72,7 @@ export function yieldWithdrawTx(
           collateralAddr,
           { kind: "inline", value: newDatum },
           {
-            lovelace: (collateralIn + inYield),
+            lovelace: (collateralIn + BigInt(yieldAmount)),
             [loanUnit]: 1n
           }
         )

@@ -412,6 +412,7 @@ export default function BorrowPage() {
         oracleTokenName={oracleTokenName}
         loanTokenName={loanTokenName}
         wallet={cardanoWalletConnected}
+        loanAmount={loanAmount}
         balance={walletBalance}
       />
       <ModalBorrowFiatComponent

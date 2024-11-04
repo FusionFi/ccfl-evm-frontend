@@ -77,3 +77,4 @@ export async function getLoans(userPkh: string): Promise<CardanoLoan[]> {
 
   return userLoans;
 }
+

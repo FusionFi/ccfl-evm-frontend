@@ -1,11 +1,12 @@
 import { Constr, Data, Lucid, toUnit, UTxO } from '@lucid-evolution/lucid';
 import { initLucid } from '../blockfrost';
 import { useEffect, useState, useCallback } from 'react';
-import { oracleDatum1 } from '../datums';
+import { collateralDatum, loanDatum, oracleDatum1 } from '../datums';
 import { interestPayAddr, ownerPKH } from '../owner';
 import { loanRepayAction, oracleUpdateAction } from '../redeemers';
 import { interestAddr, loanAddr, collateralAddr, configAddr, oracleAddr, repayAddr, loanVal, collateralVal, oracleVal, repay, loanCS, oracleCS } from '../validators';
-import { oracleUnit, loanUnit, configUnit, timestamp, interestCalc, rewards, term, oracleTn } from '../variables';
+import { oracleUnit, loanUnit, configUnit, timestamp, interestCalc, rewards, term, oracleTn, loanAmt } from '../variables';
+import { makeOracleDatum, makeCollateralDatum, makeLoanDatum } from '../evoDatums';
 
 export function loanRepayTx(
   wallet: any, 
@@ -36,38 +37,46 @@ export function loanRepayTx(
       const oracleUnit = toUnit(oracleCS, oracleTokenName)
       const loanUnit = toUnit(loanCS, loanTokenName)
 
-      const oracleDatum = Data.from(oracleDatum1)
-      const interestUtxos = await lucid.utxosAtWithUnit(interestAddr, oracleUnit)
-      const interestIn = interestUtxos[0]
-      const exchange = oracleDatum.fields[0]
-      const lUtxos: UTxO[] = await lucid.utxosAtWithUnit(loanAddr, loanUnit)
-      const lUtxo: UTxO = lUtxos[0]
-      const inDatum = Data.from(lUtxo.datum)
-      const cUtxos: UTxO[] = await lucid.utxosAtWithUnit(collateralAddr, loanUnit)
-      const cUtxo: UTxO = cUtxos[0]
-      const configUtxos = await lucid.utxosAtWithUnit(configAddr, configUnit)
-      const configIn = configUtxos[0]
       const oracleUtxos: UTxO[] = await lucid.utxosAtWithUnit(oracleAddr, oracleUnit)
       const oracleUtxo: UTxO = oracleUtxos[0]
-      const collateralValue = 2000000n
-      const remainingValue = 0n
+      const oracleExchangeRate = exchangeRate * 1000
+      const oracleInDatum = Data.from(oracleUtxo.datum!)
+      const oracleDatum = makeOracleDatum(
+        oracleExchangeRate, 
+        timestamp, 
+        oracleInDatum.fields[2], 
+        oracleInDatum.fields[3], 
+        oracleInDatum.fields[4]
+      ) 
 
-      const loanValue = inDatum.fields[0]
-      const interestTimeframe = Number(timestamp - inDatum.fields[3]) * interestCalc(5.5, 70, 4, 300, 1000000, 200000) /// 100 + 1)
-      const accruedInterest = BigInt(Math.floor((Number(loanValue * 1000n / exchange) * interestTimeframe) / 1000000))
+      const interestUtxos = await lucid.utxosAtWithUnit(interestAddr, oracleUnit)
+      const interestIn = interestUtxos[0]
+      const lUtxos: UTxO[] = await lucid.utxosAtWithUnit(loanAddr, loanUnit)
+      const lUtxo: UTxO = lUtxos[0]
+      const loanInDatum = Data.from(lUtxo.datum!)
+      const cUtxos: UTxO[] = await lucid.utxosAtWithUnit(collateralAddr, loanUnit)
+      const cUtxo: UTxO = cUtxos[0]
+      const collateralInValue = cUtxo.assets.lovelace
+      const configUtxos = await lucid.utxosAtWithUnit(configAddr, configUnit)
+      const configIn = configUtxos[0]
+      const remainingValue = loanInDatum.fields[0] - BigInt(repayAmt)
 
-      const timeframe = 31556926000 / (Number(timestamp - inDatum.fields[3]))
+      const loanValue = loanInDatum.fields[0]
+      const interestTimeframe = Number(timestamp - loanInDatum.fields[3]) * interestCalc(5.5, 70, 4, 300, 1000000, 200000) /// 100 + 1)
+      const accruedInterest = BigInt(Math.floor(((loanValue * 1000 / exchangeRate) * interestTimeframe) / 1000000))
+
+      const timeframe = 31556926000 / (Number(timestamp - loanInDatum.fields[3]))
       const interest = interestCalc(5.5, 70, 4, 300, 1000000, 200000)
       const recalc = (Number(loanValue) * interest) / timeframe
-      const interestP = recalc * 1000 / Number(exchange)
+      const interestP = recalc * 1000 / Number(exchangeRate)
       const payment = Math.floor(interestP * 1000000) + 1
 
-      console.log(timestamp)
-      console.log(timeframe)
-      console.log(interest)
-      console.log(recalc)
-      console.log(interestP)
-      console.log(payment)
+      // console.log(timestamp)
+      // console.log(timeframe)
+      // console.log(interest)
+      // console.log(recalc)
+      // console.log(interestP)
+      // console.log(payment)
 
       const withdrawRedeemer = Data.to(
         new Constr(0, [
@@ -75,24 +84,14 @@ export function loanRepayTx(
         ])
       )
 
-      // console.log(lUtxo)
-
-      const loanDatum = Data.to(
-        new Constr(0, [
-          remainingValue,
-          rewards,
-          term,
-          timestamp,
-          oracleTn
-        ])
-      )
-
-      const collateralDatum = Data.to(
-        new Constr(0, [
-          remainingValue,
-          timestamp,
-          0n
-        ])
+      const collateralOutValue = collateralInValue - BigInt(repayAmt / exchangeRate * 1000) + 2000000n
+      const collateralOutDatum = makeCollateralDatum(collateralOut, timestamp)
+      const loanOutDatum = makeLoanDatum(
+        loanAmt, 
+        loanInDatum.fields[1], 
+        loanInDatum.fields[2], 
+        timestamp, 
+        oracleTokenName
       )
 
       const tx = await lucid
@@ -105,17 +104,17 @@ export function loanRepayTx(
         .withdraw(repayAddr, 0n, withdrawRedeemer)
         .pay.ToContract(
           loanAddr,
-          { kind: "inline", value: loanDatum },
+          { kind: "inline", value: loanOutDatum },
           { [loanUnit]: 1n }
         )
         .pay.ToContract(
           collateralAddr,
-          { kind: "inline", value: collateralDatum },
-          { lovelace: collateralValue, [loanUnit]: 1n }
+          { kind: "inline", value: collateralOutDatum },
+          { lovelace: collateralOutValue, [loanUnit]: 1n }
         )
         .pay.ToContract(
           oracleAddr,
-          { kind: "inline", value: Data.to(oracleDatum) },
+          { kind: "inline", value: oracleDatum },
           { [oracleUnit]: 1n }
         )
         .pay.ToAddress(

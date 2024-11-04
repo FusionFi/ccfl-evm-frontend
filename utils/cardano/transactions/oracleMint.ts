@@ -5,7 +5,8 @@ import { oracleDatum1, interestDatum } from '../datums';
 import { ownerAddress, ownerPKH } from '../owner';
 import { oracleMintAction } from '../redeemers';
 import { configAddr, oracleCS, oracleMint, oracleAddr, interestAddr } from '../validators';
-import { configUnit } from '../variables';
+import { borrowed, configUnit, term } from '../variables';
+import { makeinterestDatum, makeOracleDatum } from '../evoDatums';
 
 export function oracleMintTx(
   wallet: any, 
@@ -16,7 +17,8 @@ export function oracleMintTx(
   optimal: number, 
   slope1: number, 
   slope2: number, 
-  supply: number
+  supply: number,
+  term: number
 ) {
 
   const [lucid, setLucid] = useState<Lucid | null>(null);
@@ -37,12 +39,26 @@ export function oracleMintTx(
       }
       console.log(wallet);
 
-      const oracleDatum = oracleDatum1
+      const oracleDatum = makeOracleDatum(
+        exchangeRate, 
+        currency, 
+        base, 
+        supply,
+        borrowed,
+      )
+
+      const interestDatum = makeinterestDatum(
+        currency, 
+        optimal, 
+        slope1, 
+        slope2,
+        term,
+      )
       const utxos: UTxO[] = await lucid.utxosAt(wallet.address)
       const utxo: UTxO = utxos[0]
       const configUtxos: UTxO[] = await lucid.utxosAtWithUnit(configAddr, configUnit)
       const configIn: UTxO = configUtxos[0]
-      const oracleTN = utxo.txHash.slice(0, 30).concat(toHex(utxo.outputIndex))
+      const oracleTN = utxo.txHash.slice(0, 30).concat(toHex(new Uint8Array([utxo.outputIndex])))
       const oracleUnit = toUnit(oracleCS, oracleTN)
 
       const tx = await lucid

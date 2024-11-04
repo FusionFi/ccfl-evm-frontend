@@ -1,4 +1,4 @@
-import { Constr, Data, Lucid, UTxO } from '@lucid-evolution/lucid';
+import { Constr, Data, Lucid, toUnit, UTxO } from '@lucid-evolution/lucid';
 import { initLucid } from '../blockfrost';
 import { useEffect, useState, useCallback } from 'react';
 import { oracleDatum1 } from '../datums';
@@ -6,13 +6,14 @@ import { ownerPKH } from '../owner';
 import { loanCloseAction, oracleUpdateAction, burnLoanAction } from '../redeemers';
 import { loanAddr, collateralAddr, configAddr, oracleAddr, loanMint, closeAddr, loanVal, collateralVal, oracleVal, close } from '../validators';
 import { loanUnit, configUnit, oracleUnit } from '../variables';
+import { loanCS, oracleCS } from '../evoValidators';
+import { makeOracleDatum } from '../evoDatums';
 
 export function loanBurnTx(
   wallet: any, 
   loanTokenName: string, 
   oracleTokenName: string, 
   exchangeRate: number
-
 ) {
   const [lucid, setLucid] = useState<Lucid | null>(null);
   const [txHash, setTxHash] = useState("None");
@@ -31,21 +32,24 @@ export function loanBurnTx(
         throw Error("Lucid not instantiated");
       }
       console.log(wallet);
+      const timestamp = Date.now()
 
+      const configUtxos = await lucid.utxosAtWithUnit(configAddr, configUnit)
+      const configIn = configUtxos[0]
       const oracleUnit = toUnit(oracleCS, oracleTokenName)
       const loanUnit = toUnit(loanCS, loanTokenName)
 
-      const oracleDatum = Data.from(oracleDatum1)
+      const oracleUtxos: UTxO[] = await lucid.utxosAtWithUnit(oracleAddr, oracleUnit)
+      const oracleUtxo: UTxO = oracleUtxos[0]
+      const oracleExchangeRate = exchangeRate * 1000
+      const oracleInDatum = Data.from(oracleUtxo.datum!)
+      const oracleDatum = makeOracleDatum(oracleExchangeRate, timestamp, oracleInDatum.fields[2], oracleInDatum.fields[3], oracleInDatum.fields[4])
+      
       const lUtxos: UTxO[] = await lucid.utxosAtWithUnit(loanAddr, loanUnit)
       const lUtxo: UTxO = lUtxos[0]
       const cUtxos: UTxO[] = await lucid.utxosAtWithUnit(collateralAddr, loanUnit)
       const cUtxo: UTxO = cUtxos[0]
-      const configUtxos = await lucid.utxosAtWithUnit(configAddr, configUnit)
-      const configIn = configUtxos[0]
-      const oracleUtxos: UTxO[] = await lucid.utxosAtWithUnit(oracleAddr, oracleUnit)
-      const oracleUtxo: UTxO = oracleUtxos[0]
-      const exchange = exchangeRate
-      const inDatum = Data.from(lUtxo.datum)
+      const inDatum = Data.from(lUtxo.datum!)
 
       const withdrawRedeemer = Data.to(
         new Constr(0, [

@@ -1,15 +1,17 @@
-import { Lucid, UTxO } from '@lucid-evolution/lucid';
+import { Data, Lucid, toUnit, UTxO } from '@lucid-evolution/lucid';
 import { initLucid } from '../blockfrost';
 import { useEffect, useState, useCallback } from 'react';
 import { oracleDatum1 } from '../datums';
 import { ownerPKH } from '../owner';
 import { oracleUpdateAction } from '../redeemers';
-import { oracleAddr, oracleVal } from '../validators';
+import { oracleAddr, oracleCS, oracleVal } from '../validators';
 import { oracleUnit } from '../variables';
+import { makeOracleDatum } from '../evoDatums';
 
 export function oracleUpdateTx(
   wallet: any, 
-  exchangeRate: number
+  exchangeRate: number,
+  oracleTokenName: string,
 ) {
   const [lucid, setLucid] = useState<Lucid | null>(null);
   const [txHash, setTxHash] = useState("None");
@@ -29,9 +31,21 @@ export function oracleUpdateTx(
       }
       console.log(wallet);
 
+      const timestamp = Date.now()
+      const oracleUnit = toUnit(oracleCS, oracleTokenName)      
+
       const utxos: UTxO[] = await lucid.utxosAtWithUnit(oracleAddr, oracleUnit)
       const utxo: UTxO = utxos[0]
-      const oracleDatum = oracleDatum1
+
+      const oracleExchangeRate = exchangeRate * 1000
+      const oracleInDatum = Data.from(utxo.datum!)
+      const oracleDatum = makeOracleDatum(
+        oracleExchangeRate, 
+        timestamp, 
+        oracleInDatum.fields[2], 
+        oracleInDatum.fields[3], 
+        oracleInDatum.fields[4]
+      ) 
 
       const tx = await lucid
         .newTx()

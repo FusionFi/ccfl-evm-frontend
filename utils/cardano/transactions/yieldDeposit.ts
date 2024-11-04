@@ -31,8 +31,9 @@ export function yieldDepositTx(
       console.log(wallet);
 
       const loanUnit = toUnit(loanCS, loanTokenName)
+      const timestamp = Date.now()
 
-      const yieldAmt = 1000000n
+      const yieldAmt = BigInt(yieldAmount)
       const cUtxos: UTxO[] = await lucid.utxosAtWithUnit(collateralAddr, loanUnit)
       const cUtxo: UTxO = cUtxos[0]
       const configUtxos = await lucid.utxosAtWithUnit(configAddr, configUnit)

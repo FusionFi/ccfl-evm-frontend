@@ -6,10 +6,12 @@ import { ownerPKH } from '../owner';
 import { loanLiquidateAction, oracleUpdateAction } from '../redeemers';
 import { loanAddr, collateralAddr, configAddr, oracleAddr, oracleVal, loanVal, collateralVal, liquidateAddr, liquidate, loanCS, oracleCS } from '../validators';
 import { loanUnit, configUnit, oracleUnit, timestamp, oracleTn } from '../variables';
+import { makeCollateralDatum, makeLoanDatum, makeOracleDatum } from '../evoDatums';
 
 export function loanLiquidateTx(
   wallet: any, 
-  loanTokenName: string,   
+  loanTokenName: string,
+  loanAmount: number,
   liquidationAmt: number, 
   oracleTokenName: string, 
   exchangeRate: number
@@ -31,21 +33,25 @@ export function loanLiquidateTx(
         throw Error("Lucid not instantiated");
       }
       console.log(wallet);
+      const timestamp = Date.now()
+      const oracleExchangeRate = exchangeRate * 1000
 
       const oracleUnit = toUnit(oracleCS, oracleTokenName)
       const loanUnit = toUnit(loanCS, loanTokenName)
 
-      const oracleDatum = Data.from(oracleDatum7)
-      const newLoanValue = 0n
-      const lUtxos: UTxO[] = await lucid.utxosAtWithUnit(loanAddr, loanUnit)
-      const lUtxo: UTxO = lUtxos[0]
-      const inDatum = Data.from(lUtxo.datum)
-      const cUtxos: UTxO[] = await lucid.utxosAtWithUnit(collateralAddr, loanUnit)
-      const cUtxo: UTxO = cUtxos[0]
       const configUtxos = await lucid.utxosAtWithUnit(configAddr, configUnit)
       const configIn = configUtxos[0]
       const oracleUtxos: UTxO[] = await lucid.utxosAtWithUnit(oracleAddr, oracleUnit)
       const oracleUtxo: UTxO = oracleUtxos[0]
+      const oracleDatum = makeOracleDatum(exchangeRate, timestamp, oracleTn, liquidationAmt, 0n)
+      
+      const newLoanValue = loanAmount - liquidationAmt
+      
+      const lUtxos: UTxO[] = await lucid.utxosAtWithUnit(loanAddr, loanUnit)
+      const lUtxo: UTxO = lUtxos[0]
+      const inDatum = Data.from(lUtxo.datum!)
+      const cUtxos: UTxO[] = await lucid.utxosAtWithUnit(collateralAddr, loanUnit)
+      const cUtxo: UTxO = cUtxos[0]
 
       const withdrawRedeemer = Data.to(
         new Constr(0, [
@@ -53,22 +59,24 @@ export function loanLiquidateTx(
         ])
       )
 
-      const liquidateDatum = Data.to(
-        new Constr(0, [
-          newLoanValue,
-          newLoanValue,
-          0n,
-          timestamp,
-          oracleTn
-        ]))
+      const liquidateLoanDatum = makeLoanDatum(newLoanValue, newLoanValue, inDatum.fields[2], timestamp, oracleTn)
+      // const liquidateDatum = Data.to(
+      //   new Constr(0, [
+      //     newLoanValue,
+      //     newLoanValue,
+      //     0n,
+      //     timestamp,
+      //     oracleTn
+      //   ]))
 
-      const liquidCollateralDatum = Data.to(
-        new Constr(0, [
-          newLoanValue * 2n,
-          timestamp,
-          0n
-        ])
-      )
+      const liquidateCollateralDatum = makeCollateralDatum(newLoanValue * 2, timestamp)
+      // const liquidCollateralDatum = Data.to(
+      //   new Constr(0, [
+      //     newLoanValue * 2n,
+      //     timestamp,
+      //     0n
+      //   ])
+      // )
 
       console.log(Data.from(lUtxo.datum))
 
@@ -80,12 +88,12 @@ export function loanLiquidateTx(
         .readFrom([configIn])
         .pay.ToContract(
           loanAddr,
-          { kind: "inline", value: liquidateDatum },
+          { kind: "inline", value: liquidateLoanDatum },
           { [loanUnit]: 1n }
         )
         .pay.ToContract(
           collateralAddr,
-          { kind: "inline", value: liquidCollateralDatum },
+          { kind: "inline", value: liquidateCollateralDatum },
           { lovelace: 2000000n, [loanUnit]: 1n }
         )
         .pay.ToContract(

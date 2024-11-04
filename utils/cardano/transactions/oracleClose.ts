@@ -1,12 +1,12 @@
-import { Lucid, UTxO } from '@lucid-evolution/lucid';
+import { Lucid, toUnit, UTxO } from '@lucid-evolution/lucid';
 import { initLucid } from '../blockfrost';
 import { useEffect, useState, useCallback } from 'react';
 import { ownerPKH } from '../owner';
 import { oracleCloseAction, oracleBurnAction } from '../redeemers';
-import { oracleAddr, interestAddr, oracleVal, interestVal, oracleMint } from '../validators';
+import { oracleAddr, interestAddr, oracleVal, interestVal, oracleMint, oracleCS } from '../validators';
 import { oracleUnit } from '../variables';
 
-export function oracleCloseTx(wallet: any) {
+export function oracleCloseTx(wallet: any, oracleTokenName: string) {
   const [lucid, setLucid] = useState<Lucid | null>(null);
   const [txHash, setTxHash] = useState("None");
 
@@ -25,6 +25,7 @@ export function oracleCloseTx(wallet: any) {
       }
       console.log(wallet);
 
+      const oracleUnit = toUnit(oracleCS, oracleTokenName)
       const utxos: UTxO[] = await lucid.utxosAtWithUnit(oracleAddr, oracleUnit)
       const utxo: UTxO = utxos[0]
       const iUtxos: UTxO[] = await lucid.utxosAtWithUnit(interestAddr, oracleUnit)
