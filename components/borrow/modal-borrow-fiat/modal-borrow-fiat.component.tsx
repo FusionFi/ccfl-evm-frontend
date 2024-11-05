@@ -174,8 +174,8 @@ export default function ModalBorrowFiatComponent({
       }),
       children: ModalBorrowFiatConfirmComponent({
         detail: tab,
-        next: () => {
-          _handleOk(tab);
+        next: (data: any) => {
+          _handleOk({ ...tab, ...data });
           setTab({
             active: '1',
           });
@@ -185,6 +185,8 @@ export default function ModalBorrowFiatComponent({
             ...tab,
             active: '3',
           }),
+        provider,
+        selectedChain,
       }),
     },
   ];

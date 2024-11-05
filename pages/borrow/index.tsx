@@ -259,10 +259,10 @@ export default function BorrowPage() {
     }
   };
 
-  const handleBorrowFiatOk = ({ paymentMethod }: any) => {
+  const handleBorrowFiatOk = (data: any) => {
     setModal({
       type: BorrowModalType.FiatSuccess,
-      paymentMethod,
+      ...data,
     });
   };
 
@@ -414,8 +414,9 @@ export default function BorrowPage() {
 
       <ModalBorrowFiatSuccessComponent
         isModalOpen={BorrowModalType.FiatSuccess == modal.type}
-        paymentMethod={modal.paymentMethod}
+        modalInfo={modal}
         handleCancel={handleCancel}
+        handleLoans={handleLoans}
       />
     </div>
   );

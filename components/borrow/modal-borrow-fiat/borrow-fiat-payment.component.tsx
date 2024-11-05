@@ -244,6 +244,7 @@ const PaymentDetail = ({
                 <Input
                   placeholder={t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_ACCOUNT_OWNER_PLACEHOLDER')}
                   className="borrow-fiat-payment-container__detail__content__item__control-input"
+                  autoComplete="off"
                 />
               </Form.Item>
               {accountOwnerError?.length > 0 ? (
@@ -317,6 +318,7 @@ const PaymentDetail = ({
               <Input
                 placeholder={t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_DESCRIPTION_PLACEHOLDER')}
                 className="borrow-fiat-payment-container__detail__content__item__control-input"
+                autoComplete="off"
               />
             </Form.Item>
           </div>

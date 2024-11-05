@@ -85,6 +85,12 @@ export default function ModalBorrowFiatMethodComponent({
       setPayoutMethod(0);
     }
   };
+  console.log(
+    'tokenList[repaymentCurrency]?.asset',
+    tokenList,
+    repaymentCurrency,
+    tokenList[repaymentCurrency]?.asset,
+  );
 
   const onFinish: FormProps<FieldType>['onFinish'] = data => {
     _setIsPending(true);
@@ -99,7 +105,7 @@ export default function ModalBorrowFiatMethodComponent({
         paymentMethod: payoutMethod,
         receiveEmail: receiveEmail,
         chainName: _chain?.name,
-        assetName: tokenList[repaymentCurrency].asset,
+        assetName: tokenList[repaymentCurrency - 1]?.asset,
       });
       _setIsPending(false);
     }, 1000);

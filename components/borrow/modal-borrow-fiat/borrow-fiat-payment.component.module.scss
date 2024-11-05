@@ -481,6 +481,16 @@
         transition: background-color 600000000s ease-in-out 0s;
         -webkit-text-fill-color: var(--character-title-85, rgba(255, 255, 255, 0.85)) !important;
       }
+      input:is(:-webkit-autofill, :autofill) {
+        color: white;
+        -webkit-text-fill-color: var(--character-title-85, rgba(255, 255, 255, 0.85)) !important;
+
+        &:focus,
+        &:hover {
+          color: white;
+          -webkit-text-fill-color: var(--character-title-85, rgba(255, 255, 255, 0.85)) !important;
+        }
+      }
       .ant-input-number-status-error,
       .ant-input-status-error,
       .ant-input-outlined {

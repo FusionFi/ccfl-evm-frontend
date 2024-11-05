@@ -1,23 +1,38 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import cssClass from './borrow-fiat-confirm.component.module.scss';
 import { twMerge } from 'tailwind-merge';
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
 import { Tooltip, Form, Select, Checkbox, InputNumber, Input, Button } from 'antd';
 import type { CheckboxProps, FormProps } from 'antd';
-import { ArrowRightOutlined } from '@ant-design/icons';
+import { ArrowRightOutlined, LoadingOutlined } from '@ant-design/icons';
 import { InfoCircleIcon } from '@/components/icons/info-circle.icon';
 import Link from 'next/link';
 import { QuestionCircleIcon } from '@/components/icons/question-circle.icon';
-import { formatNumber } from '@/utils/common';
+import { formatNumber, toAmountShow, toLessPart, toUnitWithDecimal } from '@/utils/common';
 import { CircleFlag } from 'react-circle-flags';
-import { FIAT_METHOD } from '@/constants/common.constant';
+import { CONTRACT_ADDRESS, FIAT_METHOD, TRANSACTION_STATUS } from '@/constants/common.constant';
+import { useAccount } from 'wagmi';
+import BigNumber from 'bignumber.js';
+import {
+  useAllowanceBorrow,
+  useApprovalBorrow,
+  useCreateLoan,
+  useGetGasFeeApprove,
+} from '@/hooks/provider.hook';
+import service_borrow from '@/utils/backend/borrow';
 
 type FieldType = {
   amount?: any;
 };
 
-export default function ModalBorrowFiatCollateralComponent({ next, back, detail }: any) {
+export default function ModalBorrowFiatCollateralComponent({
+  next,
+  back,
+  detail,
+  provider,
+  selectedChain,
+}: any) {
   const {
     paymentMethod,
     countryInfo,
@@ -32,26 +47,277 @@ export default function ModalBorrowFiatCollateralComponent({ next, back, detail 
     repaymentCurrency,
     chainName,
     assetName,
+    finalFiatFee,
+    collateralToken,
+    collateralAmount,
+    collateralAmountUSD,
+    healthFactor,
+    active,
+    stableCoinAddress,
+    collateralData,
+    amountStableCoin,
+    stableCoindDecimal,
   } = detail;
   const { t } = useTranslation('common');
+  const { connector } = useAccount();
+
+  const [allowanceBorrow] = useAllowanceBorrow(provider);
+  const [getGasFeeApprove] = useGetGasFeeApprove(provider);
+  const [approveBorrow] = useApprovalBorrow(provider);
+  const [createLoan] = useCreateLoan(provider);
+
+  const [loadingGasFee, setLoadingGasFee] = useState<boolean>(false);
   const [_isPending, _setIsPending] = useState(false);
   const [_isApproved, _setIsApproved] = useState(false);
+  const [gasFee, setGasFee] = useState(0);
+  const [errorEstimate, setErrorEstimate] = useState({
+    nonEnoughBalanceWallet: false,
+    exceedsAllowance: false,
+    nonEnoughBalanceCollateral: false,
+  }) as any;
+  const [isYield, setIsYield] = useState(false);
+  const [allowanceNumber, setAllowanceNumber] = useState(0) as any;
+  const [errorTx, setErrorTx] = useState() as any;
+  const [status, setStatus] = useState(TRANSACTION_STATUS.SUCCESS);
+  const [txHash, setTxHash] = useState();
 
   const handleReceiveEmailCheck: CheckboxProps['onChange'] = e => {
-    console.log(`checked = ${e.target.checked}`);
+    setIsYield(e.target.checked);
   };
 
-  const onFinish = () => {
+  const onFinish = async () => {
+    const connector_provider = await connector?.getProvider();
+    const finalData = {
+      bank: bank,
+      accountNumber: accountNumber,
+      accountOwner: accountOwner,
+      purposePayment: purposePayment,
+      sourceIncome: sourceIncome,
+      description: description,
+      collateralData: collateralData,
+      collateralAmount: collateralAmount,
+      errorTx: errorTx,
+      status: status,
+      txHash: txHash,
+      amount: amount,
+      countryInfo: countryInfo,
+      paymentMethod: paymentMethod,
+    };
+
     _setIsPending(true);
-    setTimeout(() => {
+    setTimeout(async () => {
       if (_isApproved) {
-        next();
+        try {
+          _setIsPending(true);
+          let tx = await createLoan({
+            amount: toUnitWithDecimal(amountStableCoin, stableCoindDecimal),
+            amountCollateral: toUnitWithDecimal(collateralAmount, collateralData.decimals),
+            stableCoin: stableCoinAddress,
+            collateral: collateralData.address,
+            IsYieldGenerating: isYield,
+            IsFiat: true,
+            provider: connector_provider,
+            account: provider?.account,
+            contract_address: CONTRACT_ADDRESS,
+          });
+          if (tx?.link) {
+            next({ ...finalData, txHash: tx.link, errorTx: undefined });
+            setTxHash(tx.link);
+            setErrorTx(undefined);
+            setErrorEstimate({
+              nonEnoughBalanceWallet: false,
+              exceedsAllowance: false,
+              nonEnoughBalanceCollateral: false,
+            });
+            setStatus(TRANSACTION_STATUS.SUCCESS);
+          }
+          if (tx?.error) {
+            next({ ...finalData, status: TRANSACTION_STATUS.FAILED, errorTx: tx.error });
+            setStatus(TRANSACTION_STATUS.FAILED);
+            setErrorTx(tx.error as any);
+          }
+          _setIsPending(false);
+        } catch (error) {
+          next({ ...finalData, status: TRANSACTION_STATUS.FAILED, errorTx: error });
+          setErrorTx(error);
+          setStatus(TRANSACTION_STATUS.FAILED);
+          _setIsPending(false);
+        }
       } else {
-        _setIsApproved(true);
+        try {
+          _setIsPending(true);
+          let tx = await approveBorrow({
+            provider: connector_provider,
+            contract_address: CONTRACT_ADDRESS,
+            amount: toUnitWithDecimal(collateralAmount, collateralData.decimals),
+            address: provider?.account,
+            tokenContract: collateralData.address,
+          });
+
+          if (tx?.link) {
+            _setIsApproved(true);
+            setErrorTx(undefined);
+            setErrorEstimate({
+              nonEnoughBalanceWallet: false,
+              exceedsAllowance: false,
+              nonEnoughBalanceCollateral: false,
+            });
+            setStatus(TRANSACTION_STATUS.SUCCESS);
+          }
+          if (tx?.error) {
+            next({ ...finalData, status: TRANSACTION_STATUS.FAILED, errorTx: tx.error });
+            setStatus(TRANSACTION_STATUS.FAILED);
+            setErrorTx(tx.error as any);
+          }
+          _setIsPending(false);
+        } catch (error) {
+          next({ ...finalData, status: TRANSACTION_STATUS.FAILED, errorTx: error });
+          setErrorTx(error);
+          setStatus(TRANSACTION_STATUS.FAILED);
+          _setIsPending(false);
+        }
       }
       _setIsPending(false);
     }, 1000);
   };
+
+  const handleCheckAllowance = async () => {
+    if (
+      collateralData?.address &&
+      provider?.account &&
+      stableCoinAddress &&
+      collateralAmount &&
+      collateralAmount > 0 &&
+      !_isPending
+    ) {
+      const connector_provider = await connector?.getProvider();
+      try {
+        let res = (await allowanceBorrow({
+          provider: connector_provider,
+          tokenAddress: collateralData.address,
+          account: provider?.account,
+          spender: CONTRACT_ADDRESS,
+        })) as any;
+
+        const isNotNeedToApprove = new BigNumber(
+          toAmountShow(res, collateralData.decimals),
+        ).isGreaterThanOrEqualTo(collateralAmount);
+
+        console.log(
+          'allowance borrow',
+          res,
+          toAmountShow(res, collateralData.decimals),
+          collateralAmount,
+          isNotNeedToApprove,
+        );
+        setAllowanceNumber(toAmountShow(res, collateralData.decimals));
+        if (isNotNeedToApprove) {
+          _setIsApproved(true);
+        } else {
+          _setIsApproved(false);
+        }
+      } catch (error) {
+        console.log('error', error);
+      }
+    }
+  };
+
+  const handleGetFeeCreateLoan = async () => {
+    setTimeout(async () => {
+      if (_isApproved) {
+        if (
+          amountStableCoin &&
+          amountStableCoin > 0 &&
+          collateralAmount &&
+          collateralAmount > 0 &&
+          stableCoinAddress &&
+          collateralData.address &&
+          allowanceNumber &&
+          allowanceNumber >= collateralAmount
+        ) {
+          const connector_provider = await connector?.getProvider();
+          try {
+            setLoadingGasFee(true);
+            let res = (await createLoan({
+              provider: connector_provider,
+              account: provider?.account,
+              contract_address: CONTRACT_ADDRESS,
+              amount: toUnitWithDecimal(amountStableCoin, stableCoindDecimal),
+              stableCoin: stableCoinAddress,
+              amountCollateral: toUnitWithDecimal(collateralAmount, collateralData.decimals),
+              collateral: collateralData.address,
+              IsYieldGenerating: isYield,
+              isFiat: true,
+              isGas: true,
+            })) as any;
+            let res_price = (await service_borrow.getPrice(selectedChain?.id, 'ETH')) as any;
+            console.log('handleGetFeeCreateLoan res', res);
+
+            if (res && res.gasPrice && res_price && res_price.price) {
+              let gasFee = res.gasPrice * res_price.price;
+              setGasFee(gasFee);
+            }
+
+            setErrorEstimate({
+              ...errorEstimate,
+              nonEnoughBalanceWallet: res?.nonEnoughMoney,
+              exceedsAllowance: res?.exceedsAllowance,
+            });
+            setLoadingGasFee(false);
+          } catch (error: any) {
+            setLoadingGasFee(false);
+          }
+        }
+      }
+    }, 500);
+  };
+
+  const handleGetFeeApprove = async () => {
+    setTimeout(async () => {
+      if (!_isApproved) {
+        if (
+          collateralAmount &&
+          collateralAmount > 0 &&
+          collateralData.address &&
+          !!(allowanceNumber == 0 || allowanceNumber < collateralAmount)
+        ) {
+          const connector_provider = await connector?.getProvider();
+          try {
+            setLoadingGasFee(true);
+            let res = (await getGasFeeApprove({
+              provider: connector_provider,
+              account: provider?.account,
+              amount: toUnitWithDecimal(collateralAmount, collateralData.decimals),
+              tokenAddress: collateralData.address,
+              contract_address: CONTRACT_ADDRESS,
+            })) as any;
+            let res_price = (await service_borrow.getPrice(selectedChain?.id, 'ETH')) as any;
+            if (res && res.gasPrice && res_price && res_price.price) {
+              let gasFee = res.gasPrice * res_price.price;
+              setGasFee(gasFee);
+              console.log('handleGetFee', res, gasFee);
+            }
+            setErrorEstimate({
+              ...errorEstimate,
+              nonEnoughBalanceWallet: res?.nonEnoughMoney,
+              exceedsAllowance: res?.exceedsAllowance,
+            });
+            setLoadingGasFee(false);
+          } catch (error) {
+            setLoadingGasFee(false);
+          }
+        }
+      }
+    }, 500);
+  };
+
+  useEffect(() => {
+    if (active == 4) {
+      handleCheckAllowance();
+      handleGetFeeApprove();
+      handleGetFeeCreateLoan();
+    }
+  }, [isYield, active]);
 
   return (
     <div className={cssClass['borrow-fiat-confirm-wrapper']}>
@@ -180,7 +446,11 @@ export default function ModalBorrowFiatCollateralComponent({ next, back, detail 
             </div>
             <div className="borrow-fiat-confirm-container__tx__item__value">
               <span className="borrow-fiat-confirm-container__tx__item__value__unit">$</span>
-              2.00
+              {loadingGasFee ? (
+                <LoadingOutlined className="mr-1" />
+              ) : (
+                formatNumber(toLessPart(gasFee, 2))
+              )}
             </div>
           </div>
           {paymentMethod == 1 && (
@@ -198,7 +468,7 @@ export default function ModalBorrowFiatCollateralComponent({ next, back, detail 
 
               <div className="borrow-fiat-confirm-container__tx__item__value">
                 <span className="borrow-fiat-confirm-container__tx__item__value__unit">$</span>
-                520.00
+                {finalFiatFee}
               </div>
             </div>
           )}
@@ -223,8 +493,17 @@ export default function ModalBorrowFiatCollateralComponent({ next, back, detail 
                 style={{
                   alignItems: 'center',
                 }}>
-                <Image src="/images/common/WETH.png" alt="USDC" width={16} height={16} />
-                WETH
+                <Image
+                  src={
+                    collateralToken
+                      ? `/images/common/${collateralToken}.png`
+                      : `/images/common/WETH.png`
+                  }
+                  alt={collateralToken}
+                  width={16}
+                  height={16}
+                />
+                {collateralToken}
               </div>
             </div>
             <div className="borrow-fiat-confirm-container__detail__content__item">
@@ -232,12 +511,12 @@ export default function ModalBorrowFiatCollateralComponent({ next, back, detail 
                 {t('BORROW_FIAT_MODAL_TAB_CONFIRM_COLLATERAL_AMOUNT')}
               </div>
               <div className="borrow-fiat-confirm-container__detail__content__item__value">
-                <span className="text-white font-medium">7.87</span>
+                <span className="text-white font-medium">{collateralAmount}</span>
                 <span className="borrow-fiat-confirm-container__detail__content__item__value__unit">
-                  WETH
+                  {collateralToken}
                 </span>
                 <span className="borrow-fiat-confirm-container__detail__content__item__value__price">
-                  $15,765.12
+                  ${collateralAmountUSD}
                 </span>
               </div>
             </div>
@@ -248,14 +527,14 @@ export default function ModalBorrowFiatCollateralComponent({ next, back, detail 
                 style={{
                   alignItems: 'center',
                 }}>
-                <span className="font-bold text-base">3.31B</span>
+                <span className="font-bold text-base">∞</span>
                 <ArrowRightOutlined />
                 <span
                   className="font-bold text-base"
                   style={{
                     color: '#52C41A',
                   }}>
-                  3.33B
+                  {healthFactor}
                 </span>
               </div>
             </div>
