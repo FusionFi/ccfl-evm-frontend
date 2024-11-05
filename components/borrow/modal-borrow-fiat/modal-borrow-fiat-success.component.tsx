@@ -9,7 +9,8 @@ import { LinkIcon } from '@/components/icons/link.icon';
 import { CopyOutlined } from '@ant-design/icons';
 import { TRANSACTION_STATUS, TX_LINK } from '@/constants/common.constant';
 import { useNetworkManager } from '@/hooks/supply.hook';
-import { useConnectedNetworkManager } from '@/hooks/auth.hook';
+import { useAuth, useConnectedNetworkManager, useProviderManager } from '@/hooks/auth.hook';
+import service from '@/utils/backend/encryptus';
 
 enum PayoutMethod {
   BankWire = 1,
@@ -210,14 +211,25 @@ export default function ModalBorrowFiatSuccessComponent({
     status,
     countryInfo,
     errorTx,
+    assetName,
+    finalFiatFee,
   } = modalInfo;
   console.log('modalInfo', modalInfo);
+
+  const [auth] = useAuth();
+  console.log('auth', auth);
+
+  const [provider] = useProviderManager();
 
   const [networks] = useNetworkManager();
   const { selectedChain } = useConnectedNetworkManager();
   const selectedNetwork = useMemo(() => {
     return networks?.get(selectedChain?.id) || {};
   }, [networks, selectedChain]);
+
+  console.log('provider', provider, selectedChain);
+
+  const [loading, setLoading] = useState(false);
 
   const _handleCancel = useCallback(() => {
     handleCancel();
@@ -226,7 +238,37 @@ export default function ModalBorrowFiatSuccessComponent({
     }
   }, []);
 
-  const sendInfo = () => {};
+  const sendInfo = async () => {
+    try {
+      setLoading(true);
+      const res_balance = (await service.createFiatLoan({
+        userEncryptusId: auth?.encryptus_id,
+        userWalletAddress: provider?.account,
+        networkId: selectedChain?.id,
+        txHash: txHash,
+        payoutMethod: paymentMethod,
+        country: (countryInfo?.countryCode).toUpperCase(),
+        currency: countryInfo?.currency,
+        amount: amount,
+        repaymentToken: assetName,
+        payoutDetail: {
+          bank: bank,
+          account_number: accountNumber,
+          account_owner: accountOwner,
+          purpose_of_payment: purposePayment,
+          source_of_income: sourceIncome,
+          description: description,
+          fiat_transaction_fee: finalFiatFee,
+        },
+        isReceiveEmail: true,
+      })) as any;
+
+      setLoading(false);
+    } catch (error) {
+      console.log('error', error);
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     sendInfo();
