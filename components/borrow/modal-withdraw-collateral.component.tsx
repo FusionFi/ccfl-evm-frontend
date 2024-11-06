@@ -69,9 +69,9 @@ export default function ModalWithdrawCollateralComponent({
   const [loading, setLoading] = useState<boolean>(false);
   const [exchangeRate, setExchange] = useState(0);
   const [tokenValue, setTokenValue] = useState<number>(0);
-  const { createTx, txHash } = loanBalanceTx(wallet, loanTokenName, tokenValue, oracleTokenName, exchangeRate);
+  const [minCollateral, setMinCollateral] = useState(0);
+  const { createTx, txHash } = loanBalanceTx(wallet, loanTokenName, loanAmount, tokenValue, oracleTokenName, exchangeRate);
 
-  const minCollateral = (loanAmount / exchangeRate) * 2
   console.log('minCollateral: ', minCollateral);
 
   const status = 'SUCCESS';
@@ -89,7 +89,8 @@ export default function ModalWithdrawCollateralComponent({
     try {
       const res = await getExchangeRate('cardano');
       console.log(res);
-      return setExchange(res * 1000);
+      setExchange(res * 1000);
+      return setMinCollateral((loanAmount / res) * 2);
     } catch (error) {
       console.error('Error fetching exchange rate:', error);
     }

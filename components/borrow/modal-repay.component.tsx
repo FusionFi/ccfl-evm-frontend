@@ -76,6 +76,7 @@ export default function ModalBorrowComponent({
 
   const [loading, setLoading] = useState<boolean>(false);
   const [exchangeRate, setExchange] = useState(0);
+  const [minCollateral, setMinCollateral] = useState(0);
   const { createTx, txHash } = loanRepayTx(wallet, loanTokenName, tokenValue, oracleTokenName, exchangeRate);
 
   const status = 'SUCCESS';
@@ -93,7 +94,8 @@ export default function ModalBorrowComponent({
     try {
       const res = await getExchangeRate('cardano');
       console.log(res);
-      return setExchange(res * 1000);
+      setExchange(res * 1000);
+      return setMinCollateral((loanAmount / res) * 2);
     } catch (error) {
       console.error('Error fetching exchange rate:', error);
     }
@@ -170,7 +172,7 @@ export default function ModalBorrowComponent({
                 </div>
                 <div className="modal-borrow-balance">
                   <span>
-                    {t('FORM_MINIMUM_AMOUNT')}: 0.562 {currentToken?.toUpperCase()}
+                    {t('FORM_MINIMUM_AMOUNT')}: {minCollateral} {currentToken?.toUpperCase()}
                   </span>
                   {/* <span className="insufficient">{t('BORROW_MODAL_INSUFFICIENT_BALANCE')}</span> */}
                 </div>

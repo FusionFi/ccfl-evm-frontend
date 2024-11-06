@@ -89,8 +89,10 @@ export default function ModalBorrowComponent({
   const [tokenValue, setTokenValue] = useState(0);
   const [collateralValue, setCollateralValue] = useState(0);
   const [exchange, setExchange] = useState(0);
+  const [minCollateral, setMinCollateral] = useState(0);
+
   const minimumAmount = 2;
-  const { createTx, txHash } = loanMintTx(wallet, tokenValue!, oracleTokenName, exchange);
+  const { createTx, txHash } = loanMintTx(wallet, tokenValue!, oracleTokenName, 0, exchange);
   
   const status = 'SUCCESS';
   const renderTitle = () => {
@@ -107,7 +109,8 @@ export default function ModalBorrowComponent({
     try {
       const res = await getExchangeRate('cardano');
       console.log(res);
-      return setExchange(res * 1000);
+      setExchange(res * 1000);
+      return setMinCollateral((tokenValue / res) * 2);
     } catch (error) {
       console.error('Error fetching exchange rate:', error);
     }
@@ -127,7 +130,7 @@ export default function ModalBorrowComponent({
   }, [isModalOpen]);
 
   const handleApprove = async () => {
-    if (!tokenValue || !collateralValue || collateralValue < minimumAmount) return;
+    if (!tokenValue || !collateralValue || collateralValue < minCollateral) return;
     // await createTx();
     console.log('Approve: ', tokenValue);
     console.log('OracleTokenName: ', oracleTokenName);
@@ -264,7 +267,7 @@ export default function ModalBorrowComponent({
                   </div>
                 </div>
                 <div className="modal-borrow-minimum">
-                  <span className="mr-1">Minimum amount: </span> {minimumAmount} {token}
+                  <span className="mr-1">Minimum amount: </span> {minCollateral} {token}
                 </div>
                 <div className="flex justify-between items-center modal-borrow-health c-white">
                   <div className="modal-borrow-sub-content">{t('BORROW_MODAL_BORROW_HEALTH')}</div>
@@ -305,7 +308,7 @@ export default function ModalBorrowComponent({
                     <Button
                       htmlType="submit"
                       type="primary"
-                      disabled={!tokenValue || !collateralValue || collateralValue < minimumAmount}
+                      disabled={!tokenValue || !collateralValue || collateralValue < minCollateral}
                       className="w-full"
                       loading={loading}
                       onClick={handleApprove}>
@@ -323,7 +326,7 @@ export default function ModalBorrowComponent({
                         htmlType="submit"
                         type="primary"
                         disabled={
-                          !tokenValue || !collateralValue || collateralValue < minimumAmount
+                          !tokenValue || !collateralValue || collateralValue < minCollateral
                         }
                         className="w-full"
                         loading={loading}>

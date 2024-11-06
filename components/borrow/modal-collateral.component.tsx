@@ -55,6 +55,7 @@ export default function ModalCollateralComponent({
 
   const [tokenValue, setTokenValue] = useState(0);
   const [exchangeRate, setExchange] = useState(0);
+  const [minCollateral, setMinCollateral] = useState(0);
   const { createTx, txHash } = loanBalanceTx(wallet, loanTokenName, loanValue, tokenValue, oracleTokenName, exchangeRate);
 
   const onSubmit: SubmitHandler<IFormInput> = data => {
@@ -85,7 +86,8 @@ export default function ModalCollateralComponent({
     try {
       const res = await getExchangeRate('cardano');
       console.log(res);
-      return setExchange(res * 1000);
+      setExchange(res * 1000);
+      return setMinCollateral((loanValue / res) * 2);
     } catch (error) {
       console.error('Error fetching exchange rate:', error);
     }
