@@ -63,6 +63,8 @@ export default function BorrowPage() {
   const [loanTokenName, setLoanTokenName] = useState('');
   const [oracleTokenName, setOracleTokenName] = useState('');
   const [walletBalance, setWalletBalance] = useState(0);
+  const [loanAmount, setLoanAmount] = useState(0);
+  const [collateralAmount, setCollateralAmount] = useState(0);
 
   const [loans, setLoans] = useState<any[]>([]);
   const [pkh, setPkh] = useState<string | null>(null);
@@ -137,36 +139,44 @@ export default function BorrowPage() {
     });
   };
 
-  const showWithdrawCollateralModal = (token: string, loanTokenName: string, oracleTokenName: string, ) => {
+  const showWithdrawCollateralModal = (token: string, loanTokenName: string, oracleTokenName: string, loanSize: number, collateralAmount: number) => {
     setCollateralToken(token);
     setLoanTokenName(loanTokenName);
     setOracleTokenName(oracleTokenName);
+    setLoanAmount(loanSize);
+    setCollateralAmount(collateralAmount);
     console.log(walletBalance, 'walletBalance')
     setIsModalWithdrawCollateral(true);
   };
 
-  const showRepayModal = (token: string, repaymentCurrency: string, loanTokenName: string, oracleTokenName: string) => {
+  const showRepayModal = (token: string, repaymentCurrency: string, loanTokenName: string, oracleTokenName: string, loanSize: number, collateralAmount: number) => {
     if (repaymentCurrency) {
       setIsFiat(true);
       setCurrentToken(repaymentCurrency);
       setLoanTokenName(loanTokenName);
       setOracleTokenName(oracleTokenName);
+      setLoanAmount(loanSize);
+      setCollateralAmount(collateralAmount);
     } else {
       setIsFiat(false);
       setCurrentToken(token);
       setLoanTokenName(loanTokenName);
       setOracleTokenName(oracleTokenName);
+      setLoanAmount(loanSize);
+      setCollateralAmount(collateralAmount);
     }
     console.log(walletBalance, 'walletBalance')
 
     setIsModalRepayOpen(true);
   };
 
-  const showCollateralModal = (token: string, loanTokenName: string, oracleTokenName: string) => {
+  const showCollateralModal = (token: string, loanTokenName: string, oracleTokenName: string, loanSize: number, collateralAmount: number) => {
     console.log(walletBalance, 'walletBalance')
     setCollateralToken(token);
     setLoanTokenName(loanTokenName);
     setOracleTokenName(oracleTokenName);
+    setLoanAmount(loanSize);
+    setCollateralAmount(collateralAmount);
     setIsModalCollateralOpen(true);
   };
 
@@ -400,6 +410,7 @@ export default function BorrowPage() {
         setStep={setStep}
         oracleTokenName={oracleTokenName}
         loanTokenName={loanTokenName}
+        loanValue={loanAmount}
         wallet={cardanoWalletConnected}
         balance={walletBalance}
       />

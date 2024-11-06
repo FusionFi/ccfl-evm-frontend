@@ -1,10 +1,9 @@
 import { Data, Lucid, toHex, toUnit, UTxO } from '@lucid-evolution/lucid';
 import { initLucid } from '../blockfrost';
 import { useEffect, useState, useCallback } from 'react';
-import { oracleDatum1, loanDatum, collateralDatum } from '../datums';
 import { oracleUpdateAction, mintLoanAction } from '../redeemers';
 import { loanCS, configAddr, oracleAddr, loanMint, loanAddr, collateralAddr, oracleVal, oracleCS } from '../validators';
-import { loanAmt, configUnit, oracleUnit } from '../variables';
+import { configUnit } from '../variables';
 import { makeCollateralDatum, makeLoanDatum, makeOracleDatum } from '../evoDatums';
 
 export function loanMintTx(

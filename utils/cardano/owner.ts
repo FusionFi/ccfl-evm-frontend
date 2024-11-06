@@ -1,6 +1,6 @@
 // import { initLucid } from "./blockfrost"
 
-// const lucid = initLucid()
+export const ownerPKH = process.env.NEXT_PUBLIC_OWNER_PKH
 
 // export const ownerPKH = lucid.utils.getAddressDetails(process.env.OWNER_ADDR)
 //   .paymentCredential!.hash;

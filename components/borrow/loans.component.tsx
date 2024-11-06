@@ -56,11 +56,11 @@ export default function LoansComponent(props: LoansProps) {
     } else {
       switch (type) {
         case ACTION_LOAN.COLLATERAL:
-          return props.showCollateralModal(record.collateral_asset, record.loan_token_name, record.oracle_token_name);
+          return props.showCollateralModal(record.collateral_asset, record.loan_token_name, record.oracle_token_name, record.loan_size, record.collateral_amount);
         case ACTION_LOAN.WITHDRAW_COLLATERAL:
-          return props.showWithdrawCollateralModal(record.collateral_asset, record.loan_token_name, record.oracle_token_name);
+          return props.showWithdrawCollateralModal(record.collateral_asset, record.loan_token_name, record.oracle_token_name, record.loan_size, record.collateral_amount);
         case ACTION_LOAN.REPAY:
-          return props.showRepayModal(record.asset, record.repayment_currency, record.loan_token_name, record.oracle_token_name);
+          return props.showRepayModal(record.asset, record.repayment_currency, record.loan_token_name, record.oracle_token_name, record.loan_size, record.collateral_amount);
         case ACTION_LOAN.DELETE:
           return handleDeleteLoan();
         default:
