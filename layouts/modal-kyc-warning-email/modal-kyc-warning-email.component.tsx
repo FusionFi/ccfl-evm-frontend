@@ -38,7 +38,7 @@ export default function ModalKycWarningEmailComponent({}: any) {
   const getKycLink = async () => {
     try {
       // TODO get KYC link here
-      let rs: any = await service.enctyptus.getKycLink(auth?.access_token);
+      let rs: any = await service.enctyptus.getKycLink(auth?.access_token, auth?.email);
       console.log('🚀 ~ getKycLink ~ rs:', rs);
       setKycLink(rs?.kycUrl || '');
     } catch (error) {
