@@ -1,31 +1,35 @@
-import { fromText, fromUnit, toUnit, } from "lucid-cardano";
-import { configCS } from "./validators"
+import { fromText, fromUnit, toUnit, } from '@lucid-evolution/lucid';
+import { configCS } from "./evoValidators"
 
-export const price1 = 500n
-export const price2 = 550n
-export const price3 = 600n
-export const price4 = 450n
-export const price5 = 400n
-export const price6 = 265n
-export const price7 = 50n
+export const oracleTokenName = "" // for testing purposes
+export const loanTokenName = "" // for testing purposes
 
-export const base = 55n
-export const optimal = 70n
-export const slope1 = 40n
-export const slope2 = 300n
-export const supply = 1000000n
-export const borrowed = 200000n
+export const price1 = 500
+export const price2 = 550
+export const price3 = 600
+export const price4 = 450
+export const price5 = 400
+export const price6 = 265
+export const price7 = 50
+
+export const base = 55
+export const optimal = 70
+export const slope1 = 40
+export const slope2 = 300
+export const supply = 1000000
+export const borrowed = 200000
 
 export const collateral = fromText("ADA")
-export const collateralAmt = 200n
+export const collateralAmt = 200
 export const loanCurrency = fromText("USDT")
-export const loanAmt = 100n
-export const timestamp = BigInt(new Date().getTime())
-export const interest = 15n
-export const fee = 2n
-export const term = 0n
-export const rewards = 100n
+export const loanAmt = 100
+export const timestamp = new Date().getTime()
+export const interest = 15
+export const fee = 2
+export const term = 0
+export const rewards = 100
 export const yieldDatumText = fromText("loan")
+export const yieldAmount = 100
 
 export const oracleUnit = "eb794aac8cdc0cc937d712f1cea95713d7244f6d42a95dcb7b9201989cf8f06b8555893a1df9cce9375733"
 

@@ -2,10 +2,10 @@ import { Constr, Data, Lucid, toUnit, UTxO } from '@lucid-evolution/lucid';
 import { initLucid } from '../blockfrost';
 import { useEffect, useState, useCallback } from 'react';
 import { oracleDatum7 } from '../datums';
-import { ownerPKH } from '../owner';
-import { loanLiquidateAction, oracleUpdateAction } from '../redeemers';
-import { loanAddr, collateralAddr, configAddr, oracleAddr, oracleVal, loanVal, collateralVal, liquidateAddr, liquidate, loanCS, oracleCS } from '../validators';
-import { loanUnit, configUnit, oracleUnit, timestamp, oracleTn } from '../variables';
+import { ownerPKH, ownerSKey } from '../owner';
+import { loanLiquidateAction, makeOracleUpdateAction } from '../evoRedeemers';
+import { loanAddr, collateralAddr, configAddr, oracleAddr, oracleSpend, loanSpend, collateralSpend, liquidateAddr, liquidateVal, loanCS, oracleCS } from '../evoValidators';
+import { loanUnit, configUnit, oracleUnit, timestamp, oracleTn, loanCurrency, supply } from '../variables';
 import { makeCollateralDatum, makeLoanDatum, makeOracleDatum } from '../evoDatums';
 
 export function loanLiquidateTx(
@@ -43,8 +43,9 @@ export function loanLiquidateTx(
       const configIn = configUtxos[0]
       const oracleUtxos: UTxO[] = await lucid.utxosAtWithUnit(oracleAddr, oracleUnit)
       const oracleUtxo: UTxO = oracleUtxos[0]
-      const oracleDatum = makeOracleDatum(exchangeRate, timestamp, oracleTn, liquidationAmt, 0n)
-      
+      const oracleDatum = makeOracleDatum(exchangeRate, timestamp, loanCurrency, supply, 0)
+      const oracleUpdateAction = makeOracleUpdateAction(exchangeRate, timestamp, supply, 0)
+
       const newLoanValue = loanAmount - liquidationAmt
       
       const lUtxos: UTxO[] = await lucid.utxosAtWithUnit(loanAddr, loanUnit)
@@ -60,23 +61,8 @@ export function loanLiquidateTx(
       )
 
       const liquidateLoanDatum = makeLoanDatum(newLoanValue, newLoanValue, inDatum.fields[2], timestamp, oracleTn)
-      // const liquidateDatum = Data.to(
-      //   new Constr(0, [
-      //     newLoanValue,
-      //     newLoanValue,
-      //     0n,
-      //     timestamp,
-      //     oracleTn
-      //   ]))
 
       const liquidateCollateralDatum = makeCollateralDatum(newLoanValue * 2, timestamp)
-      // const liquidCollateralDatum = Data.to(
-      //   new Constr(0, [
-      //     newLoanValue * 2n,
-      //     timestamp,
-      //     0n
-      //   ])
-      // )
 
       console.log(Data.from(lUtxo.datum))
 
@@ -101,20 +87,18 @@ export function loanLiquidateTx(
           { kind: "inline", value: Data.to(oracleDatum) },
           { [oracleUnit]: 1n }
         )
-        .attach.SpendingValidator(oracleVal)
-        .attach.SpendingValidator(loanVal)
-        .attach.SpendingValidator(collateralVal)
+        .attach.SpendingValidator(oracleSpend)
+        .attach.SpendingValidator(loanSpend)
+        .attach.SpendingValidator(collateralSpend)
         .withdraw(liquidateAddr, 0n, withdrawRedeemer)
-        .attach.WithdrawalValidator(liquidate)
-        .addSignerKey(process.env.NEXT_PUBLIC_OWNER_PKH!)
+        .attach.WithdrawalValidator(liquidateVal)
+        .addSignerKey(ownerPKH)
         .complete()
-      
-      const txString = await tx.toString()
 
-      const infraSign = await lucid.fromTx(txString).partialSign.withPrivateKey(process.env.NEXT_PUBLIC_OWNER_SKEY!)
-      const partialSign = await lucid.fromTx(txString).partialSign.withWallet()
-      
-      const assembledTx = await lucid.fromTx(txString).assemble([infraSign, partialSign]).complete();
+      const infraSign = await tx.partialSign.withPrivateKey(ownerSKey)
+      const partialSign = await tx.partialSign.withWallet()
+
+      const assembledTx = await tx.assemble([infraSign, partialSign]).complete();
 
       const txHash = await assembledTx.submit();
       

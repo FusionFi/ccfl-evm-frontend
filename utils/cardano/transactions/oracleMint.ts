@@ -1,16 +1,14 @@
 import { Lucid, toHex, toUnit, UTxO } from '@lucid-evolution/lucid';
 import { initLucid } from '../blockfrost';
 import { useEffect, useState, useCallback } from 'react';
-import { oracleDatum1, interestDatum } from '../datums';
-import { ownerAddress, ownerPKH } from '../owner';
-import { oracleMintAction } from '../redeemers';
-import { configAddr, oracleCS, oracleMint, oracleAddr, interestAddr } from '../validators';
+import { ownerAddress, ownerPKH, ownerSKey } from '../owner';
+import { makeOracleMintAction } from '../evoRedeemers';
+import { configAddr, oracleCS, oracleMint, oracleAddr, interestAddr } from '../evoValidators';
 import { borrowed, configUnit, term } from '../variables';
-import { makeinterestDatum, makeOracleDatum } from '../evoDatums';
+import { makeInterestDatum, makeOracleDatum } from '../evoDatums';
 
 export function oracleMintTx(
   wallet: any, 
-  oracleTokenName: string, 
   exchangeRate: number, 
   currency: string, 
   base: number, 
@@ -39,27 +37,44 @@ export function oracleMintTx(
       }
       console.log(wallet);
 
+      const oracleMintAction = makeOracleMintAction(
+        exchangeRate, 
+        Date.now(),
+        currency, 
+        supply,
+        borrowed,
+        base,
+        optimal,
+        slope1,
+        slope2,
+        term
+      )
+
       const oracleDatum = makeOracleDatum(
         exchangeRate, 
+        Date.now(),
         currency, 
-        base, 
         supply,
         borrowed,
       )
 
-      const interestDatum = makeinterestDatum(
-        currency, 
+      const interestDatum = makeInterestDatum(
+        base, 
         optimal, 
         slope1, 
         slope2,
         term,
       )
+
       const utxos: UTxO[] = await lucid.utxosAt(wallet.address)
       const utxo: UTxO = utxos[0]
       const configUtxos: UTxO[] = await lucid.utxosAtWithUnit(configAddr, configUnit)
       const configIn: UTxO = configUtxos[0]
       const oracleTN = utxo.txHash.slice(0, 30).concat(toHex(new Uint8Array([utxo.outputIndex])))
+      console.log(oracleTN)
       const oracleUnit = toUnit(oracleCS, oracleTN)
+
+      console.log('Oracle Unit: ', oracleUnit)
 
       const tx = await lucid
         .newTx()
@@ -79,15 +94,13 @@ export function oracleMintTx(
           { kind: "inline", value: interestDatum },
           { [oracleUnit]: 1n }
         )
-        .addSignerKey(process.env.NEXT_PUBLIC_OWNER_PKH!)
+        .addSignerKey(ownerPKH)
         .complete()
-      
-      const txString = await tx.toString()
 
-      const infraSign = await lucid.fromTx(txString).partialSign.withPrivateKey(process.env.NEXT_PUBLIC_OWNER_SKEY!)
-      const partialSign = await lucid.fromTx(txString).partialSign.withWallet()
-      
-      const assembledTx = await lucid.fromTx(txString).assemble([infraSign, partialSign]).complete();
+      const infraSign = await tx.partialSign.withPrivateKey(ownerSKey)
+      const partialSign = await tx.partialSign.withWallet()
+
+      const assembledTx = await tx.assemble([infraSign, partialSign]).complete();
 
       const txHash = await assembledTx.submit();
       

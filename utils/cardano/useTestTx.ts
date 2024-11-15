@@ -1,4 +1,4 @@
-import { Lucid } from 'lucid-cardano';
+import { Lucid } from '@lucid-evolution/lucid';
 import { initLucid } from './blockfrost';
 import { useEffect, useState, useCallback } from 'react';
 
@@ -23,10 +23,10 @@ export function useTestTx(wallet: any) {
 
       const tx = await lucid
         .newTx()
-        .payToAddress(wallet.address, { lovelace: 10000000n })
+        .pay.ToAddress(wallet.address, { lovelace: 10000000n })
         .complete();
         
-      const signedTx = await tx.sign().complete();
+      const signedTx = await tx.sign.withWallet().complete();
 
       const txHash = await signedTx.submit();
       

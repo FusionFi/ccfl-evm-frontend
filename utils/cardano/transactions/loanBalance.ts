@@ -1,11 +1,11 @@
 import { Constr, Data, Lucid, toUnit, UTxO } from '@lucid-evolution/lucid';
 import { initLucid } from '../blockfrost';
 import { useEffect, useState, useCallback } from 'react';
-import { oracleDatum1, loanDatum, collateralDatum } from '../datums';
-import { loanBalanceAction, oracleUpdateAction } from '../redeemers';
-import { loanAddr, collateralAddr, configAddr, oracleAddr, balanceAddr, loanVal, collateralVal, oracleVal, balance, oracleCS, loanCS } from '../validators';
-import { loanAmt, loanUnit, configUnit, oracleUnit } from '../variables';
+import { loanBalanceAction, makeOracleUpdateAction } from '../evoRedeemers';
+import { loanAddr, collateralAddr, configAddr, oracleAddr, balanceAddr, loanSpend, collateralSpend, oracleSpend, balanceVal, oracleCS, loanCS } from '../evoValidators';
+import { loanAmt, loanUnit, configUnit, oracleUnit, price1, supply, borrowed } from '../variables';
 import { makeCollateralDatum, makeLoanDatum, makeOracleDatum } from '../evoDatums';
+import { ownerPKH, ownerSKey } from '../owner';
 
 export function loanBalanceTx(
   wallet: any, 
@@ -50,7 +50,7 @@ export function loanBalanceTx(
         oracleInDatum.fields[3], 
         oracleInDatum.fields[4]
       ) 
-      
+      const oracleUpdateAction = makeOracleUpdateAction(price1, timestamp, supply, borrowed)
       const lUtxos: UTxO[] = await lucid.utxosAtWithUnit(loanAddr, loanUnit)
       const lUtxo: UTxO = lUtxos[0]
       const loanInDatum = Data.from(lUtxo.datum!)
@@ -64,11 +64,11 @@ export function loanBalanceTx(
 
       const minValue = (deposit * 2) - collateralInDatum.fields[2]
 
-      if (minValue < tokenValue) {
+      if (minValue > tokenValue) {
         throw Error("Insufficient collateral");
       }
 
-      const collateralOut = collateralInValue + BigInt(tokenValue)
+      const collateralOut = Number(collateralInValue) + tokenValue
       const collateralOutDatum = makeCollateralDatum(collateralOut, timestamp)
       const loanOutDatum = makeLoanDatum(
         loanAmt, 
@@ -100,7 +100,7 @@ export function loanBalanceTx(
           collateralAddr,
           { kind: "inline", value: collateralOutDatum },
           {
-            lovelace: collateralOut,
+            lovelace: BigInt(collateralOut),
             [loanUnit]: 1n,
           }
         )
@@ -109,19 +109,17 @@ export function loanBalanceTx(
           { kind: "inline", value: Data.to(oracleDatum) },
           { [oracleUnit]: 1n }
         )
-        .attach.SpendingValidator(loanVal)
-        .attach.SpendingValidator(collateralVal)
-        .attach.SpendingValidator(oracleVal)
-        .attach.WithdrawalValidator(balance)
-        .addSignerKey(process.env.NEXT_PUBLIC_OWNER_PKH!)
+        .attach.SpendingValidator(loanSpend)
+        .attach.SpendingValidator(collateralSpend)
+        .attach.SpendingValidator(oracleSpend)
+        .attach.WithdrawalValidator(balanceVal)
+        .addSignerKey(ownerPKH)
         .complete()
-      
-      const txString = await tx.toString()
 
-      const infraSign = await lucid.fromTx(txString).partialSign.withPrivateKey(process.env.NEXT_PUBLIC_OWNER_SKEY!)
-      const partialSign = await lucid.fromTx(txString).partialSign.withWallet()
-      
-      const assembledTx = await lucid.fromTx(txString).assemble([infraSign, partialSign]).complete();
+      const infraSign = await tx.partialSign.withPrivateKey(ownerSKey)
+      const partialSign = await tx.partialSign.withWallet()
+
+      const assembledTx = await tx.assemble([infraSign, partialSign]).complete();
 
       const txHash = await assembledTx.submit();
       

@@ -2,9 +2,9 @@ import { Constr, Data, fromText, Lucid, toUnit, UTxO } from '@lucid-evolution/lu
 import { initLucid } from '../blockfrost';
 import { useEffect, useState, useCallback } from 'react';
 import { oracleDatum1 } from '../datums';
-import { ownerPKH } from '../owner';
-import { loanCloseAction, oracleUpdateAction, burnLoanAction, rewardsMintAction } from '../redeemers';
-import { loanAddr, collateralAddr, configAddr, oracleAddr, rewardsCS, loanMint, rewardsMint, closeAddr, loanVal, collateralVal, oracleVal, close, loanCS, oracleCS } from '../validators';
+import { ownerPKH, ownerSKey } from '../owner';
+import { loanCloseAction, makeOracleUpdateAction, burnLoanAction, rewardsMintAction } from '../evoRedeemers';
+import { loanAddr, collateralAddr, configAddr, oracleAddr, rewardsCS, loanMint, rewardsMint, closeAddr, loanSpend, collateralSpend, oracleSpend, closeVal, loanCS, oracleCS } from '../evoValidators';
 import { loanUnit, configUnit, oracleUnit } from '../variables';
 import { makeOracleDatum } from '../evoDatums';
 
@@ -49,6 +49,12 @@ export function loanCloseTx(
         oracleInDatum.fields[3], 
         oracleInDatum.fields[4]
       )
+      const oracleUpdateAction = makeOracleUpdateAction(
+        oracleExchangeRate, 
+        timestamp, 
+        oracleInDatum.fields[3], 
+        oracleInDatum.fields[4]
+      )
       
       const lUtxos: UTxO[] = await lucid.utxosAtWithUnit(loanAddr, loanUnit)
       const lUtxo: UTxO = lUtxos[0]
@@ -87,19 +93,17 @@ export function loanCloseTx(
           { [oracleUnit]: 1n }
         )
         .withdraw(closeAddr, 0n, withdrawRedeemer)
-        .attach.SpendingValidator(loanVal)
-        .attach.SpendingValidator(collateralVal)
-        .attach.SpendingValidator(oracleVal)
-        .attach.WithdrawalValidator(close)
-        .addSignerKey(process.env.NEXT_PUBLIC_OWNER_PKH!)
+        .attach.SpendingValidator(loanSpend)
+        .attach.SpendingValidator(collateralSpend)
+        .attach.SpendingValidator(oracleSpend)
+        .attach.WithdrawalValidator(closeVal)
+        .addSignerKey(ownerPKH)
         .complete()
-      
-      const txString = await tx.toString()
 
-      const infraSign = await lucid.fromTx(txString).partialSign.withPrivateKey(process.env.NEXT_PUBLIC_OWNER_SKEY!)
-      const partialSign = await lucid.fromTx(txString).partialSign.withWallet()
-      
-      const assembledTx = await lucid.fromTx(txString).assemble([infraSign, partialSign]).complete();
+      const infraSign = await tx.partialSign.withPrivateKey(ownerSKey)
+      const partialSign = await tx.partialSign.withWallet()
+
+      const assembledTx = await tx.assemble([infraSign, partialSign]).complete();
 
       const txHash = await assembledTx.submit();
       

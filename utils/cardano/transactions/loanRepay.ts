@@ -2,9 +2,9 @@ import { Constr, Data, Lucid, toUnit, UTxO } from '@lucid-evolution/lucid';
 import { initLucid } from '../blockfrost';
 import { useEffect, useState, useCallback } from 'react';
 import { collateralDatum, loanDatum, oracleDatum1 } from '../datums';
-import { interestPayAddr, ownerPKH } from '../owner';
-import { loanRepayAction, oracleUpdateAction } from '../redeemers';
-import { interestAddr, loanAddr, collateralAddr, configAddr, oracleAddr, repayAddr, loanVal, collateralVal, oracleVal, repay, loanCS, oracleCS } from '../validators';
+import { interestPayAddr, ownerPKH, ownerSKey } from '../owner';
+import { loanRepayAction, makeOracleUpdateAction } from '../evoRedeemers';
+import { interestAddr, loanAddr, collateralAddr, configAddr, oracleAddr, repayAddr, loanSpend, collateralSpend, oracleSpend, repayVal, loanCS, oracleCS } from '../evoValidators';
 import { oracleUnit, loanUnit, configUnit, timestamp, interestCalc, rewards, term, oracleTn, loanAmt } from '../variables';
 import { makeOracleDatum, makeCollateralDatum, makeLoanDatum } from '../evoDatums';
 
@@ -71,13 +71,6 @@ export function loanRepayTx(
       const interestP = recalc * 1000 / Number(exchangeRate)
       const payment = Math.floor(interestP * 1000000) + 1
 
-      // console.log(timestamp)
-      // console.log(timeframe)
-      // console.log(interest)
-      // console.log(recalc)
-      // console.log(interestP)
-      // console.log(payment)
-
       const withdrawRedeemer = Data.to(
         new Constr(0, [
           [1n]
@@ -85,13 +78,19 @@ export function loanRepayTx(
       )
 
       const collateralOutValue = collateralInValue - BigInt(repayAmt / exchangeRate * 1000) + 2000000n
-      const collateralOutDatum = makeCollateralDatum(collateralOut, timestamp)
+      const collateralOutDatum = makeCollateralDatum(Number(collateralOutValue), timestamp)
       const loanOutDatum = makeLoanDatum(
-        loanAmt, 
+        Number(remainingValue), 
         loanInDatum.fields[1], 
         loanInDatum.fields[2], 
         timestamp, 
         oracleTokenName
+      )
+      const oracleUpdateAction = makeOracleUpdateAction(
+        oracleExchangeRate, 
+        timestamp, 
+        loanInDatum.fields[1], 
+        loanInDatum.fields[2]
       )
 
       const tx = await lucid
@@ -121,19 +120,17 @@ export function loanRepayTx(
           interestPayAddr,
           { lovelace: (BigInt(payment) + 2000000n) },
         )
-        .attach.SpendingValidator(loanVal)
-        .attach.SpendingValidator(collateralVal)
-        .attach.SpendingValidator(oracleVal)
-        .attach.WithdrawalValidator(repay)
-        .addSignerKey(process.env.NEXT_PUBLIC_OWNER_PKH!)
+        .attach.SpendingValidator(loanSpend)
+        .attach.SpendingValidator(collateralSpend)
+        .attach.SpendingValidator(oracleSpend)
+        .attach.WithdrawalValidator(repayVal)
+        .addSignerKey(ownerPKH)
         .complete()
-      
-      const txString = await tx.toString()
 
-      const infraSign = await lucid.fromTx(txString).partialSign.withPrivateKey(process.env.NEXT_PUBLIC_OWNER_SKEY!)
-      const partialSign = await lucid.fromTx(txString).partialSign.withWallet()
-      
-      const assembledTx = await lucid.fromTx(txString).assemble([infraSign, partialSign]).complete();
+      const infraSign = await tx.partialSign.withPrivateKey(ownerSKey)
+      const partialSign = await tx.partialSign.withWallet()
+
+      const assembledTx = await tx.assemble([infraSign, partialSign]).complete();
 
       const txHash = await assembledTx.submit();
       

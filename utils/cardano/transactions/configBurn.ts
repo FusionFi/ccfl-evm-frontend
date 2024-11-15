@@ -1,10 +1,11 @@
 import { Lucid, UTxO } from '@lucid-evolution/lucid';
 import { initLucid } from '../blockfrost';
 import { useEffect, useState, useCallback } from 'react';
-import { configDatum } from '../datums';
-import { configCloseAction, configUpdateAction } from '../redeemers';
-import { configMint, configAddr, configVal } from '../validators';
+import { makeConfigDatum } from '../evoDatums';
+import { configCloseAction, makeConfigUpdateAction } from '../evoRedeemers';
+import { configMint, configAddr, configVal } from '../evoValidators';
 import { configUnit } from '../variables';
+import { ownerPKH, ownerSKey } from '../owner';
 
 export function configBurnTx(wallet: any) {
   const [lucid, setLucid] = useState<Lucid | null>(null);
@@ -36,15 +37,13 @@ export function configBurnTx(wallet: any) {
         }, configCloseAction)
         .attach.MintingPolicy(configMint)
         .attach.SpendingValidator(configVal)
-        .addSignerKey(process.env.NEXT_PUBLIC_OWNER_PKH!)
+        .addSignerKey(ownerPKH)
         .complete()
-      
-      const txString = await tx.toString()
 
-      const infraSign = await lucid.fromTx(txString).partialSign.withPrivateKey(process.env.NEXT_PUBLIC_OWNER_SKEY!)
-      const partialSign = await lucid.fromTx(txString).partialSign.withWallet()
-      
-      const assembledTx = await lucid.fromTx(txString).assemble([infraSign, partialSign]).complete();
+      const infraSign = await tx.partialSign.withPrivateKey(ownerSKey)
+      const partialSign = await tx.partialSign.withWallet()
+
+      const assembledTx = await tx.assemble([infraSign, partialSign]).complete();
 
       const txHash = await assembledTx.submit();
       

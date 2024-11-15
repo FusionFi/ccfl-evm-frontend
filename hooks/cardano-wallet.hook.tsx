@@ -28,11 +28,10 @@ export function useCardanoWalletConnect(): [(wallet: Object) => void] {
         );
       }
 
-
       const lucid = await initLucid(item);
-      lucid.selectWallet(api);
+      lucid.selectWallet.fromAPI(api);
 
-      const address = await lucid.wallet.address();
+      const address = await (await lucid.wallet()).address()
 
       wallet.subscribeEvents({
         dispatch,

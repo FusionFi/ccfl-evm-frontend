@@ -2,10 +2,11 @@ import { Lucid, UTxO } from '@lucid-evolution/lucid';
 import { initLucid } from '../blockfrost';
 import { useEffect, useState, useCallback } from 'react';
 import { interestDatum } from '../datums';
-import { ownerPKH } from '../owner';
-import { interestUpdateAction } from '../redeemers';
-import { interestAddr, interestVal } from '../validators';
+import { ownerPKH, ownerSKey } from '../owner';
+import { makeInterestUpdateAction } from '../evoRedeemers';
+import { interestAddr, interestSpend } from '../evoValidators';
 import { oracleUnit } from '../variables';
+import { makeInterestDatum } from '../evoDatums';
 
 export function interestUpdateTx(
   wallet: any, 
@@ -17,6 +18,8 @@ export function interestUpdateTx(
 ) {
   const [lucid, setLucid] = useState<Lucid | null>(null);
   const [txHash, setTxHash] = useState("None");
+  const interestUpdateAction = makeInterestUpdateAction(base, optimal, slope1, slope2, 0);
+  const interestDatum = makeInterestDatum(base, optimal, slope1, slope2, 0);
 
   useEffect(() => {
     if (!lucid && wallet) {
@@ -36,26 +39,22 @@ export function interestUpdateTx(
       const utxos: UTxO[] = await lucid.utxosAtWithUnit(interestAddr, oracleUnit)
       const utxo: UTxO = utxos[0]
 
-      // const interestDatum = interestDatum2
-
       const tx = await lucid
         .newTx()
         .collectFrom([utxo], interestUpdateAction)
-        .attach.SpendingValidator(interestVal)
+        .attach.SpendingValidator(interestSpend)
         .pay.toContract(
           interestAddr,
           { kind: "inline", value: interestDatum },
           { [oracleUnit]: 1n },
         )
-        .addSignerKey(process.env.NEXT_PUBLIC_OWNER_PKH!)
+        .addSignerKey(ownerPKH)
         .complete()
       
-      const txString = await tx.toString()
+      const infraSign = await tx.partialSign.withPrivateKey(ownerSKey)
+      const partialSign = await tx.partialSign.withWallet()
 
-      const infraSign = await lucid.fromTx(txString).partialSign.withPrivateKey(process.env.NEXT_PUBLIC_OWNER_SKEY!)
-      const partialSign = await lucid.fromTx(txString).partialSign.withWallet()
-      
-      const assembledTx = await lucid.fromTx(txString).assemble([infraSign, partialSign]).complete();
+      const assembledTx = await tx.assemble([infraSign, partialSign]).complete();
 
       const txHash = await assembledTx.submit();
       

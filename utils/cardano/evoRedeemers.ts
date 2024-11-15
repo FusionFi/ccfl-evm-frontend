@@ -2,91 +2,75 @@ import { Constr, Data, } from "@lucid-evolution/lucid";
 import { loanHashz, collateralHashz, loanHash, collateralHash, rewardsCS, rewardsMint, oracleHash, balanceHash, liquidateHash, closeHash, interestHash, yieldHash } from "./evoValidators"
 import { loanAmt, rewards, term, timestamp, price1, price2, price3, price4, price5, price6, price7, interest, fee, loanCurrency, oracleTn, collateralAmt, base, borrowed, optimal, slope1, slope2, supply } from "./variables"
 
-export function makeLoanMintAction(loanAmt: bigint, rewards: bigint, term: bigint, timestamp: bigint) {
-  return Data.to(new Constr(0, [loanAmt, rewards, term, timestamp]))
+export function makeLoanMintAction(loanAmt: number, rewards: number, term: number, timestamp: number) {
+  return Data.to(
+    new Constr(0, [
+      BigInt(loanAmt), 
+      BigInt(rewards), 
+      BigInt(term), 
+      BigInt(timestamp)
+    ])
+)
 }
 
-export const mintLoanAction = Data.to(new Constr(0, [loanAmt, rewards, term, timestamp]))
 export const burnLoanAction = Data.to(new Constr(1, []))
 
-export const configUpdateAction = Data.to(new Constr(0, [
-  loanHash,
-  collateralHash,
-  rewardsCS,
-  oracleHash,
-  interestHash,
-  collateralHashz,
-]))
+export function makeConfigUpdateAction(loanHash: string, collateralHash: string, rewardsCS: string, oracleHash: string, interestHash: string, collateralHashz: string[]) {
+  return Data.to(
+    new Constr(0, [
+      loanHash,
+      collateralHash,
+      rewardsCS,
+      oracleHash,
+      interestHash,
+      collateralHashz,
+    ])
+  )
+}
 
 export const configCloseAction = Data.to(new Constr(1, []))
 
-export function makeOracleUpdateAction(price1: bigint, timestamp: bigint, supply: bigint, borrowed: bigint) {
+export function makeOracleUpdateAction(price1: number, timestamp: number, supply: number, borrowed: number) {
   return Data.to(
     new Constr(0, [
-      price1, // change this to match oracleDatum Output or it will fail
-      timestamp,
-      supply,
-      borrowed,
-    ]))
+      BigInt(price1), // change this to match oracleDatum Output or it will fail
+      BigInt(timestamp),
+      BigInt(supply),
+      BigInt(borrowed),
+    ])
+  )
 }
 
-export const oracleUpdateAction = Data.to(
-  new Constr(0, [
-    price1, // change this to match oracleDatum Output or it will fail
-    timestamp,
-    supply,
-    borrowed,
-  ]))
-
-export function makeInterestUpdateAction(base: bigint, optimal: bigint, slope1: bigint, slope2: bigint, term: bigint) {
+export function makeInterestUpdateAction(base: number, optimal: number, slope1: number, slope2: number, term: number) {
   return Data.to(
     new Constr(0, [
-      base,
-      optimal,
-      slope1,
-      slope2,
-      term,
-    ]))
+      BigInt(base),
+      BigInt(optimal),
+      BigInt(slope1),
+      BigInt(slope2),
+      BigInt(term),
+    ])
+  )
 }
-
-export const interestUpdateAction = Data.to(
-  new Constr(0, [
-    base,
-    optimal,
-    slope1,
-    slope2,
-    term,
-  ]))
 
 export const oracleCloseAction = Data.to(new Constr(1, []))
 
-export function makeOracleMintAction(price1: bigint, timestamp: bigint, loanCurrency: bigint, supply: bigint, borrowed: bigint, base: bigint, optimal: bigint, slope1: bigint, slope2: bigint, term: bigint) {
-  return Data.to(new Constr(0, [
-    price1,
-    timestamp,
-    loanCurrency,
-    supply,
-    borrowed,
-    base,
-    optimal,
-    slope1,
-    slope2,
-    term,
-  ]))
+export function makeOracleMintAction(price1: number, timestamp: number, loanCurrency: string, supply: number, borrowed: number, base: number, optimal: number, slope1: number, slope2: number, term: number) {
+  return Data.to(
+    new Constr(0, [
+      BigInt(price1),
+      BigInt(timestamp),
+      BigInt(loanCurrency),
+      BigInt(supply),
+      BigInt(borrowed),
+      BigInt(base),
+      BigInt(optimal),
+      BigInt(slope1),
+      BigInt(slope2),
+      BigInt(term),
+    ])
+  )
 }
-
-export const oracleMintAction = Data.to(new Constr(0, [
-  price1,
-  timestamp,
-  loanCurrency,
-  supply,
-  borrowed,
-  base,
-  optimal,
-  slope1,
-  slope2,
-  term,
-]))
 
 export const oracleBurnAction = Data.to(new Constr(1, []))
 export const loanBalanceAction = Data.to(new Constr(0, [0n]))

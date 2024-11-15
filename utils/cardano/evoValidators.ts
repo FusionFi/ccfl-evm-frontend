@@ -47,6 +47,17 @@ export const configMint: MintingPolicy = {
 
 export const configCS = validatorToScriptHash(configMint)
 
+export const configVal: SpendingValidator = {
+  type: "PlutusV3",
+  script: applyParamsToScript(
+    configValCompiled,
+    [ownerPKH]
+  )
+}
+
+export const configAddr = validatorToAddress('Preprod', configVal)
+export const configHash = validatorToScriptHash(configVal)
+
 export const collateralSpend: SpendingValidator = {
   type: "PlutusV3",
   script: applyParamsToScript(

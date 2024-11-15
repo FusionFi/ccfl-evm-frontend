@@ -1,9 +1,9 @@
 import { Lucid, toUnit, UTxO } from '@lucid-evolution/lucid';
 import { initLucid } from '../blockfrost';
 import { useEffect, useState, useCallback } from 'react';
-import { ownerPKH } from '../owner';
-import { oracleCloseAction, oracleBurnAction } from '../redeemers';
-import { oracleAddr, interestAddr, oracleVal, interestVal, oracleMint, oracleCS } from '../validators';
+import { ownerPKH, ownerSKey } from '../owner';
+import { oracleCloseAction, oracleBurnAction } from '../evoRedeemers';
+import { oracleAddr, interestAddr, oracleSpend, interestSpend, oracleMint, oracleCS } from '../evoValidators';
 import { oracleUnit } from '../variables';
 
 export function oracleCloseTx(wallet: any, oracleTokenName: string) {
@@ -30,28 +30,24 @@ export function oracleCloseTx(wallet: any, oracleTokenName: string) {
       const utxo: UTxO = utxos[0]
       const iUtxos: UTxO[] = await lucid.utxosAtWithUnit(interestAddr, oracleUnit)
       const interestUtxo: UTxO = iUtxos[0]
-      console.log(utxo)
-      console.log(interestUtxo)
 
       const tx = await lucid
         .newTx()
         .collectFrom([utxo], oracleCloseAction)
         .collectFrom([interestUtxo], oracleCloseAction)
-        .attach.SpendingValidator(oracleVal)
-        .attach.SpendingValidator(interestVal)
+        .attach.SpendingValidator(oracleSpend)
+        .attach.SpendingValidator(interestSpend)
         .mintAssets({
           [oracleUnit]: -2n,
         }, oracleBurnAction)
         .attach.MintingPolicy(oracleMint)
-        .addSignerKey(process.env.NEXT_PUBLIC_OWNER_PKH!)
+        .addSignerKey(ownerPKH)
         .complete()
-      
-      const txString = await tx.toString()
 
-      const infraSign = await lucid.fromTx(txString).partialSign.withPrivateKey(process.env.NEXT_PUBLIC_OWNER_SKEY!)
-      const partialSign = await lucid.fromTx(txString).partialSign.withWallet()
-      
-      const assembledTx = await lucid.fromTx(txString).assemble([infraSign, partialSign]).complete();
+      const infraSign = await tx.partialSign.withPrivateKey(ownerSKey)
+      const partialSign = await tx.partialSign.withWallet()
+
+      const assembledTx = await tx.assemble([infraSign, partialSign]).complete();
 
       const txHash = await assembledTx.submit();
       

@@ -1,14 +1,25 @@
 import { Data, Lucid, UTxO } from '@lucid-evolution/lucid';
 import { initLucid } from '../blockfrost';
 import { useEffect, useState, useCallback } from 'react';
-import { configDatum } from '../datums';
-import { configUpdateAction } from '../redeemers';
-import { configAddr, configVal } from '../validators';
+import { makeConfigDatum } from '../evoDatums';
+import { makeConfigUpdateAction } from '../evoRedeemers';
+import { configAddr, configVal, yieldHash } from '../evoValidators';
 import { configUnit } from '../variables';
+import { ownerPKH, ownerSKey } from '../owner';
 
-export function configUpdateTx(wallet: any) {
+export function configUpdateTx(
+  wallet: any,
+  loanHash: string,
+  collateralHash: string,
+  rewardsCS: string,
+  oracleHash: string,
+  interestHash: string,
+  collateralHashz: string[]
+) {
   const [lucid, setLucid] = useState<Lucid | null>(null);
   const [txHash, setTxHash] = useState("None");
+  const configUpdateAction = makeConfigUpdateAction(loanHash, collateralHash, rewardsCS, oracleHash, interestHash, collateralHashz);
+  const configDatum = makeConfigDatum(loanHash, collateralHash, rewardsCS, oracleHash, interestHash, yieldHash, collateralHashz);
 
   useEffect(() => {
     if (!lucid && wallet) {
@@ -23,16 +34,9 @@ export function configUpdateTx(wallet: any) {
       if (!lucid) {
         throw Error("Lucid not instantiated");
       }
-      console.log(wallet);
 
       const utxos: UTxO[] = await lucid.utxosAtWithUnit(configAddr, configUnit)
       const utxo: UTxO = utxos[0]
-      const configDatum = utxo.datum!
-      const configDatumFields = Data.from(configDatum).fields
-
-      console.log(`Config Datum: 
-        `, configDatumFields, `
-      `)
 
       const tx = await lucid
         .newTx()
@@ -43,18 +47,14 @@ export function configUpdateTx(wallet: any) {
           { kind: "inline", value: configDatum },
           { [configUnit]: 1n }
         )
-        .addSignerKey(process.env.NEXT_PUBLIC_OWNER_PKH!)
+        .addSignerKey(ownerPKH)
         .complete()
-      
-      const txString = await tx.toString()
 
-      const infraSign = await lucid.fromTx(txString).partialSign.withPrivateKey(process.env.NEXT_PUBLIC_OWNER_SKEY!)
-      const partialSign = await lucid.fromTx(txString).partialSign.withWallet()
-      
-      const assembledTx = await lucid.fromTx(txString).assemble([infraSign, partialSign]).complete();
+      const infraSign = await tx.partialSign.withPrivateKey(ownerSKey)
+      const partialSign = await tx.partialSign.withWallet()
+      const assembledTx = await tx.assemble([infraSign, partialSign]).complete();
 
       const txHash = await assembledTx.submit();
-      // const txHash = configDatum
 
       console.log(txHash);
       setTxHash(txHash);

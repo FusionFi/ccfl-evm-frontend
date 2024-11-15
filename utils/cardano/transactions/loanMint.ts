@@ -1,10 +1,11 @@
 import { Data, Lucid, toHex, toUnit, UTxO } from '@lucid-evolution/lucid';
 import { initLucid } from '../blockfrost';
 import { useEffect, useState, useCallback } from 'react';
-import { oracleUpdateAction, mintLoanAction } from '../redeemers';
-import { loanCS, configAddr, oracleAddr, loanMint, loanAddr, collateralAddr, oracleVal, oracleCS } from '../validators';
+import { makeOracleUpdateAction, makeLoanMintAction } from '../evoRedeemers';
+import { loanCS, configAddr, oracleAddr, loanMint, loanAddr, collateralAddr, oracleSpend, oracleCS } from '../evoValidators';
 import { configUnit } from '../variables';
 import { makeCollateralDatum, makeLoanDatum, makeOracleDatum } from '../evoDatums';
+import { ownerPKH, ownerSKey } from '../owner';
 
 export function loanMintTx(
   wallet: any,
@@ -53,6 +54,12 @@ export function loanMintTx(
         oracleInDatum.fields[3], 
         oracleInDatum.fields[4]
       ) 
+      const oracleUpdateAction = makeOracleUpdateAction(
+        oracleExchangeRate, 
+        timestamp, 
+        oracleInDatum.fields[3], 
+        oracleInDatum.fields[4]
+      )
 
       const utxos: UTxO[] = await lucid.utxosAt(wallet.address)
       const utxo: UTxO = utxos[0]
@@ -62,13 +69,7 @@ export function loanMintTx(
       const term = timestamp + (1000 * 60 * 60 * 24 * 365)
       const loanDatum = makeLoanDatum(loanAmt, loanAmt, term, timestamp, oracleTokenName)
       const collateralDatum = makeCollateralDatum(collateralAmount, timestamp)
-      // console.log(`Loan Unit: 
-      //   ${loanUnit}
-      //   `)
-      // console.log(`Collateral Value: `, deposit * 1000000 * 2, `
-      //   `)
-      // console.log(`Expected Collateral: `, ((loanAmt * 1000) / oracleOutDatum.fields[0]) * 1000000 * 2, `
-      // ` )
+      const mintLoanAction = makeLoanMintAction(loanAmt, loanAmt, term, timestamp)
 
       const tx = await lucid
         .newTx()
@@ -94,16 +95,14 @@ export function loanMintTx(
           { kind: "inline", value: oracleDatum },
           { [oracleUnit]: 1n }
         )
-        .attach.SpendingValidator(oracleVal)
-        .addSignerKey(process.env.NEXT_PUBLIC_OWNER_PKH!)
+        .attach.SpendingValidator(oracleSpend)
+        .addSignerKey(ownerPKH)
         .complete()
-      
-      const txString = await tx.toString()
 
-      const infraSign = await lucid.fromTx(txString).partialSign.withPrivateKey(process.env.NEXT_PUBLIC_OWNER_SKEY!)
-      const partialSign = await lucid.fromTx(txString).partialSign.withWallet()
-      
-      const assembledTx = await lucid.fromTx(txString).assemble([infraSign, partialSign]).complete();
+      const infraSign = await tx.partialSign.withPrivateKey(ownerSKey)
+      const partialSign = await tx.partialSign.withWallet()
+
+      const assembledTx = await tx.assemble([infraSign, partialSign]).complete();
 
       const txHash = await assembledTx.submit();
       

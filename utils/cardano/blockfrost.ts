@@ -8,6 +8,7 @@ import { AppState } from "@/store/index.store";
 import { getLucid } from "@/libs/lucid.lib";
 
 export async function initLucid(wallet: any) {
+	console.log(wallet)
 
 	console.log("Lets go");
 	const lucid = await Lucid(

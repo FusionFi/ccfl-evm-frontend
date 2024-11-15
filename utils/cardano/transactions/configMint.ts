@@ -1,10 +1,11 @@
 import { Lucid, UTxO } from '@lucid-evolution/lucid';
 import { initLucid } from '../blockfrost';
 import { useEffect, useState, useCallback } from 'react';
-import { configDatum } from '../datums';
-import { configUpdateAction } from '../redeemers';
-import { configMint, configAddr } from '../validators';
+import { makeConfigDatum } from '../evoDatums';
+import { makeConfigUpdateAction } from '../evoRedeemers';
+import { configMint, configAddr, collateralHashz, loanHash, collateralHash, rewardsCS, oracleHash, interestHash, yieldHash } from '../evoValidators';
 import { configUnit } from '../variables';
+import { ownerPKH, ownerAddress, ownerSKey } from '../owner';
 
 export function configMintTx(wallet: any) {
   const [lucid, setLucid] = useState<Lucid | null>(null);
@@ -25,8 +26,25 @@ export function configMintTx(wallet: any) {
       }
       console.log(wallet);
 
-      const utxos: UTxO[] = await lucid.utxosAt(process.env.OWNER_ADDR!);
+      const utxos: UTxO[] = await lucid.utxosAt(wallet.address);
       const utxo: UTxO = utxos[0]
+      const configDatum = makeConfigDatum(
+        loanHash,
+        collateralHash,
+        rewardsCS,
+        oracleHash,
+        interestHash,
+        yieldHash,
+        collateralHashz
+      )
+      const configUpdateAction = makeConfigUpdateAction(
+        loanHash,
+        collateralHash,
+        rewardsCS,
+        oracleHash,
+        interestHash,
+        collateralHashz
+      )
 
       const tx = await lucid
         .newTx()
@@ -34,21 +52,19 @@ export function configMintTx(wallet: any) {
         .mintAssets({
           [configUnit]: 1n,
         }, configUpdateAction)
-        .attachMintingPolicy(configMint)
+        .attach.MintingPolicy(configMint)
         .pay.ToContract(
           configAddr,
           { kind: "inline", value: configDatum },
           { [configUnit]: 1n }
         )
-        .addSignerKey(process.env.NEXT_PUBLIC_OWNER_PKH!)
+        .addSignerKey(ownerPKH)
         .complete()
-      
-      const txString = await tx.toString()
 
-      const infraSign = await lucid.fromTx(txString).partialSign.withPrivateKey(process.env.NEXT_PUBLIC_OWNER_SKEY!)
-      const partialSign = await lucid.fromTx(txString).partialSign.withWallet()
-      
-      const assembledTx = await lucid.fromTx(txString).assemble([infraSign, partialSign]).complete();
+      const infraSign = await tx.partialSign.withPrivateKey(ownerSKey)
+      const partialSign = await tx.partialSign.withWallet()
+
+      const assembledTx = await tx.assemble([infraSign, partialSign]).complete();
 
       const txHash = await assembledTx.submit();
       

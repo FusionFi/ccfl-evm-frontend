@@ -1,9 +1,9 @@
 import { Constr, Data, Lucid, toUnit, UTxO } from '@lucid-evolution/lucid';
 import { initLucid } from '../blockfrost';
 import { useEffect, useState, useCallback } from 'react';
-import { ownerPKH } from '../owner';
-import { withdrawYieldAction } from '../redeemers';
-import { yieldAddr, collateralAddr, configAddr, withdrawAddr, collateralVal, yieldVal, withdraw, loanCS } from '../validators';
+import { ownerPKH, ownerSKey } from '../owner';
+import { withdrawYieldAction } from '../evoRedeemers';
+import { yieldAddr, collateralAddr, configAddr, withdrawAddr, collateralSpend, yieldSpend, withdrawVal, loanCS } from '../evoValidators';
 import { loanUnit, configUnit } from '../variables';
 
 export function yieldWithdrawTx(
@@ -13,8 +13,7 @@ export function yieldWithdrawTx(
 ) {
   const [lucid, setLucid] = useState<Lucid | null>(null);
   const [txHash, setTxHash] = useState("None");
-  // const ownerPKH = process.env.
-
+ 
   useEffect(() => {
     if (!lucid && wallet) {
       initLucid(wallet).then((Lucid: Lucid) => {
@@ -76,18 +75,16 @@ export function yieldWithdrawTx(
             [loanUnit]: 1n
           }
         )
-        .attach.SpendingValidator(collateralVal)
-        .attach.SpendingValidator(yieldVal)
-        .attach.WithdrawalValidator(withdraw)
-        .addSignerKey(process.env.NEXT_PUBLIC_OWNER_PKH!)
+        .attach.SpendingValidator(collateralSpend)
+        .attach.SpendingValidator(yieldSpend)
+        .attach.WithdrawalValidator(withdrawVal)
+        .addSignerKey(ownerPKH)
         .complete()
-      
-      const txString = await tx.toString()
 
-      const infraSign = await lucid.fromTx(txString).partialSign.withPrivateKey(process.env.NEXT_PUBLIC_OWNER_SKEY!)
-      const partialSign = await lucid.fromTx(txString).partialSign.withWallet()
-      
-      const assembledTx = await lucid.fromTx(txString).assemble([infraSign, partialSign]).complete();
+      const infraSign = await tx.partialSign.withPrivateKey(ownerSKey)
+      const partialSign = await tx.partialSign.withWallet()
+
+      const assembledTx = await tx.assemble([infraSign, partialSign]).complete();
 
       const txHash = await assembledTx.submit();
       

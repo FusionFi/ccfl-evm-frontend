@@ -2,9 +2,9 @@ import { Data, Lucid, toUnit, UTxO } from '@lucid-evolution/lucid';
 import { initLucid } from '../blockfrost';
 import { useEffect, useState, useCallback } from 'react';
 import { oracleDatum1 } from '../datums';
-import { ownerPKH } from '../owner';
-import { oracleUpdateAction } from '../redeemers';
-import { oracleAddr, oracleCS, oracleVal } from '../validators';
+import { ownerPKH, ownerSKey } from '../owner';
+import { makeOracleUpdateAction } from '../evoRedeemers';
+import { oracleAddr, oracleCS, oracleSpend } from '../evoValidators';
 import { oracleUnit } from '../variables';
 import { makeOracleDatum } from '../evoDatums';
 
@@ -46,6 +46,12 @@ export function oracleUpdateTx(
         oracleInDatum.fields[3], 
         oracleInDatum.fields[4]
       ) 
+      const oracleUpdateAction = makeOracleUpdateAction(
+        oracleExchangeRate, 
+        timestamp, 
+        oracleInDatum.fields[3], 
+        oracleInDatum.fields[4]
+      )
 
       const tx = await lucid
         .newTx()
@@ -55,17 +61,14 @@ export function oracleUpdateTx(
           { kind: "inline", value: oracleDatum },
           { [oracleUnit]: 1n }
         )
-        .attach.SpendingValidator(oracleVal)
+        .attach.SpendingValidator(oracleSpend)
         .addSignerKey(ownerPKH)
-        .addSignerKey(process.env.NEXT_PUBLIC_OWNER_PKH!)
         .complete()
-      
-      const txString = await tx.toString()
 
-      const infraSign = await lucid.fromTx(txString).partialSign.withPrivateKey(process.env.NEXT_PUBLIC_OWNER_SKEY!)
-      const partialSign = await lucid.fromTx(txString).partialSign.withWallet()
-      
-      const assembledTx = await lucid.fromTx(txString).assemble([infraSign, partialSign]).complete();
+      const infraSign = await tx.partialSign.withPrivateKey(ownerSKey)
+      const partialSign = await tx.partialSign.withWallet()
+
+      const assembledTx = await tx.assemble([infraSign, partialSign]).complete();
 
       const txHash = await assembledTx.submit();
 
