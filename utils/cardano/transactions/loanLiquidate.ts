@@ -60,7 +60,7 @@ export function loanLiquidateTx(
         ])
       )
 
-      const liquidateLoanDatum = makeLoanDatum(newLoanValue, newLoanValue, inDatum.fields[2], timestamp, oracleTn)
+      const liquidateLoanDatum = makeLoanDatum(newLoanValue, newLoanValue, inDatum.fields[2], timestamp, oracleTokenName)
 
       const liquidateCollateralDatum = makeCollateralDatum(newLoanValue * 2, timestamp)
 
@@ -84,7 +84,7 @@ export function loanLiquidateTx(
         )
         .pay.ToContract(
           oracleAddr,
-          { kind: "inline", value: Data.to(oracleDatum) },
+          { kind: "inline", value: oracleDatum },
           { [oracleUnit]: 1n }
         )
         .attach.SpendingValidator(oracleSpend)

@@ -37,7 +37,7 @@ export function oracleUpdateTx(
       const utxos: UTxO[] = await lucid.utxosAtWithUnit(oracleAddr, oracleUnit)
       const utxo: UTxO = utxos[0]
 
-      const oracleExchangeRate = exchangeRate * 1000
+      const oracleExchangeRate = exchangeRate // exchangeRate * 1000
       const oracleInDatum = Data.from(utxo.datum!)
       const oracleDatum = makeOracleDatum(
         oracleExchangeRate, 

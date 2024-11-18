@@ -1,7 +1,7 @@
 import { fromText, fromUnit, toUnit, } from '@lucid-evolution/lucid';
 import { configCS } from "./evoValidators"
 
-export const oracleTokenName = "" // for testing purposes
+export const oracleTokenName = "828ae0f58d7ffe9cf371f414635d6c01" // "7ffe9771909a9436779f205bfda90501" // for testing purposes
 export const loanTokenName = "" // for testing purposes
 
 export const price1 = 500
@@ -20,7 +20,7 @@ export const supply = 1000000
 export const borrowed = 200000
 
 export const collateral = fromText("ADA")
-export const collateralAmt = 200
+export const collateralAmt = 400000000
 export const loanCurrency = fromText("USDT")
 export const loanAmt = 100
 export const timestamp = new Date().getTime()

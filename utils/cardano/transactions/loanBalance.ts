@@ -41,7 +41,7 @@ export function loanBalanceTx(
       
       const oracleUtxos: UTxO[] = await lucid.utxosAtWithUnit(oracleAddr, oracleUnit)
       const oracleUtxo: UTxO = oracleUtxos[0]
-      const oracleExchangeRate = exchangeRate * 1000
+      const oracleExchangeRate = exchangeRate // exchangeRate * 1000
       const oracleInDatum = Data.from(oracleUtxo.datum!)
       const oracleDatum = makeOracleDatum(
         oracleExchangeRate, 
@@ -50,7 +50,7 @@ export function loanBalanceTx(
         oracleInDatum.fields[3], 
         oracleInDatum.fields[4]
       ) 
-      const oracleUpdateAction = makeOracleUpdateAction(price1, timestamp, supply, borrowed)
+      const oracleUpdateAction = makeOracleUpdateAction(price1, timestamp, supply, oracleInDatum.fields[4])
       const lUtxos: UTxO[] = await lucid.utxosAtWithUnit(loanAddr, loanUnit)
       const lUtxo: UTxO = lUtxos[0]
       const loanInDatum = Data.from(lUtxo.datum!)
@@ -106,7 +106,7 @@ export function loanBalanceTx(
         )
         .pay.ToContract(
           oracleAddr,
-          { kind: "inline", value: Data.to(oracleDatum) },
+          { kind: "inline", value: oracleDatum },
           { [oracleUnit]: 1n }
         )
         .attach.SpendingValidator(loanSpend)

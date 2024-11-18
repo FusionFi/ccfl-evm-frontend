@@ -1,4 +1,4 @@
-import { Constr, Data, } from "@lucid-evolution/lucid";
+import { Constr, Data, fromText } from "@lucid-evolution/lucid";
 import { loanHashz, collateralHashz, loanHash, collateralHash, rewardsCS, rewardsMint, oracleHash, balanceHash, liquidateHash, closeHash, interestHash, yieldHash } from "./evoValidators"
 import { loanAmt, rewards, term, timestamp, price1, price2, price3, price4, price5, price6, price7, interest, fee, loanCurrency, oracleTn, collateralAmt, base, borrowed, optimal, slope1, slope2, supply } from "./variables"
 
@@ -60,7 +60,7 @@ export function makeOracleMintAction(price1: number, timestamp: number, loanCurr
     new Constr(0, [
       BigInt(price1),
       BigInt(timestamp),
-      BigInt(loanCurrency),
+      loanCurrency,
       BigInt(supply),
       BigInt(borrowed),
       BigInt(base),

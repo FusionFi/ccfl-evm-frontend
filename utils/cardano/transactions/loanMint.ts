@@ -45,20 +45,20 @@ export function loanMintTx(
       const configIn = configUtxos[0]
       const oracleUtxos: UTxO[] = await lucid.utxosAtWithUnit(oracleAddr, oracleUnit)
       const oracleUtxo: UTxO = oracleUtxos[0]
-      const oracleExchangeRate = exchangeRate * 1000
+      const oracleExchangeRate = exchangeRate // exchangeRate * 1000
       const oracleInDatum = Data.from(oracleUtxo.datum!)
       const oracleDatum = makeOracleDatum(
         oracleExchangeRate, 
         timestamp, 
         oracleInDatum.fields[2], 
         oracleInDatum.fields[3], 
-        oracleInDatum.fields[4]
+        (oracleInDatum.fields[4] + BigInt(loanAmt))
       ) 
       const oracleUpdateAction = makeOracleUpdateAction(
         oracleExchangeRate, 
         timestamp, 
         oracleInDatum.fields[3], 
-        oracleInDatum.fields[4]
+        (oracleInDatum.fields[4] + BigInt(loanAmt))
       )
 
       const utxos: UTxO[] = await lucid.utxosAt(wallet.address)
@@ -68,7 +68,8 @@ export function loanMintTx(
 
       const term = timestamp + (1000 * 60 * 60 * 24 * 365)
       const loanDatum = makeLoanDatum(loanAmt, loanAmt, term, timestamp, oracleTokenName)
-      const collateralDatum = makeCollateralDatum(collateralAmount, timestamp)
+      const collateralEQ = loanAmt * 2
+      const collateralDatum = makeCollateralDatum(collateralEQ, timestamp)
       const mintLoanAction = makeLoanMintAction(loanAmt, loanAmt, term, timestamp)
 
       const tx = await lucid
@@ -80,17 +81,17 @@ export function loanMintTx(
           [loanUnit]: 2n,
         }, mintLoanAction)
         .attach.MintingPolicy(loanMint)
-        .payToContract(
+        .pay.ToContract(
           loanAddr,
           { kind: "inline", value: loanDatum },
           { [loanUnit]: 1n }
         )
-        .payToContract(
+        .pay.ToContract(
           collateralAddr,
           { kind: "inline", value: collateralDatum },
           { lovelace: BigInt(collateralAmount), [loanUnit]: 1n }
         )
-        .payToContract(
+        .pay.ToContract(
           oracleAddr,
           { kind: "inline", value: oracleDatum },
           { [oracleUnit]: 1n }

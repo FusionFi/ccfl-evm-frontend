@@ -42,7 +42,7 @@ export function oracleMintTx(
         Date.now(),
         currency, 
         supply,
-        borrowed,
+        0,
         base,
         optimal,
         slope1,
@@ -55,7 +55,7 @@ export function oracleMintTx(
         Date.now(),
         currency, 
         supply,
-        borrowed,
+        0,
       )
 
       const interestDatum = makeInterestDatum(

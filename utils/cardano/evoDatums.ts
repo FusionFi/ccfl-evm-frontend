@@ -47,7 +47,7 @@ export function makeLoanDatum(loanAmt: number, rewards: number, term: number, ti
       BigInt(rewards),
       BigInt(term),
       BigInt(timestamp),
-      BigInt(oracleTn),
+      oracleTn,
     ])
   )
 }

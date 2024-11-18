@@ -1,10 +1,9 @@
-import { Lucid, UTxO } from '@lucid-evolution/lucid';
+import { Lucid, UTxO, toUnit } from '@lucid-evolution/lucid';
 import { initLucid } from '../blockfrost';
 import { useEffect, useState, useCallback } from 'react';
-import { interestDatum } from '../datums';
 import { ownerPKH, ownerSKey } from '../owner';
 import { makeInterestUpdateAction } from '../evoRedeemers';
-import { interestAddr, interestSpend } from '../evoValidators';
+import { interestAddr, interestSpend, oracleCS } from '../evoValidators';
 import { oracleUnit } from '../variables';
 import { makeInterestDatum } from '../evoDatums';
 
@@ -36,6 +35,8 @@ export function interestUpdateTx(
       }
       console.log(wallet);
 
+      const oracleUnit = toUnit(oracleCS, oracleTokenName)
+
       const utxos: UTxO[] = await lucid.utxosAtWithUnit(interestAddr, oracleUnit)
       const utxo: UTxO = utxos[0]
 
@@ -43,7 +44,7 @@ export function interestUpdateTx(
         .newTx()
         .collectFrom([utxo], interestUpdateAction)
         .attach.SpendingValidator(interestSpend)
-        .pay.toContract(
+        .pay.ToContract(
           interestAddr,
           { kind: "inline", value: interestDatum },
           { [oracleUnit]: 1n },

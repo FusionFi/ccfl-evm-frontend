@@ -56,7 +56,7 @@ export default function LucidTest() {
         <h1>Lucid</h1>
         <div>
           <h2>Lucid</h2>
-          <p>Lucid is a Cardano wallet that uses Blockfrost to interact with the Cardano blockchain. It is a simple, easy-to-use wallet that allows you to send and receive ADA, as well as view your transaction history.</p>
+          <p>Lucid is a Cardano transaction builder that uses Blockfrost to interact with the Cardano blockchain. It is a simple, easy-to-use tool that allows you to send and receive ADA, as well as interact with smart contracts.</p>
         </div>
         <div className="flex">
 

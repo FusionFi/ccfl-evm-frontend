@@ -1,7 +1,6 @@
 import { Constr, Data, fromText, Lucid, toUnit, UTxO } from '@lucid-evolution/lucid';
 import { initLucid } from '../blockfrost';
 import { useEffect, useState, useCallback } from 'react';
-import { oracleDatum1 } from '../datums';
 import { ownerPKH, ownerSKey } from '../owner';
 import { loanCloseAction, makeOracleUpdateAction, burnLoanAction, rewardsMintAction } from '../evoRedeemers';
 import { loanAddr, collateralAddr, configAddr, oracleAddr, rewardsCS, loanMint, rewardsMint, closeAddr, loanSpend, collateralSpend, oracleSpend, closeVal, loanCS, oracleCS } from '../evoValidators';
@@ -89,7 +88,7 @@ export function loanCloseTx(
         .attach.MintingPolicy(loanMint)
         .attach.MintingPolicy(rewardsMint)
         .pay.ToContract(oracleAddr,
-          { kind: "inline", value: Data.to(oracleDatum) },
+          { kind: "inline", value: oracleDatum },
           { [oracleUnit]: 1n }
         )
         .withdraw(closeAddr, 0n, withdrawRedeemer)
