@@ -65,7 +65,9 @@ class EVMProvider extends BaseProvider {
   async disconnect() {
     const connectors = getConnectors(config);
     const connector: any = connectors.find(
-      item => item.name.toLowerCase() == this.connector?.id?.toLowerCase() || this?.connector?.id == item.type,
+      item =>
+        item.name.toLowerCase() == this.connector?.id?.toLowerCase() ||
+        this?.connector?.id == item.type,
     );
 
     const result = await disconnect(config, {
@@ -260,6 +262,7 @@ class EVMProvider extends BaseProvider {
     contract_address,
     isGas,
     isFiat,
+    encryptusId,
   }: any) {
     let tx;
     if (isGas) {
@@ -273,6 +276,7 @@ class EVMProvider extends BaseProvider {
         collateral,
         IsYieldGenerating,
         isFiat,
+        encryptusId,
       );
     } else {
       tx = await service_ccfl_borrow.createLoan(
@@ -285,6 +289,7 @@ class EVMProvider extends BaseProvider {
         provider,
         account,
         contract_address,
+        encryptusId,
       );
     }
 
