@@ -84,6 +84,9 @@ const PaymentDetail = ({
   loadingPurpose,
   loadingSource,
   countryInfo,
+  ownerPhoneError,
+  ownerAddressError,
+  bicError,
 }: any) => {
   const { t } = useTranslation('common');
 
@@ -202,6 +205,29 @@ const PaymentDetail = ({
             </Form.Item>
           </div>
           <div className="borrow-fiat-payment-container__detail__content__item">
+            {t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_ACCOUNT_TYPE')}:
+            <Form.Item
+              name="accountType"
+              help=""
+              validateFirst
+              rules={[
+                {
+                  required: true,
+                  message: t('FIAT_REQUIRED'),
+                },
+              ]}>
+              <Select
+                placeholder={t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_CHOOSE_BANK_PLACEHOLDER')}
+                className="borrow-fiat-payment-container__detail__content__item__control-select"
+                popupClassName={cssClass['borrow-fiat-payment-select']}
+                options={[...(BankMap.values() as any)].map(item => ({
+                  value: item.value,
+                  lable: item.name,
+                }))}
+              />
+            </Form.Item>
+          </div>
+          <div className="borrow-fiat-payment-container__detail__content__item">
             {t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_ACCOUNT_NUMBER')}:
             <div>
               <Form.Item
@@ -248,6 +274,157 @@ const PaymentDetail = ({
                 />
               </Form.Item>
               {accountOwnerError?.length > 0 ? (
+                <div className="borrow-fiat-payment-container_error">{t('FIAT_REQUIRED')}</div>
+              ) : (
+                <div></div>
+              )}
+            </div>
+          </div>
+          <div className="borrow-fiat-payment-container__detail__content__item">
+            {t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_OWNER_PHONE_NUMBER')}:
+            <div>
+              <Form.Item
+                name="ownerPhone"
+                help=""
+                validateFirst
+                rules={[
+                  {
+                    required: true,
+                    message: t('FIAT_REQUIRED'),
+                  },
+                ]}>
+                <Input
+                  placeholder={t(
+                    'BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_OWNER_PHONE_NUMBER_PLACEHOLDER',
+                  )}
+                  className="borrow-fiat-payment-container__detail__content__item__control-input"
+                  autoComplete="off"
+                />
+              </Form.Item>
+              {ownerPhoneError?.length > 0 ? (
+                <div className="borrow-fiat-payment-container_error">{t('FIAT_REQUIRED')}</div>
+              ) : (
+                <div></div>
+              )}
+            </div>
+          </div>
+          <div className="borrow-fiat-payment-container__detail__content__item">
+            {t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_TELEPHONE_PROVIDER')}:
+            <Form.Item
+              name="telephoneProvider"
+              help=""
+              validateFirst
+              rules={[
+                {
+                  required: true,
+                  message: t('FIAT_REQUIRED'),
+                },
+              ]}>
+              <Select
+                placeholder={t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_CHOOSE_BANK_PLACEHOLDER')}
+                className="borrow-fiat-payment-container__detail__content__item__control-select"
+                popupClassName={cssClass['borrow-fiat-payment-select']}
+                options={[...(BankMap.values() as any)].map(item => ({
+                  value: item.value,
+                  lable: item.name,
+                }))}
+              />
+            </Form.Item>
+          </div>
+          <div className="borrow-fiat-payment-container__detail__content__item">
+            {t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_OWNER_ADDRESS')}:
+            <div>
+              <Form.Item
+                name="ownerAddress"
+                help=""
+                validateFirst
+                rules={[
+                  {
+                    required: true,
+                    message: t('FIAT_REQUIRED'),
+                  },
+                ]}>
+                <Input
+                  placeholder={t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_OWNER_ADDRESS_PLACEHOLDER')}
+                  className="borrow-fiat-payment-container__detail__content__item__control-input"
+                />
+              </Form.Item>
+              {ownerAddressError?.length > 0 ? (
+                <div className="borrow-fiat-payment-container_error">{t('FIAT_REQUIRED')}</div>
+              ) : (
+                <div></div>
+              )}
+            </div>
+          </div>
+          <div className="borrow-fiat-payment-container__detail__content__item">
+            {t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_BIC')}:
+            <div>
+              <Form.Item
+                name="bic"
+                help=""
+                validateFirst
+                rules={[
+                  {
+                    required: true,
+                    message: t('FIAT_REQUIRED'),
+                  },
+                ]}>
+                <Input
+                  placeholder={t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_BIC_PLACEHOLDER')}
+                  className="borrow-fiat-payment-container__detail__content__item__control-input"
+                />
+              </Form.Item>
+              {bicError?.length > 0 ? (
+                <div className="borrow-fiat-payment-container_error">{t('FIAT_REQUIRED')}</div>
+              ) : (
+                <div></div>
+              )}
+            </div>
+          </div>
+          <div className="borrow-fiat-payment-container__detail__content__item">
+            {t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_BIC')}:
+            <div>
+              <Form.Item
+                name="bic"
+                help=""
+                validateFirst
+                rules={[
+                  {
+                    required: true,
+                    message: t('FIAT_REQUIRED'),
+                  },
+                ]}>
+                <Input
+                  placeholder={t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_BIC_PLACEHOLDER')}
+                  className="borrow-fiat-payment-container__detail__content__item__control-input"
+                />
+              </Form.Item>
+              {bicError?.length > 0 ? (
+                <div className="borrow-fiat-payment-container_error">{t('FIAT_REQUIRED')}</div>
+              ) : (
+                <div></div>
+              )}
+            </div>
+          </div>
+          <div className="borrow-fiat-payment-container__detail__content__item">
+            {t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_BANK_SUB_CODE')}:
+            <div>
+              <Form.Item
+                name="bankSubCode"
+                help=""
+                validateFirst
+                rules={[
+                  {
+                    required: true,
+                    message: t('FIAT_REQUIRED'),
+                  },
+                ]}>
+                <Input
+                  placeholder={t('BORROW_FIAT_MODAL_TAB_PAYOUT_DETAIL_OWNER_ADDRESS_PLACEHOLDER')}
+                  className="borrow-fiat-payment-container__detail__content__item__control-input"
+                />
+              </Form.Item>
+              {bicError?.length > 0 ? (
                 <div className="borrow-fiat-payment-container_error">{t('FIAT_REQUIRED')}</div>
               ) : (
                 <div></div>
@@ -440,6 +617,10 @@ export default function ModalBorrowFiatPaymentComponent({
         const amountError = formInstance.getFieldError('amount');
         const accountNumberError = formInstance.getFieldError('accountNumber');
         const accountOwnerError = formInstance.getFieldError('accountOwner');
+        const ownerPhoneError = formInstance.getFieldError('ownerPhone');
+        const ownerAddressError = formInstance.getFieldError('ownerAddress');
+        const bicError = formInstance.getFieldError('bic');
+
         const isNotValidForm1 = formInstance.getFieldsError();
 
         console.log('isNotValidForm', isNotValidForm1, isNotValidForm);
@@ -460,6 +641,9 @@ export default function ModalBorrowFiatPaymentComponent({
                 loadingPurpose={loadingPurpose}
                 loadingSource={loadingSource}
                 countryInfo={countryInfo}
+                ownerPhoneError={ownerPhoneError}
+                ownerAddressError={ownerAddressError}
+                bicError={bicError}
               />
               <div className="borrow-fiat-payment-container__term-condition">
                 <Checkbox onChange={handleReceiveEmailCheck}>
