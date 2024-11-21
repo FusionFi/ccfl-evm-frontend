@@ -22,6 +22,7 @@ import {
   DEFAULT_ADDRESS,
   MIN_AMOUNT_KEY,
   ACTION_TYPE,
+  DEFAULT_ENCRYPTUS_ID,
 } from '@/constants/common.constant';
 import { formatNumber, toAmountShow, toLessPart, toUnitWithDecimal } from '@/utils/common';
 import service from '@/utils/backend/borrow';
@@ -208,6 +209,7 @@ export default function ModalBorrowComponent({
           provider: connector_provider,
           account: provider?.account,
           contract_address: CONTRACT_ADDRESS,
+          encryptusId: DEFAULT_ENCRYPTUS_ID,
         });
         if (tx?.link) {
           setStep(2);
@@ -505,6 +507,7 @@ export default function ModalBorrowComponent({
               IsYieldGenerating: isYield,
               isFiat: false,
               isGas: true,
+              encryptusId: DEFAULT_ENCRYPTUS_ID,
             })) as any;
             let res_price = (await service.getPrice(selectedChain?.id, 'ETH')) as any;
             console.log('handleGetFeeCreateLoan res', res);

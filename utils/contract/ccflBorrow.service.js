@@ -140,6 +140,7 @@ const createLoan = async (
   provider,
   account,
   contract_address,
+  encryptusId,
 ) => {
   let overwrite = { from: account };
 
@@ -161,7 +162,7 @@ const createLoan = async (
       abi,
       contract_address,
       'createLoan',
-      [amount, stableCoin, amountCollateral, collateral, IsYieldGenerating, IsFiat],
+      [amount, stableCoin, amountCollateral, collateral, IsYieldGenerating, IsFiat, encryptusId],
       overwrite,
     );
 
@@ -238,6 +239,7 @@ const getGasFeeCreateLoan = async (
   collateral,
   IsYieldGenerating,
   isFiat,
+  encryptusId,
 ) => {
   console.log(
     'getGasFeeCreateLoan',
@@ -262,7 +264,7 @@ const getGasFeeCreateLoan = async (
       abi,
       contract_address,
       'createLoan',
-      [amount, stableCoin, amountCollateral, collateral, IsYieldGenerating, isFiat],
+      [amount, stableCoin, amountCollateral, collateral, IsYieldGenerating, isFiat, encryptusId],
       overwrite,
       true,
     );
