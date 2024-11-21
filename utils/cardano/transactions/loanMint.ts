@@ -119,5 +119,5 @@ export function loanMintTx(
     }
   }, [lucid, wallet]);
 
-  return { createTx, txHash };
+  return { createTx, txHashADA: txHash };
 }

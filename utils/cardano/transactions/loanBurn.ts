@@ -93,5 +93,5 @@ export function loanBurnTx(
     }
   }, [lucid, wallet]);
 
-  return { createTx, txHash };
+  return { createTx, txHashADA: txHash };
 }

@@ -131,5 +131,5 @@ export function loanBalanceTx(
     }
   }, [lucid, wallet]);
 
-  return { createTx, txHash };
+  return { createTx, txHashADA: txHash };
 }

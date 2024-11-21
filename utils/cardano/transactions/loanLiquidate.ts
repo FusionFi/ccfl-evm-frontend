@@ -108,5 +108,5 @@ export function loanLiquidateTx(
     }
   }, [lucid, wallet]);
 
-  return { createTx, txHash };
+  return { createTx, txHashADA: txHash };
 }

@@ -14,7 +14,6 @@ export function loanRepayTx(
   repayAmt: number, 
   oracleTokenName: string, 
   exchangeRate: number
-
 ) {
   const [lucid, setLucid] = useState<Lucid | null>(null);
   const [txHash, setTxHash] = useState("None");
@@ -143,5 +142,5 @@ export function loanRepayTx(
     }
   }, [lucid, wallet]);
 
-  return { createTx, txHash };
+  return { createTx, txHashADA: txHash };
 }
