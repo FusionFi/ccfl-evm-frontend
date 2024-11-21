@@ -12,6 +12,8 @@ import { useConnectedNetworkManager, useProviderManager } from '@/hooks/auth.hoo
 import { useAccount } from 'wagmi';
 import { formatNumber, toAmountShow, toLessPart } from '@/utils/common';
 import service from '@/utils/backend/borrow';
+import { getExchangeRate } from '@/utils/api/getExchangeRate';
+import { loanBalanceTx } from '@/utils/cardano/transactions/loanBalance';
 
 interface ModalWithdrawCollateralProps {
   isModalOpen: boolean;
@@ -21,6 +23,11 @@ interface ModalWithdrawCollateralProps {
   setStep: any;
   loanItem: any;
   handleLoans: any;
+  oracleTokenName: string; // Cardano
+  loanTokenName: string; // Cardano
+  loanAmount: number; // Cardano
+  wallet: any; // Cardano
+  balance: number; // Cardano
 }
 
 interface IFormInput {}
@@ -33,6 +40,11 @@ export default function ModalWithdrawCollateralComponent({
   setStep,
   loanItem,
   handleLoans,
+  oracleTokenName,
+  loanTokenName,
+  loanAmount,
+  wallet,
+  balance,
 }: ModalWithdrawCollateralProps) {
   const { t } = useTranslation('common');
   const [provider] = useProviderManager();
@@ -64,6 +76,10 @@ export default function ModalWithdrawCollateralComponent({
   }) as any;
   const [status, setStatus] = useState(TRANSACTION_STATUS.SUCCESS);
   const [stableCoinValue, setStableCoinValue] = useState(0);
+  const [exchangeRate, setExchange] = useState(0); // Cardano 
+  const [tokenValue, setTokenValue] = useState<number>(0); // Cardano 
+  const [minCollateral, setMinCollateral] = useState(0); // CArdano 
+  const { createTx, txHashADA } = loanBalanceTx(wallet, loanTokenName, loanAmount, tokenValue, oracleTokenName, exchangeRate);
 
   const onSubmit: SubmitHandler<IFormInput> = async data => {
     const connector_provider = await connector?.getProvider();
@@ -171,6 +187,33 @@ export default function ModalWithdrawCollateralComponent({
     }
   }, [isModalOpen]);
 
+  // vV Cardano Vv //
+
+  const exchangeApi = async () => {
+    try {
+      const res = await getExchangeRate('cardano');
+      console.log(res);
+      setExchange(res * 1000);
+      return setMinCollateral((loanAmount / res) * 2);
+    } catch (error) {
+      console.error('Error fetching exchange rate:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (isModalOpen) {
+      setTokenValue(0);
+      exchangeApi();
+    }
+  }, [isModalOpen]);
+
+  const handleApprove = async () => {
+    if (!tokenValue) return;
+    await createTx();
+  };
+
+  // ^ Cardano ^ //
+
   return (
     <div>
       <ModalComponent
@@ -257,10 +300,11 @@ export default function ModalWithdrawCollateralComponent({
                         errorEstimate.exceedsAllowance ||
                         !provider?.account ||
                         !loanItem ||
-                        !loanItem?.loan_id
+                        !loanItem?.loan_id ||
                       }
                       className="w-full"
-                      loading={loading}>
+                      loading={loading}
+                      onClick={handleApprove}>
                       {t('BORROW_MODAL_WITHDRAW_MY_COLLATERAL')}
                     </Button>
                   </div>

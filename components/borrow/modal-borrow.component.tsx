@@ -38,6 +38,10 @@ import {
 } from '@/hooks/provider.hook';
 import { useNetworkManager } from '@/hooks/borrow.hook';
 import BigNumber from 'bignumber.js';
+import { loanMintTx } from '@/utils/cardano/transactions/loanMint';
+import { getExchangeRate } from '@/utils/api/getExchangeRate';
+import { initLucid } from '@/utils/cardano/blockfrost';
+import { Lucid } from '@lucid-evolution/lucid';
 
 interface ModalBorrowProps {
   isModalOpen: boolean;
@@ -52,6 +56,9 @@ interface ModalBorrowProps {
   priceStableCoin: any;
   handleLoans?: any;
   loan_available: any;
+  oracleTokenName: string; // Cardano
+  wallet: any; // Cardano
+  balance: number; // Cardano
 }
 
 interface IFormInput {
@@ -72,6 +79,9 @@ export default function ModalBorrowComponent({
   priceStableCoin,
   handleLoans,
   loan_available = 0,
+  oracleTokenName, // Cardano
+  wallet, // Cardano
+  balance, // Cardano
 }: ModalBorrowProps) {
   const { control, handleSubmit, setValue } = useForm({
     defaultValues: {
@@ -136,6 +146,14 @@ export default function ModalBorrowComponent({
   const toggleClass = () => {
     setActive(!isActive);
   };
+  const [tokenValue, setTokenValue] = useState(0); // Cardano
+  const [walletBalance, setWalletBalance] = useState(balance); // Cardano
+  const [lucid, setLucid] = useState<Lucid | null>(null); // Cardano
+  const [exchange, setExchange] = useState(0); // Cardano
+  const [minCollateral, setMinCollateral] = useState(0); // Cardano
+  const minimumAmount = 2000000;
+  // TokenValue is the stablecoin amount to be borrowed
+  const { createTx, txHashADA } = loanMintTx(wallet, tokenValue!, oracleTokenName, 0, exchange);
 
   const onSubmit: SubmitHandler<IFormInput> = async data => {
     const connector_provider = await connector?.getProvider();
@@ -668,6 +686,42 @@ export default function ModalBorrowComponent({
     }
   }, [isModalOpen]);
 
+  // vV Cardano Vv //
+
+  const exchangeApi = async () => {
+    try {
+      const res = await getExchangeRate('cardano');
+      console.log(res);
+      setExchange(res * 1000);
+      return setMinCollateral((tokenValue / res) * 2);
+    } catch (error) {
+      console.error('Error fetching exchange rate:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (isModalOpen) {
+      if (!lucid && wallet) {
+        initLucid(wallet).then((Lucid: Lucid) => {
+          setLucid(Lucid);
+        });
+      }
+      setTokenValue(0);
+      setCollateralValue(0);
+      exchangeApi();
+    }
+  }, [isModalOpen]);
+
+  const handleApprove = async () => {
+    if (!tokenValue || !collateralValue || collateralValue < minCollateral) return;
+    await createTx();
+    console.log('Approve: ', tokenValue);
+    console.log('OracleTokenName: ', oracleTokenName);
+    console.log(walletBalance);
+  };
+
+  // ^^ Cardano ^^ //
+
   return (
     <div>
       <ModalComponent
@@ -921,6 +975,9 @@ export default function ModalBorrowComponent({
                       htmlType="submit"
                       type="primary"
                       disabled={
+                        // Cardano
+                        !tokenValue || !collateralValue || collateralValue < minCollateral ||
+                        // Cardano
                         !stableCoinValue ||
                         !collateralValue ||
                         collateralValue < minimalCollateral ||
@@ -933,10 +990,11 @@ export default function ModalBorrowComponent({
                         errorEstimate.nonEnoughBalanceCollateral ||
                         stableCoinInfo.loadingStatus ||
                         (minimum && stableCoinValue < minimum) ||
-                        stableCoinValue > loan_available
+                        stableCoinValue > loan_available 
                       }
                       className="w-full"
-                      loading={loading}>
+                      loading={loading}
+                      onClick={handleApprove}>
                       {t('BORROW_MODAL_BORROW_APPROVE', { currentToken: token })}
                     </Button>
                   </div>
@@ -951,6 +1009,9 @@ export default function ModalBorrowComponent({
                         htmlType="submit"
                         type="primary"
                         disabled={
+                          // Cardano
+                          !tokenValue || !collateralValue || collateralValue < minCollateral ||
+                          // Cardano
                           !stableCoinValue ||
                           !collateralValue ||
                           collateralValue < minimalCollateral ||
@@ -988,6 +1049,7 @@ export default function ModalBorrowComponent({
               stableCoinAmount={stableCoinValue}
               collateralAmount={collateralValue}
               txLink={txHash}
+              // txHashADA={txHashADA} Cardano
               errorTx={errorTx}
               handleLoans={handleLoans}
             />

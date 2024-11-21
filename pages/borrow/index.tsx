@@ -16,7 +16,7 @@ import { Select } from 'antd';
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
 import { DataType } from '@/components/borrow/borrow';
-import { useConnectedNetworkManager, useProviderManager } from '@/hooks/auth.hook';
+import { useConnectedNetworkManager, useProviderManager, useCardanoConnected } from '@/hooks/auth.hook';
 import eventBus from '@/hooks/eventBus.hook';
 import ModalBorrowFiatSuccessComponent from '@/components/borrow/modal-borrow-fiat/modal-borrow-fiat-success.component';
 import ModalBorrowFiatComponent from '@/components/borrow/modal-borrow-fiat/modal-borrow-fiat.component';
@@ -25,6 +25,8 @@ import ModalWithdrawCollateralComponent from '@/components/borrow/modal-withdraw
 import service from '@/utils/backend/borrow';
 import { useNetworkManager } from '@/hooks/supply.hook';
 import { ProviderType } from '@/providers/index.provider';
+import { useCardanoWalletConnected } from '@/hooks/cardano-wallet.hook';
+import { getBalance, initLucid } from '@/utils/cardano/blockfrost';
 
 type LabelRender = SelectProps['labelRender'];
 enum BorrowModalType {
@@ -50,6 +52,24 @@ export default function BorrowPage() {
   const { selectedChain, updateNetwork } = useConnectedNetworkManager();
   const [, updateNetworks] = useNetworkManager();
   const [provider] = useProviderManager();
+  const [isCardanoConnected] = useCardanoConnected(); // CArdano
+  const [cardanoWalletConnected] = useCardanoWalletConnected(); // Cardano
+  const [loanTokenName, setLoanTokenName] = useState(''); // Cardano
+  const [oracleTokenName, setOracleTokenName] = useState(''); // Cardano 
+  const [walletBalance, setWalletBalance] = useState(0); // Cardano
+  const [lucid, setLucid] = useState<Lucid | null>(null); //Cardano
+
+  const isConnected_ = useMemo(() => { // Cardano
+    if (!!cardanoWalletConnected?.address) {
+      return true;
+    }
+
+    if (isCardanoConnected && networkInfo) {
+      balance
+      return true;
+    }
+    return false
+  }, [isCardanoConnected, cardanoWalletConnected?.address, networkInfo])
 
   const handleNetworkChange = (item: any) => {
     try {
@@ -142,6 +162,19 @@ export default function BorrowPage() {
     handleLoans((page - 1) * pageSize, pageSize);
   };
 
+  // Cardano
+  const balance = useMemo(async () => {
+    if (!lucid) {
+      initLucid(cardanoWalletConnected).then((lucid: Lucid) => {
+        setLucid(lucid);
+      });
+    }
+    if (cardanoWalletConnected && lucid) {
+      const balance = await getBalance(lucid, cardanoWalletConnected.address);
+      setWalletBalance(Number(balance ?? 0)); // Ensure the value is a number
+    }
+  }, [cardanoWalletConnected, lucid]);
+
   const showModal = (token: string, apr: string, decimals: string, loan_available: any) => {
     setModal({
       type: token == BorrowModalType.Fiat ? BorrowModalType.Fiat : BorrowModalType.Crypto,
@@ -151,26 +184,72 @@ export default function BorrowPage() {
       loan_available,
     });
   };
+
   const showWithdrawCollateralModal = (token: string, record: any) => {
-    setLoanItem(record);
-    setCollateralToken(token);
-    setIsModalWithdrawCollateral(true);
-  };
-  const showRepayModal = (token: string, repaymentCurrency: string, record: any) => {
-    if (repaymentCurrency) {
-      setIsFiat(true);
-      setCurrentToken(repaymentCurrency);
-    } else {
-      setIsFiat(false);
-      setCurrentToken(token);
+    if (!isCardanoConnected) {
+      setLoanItem(record);
+      setCollateralToken(token);
+      setIsModalWithdrawCollateral(true);
     }
-    setLoanItem(record);
-    setIsModalRepayOpen(true);
+    if (isCardanoConnected) {
+      setCollateralToken(token);
+      setLoanTokenName(loanTokenName);
+      setOracleTokenName(oracleTokenName);
+      setLoanAmount(loanSize);
+      setCollateralAmount(collateralAmount);
+      setIsModalWithdrawCollateral(true);
+    }
   };
+
+  const showRepayModal = (token: string, repaymentCurrency: string, record: any) => {
+    if (!isCardanoConnected) {
+      if (repaymentCurrency) {
+        setIsFiat(true);
+        setCurrentToken(repaymentCurrency);
+      } else {
+        setIsFiat(false);
+        setCurrentToken(token);
+      }
+      setLoanItem(record);
+      setIsModalRepayOpen(true);
+    }
+    if (isCardanoConnected) {
+      if (repaymentCurrency) {
+        setIsFiat(true);
+        setCurrentToken(repaymentCurrency);
+        setLoanTokenName(loanTokenName);
+        setOracleTokenName(oracleTokenName);
+        setLoanAmount(loanSize);
+        setCollateralAmount(collateralAmount);
+      } else {
+        setIsFiat(false);
+        setCurrentToken(token);
+        setLoanTokenName(loanTokenName);
+        setOracleTokenName(oracleTokenName);
+        setLoanAmount(loanSize);
+        setCollateralAmount(collateralAmount);
+      }
+  
+      setIsModalRepayOpen(true);
+    }
+  };
+
   const showCollateralModal = (token: string, record: any) => {
-    setLoanItem(record);
-    setCollateralToken(token);
-    setIsModalCollateralOpen(true);
+    if (!isCardanoConnected) {
+      setLoanItem(record);
+      setCollateralToken(token);
+      setIsModalCollateralOpen(true);
+    }
+
+    if (isCardanoConnected) {
+      setCollateralToken(token);
+      setLoanTokenName(loanTokenName);
+      setOracleTokenName(oracleTokenName);
+      setLoanAmount(loanSize);
+      setCollateralAmount(collateralAmount);
+      setIsModalCollateralOpen(true);
+    }
+
   };
 
   const handleCancel = () => {
@@ -184,16 +263,19 @@ export default function BorrowPage() {
     setStep(0);
     setToken(COLLATERAL_TOKEN[0].name);
   };
+
   const handleRepayCancel = () => {
     setCurrentToken('');
     setIsModalRepayOpen(false);
     setStep(0);
   };
+
   const handleCollateralCancel = () => {
     setCollateralToken('');
     setIsModalCollateralOpen(false);
     setStep(0);
   };
+
   const handleWithdrawCollateralCancel = () => {
     setCollateralToken('');
     setIsModalWithdrawCollateral(false);
@@ -368,6 +450,9 @@ export default function BorrowPage() {
         priceStableCoin={price}
         handleLoans={handleLoans}
         loan_available={modal.loan_available}
+        oracleTokenName={oracleTokenName}
+        wallet={cardanoWalletConnected}
+        balance={walletBalance}
       />
       <ModalRepayComponent
         isModalOpen={isModalRepayOpen}
@@ -379,6 +464,11 @@ export default function BorrowPage() {
         priceToken={price}
         loanItem={loanItem}
         handleLoans={handleLoans}
+        oracleTokenName={oracleTokenName}
+        loanTokenName={loanTokenName}
+        loanAmount={loanAmount}
+        wallet={cardanoWalletConnected}
+        balance={walletBalance}
       />
       <ModalCollateralComponent
         isModalOpen={isModalCollateralOpen}
@@ -388,6 +478,11 @@ export default function BorrowPage() {
         setStep={setStep}
         loanItem={loanItem}
         handleLoans={handleLoans}
+        oracleTokenName={oracleTokenName}
+        loanTokenName={loanTokenName}
+        loanValue={loanAmount}
+        wallet={cardanoWalletConnected}
+        balance={walletBalance}
       />
       <ModalWithdrawCollateralComponent
         isModalOpen={isModalWithdrawCollateral}
@@ -397,6 +492,11 @@ export default function BorrowPage() {
         setStep={setStep}
         loanItem={loanItem}
         handleLoans={handleLoans}
+        oracleTokenName={oracleTokenName}
+        loanTokenName={loanTokenName}
+        wallet={cardanoWalletConnected}
+        loanAmount={loanAmount}
+        balance={walletBalance}
       />
       <ModalBorrowFiatComponent
         isModalOpen={BorrowModalType.Fiat == modal.type}
@@ -407,6 +507,9 @@ export default function BorrowPage() {
         setStep={setStep}
         token={token}
         setToken={setToken}
+        oracleTokenName={oracleTokenName}
+        wallet={cardanoWalletConnected}
+        balance={walletBalance}
       />
 
       <ModalBorrowFiatSuccessComponent

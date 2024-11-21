@@ -31,6 +31,8 @@ import {
 } from '@/hooks/provider.hook';
 import { useConnectedNetworkManager, useProviderManager } from '@/hooks/auth.hook';
 import BigNumber from 'bignumber.js';
+import { getExchangeRate } from '@/utils/api/getExchangeRate'; //Cardano
+import { loanRepayTx } from '@/utils/cardano/transactions/loanRepay'; //Cardano
 
 interface ModalBorrowProps {
   isModalOpen: boolean;
@@ -42,6 +44,11 @@ interface ModalBorrowProps {
   priceToken: any;
   loanItem: any;
   handleLoans?: any;
+  oracleTokenName: string; // Cardano
+  loanTokenName: string; // CArdano
+  loanAmount: number; // Cardano
+  wallet: any; // Cardano
+  balance: number; // Cardano
 }
 
 interface IFormInput {
@@ -58,6 +65,11 @@ export default function ModalBorrowComponent({
   priceToken,
   loanItem,
   handleLoans,
+  oracleTokenName,
+  loanTokenName,
+  loanAmount,
+  wallet,
+  balance,
 }: ModalBorrowProps) {
   const { t } = useTranslation('common');
   const [provider] = useProviderManager();
@@ -100,6 +112,10 @@ export default function ModalBorrowComponent({
   const [loadingMinimum, setLoadingMinimum] = useState<boolean>(false);
   const [minimum, setMinimum] = useState(undefined) as any;
   const [allowanceNumber, setAllowanceNumber] = useState(0) as any;
+  const [exchangeRate, setExchange] = useState(0);
+  const [minCollateral, setMinCollateral] = useState(0);
+  const { createTx, txHashADA } = loanRepayTx(wallet, loanTokenName, tokenValue, oracleTokenName, exchangeRate);
+
 
   // console.log('loanItem', loanItem);
 
@@ -493,6 +509,37 @@ export default function ModalBorrowComponent({
     }
   }, [isModalOpen]);
 
+  // vV Cardano Vv //
+
+  const exchangeApi = async () => {
+    try {
+      const res = await getExchangeRate('cardano');
+      console.log(res);
+      setExchange(res * 1000);
+      return setMinCollateral((loanAmount / res) * 2);
+    } catch (error) {
+      console.error('Error fetching exchange rate:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (isModalOpen) {
+      setTokenValue(0);
+      exchangeApi();
+    }
+  }, [isModalOpen]);
+
+  const handleApprove = async () => {
+    if (!tokenValue) return;
+    // await createTx();
+    console.log('RepayingCollateral: ', tokenValue);
+    console.log('LoanTokenName: ', loanTokenName);
+    console.log('OracleTokenName: ', oracleTokenName);
+    console.log('ExchangeRate: ', exchangeRate);
+  };
+
+  // ^^ Cardano ^^ //
+
   return (
     <div>
       <ModalComponent
@@ -680,7 +727,8 @@ export default function ModalBorrowComponent({
                         (tokenValue && !(stableCoinData.balance - tokenValue >= 0))
                       }
                       className="w-full"
-                      loading={loading}>
+                      loading={loading}
+                      onClick={handleApprove}>
                       {t('BORROW_MODAL_BORROW_APPROVE', {
                         currentToken: currentToken?.toUpperCase(),
                       })}
