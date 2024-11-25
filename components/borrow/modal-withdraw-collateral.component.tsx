@@ -300,7 +300,7 @@ export default function ModalWithdrawCollateralComponent({
                         errorEstimate.exceedsAllowance ||
                         !provider?.account ||
                         !loanItem ||
-                        !loanItem?.loan_id ||
+                        !loanItem?.loan_id
                       }
                       className="w-full"
                       loading={loading}

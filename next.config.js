@@ -3,6 +3,18 @@ const path = require('path');
 const { i18n } = require('./next-i18next.config');
 const nextConfig = {
   i18n,
+  webpack: function (config, options) {
+		config.experiments = {
+			topLevelAwait: true,
+			asyncWebAssembly: true,
+			layers: true, // optional, required with some bundlers/frameworks
+		};
+    config.resolve.fallback = {
+      "mongodb-client-encryption": false ,
+      "aws4": false
+    }
+		return config;
+  },
   reactStrictMode: false,
   eslint: {
     // Warning: This allows production builds to successfully complete even if
