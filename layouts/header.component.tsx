@@ -15,7 +15,7 @@ import eventBus from '@/hooks/eventBus.hook';
 import { Button } from 'antd';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
-import { useAccount, useConnect } from 'wagmi';
+// import { useAccount, useConnect } from 'wagmi';
 import HeaderLanding from './header-landing/header-landing.component';
 export const MainHeader = () => {
   /**
@@ -27,19 +27,19 @@ export const MainHeader = () => {
    * HOOKS
    */
   const router = useRouter();
-  const { address, connector } = useAccount();
+  // const { address, connector } = useAccount();
   const [messageApi, contextHolder] = message.useMessage();
   const { t } = useTranslation('common');
-  const { connect } = useConnect();
+  // const { connect } = useConnect();
   const [isCardanoConnected, updateCardanoConnected] = useCardanoConnected();
   const [cardanoWalletConnected] = useCardanoWalletConnected();
-  const address_ = useMemo(() => {
-    if (isCardanoConnected) {
-      return cardanoWalletConnected?.address;
-    }
+  // const address_ = useMemo(() => {
+  //   if (isCardanoConnected) {
+  //     return cardanoWalletConnected?.address;
+  //   }
 
-    return address;
-  }, [address, cardanoWalletConnected?.address]);
+  //   return address;
+  // }, [address, cardanoWalletConnected?.address]);
 
   /**
    * FUNCTIONS
@@ -97,7 +97,7 @@ export const MainHeader = () => {
     } else {
       return (
         <div className="page-header-content flex items-center justify-center w-full">
-          {!isLandingPage && (
+          {/* {!isLandingPage && (
             <div className="navigation-links">
               <ul className="flex items-center justify-center ml-4">
                 <li className="text-white mr-4 hover:opacity-80">
@@ -155,7 +155,7 @@ export const MainHeader = () => {
                 btnLabel={'LAYOUT_MAIN_HEADER_NAV_BTN_TITLE_CONNECT_WALLET'}
               />
             </div>
-          </div>
+          </div> */}
         </div>
       );
     }

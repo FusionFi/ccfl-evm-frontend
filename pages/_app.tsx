@@ -55,12 +55,12 @@ const config = defaultWagmiConfig({
 });
 
 // 3. Create Web3Modal
-createWeb3Modal({
-  wagmiConfig: config,
-  projectId,
-  enableAnalytics: true, // Optional - defaults to your Cloud configuration
-  enableOnramp: false, // Optional - false as default
-});
+// createWeb3Modal({
+//   wagmiConfig: config,
+//   projectId,
+//   enableAnalytics: true, // Optional - defaults to your Cloud configuration
+//   enableOnramp: false, // Optional - false as default
+// });
 // TODO: config chaings
 const supportedChains = process.env.NEXT_PUBLIC_IS_TESTNET ? [sepolia] : [mainnet];
 
@@ -131,7 +131,7 @@ function App({ Component, ...rest }: AppProps) {
             </div>
           }
           persistor={persistor}>
-          <WagmiProvider config={config}>
+        
             <QueryClientProvider client={queryClient}>
               <div className={inter.className}>
                 <MainLayout>
@@ -139,7 +139,7 @@ function App({ Component, ...rest }: AppProps) {
                 </MainLayout>
               </div>
             </QueryClientProvider>
-          </WagmiProvider>
+         
         </PersistGate>
       </Provider>
     </StyleProvider>
